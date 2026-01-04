@@ -1,0 +1,46 @@
+{
+  "status": "completed",
+  "submitted_at": 1767474798.4063098,
+  "front_path": "/home/wtf/Vanguard/exports/mobile_jobs/e249ce10242c4303a52b877b80bf89ba/front.jpeg",
+  "back_path": "/home/wtf/Vanguard/exports/mobile_jobs/e249ce10242c4303a52b877b80bf89ba/back.jpeg",
+  "metadata": {
+    "source": "flutter-mobile",
+    "front_from_gallery": false,
+    "back_from_gallery": false
+  },
+  "started_at": 1767474798.461705,
+  "completed_at": 1767474852.528587,
+  "result": {
+    "front": {
+      "success": true,
+      "grade": 8.5
+    },
+    "back": {
+      "success": true,
+      "grade": 8.5
+    },
+    "metadata": {
+      "source": "flutter-mobile",
+      "front_from_gallery": false,
+      "back_from_gallery": false
+    },
+    "details": {
+      "front": {
+        "raw_data": "Available in full export"
+      },
+      "back": {
+        "raw_data": "Available in full export"
+      }
+    },
+    "visualizations": {
+      "front": {
+        "assets": [],
+        "meta": {}
+      },
+      "back": {
+        "assets": [],
+        "meta": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,104 @@
+Oups.otf -> Oups
+Oups_Clean.otf -> Oups
+SansitaSwashed-VariableFont_wght.ttf -> Sansita Swashed Light
+PermanentMarker-Regular.ttf -> Permanent Marker
+PlaywriteHU-ExtraLight.ttf -> Playwrite HU ExtraLight
+PlaywriteHU-Light.ttf -> Playwrite HU Light
+PlaywriteHU-Regular.ttf -> Playwrite HU
+PlaywriteHU-Thin.ttf -> Playwrite HU Thin
+PlaywriteHU-VariableFont_wght.ttf -> Playwrite HU
+Albas.ttf -> Alba Super
+SansitaSwashed-Black.ttf -> Sansita Swashed Black
+SansitaSwashed-Bold.ttf -> Sansita Swashed
+SansitaSwashed-ExtraBold.ttf -> Sansita Swashed ExtraBold
+SansitaSwashed-Light.ttf -> Sansita Swashed Light
+SansitaSwashed-Medium.ttf -> Sansita Swashed Medium
+SansitaSwashed-Regular.ttf -> Sansita Swashed
+Moogalator.ttf -> Moogalator
+MoogalatorFiller.ttf -> Moogalator Filler
+NEONLEDLight.otf -> NEON LED Light
+Oaklash.ttf -> Oaklash
+Kaboom_PersonalUseOnly.ttf -> Kaboom_PersonalUseOnly
+MonoglycerideDemiBold.ttf -> Monoglyceride
+Monoglyceride.ttf -> Monoglyceride
+barcadnobarboldital.ttf -> Barcade No Bar Bold Italic
+barcadenobarital.ttf -> Barcade No Bar Italic
+barcadesemital.ttf -> Barcade Semi-Italic
+barcadeital.ttf -> Barcade Italic
+barcadeleft.ttf -> Barcade Leftalic
+barcadecond.ttf -> Barcade Condensed
+barcadeoutital.ttf -> Barcade Outline Italic
+barcadboldital.ttf -> Barcade Bold Italic
+barcadeexpandital.ttf -> Barcade Expanded Italic
+barcadeexpand.ttf -> Barcade Expanded
+barcade3d.ttf -> Barcade 3D
+Ganely.ttf -> Ganely
+SFEspressoShack Condensed.ttf -> SF Espresso Shack Condensed
+SFEspressoShack CondensedBold Italic.ttf -> SF Espresso Shack Condensed
+AirstreamNF.ttf -> Airstream NF
+Messing-Lettern.ttf -> Messing Lettern
+Light-Metro.otf -> Light Metro personal use
+Rushing Nightshade.ttf -> Rushing Nightshade DEMO
+AdvertisingScript MonolineTrial.ttf -> Advertising Script Monoline
+AdvertisingScript BoldTrial.ttf -> Advertising Script
+SFEspressoShack.ttf -> SF Espresso Shack
+SFEspressoShack Italic.ttf -> SF Espresso Shack
+SFEspressoShack CondensedItalic.ttf -> SF Espresso Shack Condensed
+Albam.ttf -> Alba Matter
+Fuck Off.ttf -> Fuck Off
+Aisha Script.ttf -> Aisha Script
+VintageQueens.ttf -> Vintage Queens Personal Use
+VintageParty.ttf -> Vintage Party FreeVersion
+CattilyDemoRegular.ttf -> Cattily Demo
+SFEspressoShack Bold.ttf -> SF Espresso Shack
+SFEspressoShack Bold Italic.ttf -> SF Espresso Shack
+SFEspressoShack CondensedBold.ttf -> SF Espresso Shack Condensed
+techover.ttf -> techno overload BRK
+MonoglycerideExtraBold.ttf -> Monoglyceride
+MonoglycerideBold.ttf -> Monoglyceride
+barcadnobarbold.ttf -> Barcade No Bar Bold
+barcadenobar.ttf -> Barcade No Bar
+barcade.ttf -> Barcade
+barcadecondital.ttf -> Barcade Condensed Italic
+barcadeout.ttf -> Barcade Outline
+barcadbold.ttf -> Barcade Bold
+barcade3dital.ttf -> Barcade 3D Italic
+Slant.ttf -> Slant
+Arial.ttf -> Arial
+BAMBOOBRUSH.otf -> BAMBOO BRUSH
+BAMBOOBRUSH.ttf -> BAMBOO BRUSH
+Retro Vintage.ttf -> Retro Vintage
+BungeeInline-Regular.ttf -> Bungee Inline
+Catleya Signature.ttf -> Catleya Signature
+Chango-Regular.ttf -> Chango
+Albah.ttf -> Alba
+CherryCreamSoda-Regular.ttf -> Cherry Cream Soda
+Class of 74.ttf -> Class of 74
+Condiment-Regular.ttf -> Condiment
+Dirtylane (Demo_Font).otf -> Dirtylane
+Fradle Script.otf -> Fradle Script
+Haze New Defog Demo.ttf -> Haze New Defog Demo
+Haze New Demo.ttf -> Haze New Demo
+Hoshiko Satsuki.ttf -> Hoshiko Satsuki
+Molle-Italic.ttf -> Molle
+Oups_Outline.otf -> Oups
+Redrum.ttf -> Redrum
+SansitaSwashed-SemiBold.ttf -> Sansita Swashed SemiBold
+Science Icons.ttf -> Science Icons
+Supernova - Personal Used.ttf -> Supernova
+Swash Break Trial.otf -> Swash Break Trial
+Audiowide-Regular.ttf -> Audiowide
+DAGGERSQUARE.otf -> DAGGERSQUARE
+DAGGERSQUARE OBLIQUE.otf -> DAGGERSQUARE
+ecliptic.ttf -> Ecliptic (BRK)
+freaktur.ttf -> Freak Turbulence (BRK)
+good timing bd.otf -> Good Timing Rg
+moonhouse.ttf -> moonhouse
+Overload.otf -> Overload
+Overload Burn.otf -> Overload Burn
+rimouski sb.otf -> Rimouski Sb
+TrickrLogo-Italic.ttf -> Trickr Logo
+TrickrLogo-Regular.ttf -> Trickr Logo
+vuldspl.ttf -> Vulgar Display
+Youre Gone.otf -> You're Gone
+Youre Gone It.otf -> You;re Gone

@@ -1,0 +1,53 @@
+{
+  "job_id": "2698994554944d2cbfd83e6ac4ef3c94",
+  "status": "completed",
+  "submitted_at": 1765753262.6165566,
+  "started_at": 1765753262.6168208,
+  "completed_at": 1765753268.4927018,
+  "front_path": "/home/wtf/Vanguard/exports/mobile_jobs/2698994554944d2cbfd83e6ac4ef3c94/front.jpg",
+  "back_path": "/home/wtf/Vanguard/exports/mobile_jobs/2698994554944d2cbfd83e6ac4ef3c94/back.jpg",
+  "metadata": {
+    "source": "flutter-mobile",
+    "front_from_gallery": false,
+    "back_from_gallery": false
+  },
+  "result": {
+    "front": {
+      "success": true,
+      "grade": 8.0,
+      "grade_confidence": null,
+      "surface_integrity": 78.86388562619686,
+      "centering_score": 91.42,
+      "corner_scores": {
+        "tl_corner": 94.97865295410156,
+        "tr_corner": 94.98619079589844,
+        "bl_corner": 94.85816192626953,
+        "br_corner": 91.29457092285156
+      },
+      "defects_count": 3671,
+      "processing_time": 1.8561699390411377,
+      "timestamp": "2025-12-14T17:01:07.104756"
+    },
+    "back": {
+      "success": true,
+      "grade": 7.0,
+      "grade_confidence": null,
+      "surface_integrity": 70.29155679047108,
+      "centering_score": 52.55,
+      "corner_scores": {
+        "tl_corner": 94.97284698486328,
+        "tr_corner": 94.99464416503906,
+        "bl_corner": 94.60245513916016,
+        "br_corner": 88.23675537109375
+      },
+      "defects_count": 4333,
+      "processing_time": 1.3878452777862549,
+      "timestamp": "2025-12-14T17:01:08.492657"
+    },
+    "metadata": {
+      "source": "flutter-mobile",
+      "front_from_gallery": false,
+      "back_from_gallery": false
+    }
+  }
+}

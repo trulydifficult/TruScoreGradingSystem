@@ -1,0 +1,26 @@
+var settings = {
+    "async": true,
+    "crossDomain": true,
+    "url": "https://api.psacard.com/publicapi/cert/GetByCertNumber/00000000",
+    "method": "GET",
+    "headers": {
+          "authorization": "bearer 7Klw-327nukr9BQQUOczm6rP1X1gYbxg7fW302NfPrJ_xDNt0iNdDsmK30xatuYLMnpZwL1Rk5QVkFUF4lku4zmkvifuXCFXMO1Ymp-LrkikC87Nz5IuSgEZkpDN3fsYHIlwI9OLOWIOReGCLhRcN1Kq7Z9eYbXBJYoUiUZg3kdq5xvpC3FtFSBPpo0jbMnknwdaGNWDSKUl-hvYOCyGvmWlTLR0RjwFBqKyqV16Yyq6KEScha5BW9OJK4GIUKZ4kSJY7Baxv5S9NA97b3aeYDBFOPdK1UwOJCHJah41yPU0lPfM"
+    }
+}
+$.ajax(settings).done(function (response) {
+    console.log(response);
+});
+
+
+
+
+Zyla sports card & trading card api
+
+sportscardspro api
+
+https://services.tineye.com/MobileEngine/TCG
+
+
+
+
+

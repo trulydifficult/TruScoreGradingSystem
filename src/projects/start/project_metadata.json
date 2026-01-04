@@ -1,0 +1,13 @@
+{
+  "project_name": "start",
+  "display_name": "start",
+  "description": "",
+  "created_date": "2025-10-30T20:27:46.166268",
+  "last_modified": "2025-10-30T20:27:46.166271",
+  "images_count": 0,
+  "labels_count": 0,
+  "annotations_count": 0,
+  "project_type": "border_detection_single",
+  "status": "created",
+  "version": "1.0"
+}
