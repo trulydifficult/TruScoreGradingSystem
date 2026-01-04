@@ -1,0 +1,182 @@
+TRUSCORE GRADING
+Investor Pitch Deck – Pre-Seed Round
+
+
+
+
+1. Cover Slide
+
+TruScore Grading (TSG)
+AI-Powered Sports Card Pre-Grading
+Building trust, one scan at a time.
+
+
+
+
+2. The Problem
+
+     • Professional grading is expensive, slow, and opaque.
+     • Collectors waste money submitting cards that aren’t worth grading.
+     • Human graders = inconsistent, biased, non-transparent.
+     • PSA’s acquisition of SGC & Beckett risks monopolizing grading standards.
+
+
+
+
+3. The Solution
+
+TruScore Grading (TSG) – An AI-driven pre-grading app that: - Analyzes card condition using smartphone
+scans - Delivers objective, explainable grade estimates - Highlights defects: corners, edges, surface,
+centering - Shows whether grading is financially worthwhile, using real-time market data
+
+
+
+
+4. Why Now
+
+     • Card market = multi-billion dollar ecosystem
+     • Grading volumes are booming — but so is frustration
+     • No scalable, AI-first consumer tool exists
+     • Consolidation is increasing control and bias in grading
+     • Collectors demand transparency, consistency, and control
+
+
+
+
+5. Target Market
+
+     • Hobbyists, flippers, and investors submitting cards frequently
+     • Millions of collectors worldwide
+     • Heavy repeat behavior: multiple scans per week/month
+
+
+
+
+6. Product Overview
+
+     • Easy smartphone scan
+
+
+
+
+                                                    1
+     • Transparent AI grading logic
+     • Unlimited scans on subscription ($5–$10/mo)
+     • No per-card fees
+     • Clean UX with collector-first features
+
+
+
+
+7. Key Differentiators
+
+     • Objective AI, not human opinion
+     • Visual explanations of grades
+     • Built for users, not grading companies
+     • Subscription-based — no extra fees
+     • Scalable across all major card types
+
+
+
+
+8. Technology
+
+     • Computer vision & ML models trained on large datasets
+     • Defect detection pipeline (corners, edges, etc.)
+     • Real-time market value estimation
+     • Scalable cloud-based backend
+     • Continuous improvement via user scans
+
+
+
+
+9. Current Status
+
+     • Core AI pipeline built
+     • Dataset and training infrastructure complete
+     • Desktop tools functional
+     • Mobile app in active development
+     • Seeking funding to complete mobile MVP, launch, and scale
+
+
+
+
+10. Traction & Roadmap
+
+Today: Functional AI, live dataset tools
+Next 6 Months: Complete mobile app, begin go-to-market launch
+12 Months: Paid user growth, analytics features, partnerships
+
+
+
+
+11. Business Model
+
+     • SaaS subscription ($5–$10/month)
+     • Unlimited card scans
+     • Upsells: bulk scanning, analytics, pro tools
+     • Low churn: high repeat use by active collectors
+
+
+
+
+                                                     2
+12. Competitive Landscape
+
+           Company                  Model            Bias-Free?   Explainable?   Built for Users?
+
+           PSA/SGC/Beckett          Full Grading     ❌            ❌              ❌
+
+           Manual Pre-Grading       Freelance        ❌            ❌              ✅
+
+           TruScore Grading         AI Pre-Grading   ✅            ✅              ✅
+
+
+
+
+13. Vision
+
+To become the standard pre-grading platform for collectors — One that promotes trust, transparency,
+and data-driven confidence in the hobby.
+
+
+Eventually? Disrupt traditional grading by showing the world that: - Human bias isn’t needed to assign
+value - AI can provide clarity and consistency at scale
+
+
+
+
+14. The Ask
+
+$50,000 Pre-Seed Investment
+Funding will be used for: - Finalizing mobile MVP - Infrastructure and cloud costs - Marketing and go-to-
+market launch - Scaling and tuning AI models
+
+
+
+
+15. Why This is a Smart Bet
+
+      • Built for a massive, underserved market
+      • Already functioning AI pipeline
+      • Strategic timing: consolidation = collector distrust
+      • Founder-led, passion-driven, data-backed
+      • $50K unlocks launch and early user growth — not a favor, but leverage
+
+
+
+
+16. Contact / Close Slide
+
+TruScore Grading (TSG)
+Pre-grading built on trust, not guesswork.
+https://deweydbdecibel.github.io/truscoregrading
+
+
+Let’s fix card grading, together.
+
+
+
+
+                                                     3
+

@@ -1,0 +1,95 @@
+================================================================================
+DATASET CREATOR FOLDER ANALYSIS - COMPLETE
+================================================================================
+
+TOTAL FILES: 32 Python files analyzed
+ANALYSIS TOOL: analyze_dependencies.py (created)
+FULL REPORT: DEPENDENCY_ANALYSIS.json
+CLEANUP PLAN: CLEANUP_PLAN.md
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+✅ PRODUCTION WORKFLOW (WORKING - DO NOT TOUCH):
+   1. enterprise_dataset_studio.py         (1543 lines) - Main entry point
+   2. truscore_dataset_frame_flowlayout.py (3497 lines) - 5-tab studio
+   3. flowlayout.py                        (94 lines)   - Working grid
+   4. yolo_to_maskrcnn_converter.py        (636 lines)  - YOLO→COCO
+   5. enterprise_glassmorphism.py          (416 lines)  - UI styling
+   6. components/pipeline_compatibility_engine.py       - Core logic
+   7. components/professional_dataset_selector.py       - Core logic
+
+❌ DUPLICATES (SAFE TO DELETE):
+   1. project_management/annotation_formats.py
+   2. project_management/dataset_llm_integration.py
+   3. project_management/tensorzero_integration.py
+
+📦 ARCHIVE CANDIDATES (Failed experiments & alternatives):
+   1. fixed_grid_image_cards.py         - Failed DearPyGUI attempt
+   2. fixed_grid_image_cards_backup.py  - DPG demo backup
+   3. truscore_dataset_frame.py         - Superseded by flowlayout version
+   4. truscore_grid_system.py           - Alternative grid
+   5. truscore_model_grid.py            - Alternative grid
+   6. gridlayout.py                     - Alternative grid
+
+✅ KEEP (Utilities & Future Features):
+   - annotation_formats.py, dataset_validator.py, cache_db.py
+   - dataset_llm_integration.py, tensorzero_integration.py
+   - conversion_pipeline.py, phoenix_training_queue.py
+   - preview_panel.py, run_annotation_studio.py
+   - All project_management/* (except duplicates)
+
+================================================================================
+RECOMMENDED ACTIONS (In Order)
+================================================================================
+
+PHASE 1: Fix Broken Launchers
+   [ ] Fix run_dataset_studio.py import
+   [ ] Test launcher works
+   [ ] Fix or delete launch_studio_with_project.py
+
+PHASE 2: Delete Duplicates (SAFE)
+   [ ] Delete 3 duplicate files in project_management/
+   [ ] Test nothing breaks
+
+PHASE 3: Archive Alternatives (SAFE)
+   [ ] Create archive/ subdirectory
+   [ ] Move 6 files to archive/
+   [ ] Test production workflow
+
+PHASE 4: Documentation
+   [ ] Update README with correct workflow
+   [ ] Document architecture
+
+================================================================================
+FILES GENERATED
+================================================================================
+
+✅ analyze_dependencies.py          - Dependency analysis script
+✅ DEPENDENCY_ANALYSIS.json         - Full analysis data
+✅ CLEANUP_PLAN.md                  - Detailed cleanup plan
+✅ ANALYSIS_SUMMARY.txt             - This file
+
+================================================================================
+IMPORTANT NOTES
+================================================================================
+
+1. NO FILES DELETED - Only analysis performed
+2. All recommendations are based on import graph analysis
+3. "Orphaned" files might still be used by external systems
+4. Archive files are kept for reference, not deleted
+5. Utility files kept even if not currently imported
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+Review CLEANUP_PLAN.md and decide:
+   1. Should we fix run_dataset_studio.py?
+   2. Should we delete the 3 duplicates?
+   3. Should we archive the 6 alternative implementations?
+
+Then proceed with systematic cleanup, one phase at a time.
+
+================================================================================

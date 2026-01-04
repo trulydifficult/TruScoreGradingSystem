@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/DeepSeek-OCR" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/EasyOCR" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/Sizer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/deepseek-ocr-git" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/flutter-settings-ui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/flutter_launcher_icons" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/font_awesome_flutter" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/hl_image_picker" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/introduction_screen" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Checkplz/tesseract" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tensorzero" vcs="Git" />
+  </component>
+</project>

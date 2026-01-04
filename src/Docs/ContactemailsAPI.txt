@@ -1,0 +1,14 @@
+Company       -      Email
+
+PSA API             collectors-apis@collectors.com
+
+SGC API             support@gosgc.com
+
+Beckett API         Email Sent
+
+CGC Grading         submissions@cgccomics.com
+
+Sportscardspro      Sales/feeback - sales@vgpc.com
+                    Webmaster - webmaster@sportscardspro.com    @vgpc.com
+
+CardHedger          support@cardhedger.com

@@ -1,0 +1,403 @@
+        self.dataset_types = {
+            # BORDER DETECTION PROFESSIONAL
+            'border_detection_single': {
+                'name': 'Border Detection (Single Class)',
+                'description': 'Single-class border detection optimized for 24-point centering system',
+                'category': 'Border Detection',
+                'accuracy_target': '98.5%+',
+                'requirements': [
+                    'High-resolution card scans (300 DPI minimum)',
+                    'Clear, visible borders with consistent lighting',
+                    'Single card per image, minimal glare/reflection',
+                    'No extreme angles or rotations',
+                    'Recommended size: 1000x1000 pixels minimum'
+                ],
+                'pipelines': ['Detectron2 (Mask R-CNN + RPN) - Professional', 'YOLOv10x Precision', 'YOLO v8 Border Detection'],
+                'label_formats': ['COCO JSON (*.json)', 'YOLO (*.txt)', 'Custom Border Annotations'],
+                'export_formats': ['COCO JSON', 'YOLO TXT', 'Pascal VOC XML']
+            },
+            'border_detection_2class': {
+                'name': 'Border Detection (2-Class)',
+                'description': 'Dual-class border detection (outer & graphical borders) for premium grading',
+                'category': 'Border Detection',
+                'accuracy_target': '99.2%+',
+                'requirements': [
+                    'Ultra-high resolution scans (600 DPI minimum)',
+                    'Professional lighting setup with pristine card condition',
+                    'Dual border visibility (outer + graphical)',
+                    'No surface damage in border areas',
+                    'Recommended size: 2000x2000 pixels minimum'
+                ],
+                'pipelines': ['Detectron2 (Mask R-CNN + RPN) - Professional', 'Dual-Class YOLOv9', 'Advanced Segmentation'],
+                'label_formats': ['COCO JSON (*.json)', '2-Class YOLO (*.txt)', 'Segmentation Masks'],
+                'export_formats': ['COCO JSON', '2-Class YOLO', 'Segmentation Masks']
+            },
+            'border_ultra_precision': {
+                'name': 'Ultra-Precision Border (1000-Point Scale)',
+                'description': 'Professional 1000-point precision scale border detection with sub-pixel accuracy',
+                'category': 'Border Detection',
+                'accuracy_target': '99.8%+',
+                'requirements': [
+                    'Professional scanning equipment (800+ DPI)',
+                    'Controlled photometric environment',
+                    'Sub-pixel edge detection capability',
+                    'Industrial-grade precision requirements',
+                    'Minimum 4000x4000 pixel resolution'
+                ],
+                'pipelines': ['Sub-Pixel Enhanced Detectron2', 'YOLOv10x + Sub-Pixel Enhancement', 'Custom Ultra-Precision'],
+                'label_formats': ['High-Precision COCO JSON', 'Sub-Pixel YOLO', 'Precision Coordinates'],
+                'export_formats': ['Ultra-Precision JSON', 'Sub-Pixel Coordinates', 'CAD-Level Precision']
+            },
+            
+            # CORNER ANALYSIS PROFESSIONAL
+            'corner_quality_classification': {
+                'name': 'Corner Quality Classification',
+                'description': 'AI-powered corner condition assessment with precision damage detection',
+                'category': 'Corner Analysis',
+                'accuracy_target': '97.8%+',
+                'requirements': [
+                    'High-resolution corner visibility (macro lens recommended)',
+                    'Consistent lighting across all four corners',
+                    'Clear edge definition without shadows',
+                    'Multiple angle capture capability',
+                    'Minimum 200x200 pixels per corner'
+                ],
+                'pipelines': ['ResNet-152 Classification', 'Vision Transformer (ViT)', 'EfficientNet-B7'],
+                'label_formats': ['Corner Classification CSV', 'Multi-Class JSON', 'Quality Matrices'],
+                'export_formats': ['Classification Results', 'Quality Assessment JSON', 'Corner Analysis Report']
+            },
+            'corner_damage_detection': {
+                'name': 'Corner Damage Detection',
+                'description': 'Precision wear analysis and damage classification for corner assessment',
+                'category': 'Corner Analysis', 
+                'accuracy_target': '98.9%+',
+                'requirements': [
+                    'Macro photography with 5x+ magnification',
+                    'Multi-angle corner capture (4+ angles per corner)',
+                    'Professional lighting for shadow elimination',
+                    'Surface texture visibility for wear detection',
+                    'Minimum 500x500 pixels per corner detail'
+                ],
+                'pipelines': ['Mask R-CNN Corner Detection', 'YOLOv9 Damage Classification', 'Custom Wear Analysis'],
+                'label_formats': ['Damage Segmentation Masks', 'Corner Damage JSON', 'Wear Pattern Data'],
+                'export_formats': ['Damage Assessment Report', 'Segmentation Masks', 'Wear Analysis JSON']
+            },
+            'corner_sharpness_rating': {
+                'name': 'Corner Sharpness Rating',
+                'description': 'Sub-pixel precision corner sharpness analysis for premium grading',
+                'category': 'Corner Analysis',
+                'accuracy_target': '99.5%+',
+                'requirements': [
+                    'Ultra-high resolution imaging (1000+ DPI)',
+                    'Edge enhancement preprocessing',
+                    'Professional macro lens setup',
+                    'Controlled lighting environment',
+                    'Sub-pixel accuracy requirements'
+                ],
+                'pipelines': ['Sub-Pixel Corner Analysis', 'Advanced Edge Detection', 'Sharpness Quantification'],
+                'label_formats': ['Sharpness Metrics JSON', 'Edge Quality Data', 'Precision Measurements'],
+                'export_formats': ['Sharpness Report', 'Precision Metrics', 'Edge Quality Assessment']
+            },
+            
+            # EDGE ANALYSIS PROFESSIONAL  
+            'edge_wear_detection': {
+                'name': 'Edge Wear Detection',
+                'description': 'Advanced edge wear analysis using U-Net and DeepLab v3+ architectures',
+                'category': 'Edge Analysis',
+                'accuracy_target': '98.7%+',
+                'requirements': [
+                    'High-resolution edge imaging (side lighting preferred)',
+                    'Complete edge visibility (all four sides)',
+                    'Wear pattern detection capability',
+                    'Shadow-free edge photography',
+                    'Minimum 100x edge pixel width'
+                ],
+                'pipelines': ['U-Net Edge Segmentation', 'DeepLab v3+ Advanced', 'Custom Edge Analysis'],
+                'label_formats': ['Edge Segmentation Masks', 'Wear Pattern JSON', 'Edge Quality Data'],
+                'export_formats': ['Wear Assessment Report', 'Edge Segmentation', 'Quality Metrics']
+            },
+            'edge_damage_classification': {
+                'name': 'Edge Damage Classification',
+                'description': 'Segment Anything fine-tuned for comprehensive edge damage assessment',
+                'category': 'Edge Analysis',
+                'accuracy_target': '99.1%+',
+                'requirements': [
+                    'Professional edge lighting setup',
+                    'Multi-angle edge capture capability',
+                    'Damage visibility enhancement',
+                    'Consistent edge exposure',
+                    'High-contrast edge definition'
+                ],
+                'pipelines': ['Segment Anything (Fine-tuned)', 'Advanced Edge Classification', 'Multi-Class Damage Detection'],
+                'label_formats': ['SAM Segmentation Masks', 'Damage Classification JSON', 'Edge Damage Data'],
+                'export_formats': ['Comprehensive Damage Report', 'Segmentation Results', 'Classification Metrics']
+            },
+            
+            # SURFACE ANALYSIS PROFESSIONAL
+            'surface_defect_detection': {
+                'name': 'Surface Defect Detection',
+                'description': 'Feature Pyramid Networks for microscopic surface defect identification',
+                'category': 'Surface Analysis',
+                'accuracy_target': '99.3%+',
+                'requirements': [
+                    'Ultra-high resolution surface imaging (1200+ DPI)',
+                    'Professional photometric stereo lighting',
+                    'Surface texture enhancement capability',
+                    'Microscopic defect visibility (10+ micrometers)',
+                    'Multi-angle illumination setup'
+                ],
+                'pipelines': ['Feature Pyramid Networks', 'Advanced Defect Detection', 'Photometric Surface Analysis'],
+                'label_formats': ['Defect Segmentation Masks', 'Surface Defect JSON', 'Microscopic Analysis Data'],
+                'export_formats': ['Surface Defect Report', 'Defect Segmentation', 'Quality Assessment']
+            },
+            'surface_quality_rating': {
+                'name': 'Surface Quality Rating',
+                'description': 'Swin Transformer-based comprehensive surface condition assessment',
+                'category': 'Surface Analysis',
+                'accuracy_target': '98.8%+',
+                'requirements': [
+                    'Professional surface lighting with glare elimination',
+                    'High-resolution surface texture capture',
+                    'Multiple lighting angle capability',
+                    'Surface reflectance analysis',
+                    'Consistent surface exposure'
+                ],
+                'pipelines': ['Swin Transformer Advanced', 'Surface Quality Networks', 'Multi-Modal Surface Analysis'],
+                'label_formats': ['Surface Quality JSON', 'Texture Analysis Data', 'Quality Metrics'],
+                'export_formats': ['Surface Quality Report', 'Texture Analysis', 'Quality Assessment JSON']
+            },
+            'surface_damage_classification': {
+                'name': 'Multi-Class Surface Damage',
+                'description': 'ConvNext-powered multi-class surface damage classification system',
+                'category': 'Surface Analysis',
+                'accuracy_target': '99.6%+',
+                'requirements': [
+                    'Professional macro photography setup',
+                    'Surface damage visibility enhancement',
+                    'Multi-class damage differentiation',
+                    'Consistent damage classification',
+                    'High-contrast surface imaging'
+                ],
+                'pipelines': ['ConvNext Classification', 'Multi-Class Damage Networks', 'Advanced Surface Classification'],
+                'label_formats': ['Multi-Class Damage JSON', 'Surface Classification Data', 'Damage Type Metrics'],
+                'export_formats': ['Damage Classification Report', 'Multi-Class Results', 'Surface Analysis']
+            },
+            
+            # PHOTOMETRIC STEREO PROFESSIONAL
+            'photometric_surface_normals': {
+                'name': 'Surface Normal Estimation',
+                'description': 'Custom PS-Net for revolutionary surface normal reconstruction',
+                'category': 'Photometric Stereo',
+                'accuracy_target': '99.7%+',
+                'requirements': [
+                    'Professional photometric stereo lighting (8+ LEDs)',
+                    'Calibrated multi-directional illumination',
+                    'Surface normal calculation capability',
+                    'High-precision photometric reconstruction',
+                    'Professional stereo imaging setup'
+                ],
+                'pipelines': ['Custom PS-Net', 'EventPS Real-time (30+ fps)', 'Advanced Photometric Networks'],
+                'label_formats': ['Surface Normal Maps', 'Photometric Data JSON', '3D Reconstruction Data'],
+                'export_formats': ['3D Surface Model', 'Normal Map Images', 'Photometric Analysis']
+            },
+            'photometric_reflectance': {
+                'name': 'Reflectance Analysis',
+                'description': 'Neural Surface Reconstruction for material property analysis',
+                'category': 'Photometric Stereo',
+                'accuracy_target': '99.4%+',
+                'requirements': [
+                    'Controlled reflectance measurement environment',
+                    'Material property analysis capability',
+                    'Multi-spectral imaging support',
+                    'Professional lighting calibration',
+                    'Surface reflectance modeling'
+                ],
+                'pipelines': ['Neural Surface Reconstruction', 'Reflectance Analysis Networks', 'Material Property AI'],
+                'label_formats': ['Reflectance Maps', 'Material Property JSON', 'Surface Reflectance Data'],
+                'export_formats': ['Material Analysis Report', 'Reflectance Maps', 'Property Assessment']
+            },
+            'photometric_depth': {
+                'name': 'Depth Reconstruction',
+                'description': 'Multi-View Networks for precision 3D depth reconstruction',
+                'category': 'Photometric Stereo',
+                'accuracy_target': '99.9%+',
+                'requirements': [
+                    'Multi-view stereo imaging capability',
+                    'Precision depth measurement (sub-millimeter)',
+                    'Calibrated camera array setup',
+                    '3D reconstruction processing power',
+                    'Professional stereo calibration'
+                ],
+                'pipelines': ['Multi-View Networks', 'Precision Depth Reconstruction', '3D Photometric Stereo'],
+                'label_formats': ['3D Point Clouds', 'Depth Maps', 'Multi-View Reconstruction Data'],
+                'export_formats': ['3D Model Files', 'Depth Map Images', 'Point Cloud Data']
+            },
+            
+            # YOLO PROFESSIONAL SYSTEMS
+            'yolo_v10x_precision': {
+                'name': 'YOLOv10x Precision Detection',
+                'description': 'Industry-leading 0.908 precision score for maximum accuracy detection',
+                'category': 'YOLO Professional',
+                'accuracy_target': '99.1%+',
+                'requirements': [
+                    'High-resolution detection requirements',
+                    'Maximum precision optimization',
+                    'Professional object detection setup',
+                    'Precision-critical applications',
+                    'Real-time processing capability'
+                ],
+                'pipelines': ['YOLOv10x Precision', 'NMS-Free Training', 'Precision-Optimized Detection'],
+                'label_formats': ['YOLO Precision Format', 'High-Precision COCO', 'Detection Confidence Data'],
+                'export_formats': ['Precision Detection Results', 'YOLO Export', 'Confidence Metrics']
+            },
+            'yolo_v9_accuracy': {
+                'name': 'YOLOv9 Accuracy Champion',
+                'description': 'Highest overall accuracy with 0.935 mAP@50 using Gelan-base architectures',
+                'category': 'YOLO Professional',
+                'accuracy_target': '99.3%+',
+                'requirements': [
+                    'Comprehensive detection accuracy requirements',
+                    'Multi-object detection capability',
+                    'Advanced object detection scenarios',
+                    'High-accuracy detection needs',
+                    'Production-grade performance'
+                ],
+                'pipelines': ['YOLOv9 Gelan-base', 'Progressive Gradient Integration', 'Accuracy-Optimized Networks'],
+                'label_formats': ['YOLOv9 Advanced Format', 'mAP-Optimized COCO', 'Accuracy Metrics'],
+                'export_formats': ['High-Accuracy Results', 'YOLOv9 Export', 'Detection Metrics']
+            },
+            'yolo_11s_advanced': {
+                'name': 'YOLO11s Advanced Efficiency',
+                'description': '22% fewer parameters with 2% faster inference - revolutionary efficiency',
+                'category': 'YOLO Professional',
+                'accuracy_target': '98.9%+',
+                'requirements': [
+                    'Efficiency-optimized detection',
+                    'Resource-constrained deployment',
+                    'Fast inference requirements',
+                    'Mobile/edge deployment capability',
+                    'Optimized parameter efficiency'
+                ],
+                'pipelines': ['YOLO11s Optimized', 'C3k2 Advanced Blocks', 'Efficiency-First Networks'],
+                'label_formats': ['YOLO11s Format', 'Efficiency-Optimized Data', 'Mobile Detection Format'],
+                'export_formats': ['Mobile-Optimized Export', 'Edge Deployment', 'Efficiency Metrics']
+            },
+            
+            # EXPERIMENTAL/FUTURE SYSTEMS - ENTERPRISE EDITION
+            'vision_language_fusion': {
+                'name': 'Vision-Language Fusion',
+                'description': 'Prompt-controllable segmentation with natural language guidance',
+                'category': 'Experimental',
+                'accuracy_target': '99.99%+',
+                'requirements': [
+                    'Advanced multi-modal processing capability',
+                    'Natural language prompt integration',
+                    'Vision-language model fusion setup',
+                    'Controllable segmentation requirements',
+                    'Advanced AI infrastructure'
+                ],
+                'pipelines': ['FILM Framework', 'FusionSAM Advanced', 'Vision-Language Networks'],
+                'label_formats': ['Multi-Modal JSON', 'Language-Guided Annotations', 'Prompt-Based Labels'],
+                'export_formats': ['Vision-Language Results', 'Controllable Segmentation', 'Multi-Modal Analysis']
+            },
+            'neural_rendering_hybrid': {
+                'name': 'Neural Rendering Hybrid',
+                'description': '3D-2D analysis fusion with neural scene understanding',
+                'category': 'Experimental',
+                'accuracy_target': '99.99%+',
+                'requirements': [
+                    'Neural rendering processing capability',
+                    '3D scene understanding requirements',
+                    'Multi-view capture setup',
+                    'Advanced GPU processing power',
+                    'Neural implicit surface support'
+                ],
+                'pipelines': ['3D Gaussian Splatting', 'NeRF Advanced', 'BayesSDF Framework'],
+                'label_formats': ['3D Scene Data', 'Neural Rendering Annotations', 'Implicit Surface Maps'],
+                'export_formats': ['3D Neural Models', 'Rendering Results', 'Scene Understanding Data']
+            },
+            'tesla_hydra_phoenix': {
+                'name': 'Tesla Hydra Phoenix',
+                'description': 'Multi-task awakening architecture for revolutionary AI training',
+                'category': 'Experimental',
+                'accuracy_target': '99.999%+',
+                'requirements': [
+                    'Enterprise-scale AI infrastructure',
+                    'Multi-task learning capability',
+                    'Advanced ensemble processing',
+                    'Professional AI hardware setup',
+                    'Zero-failure training guarantees'
+                ],
+                'pipelines': ['Tesla Hydra Phoenix', 'Multi-Task Awakening', 'Professional Ensemble'],
+                'label_formats': ['Multi-Task Labels', 'Hydra Training Data', 'Phoenix Annotations'],
+                'export_formats': ['Professional Models', 'Multi-Task Results', 'Phoenix Architecture']
+            },
+            'uncertainty_quantification': {
+                'name': 'Uncertainty Quantification',
+                'description': 'Bayesian confidence systems for 99.99999999999% reliability',
+                'category': 'Experimental',
+                'accuracy_target': '99.99999999999%',
+                'requirements': [
+                    'Bayesian neural network infrastructure',
+                    'Uncertainty estimation capability',
+                    'Confidence quantification systems',
+                    'Reliability-critical applications',
+                    'Professional-grade uncertainty modeling'
+                ],
+                'pipelines': ['Bayesian Neural Networks', 'Deep Ensembles', 'Monte Carlo Dropout'],
+                'label_formats': ['Uncertainty Annotations', 'Confidence Data', 'Bayesian Labels'],
+                'export_formats': ['Uncertainty Reports', 'Confidence Metrics', 'Reliability Analysis']
+            },
+            
+            # TRADITIONAL SYSTEMS (For Compatibility)
+            'classification': {
+                'name': 'Image Classification',
+                'description': 'Multi-class image classification for card grading and categorization',
+                'category': 'Traditional',
+                'accuracy_target': '96.5%+',
+                'requirements': [
+                    'Consistent image dimensions',
+                    'Clear subject visibility',
+                    'Balanced class distribution',
+                    'Minimal background variation',
+                    'High-quality representative samples'
+                ],
+                'pipelines': ['ResNet-152 Advanced', 'EfficientNet-B7', 'Vision Transformer (ViT-Large)'],
+                'label_formats': ['Class folders', 'CSV files (*.csv)', 'JSON class mapping'],
+                'export_formats': ['ImageNet Format', 'Custom Classification CSV']
+            },
+            'segmentation': {
+                'name': 'Instance Segmentation',
+                'description': 'Pixel-perfect object segmentation and masking',
+                'category': 'Traditional',
+                'accuracy_target': '97.8%+',
+                'requirements': [
+                    'High-resolution images for precise boundaries',
+                    'Clear object separation',
+                    'Consistent lighting',
+                    'Minimal overlapping objects',
+                    'Professional annotation quality'
+                ],
+                'pipelines': ['Detectron2 (Mask R-CNN)', 'Segment Anything Model (SAM)', 'U-Net Advanced'],
+                'label_formats': ['COCO JSON (*.json)', 'Segmentation Masks (*.png)', 'LabelMe Format'],
+                'export_formats': ['COCO Segmentation', 'Binary Masks', 'Polygon Coordinates']
+            },
+            'truscore_professional': {
+                'name': 'TruScore Professional Analysis',
+                'description': 'Professional card grading with multi-modal surface analysis',
+                'category': 'TruScore',
+                'accuracy_target': '99.99999999999%',
+                'requirements': [
+                    'Professional card scanning equipment',
+                    'Controlled photometric environment',
+                    'Multi-modal surface analysis capability',
+                    'Edge and corner precision analysis',
+                    'Professional Grade Standards compliance',
+                    'Sub-pixel accuracy requirements'
+                ],
+                'pipelines': ['TruScore Professional Pipeline', 'Multi-Modal Analysis', 'Professional Surface Detection'],
+                'label_formats': ['TruScore JSON (*.json)', 'Quality Matrices (*.csv)', 'Surface Maps'],
+                'export_formats': ['TruScore Report', 'Quality Assessment JSON', 'Professional Analysis Data']
+            }
+        }
+        

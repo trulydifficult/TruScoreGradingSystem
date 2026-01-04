@@ -1,0 +1,42 @@
+Solutions to Resolve Yellow Underlines:
+Wrap with Material or Scaffold.
+The most common and straightforward solution is to ensure your Text widget, or its parent, is wrapped within a Material or Scaffold widget. Scaffold is typically used for entire pages and inherently includes a Material widget.
+Code
+
+    Material(
+      child: Text('Your Text Here'),
+    )
+or
+Code
+
+    Scaffold(
+      body: Center(
+        child: Text('Your Text Here'),
+      ),
+    )
+Define DefaultTextStyle in MaterialApp.
+For a more global solution, particularly if you are building an app without a conventional Material Design structure, you can explicitly set a DefaultTextStyle in your MaterialApp's builder property.
+Code
+
+    MaterialApp(
+      builder: (context, child) {
+        return DefaultTextStyle(
+          style: DefaultTextStyle.of(context).style.copyWith(
+                decoration: TextDecoration.none, // Removes the underline
+              ),
+          child: child!,
+        );
+      },
+      home: MyHomePage(),
+    )
+Customize TextStyle (for specific cases).
+If the yellow line is desired for a specific Text widget but you want to control its appearance, you can directly modify the decoration property within the TextStyle of that Text widget.
+Code
+
+    Text(
+      'Your Text Here',
+      style: TextStyle(
+        decoration: TextDecoration.none, // Removes the underline
+      ),
+    )
+By implementing one of these solutions, you can effectively remove the double yellow lines under text widgets in your Flutter application, ensuring a cleaner and more professional visual presentation.
