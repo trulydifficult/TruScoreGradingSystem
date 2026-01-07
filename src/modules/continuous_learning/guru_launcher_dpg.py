@@ -15,18 +15,28 @@ Authors: dewster & Claude - TruScore Engineering Team
 Date: December 2024
 """
 
+import os
 import sys
+import logging
 from pathlib import Path
 
-# Add project root to path for imports
-project_root = Path(__file__).parent.parent.parent
+# Calculate the project root (src directory)
+src_dir = Path(__file__).parent.parent.parent  # This points to src/
+project_root = src_dir.parent  # This points to the project root (Vanguard/)
+
+# Add both src and project root to Python path if not already there
+for path in [str(project_root), str(src_dir)]:
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+# Set the working directory to the project root
+os.chdir(project_root)
 
 # Setup logging
 try:
     from shared.essentials.truscore_logging import setup_truscore_logging, log_component_status
     logger = setup_truscore_logging(__name__, "guru_dpg_launcher.log")
-except ImportError:
-    import logging
+except ImportError as e:
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     def log_component_status(name, status, error=None):

@@ -1,0 +1,514 @@
+// ignore_for_file: deprecated_member_use
+
+import 'package:camerawesome/camerawesome_plugin.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
+
+import '../models/captured_image.dart';
+import '../widgets/card_overlay.dart';
+
+/// Real camera experience powered by Camerawesome + a card overlay. Supports
+/// flash toggle, zoom slider and gallery import.
+class CameraScreen extends StatefulWidget {
+  final String side; // 'front' or 'back'
+  final ValueChanged<CapturedImage> onCapture;
+  final VoidCallback onBack;
+
+  const CameraScreen({
+    super.key,
+    required this.side,
+    required this.onCapture,
+    required this.onBack,
+  });
+
+  @override
+  State<CameraScreen> createState() => _CameraScreenState();
+}
+
+class _CameraScreenState extends State<CameraScreen> {
+  final GlobalKey _overlayKey = GlobalKey();
+  final GlobalKey _previewContainerKey = GlobalKey();
+  FlashMode _flashMode = FlashMode.auto;
+  double _zoom = 0.0; // 0..1 expected by camerawesome
+  bool _isProcessing = false;
+  final _picker = ImagePicker();
+  // Portrait card: width / height = 2.5 / 3.5 = 0.714
+  final CardOverlay _overlay = const CardOverlay(
+    ratio: 2.5 / 3.5,
+    cornerRadius: 0.064,
+    orientation: OverlayOrientation.portrait,
+  );
+
+  void _handleMediaEvent(MediaCapture event) {
+    setState(() {
+      _isProcessing = event.status == MediaCaptureStatus.capturing;
+    });
+
+    if (event.status == MediaCaptureStatus.success && event.isPicture) {
+      final path = event.captureRequest.when(
+        single: (single) => single.file?.path,
+        multiple: (multiple) => multiple.fileBySensor.values.first?.path,
+      );
+      if (path != null) {
+        _fixOrientationAndReturn(path);
+      }
+    } else if (event.status == MediaCaptureStatus.failure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(event.exception?.toString() ?? 'Could not take photo'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _pickFromGallery() async {
+    final file = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 95,
+    );
+    if (file != null) {
+      _fixOrientationAndReturn(file.path, fromGallery: true);
+    }
+  }
+
+  Future<void> _fixOrientationAndReturn(String path,
+      {bool fromGallery = false}) async {
+    try {
+      // ignore: use_build_context_synchronously
+      final media = MediaQuery.of(context);
+
+      // Normalize EXIF orientation into a new file.
+      final rotatedFile = await FlutterExifRotation.rotateImage(path: path);
+
+      // Decode and ensure portrait orientation before cropping.
+      final bytes = await rotatedFile.readAsBytes();
+      final decoded = img.decodeImage(bytes);
+      if (decoded != null) {
+        img.Image working = decoded;
+        // Normalize orientation: portrait, upright.
+        if (working.width > working.height) {
+          working = img.copyRotate(working, angle: 90);
+        }
+        // Crop the captured image to the on-screen overlay bounds. We read the
+        // live overlay rectangle and map it back into the camera image using
+        // the same cover-fit math as the preview.
+        final overlayRect = _currentOverlayRect(media);
+        final previewBox =
+            _previewContainerKey.currentContext?.findRenderObject() as RenderBox?;
+        final previewOrigin =
+            previewBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+        final overlayLocal = overlayRect.shift(-previewOrigin);
+        final double screenW = media.size.width;
+        final double screenH = media.size.height;
+        final double imageW = working.width.toDouble();
+        final double imageH = working.height.toDouble();
+
+        double cropLeft, cropTop, cropWidth, cropHeight;
+        final Size? previewSize = previewBox?.size;
+        if (previewSize != null) {
+          // Camera preview uses a cover fit with center alignment. Recreate
+          // that transform so we can map the on-screen overlay back into the
+          // captured image coordinates.
+          final fitted = applyBoxFit(
+            BoxFit.cover,
+            Size(imageW, imageH),
+            previewSize,
+          );
+          final double scale = fitted.destination.width / fitted.source.width;
+          final double dx = (previewSize.width - fitted.destination.width) / 2;
+          final double dy = (previewSize.height - fitted.destination.height) / 2;
+
+          cropLeft = (overlayLocal.left - dx) / scale;
+          cropTop = (overlayLocal.top - dy) / scale;
+          cropWidth = overlayLocal.width / scale;
+          cropHeight = overlayLocal.height / scale;
+        } else {
+          // Fallback: use normalized screen mapping.
+          final double normLeft = overlayRect.left / screenW;
+          final double normTop = overlayRect.top / screenH;
+          final double normWidth = overlayRect.width / screenW;
+          final double normHeight = overlayRect.height / screenH;
+          cropLeft = normLeft * imageW;
+          cropTop = normTop * imageH;
+          cropWidth = normWidth * imageW;
+          cropHeight = normHeight * imageH;
+        }
+
+        final int x = cropLeft.clamp(0, imageW - 1).round();
+        final int y = cropTop.clamp(0, imageH - 1).round();
+        final int width = cropWidth.clamp(1, imageW - x).round();
+        final int height = cropHeight.clamp(1, imageH - y).round();
+
+        if (width > 0 && height > 0) {
+          working = img.copyCrop(
+            working,
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+          );
+        }
+        await rotatedFile.writeAsBytes(img.encodeJpg(working, quality: 100));
+      }
+      widget.onCapture(
+        CapturedImage(path: rotatedFile.path, fromGallery: fromGallery),
+      );
+    } catch (_) {
+      // Fall back to original if rotation fails.
+      widget.onCapture(
+        CapturedImage(path: path, fromGallery: fromGallery),
+      );
+    }
+  }
+
+  void _cycleFlash(CameraState state) {
+    final next = switch (_flashMode) {
+      FlashMode.auto => FlashMode.always,
+      FlashMode.always => FlashMode.none,
+      _ => FlashMode.auto,
+    };
+    setState(() {
+      _flashMode = next;
+    });
+    state.sensorConfig.setFlashMode(next);
+  }
+
+  Future<void> _capture(CameraState state) async {
+    if (_isProcessing) return;
+    HapticFeedback.mediumImpact();
+    await state.when(onPhotoMode: (photoState) => photoState.takePhoto());
+  }
+
+  Widget _buildTopBar(CameraState state) {
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _glassButton(
+              icon: Icons.close,
+              onTap: widget.onBack,
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.35),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
+              ),
+              child: Text(
+                '${widget.side[0].toUpperCase()}${widget.side.substring(1)} of Card',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            _glassButton(
+              icon: _flashIconForMode(_flashMode),
+              onTap: () => _cycleFlash(state),
+              iconColor: _flashMode == FlashMode.none
+                  ? Colors.white70
+                  : Colors.amberAccent,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(CameraState state) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _glassButton(
+                    icon: Icons.photo_library_outlined,
+                    onTap: _pickFromGallery,
+                  ),
+                  GestureDetector(
+                    onTap: () => _capture(state),
+                    child: Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 3,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.cyan.withOpacity(0.2),
+                            blurRadius: 24,
+                            spreadRadius: 2,
+                          )
+                        ],
+                      ),
+                      alignment: Alignment.center,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: _isProcessing ? 64 : 70,
+                        height: _isProcessing ? 64 : 70,
+                        decoration: BoxDecoration(
+                          color: _isProcessing
+                              ? Colors.white70
+                              : Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: _isProcessing
+                            ? const Padding(
+                                padding: EdgeInsets.all(18),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Colors.black87),
+                                ),
+                              )
+                            : null,
+                      ),
+                    ),
+                  ),
+                  _glassButton(
+                    icon: Icons.cameraswitch_rounded,
+                    onTap: () => state.switchCameraSensor(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverlay() {
+    final mediaSize = MediaQuery.of(context).size;
+    final padding = MediaQuery.of(context).viewPadding;
+    final overlayRect = _overlayRect(mediaSize, padding);
+    return IgnorePointer(
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.25),
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.35),
+                  ],
+                  stops: const [0.0, 0.4, 1.0],
+                ),
+              ),
+            ),
+          ),
+          Align(
+            alignment: const Alignment(0, -0.12),
+            child: SizedBox(
+              width: overlayRect.width,
+              height: overlayRect.height,
+              child: KeyedSubtree(
+                key: _overlayKey,
+                child: CardOverlayShape(
+                  model: _overlay,
+                  width: overlayRect.width,
+                  height: overlayRect.height,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        bottom: false,
+        child: Stack(
+          children: [
+            CameraAwesomeBuilder.custom(
+              saveConfig: SaveConfig.photo(),
+              sensorConfig: SensorConfig.single(
+                sensor: Sensor.position(SensorPosition.back),
+                flashMode: _flashMode,
+                zoom: _zoom,
+              ),
+              previewFit: CameraPreviewFit.cover,
+              enablePhysicalButton: true,
+              onMediaCaptureEvent: _handleMediaEvent,
+              onPreviewScaleBuilder: (state) => OnPreviewScale(
+                onScale: (scale) {
+                  final clamped = scale.clamp(0.0, 1.0);
+                  setState(() => _zoom = clamped);
+                  state.sensorConfig.setZoom(clamped);
+                },
+              ),
+              onPreviewTapBuilder: (state) => OnPreviewTap(
+                onTap: (position, pixelPreviewSize, flutterPreviewSize) {
+                  state.when(
+                    onPhotoMode: (photoState) => photoState.focusOnPoint(
+                      flutterPosition: position,
+                      pixelPreviewSize: pixelPreviewSize,
+                      flutterPreviewSize: flutterPreviewSize,
+                    ),
+                    onPreviewMode: (previewState) => previewState.focusOnPoint(
+                      flutterPosition: position,
+                      pixelPreviewSize: pixelPreviewSize,
+                      flutterPreviewSize: flutterPreviewSize,
+                    ),
+                  );
+                  HapticFeedback.selectionClick();
+                },
+              ),
+              builder: (state, preview) {
+                return Stack(
+                  key: _previewContainerKey,
+                  children: [
+                    _buildOverlay(),
+                    Positioned(
+                      top: MediaQuery.of(context).viewPadding.top + 24,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.45),
+                            borderRadius: BorderRadius.circular(18),
+                            border:
+                                Border.all(color: Colors.white.withOpacity(0.12)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.4),
+                                blurRadius: 12,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'Align ${widget.side}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    _buildTopBar(state),
+                    _buildBottomBar(state),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _flashIconForMode(FlashMode mode) {
+    switch (mode) {
+      case FlashMode.auto:
+        return Icons.flash_auto;
+      case FlashMode.always:
+      case FlashMode.on:
+        return Icons.flash_on;
+      case FlashMode.none:
+        return Icons.flash_off;
+    }
+  }
+
+  Widget _glassButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    Color iconColor = Colors.white,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withOpacity(0.06),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.35),
+              blurRadius: 10,
+            ),
+          ],
+        ),
+        child: Icon(icon, color: iconColor, size: 22),
+      ),
+    );
+  }
+
+  /// Computes the overlay rectangle on screen (in logical pixels) so we can
+  /// crop the captured image to match exactly what the user saw.
+  Rect _overlayRect(Size screenSize, EdgeInsets padding) {
+    const cardAspect = 2.5 / 3.5; // width / height
+    final stackWidth = screenSize.width;
+    // SafeArea pads the stack by the top inset; account for that so the rect
+    // matches the actual overlay location.
+    final stackHeight = screenSize.height - padding.top;
+    final maxWidth = stackWidth * 0.9;
+    final bottomReserve = 280 + padding.bottom;
+    const topReserve = 48.0;
+    final availableHeight = (stackHeight - bottomReserve - topReserve)
+        .clamp(240.0, stackHeight * 0.75);
+    double width = availableHeight * cardAspect;
+    if (width > maxWidth) {
+      width = maxWidth;
+    }
+    final height = width / cardAspect;
+    const alignY = -0.12; // matches Align in _buildOverlay
+    final center = Offset(
+      stackWidth / 2,
+      padding.top + stackHeight * (1 + alignY) / 2,
+    );
+    final left = center.dx - width / 2;
+    final top = center.dy - height / 2;
+    return Rect.fromLTWH(left, top, width, height);
+  }
+
+  /// Reads the current overlay rect from the render tree; falls back to the
+  /// calculated rect if the render object is not yet laid out.
+  Rect _currentOverlayRect(MediaQueryData media) {
+    final box = _overlayKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box != null) {
+      final topLeft = box.localToGlobal(Offset.zero);
+      final size = box.size;
+      return Rect.fromLTWH(topLeft.dx, topLeft.dy, size.width, size.height);
+    }
+    return _overlayRect(media.size, media.viewPadding);
+  }
+
+}

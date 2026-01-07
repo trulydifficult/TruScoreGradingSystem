@@ -543,7 +543,7 @@
       <excludeFolder url="file://$MODULE_DIR$/src/mobile/TruScoreApp/windows/flutter/ephemeral/.plugin_symlinks/shared_preferences_windows/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/src/mobile/TruScoreApp/windows/flutter/ephemeral/.plugin_symlinks/shared_preferences_windows/example/build" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.11 (Vanguard)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.11 (Vanguard) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV=/home/wtf/Vanguard/vanguard
+VIRTUAL_ENV=/home/dewster/Vanguard/vanguard
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
