@@ -1,0 +1,1 @@
+(e.g., OpenCV for photometric stereo or TensorFlow/PyTorch for defect detection).

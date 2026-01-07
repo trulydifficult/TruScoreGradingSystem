@@ -772,4 +772,25 @@ def get_pipeline_info() -> Dict[str, Any]:
         'grade_scale': '1.0 - 10.0 (with halves)'
     }
 
+if __name__ == "__main__":
+    print("TRUGRADE MASTER PIPELINE v2.0")
+    print("=" * 50)
+    print("THE ultimate card grading system!")
+    print("💎 Ready to revolutionize the industry!")
 
+    # Test with sample image if provided
+    import sys
+    if len(sys.argv) > 1:
+        image_path = sys.argv[1]
+        if os.path.exists(image_path):
+            print(f"\n🎯 Testing with: {image_path}")
+            results = analyze_card_master_pipeline(image_path)
+            if results.success:
+                print(f"✅ Analysis complete! Grade: {results.scores.final_grade:.1f}/10.0")
+            else:
+                print("❌ Analysis failed")
+        else:
+            print(f"❌ Image not found: {image_path}")
+    else:
+        print("\n📋 Usage: python trugrade_master_pipeline.py <image_path>")
+        print("🚀 Ready to make history!")

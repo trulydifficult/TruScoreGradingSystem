@@ -260,14 +260,14 @@ class GuruDPGInterface:
                         "0%", color=GuruColors.NEON_GREEN
                     )
                     
-                    dpg.add_spacer(width=30)
+                    dpg.add_spacing(width=30)
                     
                     dpg.add_text("Knowledge Items: ", color=GuruColors.TEXT_WHITE)
                     self.stats_tags['knowledge_items'] = dpg.add_text(
                         "0", color=GuruColors.CYAN_ACCENT
                     )
                     
-                    dpg.add_spacer(width=30)
+                    dpg.add_spacing(width=30)
                     
                     dpg.add_text("Status: ", color=GuruColors.TEXT_WHITE)
                     self.stats_tags['status'] = dpg.add_text(
@@ -587,7 +587,7 @@ class GuruDPGInterface:
                         callback=self.filter_history
                     )
                     
-                    dpg.add_spacer(width=20)
+                    dpg.add_spacing(width=20)
                     
                     refresh_btn = dpg.add_button(
                         label="Refresh History",
@@ -1050,7 +1050,7 @@ class GuruDPGInterface:
                                              callback=self.confirm_reset_learning)
                 dpg.bind_item_theme(confirm_btn, self.red_button_theme)
                 
-                dpg.add_spacer(width=10)
+                dpg.add_spacing(width=10)
                 
                 cancel_btn = dpg.add_button(label="Cancel", width=180, 
                                            callback=lambda: dpg.delete_item(dpg.get_item_parent(dpg.get_item_parent(cancel_btn))))

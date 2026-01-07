@@ -1,4 +1,4 @@
-#!/home/wtf/Vanguard/vanguard/bin/python3.11
+#!/home/dewster/Vanguard/vanguard/bin/python3.11
 import sys
 from rsa.cli import decrypt
 if __name__ == '__main__':
