@@ -32,6 +32,10 @@ from shared.essentials.truscore_theme import TruScoreTheme
 os.environ.setdefault('QT_QPA_PLATFORM', 'wayland')
 from shared.essentials.truscore_logging import setup_truscore_logging
 from shared.guru_system.guru_dispatcher import get_global_guru
+from datetime import datetime
+import json
+import numpy as np
+import subprocess
 
 # Premium styling components
 from shared.essentials.static_background import StaticBackgroundImage
@@ -298,7 +302,6 @@ score component is measurable and reproducible.
         """Realistic quality analysis for 600dpi scans - actually analyzes each image"""
         try:
             from PIL import Image
-            import numpy as np
             
             img = Image.open(self.image_path)
             width, height = img.size
@@ -396,8 +399,7 @@ score component is measurable and reproducible.
             
             # GURU ABSORPTION: Quality Analysis Event
             if hasattr(self, 'guru'):
-                self.guru.absorb_dataset_event({
-                    'event_type': 'image_quality_analyzed',
+                self.guru.absorb_dataset_event('image_quality_analyzed', {
                     'image_path': str(self.image_path),
                     'quality_score': quality_metrics['final_score'],
                     'resolution_score': quality_metrics['resolution_score'],
@@ -2166,8 +2168,7 @@ class TruScoreDatasetFrame(QFrame):
             self.logger.debug(f"First 3 image paths: {image_paths[:3]}")
             
             # GURU ABSORPTION: Image Import Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'images_imported',
+            self.guru.absorb_dataset_event('images_imported', {
                 'image_count': len(image_paths),
                 'dataset_name': getattr(self.current_config, 'name', 'Unknown'),
                 'dataset_type': getattr(self.current_config, 'type', 'Unknown'),
@@ -3204,8 +3205,6 @@ Path: {label_info['path']}
             }
             
             # Create projects directory structure in modules/dataset_studio/projects/
-            from pathlib import Path
-            from datetime import datetime
             projects_dir = Path(__file__).parent / "projects"
             projects_dir.mkdir(exist_ok=True)
             
@@ -3221,8 +3220,7 @@ Path: {label_info['path']}
                 json.dump(project_data, f, indent=2)
             
             # GURU ABSORPTION: Project Progress Save Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'project_progress_saved',
+            self.guru.absorb_dataset_event('project_progress_saved', {
                 'project_name': project_data['name'],
                 'dataset_type': project_data['dataset_type'],
                 'pipeline': project_data['pipeline'],
@@ -3669,8 +3667,7 @@ Path: {label_info['path']}
                 return
             
             # GURU ABSORPTION: Dataset Export Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'dataset_exported',
+            self.guru.absorb_dataset_event('dataset_exported', {
                 'export_formats': selected_formats,
                 'image_count': len(self.images) if hasattr(self, 'images') else 0,
                 'label_count': len(self.imported_labels) if hasattr(self, 'imported_labels') else 0,
@@ -3732,7 +3729,6 @@ Proceed with export?
                 # Perform REAL export
                 try:
                     # Create unique dataset folder with timestamp
-                    from datetime import datetime
                     dataset_name = getattr(self, 'project_name', 'Dataset')
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     unique_dataset_folder = f"{dataset_name}_{timestamp}"
@@ -4340,8 +4336,7 @@ Proceed with export?
                 self.logger.info(f"Project updated with data_path: {dataset_export_dir}")
             
             # GURU ABSORPTION: Export to Queue Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'dataset_exported_to_queue',
+            self.guru.absorb_dataset_event('dataset_exported_to_queue', {
                 'dataset_name': dataset_name,
                 'model_type': pipeline,  # 🚨 FIX: Use 'pipeline' variable defined earlier
                 'image_count': len(self.images),

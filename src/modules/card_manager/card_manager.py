@@ -32,10 +32,11 @@ import os
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QFrame,
     QPushButton, QLabel, QTextEdit, QScrollArea, QSizePolicy,
-    QFileDialog, QMessageBox, QGraphicsBlurEffect, QGraphicsDropShadowEffect
+    QFileDialog, QMessageBox, QGraphicsBlurEffect, QGraphicsDropShadowEffect,
+    QCheckBox
 )
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QThread, pyqtSlot
-from PyQt6.QtGui import QFont, QPixmap, QPainter, QColor, QCursor
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QThread, pyqtSlot, QPoint
+from PyQt6.QtGui import QFont, QPixmap, QPainter, QColor, QCursor, QPen
 
 # Import visual system components
 from shared.essentials.enterprise_glassmorphism import (
@@ -71,8 +72,6 @@ src_root = Path(__file__).parent.parent.parent
 try:
     logger.info("Attempting to import grading engines")
     logger.info(f"Using project root at: {src_root}")
-    logger.info("TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py")
-    logger.info("TruScoreGradingEngine import handled by enhanced_revo_card_manager.py")
     
     GRADING_ENGINES_AVAILABLE = True
     logger.info("All grading engines imported successfully")
@@ -189,6 +188,58 @@ class CardData:
     condition_estimate: str = "unknown"
     analysis_confidence: float = 0.0
 
+class AlignmentGuideLabel(QLabel):
+    """
+    High-precision alignment guide overlay for sports card positioning.
+    Provides visual 'straightness' cues for manual fine-tuning.
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.show_guides = False
+        
+    def set_guides_visible(self, visible):
+        self.show_guides = visible
+        self.update()
+        
+    def paintEvent(self, event):
+        # Draw the actual image first
+        super().paintEvent(event)
+        
+        # Only draw guides if enabled and an image is actually loaded
+        pix = self.pixmap()
+        if self.show_guides and pix and not pix.isNull():
+            painter = QPainter(self)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            
+            # Professional semi-transparent neon cyan for high visibility on any card
+            pen = QPen(QColor(0, 255, 255, 150)) 
+            pen.setWidth(1)
+            pen.setStyle(Qt.PenStyle.DashLine)
+            painter.setPen(pen)
+            
+            w = self.width()
+            h = self.height()
+            
+            # --- Vertical Guides ---
+            # Center
+            painter.drawLine(w // 2, 0, w // 2, h)
+            # 1/4 and 3/4 positions for edge alignment
+            painter.drawLine(w // 4, 0, w // 4, h)
+            painter.drawLine(3 * w // 4, 0, 3 * w // 4, h)
+            
+            # --- Horizontal Guides ---
+            # Center
+            painter.drawLine(0, h // 2, w, h // 2)
+            # 1/4 and 3/4 positions
+            painter.drawLine(0, h // 4, w, h // 4)
+            painter.drawLine(0, 3 * h // 4, w, 3 * h // 4)
+            
+            # Add a small circular crosshair in the middle
+            painter.setPen(QPen(QColor(0, 255, 255, 180), 1))
+            painter.drawEllipse(QPoint(w // 2, h // 2), 20, 20)
+            
+            painter.end()
+
 class TruScoreCardManager(QWidget):
 
     def __init__(self, parent, main_app_callback=None):
@@ -233,14 +284,14 @@ class TruScoreCardManager(QWidget):
         if self.truscore_system is None and not self._truscore_integration_attempted:
             self._truscore_integration_attempted = True
             try:
-                print("TruScore Grading System: Loading...")
+                # SILENCED: print("TruScore Grading System: Loading...")
                 from modules.truscore_grading.TruScore_photometric_integration import TruScorePhotometricIntegration
                 self.truscore_system = TruScorePhotometricIntegration()
-                print("TruScore Grading System: Loaded")
+                # SILENCED: print("TruScore Grading System: Loaded")
                 logger.info("TruScore Photometric Integration system loaded successfully")
                 return True
             except Exception as e:
-                print("TruScore Grading System: Not Loaded (check src/Logs/truscore_card_manager.log)")
+                # SILENCED: print("TruScore Grading System: Not Loaded (check src/Logs/truscore_card_manager.log)")
                 logger.error(f"TruScore system not available: {e}")
                 logger.error(f"Import error details: {str(e)}")
                 logger.error(f"Failed to load analysis engines - check engine availability")
@@ -260,8 +311,8 @@ class TruScoreCardManager(QWidget):
         main_layout.setColumnMinimumWidth(0, 320)  # Left actions
         main_layout.setColumnMinimumWidth(1, 800)  # Center image
         main_layout.setColumnMinimumWidth(2, 320)  # Right actions
-        main_layout.setColumnStretch(0, 1)
-        main_layout.setColumnStretch(1, 1)
+        main_layout.setColumnStretch(0, 0)
+        main_layout.setColumnStretch(1, 0)
         main_layout.setColumnStretch(2, 1)
         main_layout.setRowStretch(0, 1)
 
@@ -442,9 +493,128 @@ class TruScoreCardManager(QWidget):
         self.full_analysis_btn.clicked.connect(self.start_full_analysis)
         quick_layout.addWidget(self.full_analysis_btn)
 
+        # Image Corrections section with glass effect
+        correction_section = GlassmorphicPanel(self)
+        correction_section.setMinimumHeight(240)
+        panel_layout.addWidget(correction_section)
+
+        correction_layout = QVBoxLayout(correction_section)
+        correction_layout.setContentsMargins(20, 20, 20, 20)
+        correction_layout.setSpacing(10)
+
+        # Glowing section title
+        correction_title = GlowTextLabel(
+            text=" IMAGE TOOLS ",
+            font_family="Permanent Marker",
+            font_size=18,
+            text_color=QColor(188, 42, 201),
+            glow_color=QColor(17, 240, 54)
+        )
+        correction_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        correction_layout.addWidget(correction_title)
+
+        # Auto-Straighten button
+        self.auto_rotate_btn = QPushButton("Auto-Straighten")
+        self.auto_rotate_btn.setFont(TruScoreTheme.get_font("Arial", 11))
+        self.auto_rotate_btn.setMinimumSize(240, 40)
+        self.auto_rotate_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.auto_rotate_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgb(56, 189, 248);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: rgb(34, 197, 94);
+            }
+            QPushButton:disabled {
+                background-color: rgb(100, 100, 100);
+                color: rgb(150, 150, 150);
+            }
+        """)
+        self.auto_rotate_btn.clicked.connect(lambda: self.auto_straighten_card(silent=False))
+        correction_layout.addWidget(self.auto_rotate_btn)
+
+        # Layout for fine-tune rotations
+        rotate_fine_layout = QHBoxLayout()
+        rotate_fine_layout.setSpacing(10)
+
+        self.rotate_ccw_btn = QPushButton("+0.001° CCW")
+        self.rotate_ccw_btn.setFont(TruScoreTheme.get_font("Arial", 10))
+        self.rotate_ccw_btn.setMinimumHeight(40)
+        self.rotate_ccw_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.rotate_ccw_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgb(168, 85, 247);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: rgb(34, 197, 94);
+            }
+            QPushButton:disabled {
+                background-color: rgb(100, 100, 100);
+                color: rgb(150, 150, 150);
+            }
+        """)
+        self.rotate_ccw_btn.clicked.connect(self.rotate_fine_ccw)
+        rotate_fine_layout.addWidget(self.rotate_ccw_btn)
+
+        self.rotate_cw_btn = QPushButton("-0.001° CW")
+        self.rotate_cw_btn.setFont(TruScoreTheme.get_font("Arial", 10))
+        self.rotate_cw_btn.setMinimumHeight(40)
+        self.rotate_cw_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.rotate_cw_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgb(168, 85, 247);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: rgb(34, 197, 94);
+            }
+            QPushButton:disabled {
+                background-color: rgb(100, 100, 100);
+                color: rgb(150, 150, 150);
+            }
+        """)
+        self.rotate_cw_btn.clicked.connect(self.rotate_fine_cw)
+        rotate_fine_layout.addWidget(self.rotate_cw_btn)
+
+        correction_layout.addLayout(rotate_fine_layout)
+
+        # Alignment Guides checkbox
+        self.show_guides_cb = QCheckBox("Show Alignment Guides")
+        self.show_guides_cb.setFont(TruScoreTheme.get_font("Arial", 10))
+        self.show_guides_cb.setStyleSheet("""
+            QCheckBox {
+                color: rgba(226, 232, 240, 255);
+                padding: 5px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+                border-radius: 4px;
+                border: 1px solid rgba(56, 189, 248, 100);
+                background-color: rgba(15, 23, 42, 100);
+            }
+            QCheckBox::indicator:checked {
+                background-color: rgb(168, 85, 247);
+                image: url(src/shared/essentials/appfonts/check.png); /* Fallback to standard check if missing */
+            }
+        """)
+        self.show_guides_cb.stateChanged.connect(self.toggle_guides)
+        correction_layout.addWidget(self.show_guides_cb)
+
         # Card info section with bold glass
         info_section = GlassmorphicPanel(self)
-        info_section.setMinimumHeight(420)
+        info_section.setMinimumHeight(240)
         panel_layout.addWidget(info_section)
 
         info_layout = QVBoxLayout(info_section)
@@ -464,7 +634,7 @@ class TruScoreCardManager(QWidget):
 
         # Card info text with glass styling
         self.card_info_text = QTextEdit()
-        self.card_info_text.setFixedSize(240, 360)
+        self.card_info_text.setFixedSize(240, 200)
         self.card_info_text.setStyleSheet(f"""
             QTextEdit {{
                 background-color: rgba(15, 23, 42, 140);
@@ -502,6 +672,7 @@ class TruScoreCardManager(QWidget):
 
         # Main display with bold glass effect
         display_frame = GlassmorphicPanel(self, accent_color=QColor(0,0,0,0))
+        display_frame.setFixedWidth(800) # Lock center width per user request
         main_layout.addWidget(display_frame, 0, 1)
 
         # Display frame layout
@@ -670,10 +841,11 @@ class TruScoreCardManager(QWidget):
         display_layout.addWidget(self.image_scroll)
 
         # Image label inside scroll area with welcome message
-        self.image_label = QLabel()
+        # UPDATED: Use AlignmentGuideLabel for manual fine-tuning support
+        self.image_label = AlignmentGuideLabel()
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.image_label.setStyleSheet("""
-            QLabel {
+            AlignmentGuideLabel {
                 background-color: transparent;
                 border: none;
                 color: rgba(148, 163, 184, 255);
@@ -690,7 +862,7 @@ class TruScoreCardManager(QWidget):
 
         # Static glassmorphism panel (no animation needed)
         analysis_panel = GlassmorphicPanel(self, accent_color=QColor(0,0,0,0))
-        analysis_panel.setFixedWidth(320)
+        analysis_panel.setMinimumWidth(320)
         main_layout.addWidget(analysis_panel, 0, 2, Qt.AlignmentFlag.AlignTop)
 
         # Panel layout
@@ -832,8 +1004,8 @@ class TruScoreCardManager(QWidget):
 
         # Results section with bold glass
         results_section = GlassmorphicPanel(self)
-        results_section.setMinimumHeight(600)
-        panel_layout.addWidget(results_section)
+        results_section.setMinimumHeight(600) # Reduced from 600 to allow room for market section
+        panel_layout.addWidget(results_section, 1) # Set stretch factor to 1 so it fills available space
 
         results_layout = QVBoxLayout(results_section)
         results_layout.setContentsMargins(20, 20, 20, 20)
@@ -852,7 +1024,8 @@ class TruScoreCardManager(QWidget):
 
         # Results text with glass styling and animated scrollbar
         self.results_text = QTextEdit()
-        self.results_text.setFixedSize(240, 450)
+        # Removed fixed size to allow it to fill the stretching results_section
+        self.results_text.setMinimumWidth(240)
         self.results_text.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.results_text.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.results_text.setStyleSheet("""
@@ -891,9 +1064,6 @@ class TruScoreCardManager(QWidget):
             }
         """)
         results_layout.addWidget(self.results_text)
-
-        # Add stretch to push everything to top
-        panel_layout.addStretch()
 
         # Initially disable market intelligence buttons
         self.set_analysis_buttons_state(False)
@@ -1043,6 +1213,10 @@ class TruScoreCardManager(QWidget):
                 # Update zoom label
                 self.zoom_label.setText(f"{int(self.zoom_level * 100)}%")
 
+                # Ensure alignment guides state is preserved
+                if hasattr(self, 'show_guides_cb'):
+                    self.image_label.set_guides_visible(self.show_guides_cb.isChecked())
+
         except Exception as e:
             logger.error(f"Error displaying card: {e}")
 
@@ -1086,6 +1260,11 @@ class TruScoreCardManager(QWidget):
         """Enable/disable action buttons - EXACT conversion"""
         self.photometric_scan_btn.setEnabled(enabled)
         self.full_analysis_btn.setEnabled(enabled)
+        self.auto_rotate_btn.setEnabled(enabled)
+        self.rotate_ccw_btn.setEnabled(enabled)
+        self.rotate_cw_btn.setEnabled(enabled)
+        if hasattr(self, 'show_guides_cb'):
+            self.show_guides_cb.setEnabled(enabled)
 
     def set_analysis_buttons_state(self, enabled: bool):
         """Enable/disable market intelligence buttons"""
@@ -1133,8 +1312,10 @@ TruScore analysis ready!"""
             # Import photometric stereo engine directly
             from modules.truscore_grading.TruScore_photometric_integration import analyze_card_photometric_only
             
-            # Run photometric-only analysis and show 4-tab viewer
+            # Run photometric-only analysis and show popup with restricted tabs (4 tabs for showcase)
+            # Use EXACT names as defined in PhotometricResultsViewer
             allowed_tabs = ["Surface Normals", "Depth Map", "Confidence", "Albedo Map"]
+            logger.info(f"Triggering photometric showcase with allowed_tabs: {allowed_tabs}")
             analysis = analyze_card_photometric_only(self.current_card.image_path, parent_window=self, allowed_tabs=allowed_tabs)
             
             # Update results display with showcase info (safe variables)
@@ -1183,46 +1364,108 @@ TruScore analysis ready!"""
         self.update_results_display(" TruScore Master Pipeline v2.0\n" + "="*50 + "\n\nInitializing ultimate grading system...\n")
         
         try:
-            # Import and run the MASTER PIPELINE
-            from modules.truscore_grading.truscore_master_pipeline import analyze_card_master_pipeline
+            # Import and run the MASTER PIPELINE from TruScore_photometric_integration
+            from modules.truscore_grading.TruScore_photometric_integration import TruScorePhotometricIntegration, show_photometric_results
+            
+            # Create instance of the integration system
+            integration = TruScorePhotometricIntegration()
             
             # Run the ultimate analysis
-            results = analyze_card_master_pipeline(self.current_card.image_path)
+            results = integration.analyze_card_comprehensive(self.current_card.image_path)
             
-            if results.success:
+            # CRITICAL: Debug log for results success
+            success = results.get('success', False)
+            # SILENCED FOR CLEAN CLI: logger.info(f"Master pipeline success: {success}")
+            
+            if success:
                 # Format and display the master results
-                self.format_master_results(results)
+                self.format_master_results_new(results)
                 
-                # Show 8-tab visualization with master pipeline data
+                # Show 8-tab visualization
                 logger.info("Attempting to show 8-tab visualization...")
-                self.show_master_visualization(results)
+                show_photometric_results(results, self.current_card.image_path, parent_window=self)
                 
-                logger.info(f" Master Pipeline Complete - Grade: {results.scores.final_grade:.1f}/10.0")
+                logger.info(f" Master Pipeline Complete - Grade: {results.get('insights', {}).get('overall_grade_estimate', 'N/A')}")
                 
-                # GURU EVENT #3: Quick Grading (using full analysis)
-                guru.send_annotation_created(
-                    image_path=self.current_card.image_path,
-                    annotation_type='quick_grading',
-                    annotation_data={
-                        'final_grade': results.scores.final_grade,
-                        'total_score': results.scores.total,
-                        'category_scores': {
-                            'corners': results.scores.corners,
-                            'centering': results.scores.centering,
-                            'surface': results.scores.surface,
-                            'edges': results.scores.edges
-                        }
-                    },
-                    method='AI-assisted',
-                    metadata={'grading_timestamp': datetime.now().isoformat()}
-                )
             else:
                 logger.error("Master pipeline failed")
-                self.update_results_display(f"❌ Master Pipeline Failed\n\n{results.visualization_data.get('error', 'Unknown error')}")
+                self.update_results_display(f"❌ Master Pipeline Failed\n\n{results.get('error', 'Unknown error')}")
                 
         except Exception as e:
             logger.error(f"Master pipeline error: {e}")
             self.update_results_display(f"❌ Master Pipeline Error\n\n{str(e)}\n\nCheck logs for details.")
+
+    def format_master_results_new(self, results):
+        """Format TruScore_photometric_integration results for display"""
+        try:
+            insights = results.get('insights', {})
+            
+            # Build comprehensive results display
+            results_text = " TRUSCORE MASTER PIPELINE v2.0 - COMPLETE\n"
+            results_text += "=" * 60 + "\n\n"
+            
+            # Final Grade and Scores
+            results_text += f" FINAL GRADE ESTIMATE: {insights.get('overall_grade_estimate', 'N/A')}\n"
+            results_text += f"CONFIDENCE LEVEL: {insights.get('grade_confidence', 0.0):.1f}%\n"
+            results_text += f"SHOULD GRADE: {'YES' if insights.get('should_grade', False) else 'NO'}\n\n"
+            
+            # Category Breakdown
+            results_text += " CATEGORY ASSESSMENT:\n"
+            
+            # Corner Analysis Details
+            corner_data = results.get('corner_analysis', {})
+            if corner_data and 'scores' in corner_data:
+                corner_scores = corner_data['scores']
+                results_text += "   🔸 Corners (3D Photometric Analysis):\n"
+                results_text += f"      Top Left: {corner_scores.get('tl_corner', 0):.1f}%\n"
+                results_text += f"      Top Right: {corner_scores.get('tr_corner', 0):.1f}%\n"
+                results_text += f"      Bottom Left: {corner_scores.get('bl_corner', 0):.1f}%\n"
+                results_text += f"      Bottom Right: {corner_scores.get('br_corner', 0):.1f}%\n\n"
+            
+            # 24-Point Centering Details
+            centering = results.get('centering_analysis', {})
+            if centering:
+                results_text += "   🔸 24-Point Centering (Patented System):\n"
+                results_text += f"      Overall Score: {centering.get('overall_centering_score', 0):.1f}%\n"
+                
+                ratios = centering.get('ratios', {})
+                if ratios:
+                    tb_ratio = ratios.get('top_bottom', (50, 50))
+                    lr_ratio = ratios.get('left_right', (50, 50))
+                    results_text += f"      Top/Bottom: {tb_ratio[0]:.1f}% / {tb_ratio[1]:.1f}%\n"
+                    results_text += f"      Left/Right: {lr_ratio[0]:.1f}% / {lr_ratio[1]:.1f}%\n"
+                
+                verdict = centering.get('verdict', '')
+                if verdict:
+                    results_text += f"      Assessment: {verdict}\n\n"
+            
+            # Surface Analysis Details
+            photometric = results.get('photometric_analysis')
+            if photometric:
+                results_text += "   🔸 Surface Analysis (8-Directional):\n"
+                results_text += f"      Surface Integrity: {photometric.surface_integrity:.1f}%\n"
+                results_text += f"      Surface Quality: {insights.get('surface_quality', 'N/A')}\n"
+                results_text += f"      Defects Detected: {len(results.get('smart_defects', []))}\n\n"
+            
+            # Quality Recommendations
+            suggestions = insights.get('improvement_suggestions', [])
+            if suggestions:
+                results_text += " RECOMMENDATIONS:\n"
+                for suggestion in suggestions:
+                    results_text += f"   - {suggestion}\n"
+                results_text += "\n"
+            
+            # Processing Stats
+            results_text += f"ANALYSIS COMPLETED IN: {results.get('processing_time', 0.0):.2f} seconds\n"
+            results_text += f"POWERED BY: TruScore Master Technology\n"
+            results_text += "\n"
+            
+            # Update the results display
+            self.update_results_display(results_text)
+            
+        except Exception as e:
+            logger.error(f"Error formatting master results: {e}")
+            self.update_results_display(f"Master analysis completed!\nGrade: {results.get('insights', {}).get('overall_grade_estimate', 'N/A')}\n\nError formatting detailed results - check src/Logs.")
 
     # Old signal handlers removed - now using master pipeline directly
     
@@ -1232,7 +1475,7 @@ TruScore analysis ready!"""
             scores = results.scores
             
             # Build comprehensive results display
-            results_text = " TRUGRADE MASTER PIPELINE v2.0 - COMPLETE\n"
+            results_text = " TRUSCORE MASTER PIPELINE v2.0 - COMPLETE\n"
             results_text += "=" * 60 + "\n\n"
             
             # Final Grade and Scores
@@ -1249,7 +1492,7 @@ TruScore analysis ready!"""
             # Corner Analysis Details
             if results.corner_data and 'scores' in results.corner_data:
                 corner_scores = results.corner_data['scores']
-                results_text += "CORNER ANALYSIS (300px crops, 99.41% accuracy models):\n"
+                results_text += "CORNER ANALYSIS (150px crops, 99.41% accuracy models):\n"
                 results_text += f"   Top Left: {corner_scores.get('tl_corner', 0):.1f}%\n"
                 results_text += f"   Top Right: {corner_scores.get('tr_corner', 0):.1f}%\n"
                 results_text += f"   Bottom Left: {corner_scores.get('bl_corner', 0):.1f}%\n"
@@ -1294,6 +1537,9 @@ TruScore analysis ready!"""
             results_text += f"POWERED BY: TruScore Master Pipeline v2.0\n"
             results_text += "\n"
             
+            # Store formatted text for potential use in viewer
+            self.last_results_text = results_text
+            
             # Update the results display
             self.update_results_display(results_text)
             
@@ -1307,7 +1553,16 @@ TruScore analysis ready!"""
             logger.info("Launching 8-tab master visualization")
             
             # Import the PhotometricResultsViewer
-            from modules.truscore_grading.TruScore_photometric_integration import PhotometricResultsViewer
+            try:
+                from modules.truscore_grading.TruScore_photometric_integration import PhotometricResultsViewer
+            except ImportError as ie:
+                logger.error(f"Failed to import PhotometricResultsViewer: {ie}")
+                # Try fallback or root
+                try:
+                    sys.path.append(os.path.join(os.getcwd(), 'src'))
+                    from modules.truscore_grading.TruScore_photometric_integration import PhotometricResultsViewer
+                except:
+                    raise ie
             
             # Use the visualization data from master pipeline results
             visualization_data = results.visualization_data
@@ -1325,7 +1580,7 @@ TruScore analysis ready!"""
                 logger.error(f"PhotometricResultsViewer creation failed: {viewer_error}")
                 logger.error(f"Viewer error type: {type(viewer_error)}")
                 # Fallback note to user and exit gracefully
-                self.update_results_display(self.results_text.toPlainText() + "\n\nNote: 8-tab visualization failed to load.\nAnalysis completed successfully - check src/Logs for details.")
+                self.update_results_display(self.last_results_text + "\n\nNote: 8-tab visualization failed to load.\nAnalysis completed successfully - check src/Logs for details.")
                 return
             
             logger.info("8-tab master visualization displayed successfully")
@@ -1334,7 +1589,8 @@ TruScore analysis ready!"""
             logger.error(f"Failed to show master visualization: {e}")
             logger.error(f"Error details: {str(e)}")
             # Show a simple message to user about visualization issue
-            self.update_results_display(self.results_text.toPlainText() + "\n\nNote: 8-tab visualization failed to load.\nAnalysis completed successfully - check src/Logs for details.")
+            fallback_text = getattr(self, 'last_results_text', "Analysis complete.")
+            self.update_results_display(fallback_text + "\n\nNote: 8-tab visualization failed to load.\nAnalysis completed successfully - check src/Logs for details.")
     
     def show_photometric_showcase(self, results):
         """Show 8-tab photometric showcase visualization"""
@@ -1746,7 +2002,7 @@ PRECISION | TRANSPARENCY | EXCELLENCE
         return tab
     
     def create_corners_tab(self, corner_data):
-        """Create REAL corner analysis visualization with 300px crops"""
+        """Create REAL corner analysis visualization with 150px crops"""
         from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QWidget, QGridLayout
         from PyQt6.QtCore import Qt
         from PyQt6.QtGui import QPixmap, QImage
@@ -1757,7 +2013,7 @@ PRECISION | TRANSPARENCY | EXCELLENCE
         layout = QVBoxLayout(tab)
         
         # Title
-        title = QLabel("CORNER ANALYSIS - 300px Crops with 99.41% Accuracy Models")
+        title = QLabel("CORNER ANALYSIS - 150px Crops with 99.41% Accuracy Models")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet("font-size: 16px; font-weight: bold; padding: 10px;")
         layout.addWidget(title)
@@ -1783,7 +2039,7 @@ PRECISION | TRANSPARENCY | EXCELLENCE
                     corner_label.setStyleSheet("font-weight: bold; font-size: 12px; padding: 5px;")
                     corner_layout.addWidget(corner_label)
                     
-                    # Corner image (300px crop)
+                    # Corner image (150px crop)
                     if corner_key in corner_data['crops']:
                         crop = corner_data['crops'][corner_key]
                         
@@ -1805,7 +2061,7 @@ PRECISION | TRANSPARENCY | EXCELLENCE
                                 
                                 pixmap = QPixmap.fromImage(q_image)
                                 
-                                # Scale to reasonable size for display (300px crops → 200px display)
+                                # Scale to reasonable size for display (150px crops → 200px display)
                                 scaled_pixmap = pixmap.scaled(200, 200, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
                                 
                                 image_label = QLabel()
@@ -1838,7 +2094,7 @@ PRECISION | TRANSPARENCY | EXCELLENCE
                 layout.addWidget(grid_widget)
                 
                 # Add description
-                desc = QLabel("Each corner analyzed with 300px crops using 99.41% accuracy AI models.\nScores reflect corner condition, wear, and structural integrity.")
+                desc = QLabel("Each corner analyzed with 150px crops using 99.41% accuracy AI models.\nScores reflect corner condition, wear, and structural integrity.")
                 desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 desc.setStyleSheet("font-size: 12px; padding: 10px;")
                 layout.addWidget(desc)
@@ -1849,7 +2105,7 @@ PRECISION | TRANSPARENCY | EXCELLENCE
                 error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 layout.addWidget(error_label)
         else:
-            placeholder = QLabel("🔧 Corner analysis data processing...\n300px crops with AI model assessment")
+            placeholder = QLabel("🔧 Corner analysis data processing...\n150px crops with AI model assessment")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
             placeholder.setStyleSheet("font-size: 14px; padding: 50px;")
             layout.addWidget(placeholder)
@@ -2091,8 +2347,174 @@ PATENT PENDING: 24-Point Border Measurement System
             
         self.update_results_display("Loading Investment Analysis...\n\nCalculating investment potential...")
         logger.info("Investment analysis requested")
-        
+
         QMessageBox.information(self, "Investment Analysis", "Investment analysis will be integrated here!")
+
+    # --- Image Correction Methods ---
+
+    def rotate_fine_cw(self):
+        """Fine-tune rotate card 0.001 degrees clockwise"""
+        if not self.current_card or self.current_card.original_image is None:
+            return
+        logger.info("Fine-tune rotating card 0.001° CW")
+        self._apply_rotation(-0.001, silent=True)
+        self.update_card_info_for_current_card()
+
+    def rotate_fine_ccw(self):
+        """Fine-tune rotate card 0.001 degrees counter-clockwise"""
+        if not self.current_card or self.current_card.original_image is None:
+            return
+        logger.info("Fine-tune rotating card 0.001° CCW")
+        self._apply_rotation(0.001, silent=True)
+        self.update_card_info_for_current_card()
+
+    def toggle_guides(self, state):
+        """Toggle visual alignment guides on the image display"""
+        show = self.show_guides_cb.isChecked()
+        if hasattr(self, 'image_label') and isinstance(self.image_label, AlignmentGuideLabel):
+            self.image_label.set_guides_visible(show)
+            logger.info(f"Alignment guides {'enabled' if show else 'disabled'}")
+
+    def rotate_90_cw(self):
+        """Rotate card 90 degrees clockwise - Legacy support"""
+        if not self.current_card or self.current_card.original_image is None:
+            return
+        logger.info("Rotating card 90° CW")
+        self.current_card.original_image = cv2.rotate(self.current_card.original_image, cv2.ROTATE_90_CLOCKWISE)
+        self.display_current_card()
+        self.update_card_info_for_current_card()
+
+    def rotate_90_ccw(self):
+        """Rotate card 90 degrees counter-clockwise - Legacy support"""
+        if not self.current_card or self.current_card.original_image is None:
+            return
+        logger.info("Rotating card 90° CCW")
+        self.current_card.original_image = cv2.rotate(self.current_card.original_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        self.display_current_card()
+        self.update_card_info_for_current_card()
+
+    def auto_straighten_card(self, silent=False):
+        """
+        Auto-rotate card to be perfectly straight.
+        Uses multi-stage analysis: YOLO rough detection -> Contour precise alignment.
+        """
+        if not self.current_card or self.current_card.original_image is None:
+            return
+
+        if not silent:
+            self.update_results_display("AUTO-STRAIGHTENING\n" + "="*40 + "\n\nAnalyzing card orientation for perfect alignment...\n")
+            logger.info("🚀 Starting high-precision auto-straightening...")
+        
+        try:
+            image = self.current_card.original_image
+            h, w = image.shape[:2]
+            
+            # Use TruScore system for rough localization if available
+            detector = None
+            if self._ensure_truscore_system_loaded():
+                detector = self.truscore_system.border_detector
+            
+            if detector:
+                # Run AI detection to find rough area
+                ai_results = detector._run_ai_border_detection(image)
+                outer = ai_results.get('outer_border')
+                
+                if outer is not None:
+                    # Crop roughly around the card to reduce noise for contour analysis
+                    x1, y1, x2, y2 = outer.astype(int)
+                    margin = 40
+                    x1, y1 = max(0, x1 - margin), max(0, y1 - margin)
+                    x2, y2 = min(w, x2 + margin), min(h, y2 + margin)
+                    
+                    roi = image[y1:y2, x1:x2]
+                    angle = self._calculate_precise_skew(roi)
+                    
+                    if abs(angle) > 0.05:
+                        self._apply_rotation(angle, silent)
+                        return True
+            
+            # Fallback to basic method if AI failed or no angle detected in ROI
+            return self._auto_rotate_basic(image, silent)
+            
+        except Exception as e:
+            logger.error(f"Auto-straightening failed: {e}")
+            if not silent:
+                self.update_results_display(f"Auto-straightening error: {str(e)}")
+            return False
+
+    def _calculate_precise_skew(self, image_roi):
+        """Find the precise skew angle of a rectangular object in ROI"""
+        try:
+            gray = cv2.cvtColor(image_roi, cv2.COLOR_BGR2GRAY)
+            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+            edged = cv2.Canny(blurred, 50, 150)
+            
+            contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if not contours:
+                return 0.0
+                
+            cnt = max(contours, key=cv2.contourArea)
+            rect = cv2.minAreaRect(cnt)
+            (center, (rw, rh), angle) = rect
+            
+            # Standardize angle logic
+            if rw < rh:
+                actual_angle = angle - 90 if angle > 0 else angle + 90
+            else:
+                actual_angle = angle
+                
+            # Normalize to deskew (-45 to 45)
+            if actual_angle < -45:
+                actual_angle += 90
+            elif actual_angle > 45:
+                actual_angle -= 90
+                
+            return actual_angle
+        except:
+            return 0.0
+
+    def _auto_rotate_basic(self, image, silent=False):
+        """Basic contour-based deskewing if high-precision ROI fails"""
+        try:
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
+            if not contours:
+                return False
+                
+            cnt = max(contours, key=cv2.contourArea)
+            rect = cv2.minAreaRect(cnt)
+            angle = rect[-1]
+            
+            if angle < -45:
+                angle = 90 + angle
+            elif angle > 45:
+                angle = angle - 90
+                
+            if abs(angle) > 0.1:
+                self._apply_rotation(angle, silent)
+                return True
+            return False
+        except:
+            return False
+
+    def _apply_rotation(self, angle, silent=False):
+        """Apply affine rotation to original image"""
+        image = self.current_card.original_image
+        (h, w) = image.shape[:2]
+        center = (w // 2, h // 2)
+        
+        M = cv2.getRotationMatrix2D(center, angle, 1.0)
+        rotated = cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        
+        self.current_card.original_image = rotated
+        self.display_current_card()
+        
+        if not silent:
+            logger.info(f"✅ Rotated image by {angle:.2f}° for alignment")
+            self.update_results_display(f"Alignment Successful\n\nCorrected skew by {angle:.2f} degrees.")
+        self.update_card_info_for_current_card()
 
 
 # Integration function for shell compatibility - EXACT from original

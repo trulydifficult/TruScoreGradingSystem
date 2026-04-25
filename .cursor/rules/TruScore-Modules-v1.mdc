@@ -1,0 +1,50 @@
+---
+alwaysApply: true
+---
+
+# TruScoreGradingSystem --- Module Definitions (v1)
+
+## 1. PURPOSE
+
+Define strict ownership of responsibilities across the codebase.
+
+## 2. MODULE STRUCTURE
+
+/project_root ├── ingestion/ ├── identification/ ├── grading/ ├──
+market/ ├── decision/ ├── pipeline/ ├── app/ ├── utils/
+
+## 3. MODULE RESPONSIBILITIES
+
+ingestion: image preprocessing only\
+identification: CardSight API calls\
+grading: condition analysis (surface, edges, corners, centering)\
+market: pricing and population data\
+decision: expected value and recommendations\
+pipeline: orchestration only\
+app: UI and communication\
+utils: shared helpers only
+
+## 4. RULES
+
+-   One function = one module\
+-   No duplicate logic\
+-   No cross-module contamination\
+-   No temporary logic outside modules
+
+## 5. REFACTOR STRATEGY
+
+-   Extract working functions\
+-   Move to correct module\
+-   Replace original with import + call\
+-   Do NOT rewrite working logic
+
+## 6. WARNING SIGNS
+
+-   Duplicate functions\
+-   Mixed responsibilities\
+-   UI calling grading logic\
+-   Market logic inside grading
+
+## 7. GOAL
+
+Modules must be isolated, testable, and reusable.

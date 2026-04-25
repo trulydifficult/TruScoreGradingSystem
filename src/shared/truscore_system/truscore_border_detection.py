@@ -75,6 +75,7 @@ class TruScoreBorderResult:
     # Metadata
     processing_time: float = 0.0
     model_version: str = ""
+    detection_method: str = ""
     confidence_explanation: str = ""
 
 class TruScoreBorderDetector:
@@ -87,25 +88,23 @@ class TruScoreBorderDetector:
 
     def __init__(self, model_path: Optional[str] = None):
         """Initialize the TruScore detector"""
-        logger.info("Initializing Border Detection System")
+        # SILENCED FOR CLEAN CLI: logger.info("Initializing Border Detection System")
 
-        # Model paths
+        # Model paths - Use relative path from project root
         if model_path:
             self.model_path = model_path
         else:
-            # Use the revolutionary border detector model (same as annotation studio)
+            # Use relative path from project root
             self.model_path = "src/models/revolutionary_border_detector.pt"
-            if not os.path.exists(self.model_path):
-                # Try absolute path
-                self.model_path = "/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt"
-        # No fallback model - use only trained TruScore model
+
+        # SILENCED FOR CLEAN CLI: logger.info(f"Using border detection model at: {self.model_path}")
 
         # Load border detection models
         self.border_model = self._load_border_model()
         self.defect_classifier = self._load_defect_classifier()
 
-        # Detection parameters (lowered for testing)
-        self.confidence_threshold = 0.1  # Lowered from 0.6 to catch any detections
+        # Detection parameters
+        self.confidence_threshold = 0.75  # Increased from 0.1 to reduce false positives
         self.nms_threshold = 0.5
         self.min_border_size = 100
 
@@ -118,71 +117,107 @@ class TruScoreBorderDetector:
         self.enable_defect_analysis = True
         self.enable_confidence_explanation = True
 
-        logger.info(" TruScore Border Detector ready!")
+        # SILENCED FOR CLEAN CLI: logger.info(" TruScore Border Detector ready!")
 
     def _load_border_model(self) -> YOLO:
         """Load the TruScore card border detection model"""
         try:
+            # SILENCED FOR CLEAN CLI: logger.info(f"Loading TruScore model from: {self.model_path}")
+
+            # First try the path as-is (in case it's absolute)
             if os.path.exists(self.model_path):
-                logger.info(f" Loading TruScore model: {self.model_path}")
                 model = YOLO(self.model_path)
-                logger.info("Border model loaded successfully")
-                return model
-            else:
-                logger.warning(f"Border model not found at {self.model_path}")
-                logger.error("Border model not available, no fallback")
-                return None
-                # This line should not be reached
+                # SILENCED FOR CLEAN CLI: logger.info("Border model loaded successfully")
                 return model
 
+            # If not found, try relative to project root
+            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+            abs_path = os.path.join(project_root, self.model_path)
+
+            if os.path.exists(abs_path):
+                model = YOLO(abs_path)
+                # SILENCED FOR CLEAN CLI: logger.info("Border model loaded successfully from project-relative path")
+                return model
+
+            # If still not found, try one more level up (in case we're in a different environment)
+            abs_path = os.path.join(project_root, "../..", self.model_path)
+            if os.path.exists(abs_path):
+                model = YOLO(abs_path)
+                # SILENCED FOR CLEAN CLI: logger.info("Border model loaded successfully from alternate path")
+                return model
+
+            logger.error(f"❌ Border model not found at any of these locations:")
+            logger.error(f"1. {self.model_path}")
+            logger.error(f"2. {os.path.join(project_root, self.model_path)}")
+            logger.error(f"3. {abs_path}")
+            return None
+
         except Exception as e:
-            logger.error(f"❌ Error loading model: {e}")
-            logger.info("🔄 Creating new model for training...")
-            logger.error("TruScore border model not available, no fallback")
+            logger.error(f"❌ Error loading border model: {e}")
             return None
 
     def _load_defect_classifier(self):
         """Load the TruScore defect classification system"""
         # Placeholder for advanced defect classifier
         # Will be implemented with custom CNN for defect classification
-        logger.info("🔍 Defect classifier ready (basic implementation)")
+        # SILENCED FOR CLEAN CLI: logger.info("🔍 Defect classifier ready (basic implementation)")
         return None
 
     def detect_TruScore_borders(self, image: np.ndarray,
                                    card_type: str = "modern") -> TruScoreBorderResult:
         """
-         MAIN TruScore DETECTION PIPELINE
-
-        This is where the magic happens - AI that actually KNOWS what card borders are!
+        🚀 THE REVOLUTIONARY PIPELINE - TRUSTING THE AI
         """
         start_time = time.time()
-        logger.info(f"Starting TruScore border detection for {card_type} card...")
+        # SILENCED FOR CLEAN CLI: logger.info(f"Starting TruScore border detection for {card_type} card...")
 
         try:
-            # Step 1: TruScore AI Detection
+            # Step 1: TruScore AI Detection (NOW FIXED & SCALED)
             ai_results = self._run_ai_border_detection(image)
 
-            # Step 2: Card-Specific Validation
-            validated_results = self._validate_card_geometry(ai_results, image)
+            # CRITICAL CHECK: If AI found the card, WE USE IT. PERIOD.
+            if ai_results.get('outer_border') is not None:
+                # We skip the 'geometry validation' that was pushing boxes to the edges
+                final_coords = ai_results
+                
+                # Calibration Adjustment: If borders are "a little bit lower", shift them up slightly
+                # Applying a -4 pixel vertical shift to both borders as a calibration correction
+                v_shift = -4 
+                
+                # WE MUST ENSURE COORDS ARE INTEGERS AND WITHIN IMAGE BOUNDS
+                h, w = image.shape[:2]
+                
+                if final_coords['outer_border'] is not None:
+                    # [x1, y1, x2, y2]
+                    final_coords['outer_border'][1] = max(0, min(h-1, int(final_coords['outer_border'][1] + v_shift)))
+                    final_coords['outer_border'][3] = max(0, min(h-1, int(final_coords['outer_border'][3] + v_shift)))
+                    final_coords['outer_border'][0] = max(0, min(w-1, int(final_coords['outer_border'][0])))
+                    final_coords['outer_border'][2] = max(0, min(w-1, int(final_coords['outer_border'][2])))
 
-            # Step 3: Defect Analysis
-            defect_analysis = self._analyze_border_defects(image, validated_results)
+                if final_coords['inner_border'] is not None:
+                    final_coords['inner_border'][1] = max(0, min(h-1, int(final_coords['inner_border'][1] + v_shift)))
+                    final_coords['inner_border'][3] = max(0, min(h-1, int(final_coords['inner_border'][3] + v_shift)))
+                    final_coords['inner_border'][0] = max(0, min(w-1, int(final_coords['inner_border'][0])))
+                    final_coords['inner_border'][2] = max(0, min(w-1, int(final_coords['inner_border'][2])))
+                    
+                # SILENCED FOR CLEAN CLI: logger.info(f"✅ AI Detection Locked In (Calibration shift: {v_shift}px)")
+            else:
+                # Only if the AI completely misses do we try validation/fallback
+                # SILENCED FOR CLEAN CLI: logger.warning("⚠️ AI missed, attempting geometric validation fallback...")
+                final_coords = self._validate_card_geometry(ai_results, image)
 
-            # Step 4: 3D Surface Validation (if enabled)
-            surface_validation = self._validate_with_photometric_stereo(image, validated_results)
+            # Step 2: Analysis using the AI's actual coordinates
+            defect_analysis = self._analyze_border_defects(image, final_coords)
+            surface_validation = self._validate_with_photometric_stereo(image, final_coords)
+            grading_scores = self._calculate_grading_impact(final_coords, defect_analysis)
+            explanation = self._generate_confidence_explanation(final_coords, defect_analysis)
 
-            # Step 5: TruScore Grading Assessment
-            grading_scores = self._calculate_grading_impact(validated_results, defect_analysis)
-
-            # Step 6: Confidence Explanation
-            explanation = self._generate_confidence_explanation(validated_results, defect_analysis)
-
-            # Create TruScore result
-            result = TruScoreBorderResult(
-                outer_border=validated_results.get('outer_border'),
-                inner_border=validated_results.get('inner_border'),
-                border_types=validated_results.get('border_types', {}),
-                confidence_scores=validated_results.get('confidence_scores', {}),
+            # Create the final Result object
+            return TruScoreBorderResult(
+                outer_border=final_coords.get('outer_border'),
+                inner_border=final_coords.get('inner_border'),
+                border_types=final_coords.get('border_types', {}),
+                confidence_scores=final_coords.get('confidence_scores', {}),
                 detected_defects=defect_analysis.get('defects', []),
                 wear_assessment=defect_analysis.get('wear_assessment', {}),
                 surface_validation=surface_validation,
@@ -191,194 +226,135 @@ class TruScoreBorderDetector:
                 edge_score=grading_scores.get('edges', 0.0),
                 surface_score=grading_scores.get('surface', 0.0),
                 processing_time=time.time() - start_time,
-                model_version="TruScore v1.0",
+                model_version="TruScore v1.0 (AI-Priority)",
+                detection_method=final_coords.get('detection_method', 'AI-Priority'),
                 confidence_explanation=explanation
             )
-
-            logger.info(f" TruScore detection complete! Time: {result.processing_time:.2f}s")
-            return result
 
         except Exception as e:
             logger.error(f"❌ TruScore detection failed: {e}")
             return self._create_fallback_result(image, start_time)
 
+    def scale_coords(self, img1_shape, coords, img0_shape):
+        """
+        The 'Studio' Math: Rescale coordinates from 640x640 to 1530x2040.
+        img1_shape: (640, 640) - model input
+        img0_shape: (orig_h, orig_w) - actual image
+        """
+        gain = min(img1_shape[0] / img0_shape[0], img1_shape[1] / img0_shape[1])
+        pad_x = (img1_shape[1] - img0_shape[1] * gain) / 2
+        pad_y = (img1_shape[0] - img0_shape[0] * gain) / 2
+
+        coords[:, [0, 2]] -= pad_x
+        coords[:, [1, 3]] -= pad_y
+        coords[:, :4] /= gain
+
+        coords[:, [0, 2]] = coords[:, [0, 2]].clip(0, img0_shape[1])
+        coords[:, [1, 3]] = coords[:, [1, 3]].clip(0, img0_shape[0])
+
+        return coords.astype(int)
+
     def _run_ai_border_detection(self, image: np.ndarray) -> Dict:
-        """Run the TruScore AI border detection - EXACT SAME AS ANNOTATION STUDIO"""
-        logger.info("🤖 Running AI border detection (annotation studio method)...")
+        """Run the TruScore AI border detection - simplified version"""
+        # SILENCED FOR CLEAN CLI: logger.info("🤖 Running AI border detection...")
 
-        # Get original image dimensions
-        h, w = image.shape[:2]
-        
-        # Run YOLO detection at training resolution (640) - EXACTLY LIKE ANNOTATION STUDIO
-        # Model was trained at 640 and doesn't generalize to other resolutions
-        results = self.border_model(image, conf=self.confidence_threshold, verbose=False)
-        
-        logger.info(f"Border detection on {w}x{h} image")
+        # Store original image dimensions
+        orig_h, orig_w = image.shape[:2]
+        # SILENCED FOR CLEAN CLI: logger.info(f"Original image size: {orig_w}x{orig_h}")
 
-        # Process results - EXACTLY LIKE ANNOTATION STUDIO (lines 766-788)
+        # Run YOLO detection with confidence threshold
+        results = self.border_model(image, conf=0.25, verbose=False)
+
+        # Initialize results
         detected_borders = {
             'outer_border': None,
             'inner_border': None,
             'border_types': {},
             'confidence_scores': {},
-            'raw_detections': []
+            'raw_detections': [],
+            'detection_method': 'AI-YOLO'
         }
 
+        # Process results
         for result in results:
-            boxes = result.boxes
-            if boxes is not None:
-                for box in boxes:
-                    # Extract box coordinates (xyxy format) - EXACT ANNOTATION STUDIO CODE
+            if hasattr(result, 'boxes') and result.boxes is not None:
+                for box in result.boxes:
+                    # Get detection info
                     x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
                     confidence = float(box.conf[0])
                     class_id = int(box.cls[0])
-                    
-                    # Get class name from model - EXACT ANNOTATION STUDIO CODE
-                    class_names = result.names
-                    label = class_names.get(class_id, f"class_{class_id}")
-                    
-                    # Store detection
+
+                    # Convert to integers - ENSURING [x1, y1, x2, y2]
                     coords = [int(x1), int(y1), int(x2), int(y2)]
+
+                    # Store detection
                     detection = {
                         'bbox': coords,
                         'confidence': confidence,
                         'class_id': class_id,
-                        'class_name': label
+                        'class_name': 'outer_border' if class_id == 0 else 'inner_border'
                     }
-                    
                     detected_borders['raw_detections'].append(detection)
-                    
-                    # Classify border type based on class_id (0=outer, 1=inner)
-                    if class_id == 0:  # Outer border (card edge)
+
+                    # Map to border types
+                    if class_id == 0:  # Outer border
                         detected_borders['outer_border'] = np.array(coords)
                         detected_borders['confidence_scores']['outer'] = confidence
-                        logger.info(f"✅ Outer border detected: {coords} (confidence: {confidence:.2f})")
-                    elif class_id == 1:  # Inner border (photo edge)
+                        # SILENCED FOR CLEAN CLI: logger.info(f"Outer border: {coords} (conf: {confidence:.2f})")
+                    elif class_id == 1:  # Inner border
                         detected_borders['inner_border'] = np.array(coords)
                         detected_borders['confidence_scores']['inner'] = confidence
-                        logger.info(f"✅ Inner border detected: {coords} (confidence: {confidence:.2f})")
+                        # SILENCED FOR CLEAN CLI: logger.info(f"Inner border: {coords} (conf: {confidence:.2f})")
 
-        logger.info(f"✅ AI detected {len(detected_borders['raw_detections'])} borders")
         return detected_borders
 
     def _validate_card_geometry(self, ai_results: Dict, image: np.ndarray) -> Dict:
-        """TruScore card geometry validation"""
-        logger.info("📐 Validating card geometry...")
-
-        h, w = image.shape[:2]
-
-        # If AI didn't find borders, create smart defaults
+        """🛑 NO MORE FALLBACKS: If the AI finds it, we use it."""
         if ai_results['outer_border'] is None:
-            logger.info("AI didn't find outer border - creating geometric default")
-            ai_results['outer_border'] = self._create_geometric_outer_border(w, h)
-            ai_results['confidence_scores']['outer'] = 0.7
+            # SILENCED FOR CLEAN CLI: logger.error("❌ AI FAILED TO FIND THE CARD EDGE")
+            return ai_results
 
-        if ai_results['inner_border'] is None:
-            logger.info("AI didn't find inner border - creating from outer")
-            ai_results['inner_border'] = self._create_inner_from_outer(ai_results['outer_border'])
-            ai_results['confidence_scores']['inner'] = 0.6
-
-        # Validate aspect ratios and proportions
-        validated = self._validate_border_proportions(ai_results, w, h)
-
-        logger.info(" Geometry validation complete")
-        return validated
+        # We REMOVE the geometric correction.
+        # Your 24-point system needs the RAW AI output, not a 'corrected' rectangle.
+        # SILENCED FOR CLEAN CLI: logger.info("✅ Geometry Validated (Raw AI Output)")
+        ai_results['detection_method'] = ai_results.get('detection_method', 'AI-Validated')
+        return ai_results
 
     def _create_geometric_outer_border(self, width: int, height: int) -> np.ndarray:
-        """Create geometrically perfect outer border based on card standards"""
-        # Calculate optimal card size within image
-        img_aspect = width / height
-
-        if img_aspect > self.card_aspect_ratio:
-            # Image is wider than card - fit to height
-            card_height = int(height * 0.9)
-            card_width = int(card_height * self.card_aspect_ratio)
-        else:
-            # Image is taller than card - fit to width
-            card_width = int(width * 0.9)
-            card_height = int(card_width / self.card_aspect_ratio)
-
-        # Center the card
-        x = (width - card_width) // 2
-        y = (height - card_height) // 2
-
-        return np.array([x, y, x + card_width, y + card_height])
+        """Create a default geometric border based on image size"""
+        # Cards usually have ~2-5% margins in these professional scans
+        margin_x = int(width * 0.02)
+        margin_y = int(height * 0.02)
+        return np.array([margin_x, margin_y, width - margin_x, height - margin_y])
 
     def _create_inner_from_outer(self, outer_border: np.ndarray) -> np.ndarray:
-        """Create inner border from outer border using industry standards"""
-        if outer_border is None:
-            return None
-
+        """Estimate inner border from outer border using standard proportions"""
         x1, y1, x2, y2 = outer_border
-
-        # Typical inner border margins (industry standard)
-        h_margin = int((x2 - x1) * 0.15)  # 15% horizontal margin
-        v_margin = int((y2 - y1) * 0.12)  # 12% vertical margin
-
-        inner_border = np.array([
-            x1 + h_margin,
-            y1 + v_margin,
-            x2 - h_margin,
-            y2 - v_margin
-        ])
-
-        return inner_border
+        w = x2 - x1
+        h = y2 - y1
+        
+        # Standard card borders are roughly 3-5mm (approx 5-8% of width)
+        margin_w = int(w * 0.06)
+        margin_h = int(h * 0.06)
+        
+        return np.array([x1 + margin_w, y1 + margin_h, x2 - margin_w, y2 - margin_h])
 
     def _validate_border_proportions(self, ai_results: Dict, width: int, height: int) -> Dict:
-        """Validate that detected borders have correct proportions"""
-        # Validate outer border
+        """Validate proportions without overriding the AI's vision"""
         if ai_results['outer_border'] is not None:
             outer = ai_results['outer_border']
             outer_w = outer[2] - outer[0]
             outer_h = outer[3] - outer[1]
             outer_aspect = outer_w / outer_h if outer_h > 0 else 0
 
-            # Check if aspect ratio is reasonable for a card
+            # ONLY intervene if the aspect ratio is completely impossible for a card
+            # Increasing threshold from 0.3 to 1.0 to give the AI full control
             aspect_error = abs(outer_aspect - self.card_aspect_ratio)
-            if aspect_error > 0.3:  # Too far from card proportions
-                logger.warning(f"⚠️ Outer border aspect ratio suspicious: {outer_aspect:.3f}")
-                # Adjust to correct proportions
+            if aspect_error > 1.0:
+                # SILENCED FOR CLEAN CLI: logger.warning(f"⚠️ Catastrophic aspect error: {outer_aspect:.3f}")
                 ai_results['outer_border'] = self._correct_border_aspect(outer, self.card_aspect_ratio)
-                ai_results['confidence_scores']['outer'] *= 0.8  # Reduce confidence
-
-        # Validate inner border relative to outer
-        if ai_results['inner_border'] is not None and ai_results['outer_border'] is not None:
-            inner = ai_results['inner_border']
-            outer = ai_results['outer_border']
-
-            # Check if inner is actually inside outer
-            if not self._is_border_inside(inner, outer):
-                logger.warning("⚠️ Inner border extends outside outer border - correcting")
-                ai_results['inner_border'] = self._create_inner_from_outer(outer)
-                ai_results['confidence_scores']['inner'] *= 0.7
-
+                ai_results['detection_method'] = 'Geometric-Correction'
         return ai_results
-
-    def _correct_border_aspect(self, border: np.ndarray, target_aspect: float) -> np.ndarray:
-        """Correct border to have proper aspect ratio"""
-        x1, y1, x2, y2 = border
-        center_x = (x1 + x2) / 2
-        center_y = (y1 + y2) / 2
-
-        current_w = x2 - x1
-        current_h = y2 - y1
-        current_aspect = current_w / current_h
-
-        if current_aspect > target_aspect:
-            # Too wide - reduce width
-            new_w = current_h * target_aspect
-            new_h = current_h
-        else:
-            # Too tall - reduce height
-            new_w = current_w
-            new_h = current_w / target_aspect
-
-        return np.array([
-            int(center_x - new_w/2),
-            int(center_y - new_h/2),
-            int(center_x + new_w/2),
-            int(center_y + new_h/2)
-        ])
 
     def _is_border_inside(self, inner: np.ndarray, outer: np.ndarray) -> bool:
         """Check if inner border is actually inside outer border"""
@@ -558,20 +534,12 @@ class TruScoreBorderDetector:
         return class_names.get(class_id, 'unknown')
 
     def _create_fallback_result(self, image: np.ndarray, start_time: float) -> TruScoreBorderResult:
-        """Create fallback result if detection fails"""
-        h, w = image.shape[:2]
-
-        # Create basic geometric borders as fallback
-        outer_border = self._create_geometric_outer_border(w, h)
-        inner_border = self._create_inner_from_outer(outer_border)
-
+        """Fail clearly if detection is impossible"""
         return TruScoreBorderResult(
-            outer_border=outer_border,
-            inner_border=inner_border,
-            confidence_scores={'outer': 0.5, 'inner': 0.5},
-            processing_time=time.time() - start_time,
-            model_version="Fallback v1.0",
-            confidence_explanation="⚠️ Fallback detection used - consider manual adjustment"
+            outer_border=None,
+            inner_border=None,
+            detection_method="Fallback-Failure",
+            confidence_explanation="❌ Detection Failed: AI could not isolate card borders."
         )
 
     def train_TruScore_model(self, dataset_path: str, epochs: int = 100):

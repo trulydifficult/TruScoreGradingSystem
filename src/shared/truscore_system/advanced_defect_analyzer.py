@@ -176,7 +176,7 @@ class TruScoreDefectAnalyzer:
                     continue  # Skip card features
 
             except Exception as e:
-                print(f"Error processing component {i}: {e}")
+                # SILENCED: print(f"Error processing component {i}: {e}")
                 continue
 
             # Step 5: Classify defect type and severity
@@ -626,15 +626,17 @@ def upgrade_photometric_defect_analysis(photometric_result, original_image_path:
 
     # Show defect breakdown
     for defect_type, details in grading_analysis['defect_types'].items():
-        print(f"   - {defect_type.replace('_', ' ').title()}: {details['count']} defects")
+        # SILENCED: print(f"   - {defect_type.replace('_', ' ').title()}: {details['count']} defects")
+        pass
 
     return smart_defects, grading_analysis, enhanced_defect_viz
 
 if __name__ == "__main__":
-    print("TruScore DEFECT INTELLIGENCE SYSTEM")
-    print("=" * 60)
-    print(" Advanced defect filtering ready")
-    print("Feature vs defect classification available")
-    print(" Professional grading impact analysis ready")
-    print("Enhanced defect visualization ready")
-    print("\n Ready to transform 838 noise into precise defects!")
+    # SILENCED: print("TruScore DEFECT INTELLIGENCE SYSTEM")
+    # SILENCED: print("=" * 60)
+    # SILENCED: print(" Advanced defect filtering ready")
+    # SILENCED: print("Feature vs defect classification available")
+    # SILENCED: print(" Professional grading impact analysis ready")
+    # SILENCED: print("Enhanced defect visualization ready")
+    # SILENCED: print("\n Ready to transform 838 noise into precise defects!")
+    pass

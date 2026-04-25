@@ -1035,8 +1035,7 @@ class ProjectManagerView(QWidget):
             self.filter_compatible_pipelines(dataset_info.compatible_pipelines)
             
             # GURU ABSORPTION: Dataset Type Selection Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'dataset_type_selected',
+            self.guru.absorb_dataset_event('dataset_type_selected', {
                 'dataset_type': dataset_key,
                 'dataset_name': dataset_info.name,
                 'dataset_category': dataset_info.category,
@@ -1062,8 +1061,7 @@ class ProjectManagerView(QWidget):
             self.update_pipeline_details_display(pipeline_info)
             
             # GURU ABSORPTION: Pipeline Selection Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'pipeline_selected',
+            self.guru.absorb_dataset_event('pipeline_selected', {
                 'pipeline_key': pipeline_key,
                 'pipeline_name': pipeline_info.name,
                 'model_architecture': pipeline_info.model_architecture,
@@ -1178,8 +1176,7 @@ class ProjectManagerView(QWidget):
             self.logger.info(f"Exporting to trainer: {dataset_path} -> {model_type}")
             
             # GURU ABSORPTION: Export to Trainer Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'dataset_exported_to_trainer',
+            self.guru.absorb_dataset_event('dataset_exported_to_trainer', {
                 'dataset_type': self.selected_dataset_type,
                 'pipeline': self.selected_pipeline,
                 'dataset_name': dataset_info.name,
@@ -1294,8 +1291,7 @@ class ProjectManagerView(QWidget):
             self.logger.info(f"Configuration exported to queue: {config_export_dir}")
             
             # GURU ABSORPTION: Export to Queue Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'dataset_config_exported_to_queue',
+            self.guru.absorb_dataset_event('dataset_config_exported_to_queue', {
                 'dataset_type': self.selected_dataset_type,
                 'pipeline': self.selected_pipeline,
                 'dataset_name': dataset_info.name,
@@ -1546,8 +1542,7 @@ class EnterpriseDatasetStudio(QMainWindow):
             self.logger.info(f"Successfully loaded project: {project_config.name}")
             
             # GURU ABSORPTION: Project Loading Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'project_loaded',
+            self.guru.absorb_dataset_event('project_loaded', {
                 'project_name': project_config.name,
                 'dataset_type': project_config.dataset_type,
                 'pipeline': project_config.pipeline,
@@ -1669,8 +1664,7 @@ class EnterpriseDatasetStudio(QMainWindow):
             self.logger.info(f"Project saved: {project_file}")
             
             # GURU ABSORPTION: Project Creation Event
-            self.guru.absorb_dataset_event({
-                'event_type': 'project_created',
+            self.guru.absorb_dataset_event('project_created', {
                 'project_name': project_config.name,
                 'dataset_type': project_config.dataset_type,
                 'pipeline': project_config.pipeline,
