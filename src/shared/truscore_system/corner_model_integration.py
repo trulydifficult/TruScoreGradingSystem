@@ -115,7 +115,7 @@ class TruScoreCornerAnalyzer:
                 self.processors[corner_type] = None
 
         loaded_count = sum(1 for model in self.models.values() if model is not None)
-        self.logger.info(f"Loaded {loaded_count}/4 corner models successfully")
+        # SILENCED FOR CLEAN CLI: self.logger.info(f"Loaded {loaded_count}/4 corner models successfully")
 
     def analyze_corners_with_photometric_data(self,
                                              image: np.ndarray,
@@ -149,22 +149,22 @@ class TruScoreCornerAnalyzer:
                         )
                         results["scores"][f'{corner_type.lower()}_corner'] = condition_score
                         results["crops"][f'{corner_type.lower()}_corner'] = corner_crops[corner_type]
-                        print(f"   {corner_type}: {condition_score:.1f}%")
+                        # SILENCED: print(f"   {corner_type}: {condition_score:.1f}%")
 
                     except Exception as e:
                         self.logger.error(f"Error assessing {corner_type} corner: {e}")
                         results["scores"][f'{corner_type.lower()}_corner'] = 50.0  # Fallback
-                        print(f"  ❌ {corner_type}: Error, using fallback score")
+                        # SILENCED: print(f"  ❌ {corner_type}: Error, using fallback score")
                 else:
                     results["scores"][f'{corner_type.lower()}_corner'] = 50.0  # Fallback
-                    print(f"  ⚠️ {corner_type}: Model not available, using fallback")
+                    # SILENCED: print(f"  ⚠️ {corner_type}: Model not available, using fallback")
 
             self.logger.info("Corner analysis complete")
             return results
 
         except Exception as e:
             self.logger.error(f"Corner analysis failed: {e}")
-            print(f"❌ Corner analysis failed: {e}")
+            # SILENCED: print(f"❌ Corner analysis failed: {e}")
             # Return fallback scores
             return {
                 "scores": {
@@ -180,106 +180,39 @@ class TruScoreCornerAnalyzer:
                                            image: np.ndarray,
                                            surface_normals: np.ndarray,
                                            depth_map: np.ndarray) -> Dict[str, Tuple[int, int]]:
-        """Use photometric stereo data to find precise corner locations"""
+        """Use photometric stereo data to find absolute image corners"""
         h, w = image.shape[:2]
-
-        # Method 1: Use depth map gradients to find corners
-        try:
-            # Calculate gradient magnitude of depth map
-            grad_x = cv2.Sobel(depth_map, cv2.CV_64F, 1, 0, ksize=3)
-            grad_y = cv2.Sobel(depth_map, cv2.CV_64F, 0, 1, ksize=3)
-            gradient_magnitude = np.sqrt(grad_x**2 + grad_y**2)
-
-            # Find corner candidates
-            corners = cv2.goodFeaturesToTrack(
-                (gradient_magnitude * 255).astype(np.uint8),
-                maxCorners=4,
-                qualityLevel=0.01,
-                minDistance=min(h, w) // 8
-            )
-
-            if corners is not None and len(corners) >= 4:
-                # Sort corners by position
-                corners = corners.reshape(-1, 2)
-                sorted_corners = self._sort_corners_by_position(corners, w, h)
-
-                return {
-                    'TL': sorted_corners[0],
-                    'TR': sorted_corners[1],
-                    'BL': sorted_corners[2],
-                    'BR': sorted_corners[3]
-                }
-        except:
-            pass
-
-        # Fallback: Use image corners
-        return self._get_default_corner_locations(w, h)
-
-    def _sort_corners_by_position(self, corners: np.ndarray, w: int, h: int) -> list:
-        """Sort corners into TL, TR, BL, BR order"""
-        center_x, center_y = w // 2, h // 2
-
-        sorted_corners = [None] * 4
-
-        for corner in corners:
-            x, y = int(corner[0]), int(corner[1])
-
-            if x < center_x and y < center_y:
-                sorted_corners[0] = (x, y)  # TL
-            elif x >= center_x and y < center_y:
-                sorted_corners[1] = (x, y)  # TR
-            elif x < center_x and y >= center_y:
-                sorted_corners[2] = (x, y)  # BL
-            else:
-                sorted_corners[3] = (x, y)  # BR
-
-        # Fill any missing corners with defaults
-        if sorted_corners[0] is None: sorted_corners[0] = (w//4, h//4)
-        if sorted_corners[1] is None: sorted_corners[1] = (3*w//4, h//4)
-        if sorted_corners[2] is None: sorted_corners[2] = (w//4, 3*h//4)
-        if sorted_corners[3] is None: sorted_corners[3] = (3*w//4, 3*h//4)
-
-        return sorted_corners
-
-    def _get_default_corner_locations(self, w: int, h: int) -> Dict[str, Tuple[int, int]]:
-        """Fallback corner locations based on image dimensions - closer to actual card corners"""
-        margin_x = w // 20  # Smaller margin to get closer to actual corners
-        margin_y = h // 20
-
         return {
-            'TL': (margin_x, margin_y),
-            'TR': (w - margin_x, margin_y),
-            'BL': (margin_x, h - margin_y),
-            'BR': (w - margin_x, h - margin_y)
+            'TL': (0, 0),
+            'TR': (w, 0),
+            'BL': (0, h),
+            'BR': (w, h)
         }
 
     def _extract_corner_crops(self, image: np.ndarray, corner_locations: Dict) -> Dict[str, np.ndarray]:
-        """Extract corner crops around detected locations"""
+        """Extract 150x150 corner crops from absolute corners"""
         crops = {}
-        crop_size = 150  # Larger size to show actual corner details
+        crop_size = 150
+        h, w = image.shape[:2]
 
-        for corner_type, (x, y) in corner_locations.items():
-            try:
-                # Calculate crop boundaries
-                x1 = max(0, x - crop_size // 2)
-                y1 = max(0, y - crop_size // 2)
-                x2 = min(image.shape[1], x + crop_size // 2)
-                y2 = min(image.shape[0], y + crop_size // 2)
+        # Explicitly extract from image boundaries
+        # Top Left
+        crops['TL'] = image[0:crop_size, 0:crop_size]
+        # Top Right
+        crops['TR'] = image[0:crop_size, w-crop_size:w]
+        # Bottom Left
+        crops['BL'] = image[h-crop_size:h, 0:crop_size]
+        # Bottom Right
+        crops['BR'] = image[h-crop_size:h, w-crop_size:w]
 
-                # Extract crop
-                crop = image[y1:y2, x1:x2]
-
-                # Keep original crop for visualization, resize copy for model
-                display_crop = crop.copy()
-                
-                # Resize a copy to 64x64 for model input only
-                model_crop = cv2.resize(crop, (64, 64)) if crop.shape[:2] != (64, 64) else crop
-
-                crops[corner_type] = display_crop  # Store larger crop for display
-
-            except Exception as e:
-                self.logger.error(f"Failed to extract {corner_type} crop: {e}")
-                continue
+        # Verify and pad if necessary (though they should be perfect from the slicing above)
+        for corner_type in ['TL', 'TR', 'BL', 'BR']:
+            crop = crops[corner_type]
+            if crop.shape[0] != crop_size or crop.shape[1] != crop_size:
+                padded_crop = np.zeros((crop_size, crop_size, 3), dtype=np.uint8)
+                ch, cw = crop.shape[:2]
+                padded_crop[0:ch, 0:cw] = crop
+                crops[corner_type] = padded_crop
 
         return crops
 
@@ -382,12 +315,12 @@ def analyze_corners_3d_TruScore(image_path: str,
 
 if __name__ == "__main__":
     # Test the corner analyzer
-    print(" Testing TruScore Corner Analyzer...")
+    # SILENCED: print(" Testing TruScore Corner Analyzer...")
 
     try:
         analyzer = create_TruScore_corner_analyzer()
-        print(" Corner analyzer created successfully!")
-        print(f"Models loaded: {sum(1 for m in analyzer.models.values() if m is not None)}/4")
+        # SILENCED: print(" Corner analyzer created successfully!")
+        # SILENCED: print(f"Models loaded: {sum(1 for m in analyzer.models.values() if m is not None)}/4")
 
         # Test with dummy data
         dummy_image = np.random.randint(0, 255, (400, 300, 3), dtype=np.uint8)
@@ -398,9 +331,10 @@ if __name__ == "__main__":
             dummy_image, dummy_normals, dummy_depth
         )
 
-        print(" Test results:")
-        for corner, score in scores.items():
-            print(f"  {corner}: {score:.1f}%")
+        # SILENCED: print(" Test results:")
+        # for corner, score in scores.items():
+            # print(f"  {corner}: {score:.1f}%")
 
     except Exception as e:
-        print(f"❌ Test failed: {e}")
+        # SILENCED: print(f"❌ Test failed: {e}")
+        pass

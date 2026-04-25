@@ -163,11 +163,8 @@ class GuruEventDispatcher:
     
     # ============ DATASET STUDIO INTEGRATION ============
     
-    def absorb_dataset_event(self, event_data: Dict[str, Any]) -> bool:
+    def absorb_dataset_event(self, event_type: str, event_data: Dict[str, Any], quality_score: Optional[float] = None) -> bool:
         """Absorb events from Dataset Studio (with configurable learning controls)"""
-        # Check if this specific event type should be absorbed
-        event_type = event_data.get('event_type', 'dataset_action')
-        
         # Map event types to settings
         setting_map = {
             'project_created': 'dataset_project_creation',
@@ -198,17 +195,15 @@ class GuruEventDispatcher:
                 'absorption_source': 'dataset_studio_integration',
                 'learning_enabled': True
             },
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            quality_score=quality_score
         )
         return self.absorb_event(event)
     
     # ============ TRAINING STUDIO INTEGRATION ============
     
-    def absorb_training_event(self, event_data: Dict[str, Any]) -> bool:
+    def absorb_training_event(self, event_type: str, event_data: Dict[str, Any], quality_score: Optional[float] = None) -> bool:
         """Absorb events from Training Studio (with configurable learning controls)"""
-        # Check if training learning is enabled
-        event_type = event_data.get('event_type', 'training_action')
-        
         # Map training event types to settings
         training_setting_map = {
             'training_started': 'training_session_start',
@@ -234,16 +229,15 @@ class GuruEventDispatcher:
                 'absorption_source': 'training_studio_integration',
                 'learning_enabled': True
             },
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            quality_score=quality_score
         )
         return self.absorb_event(event)
     
     # ============ ANNOTATION STUDIO INTEGRATION ============
     
-    def absorb_annotation_event(self, event_data: Dict[str, Any]) -> bool:
+    def absorb_annotation_event(self, event_type: str, event_data: Dict[str, Any], quality_score: Optional[float] = None) -> bool:
         """Absorb events from Annotation Studio (with configurable learning controls)"""
-        event_type = event_data.get('event_type', 'annotation_action')
-        
         # Map annotation event types to settings
         annotation_setting_map = {
             'annotation_created': 'annotation_creation',
@@ -268,16 +262,15 @@ class GuruEventDispatcher:
                 'absorption_source': 'annotation_studio_integration',
                 'learning_enabled': True
             },
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            quality_score=quality_score
         )
         return self.absorb_event(event)
     
     # ============ TENSORZERO INTEGRATION ============
     
-    def absorb_prediction_event(self, event_data: Dict[str, Any]) -> bool:
+    def absorb_prediction_event(self, event_type: str, event_data: Dict[str, Any], quality_score: Optional[float] = None) -> bool:
         """Absorb events from TensorZero predictions (with configurable learning controls)"""
-        event_type = event_data.get('event_type', 'prediction_action')
-        
         # Map TensorZero event types to settings
         tensorzero_setting_map = {
             'prediction_made': 'tensorzero_predictions',
@@ -302,7 +295,8 @@ class GuruEventDispatcher:
                 'absorption_source': 'tensorzero_integration',
                 'learning_enabled': True
             },
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            quality_score=quality_score
         )
         return self.absorb_event(event)
     

@@ -31,6 +31,7 @@ from datetime import datetime
 import mimetypes
 from pathlib import Path
 from typing import Any, Dict, Optional, List
+from dataclasses import is_dataclass, asdict
 
 import cv2
 import numpy as np
@@ -354,7 +355,7 @@ class GradingWorker:
             if self._pipeline is None:
                 logger.info("Initializing TruScore Master Pipeline (Lazy Load)...")
                 try:
-                    from modules.truscore_grading.truscore_master_pipeline import TruScoreMasterPipeline
+                    from modules.truscore_grading.TruScore_photometric_integration import TruScorePhotometricIntegration as TruScoreMasterPipeline
                     self._pipeline = TruScoreMasterPipeline()
                     logger.info("Pipeline Ready.")
                 except Exception as exc:
@@ -466,6 +467,8 @@ def _sanitize_value(value):
         return None
     if isinstance(value, (str, int, float, bool)):
         return value
+    if is_dataclass(value):
+        return _sanitize_value(asdict(value))
     if isinstance(value, (np.integer,)):
         return int(value)
     if isinstance(value, (np.floating,)):
@@ -477,10 +480,18 @@ def _sanitize_value(value):
     if hasattr(value, "x") and hasattr(value, "y") and callable(value.x) and callable(value.y):
         return [float(value.x()), float(value.y())]
     if hasattr(value, "name") and hasattr(value, "value"):
-        return value.name
+        return value.value
     if isinstance(value, dict):
         clean_dict = {}
         for k, v in value.items():
+            # PROTECT THE BORDERS: Don't let the sanitizer mangle the actual coordinates
+            if k in {"outer_border", "inner_border", "detected_borders"}:
+                # If it's already a list/array of pixels, keep it exactly as is
+                if isinstance(v, np.ndarray):
+                    clean_dict[k] = v.tolist()
+                else:
+                    clean_dict[k] = v
+                continue
             if k in {"pixmap", "image_data", "buffer"}:
                 continue
             if "Pixmap" in str(type(v)):
@@ -607,11 +618,12 @@ def _render_centering_overlay(image_path: Optional[Path], centering: Dict[str, A
         def _to_pts(poly):
             return np.array([[int(x), int(y)] for x, y in poly], dtype=np.int32)
 
-        outer = centering.get("outer")
-        inner = centering.get("inner")
+        outer = centering.get("outer_border")
+        inner = centering.get("inner_border")
         rays = centering.get("rays") or []
 
-        if (outer is None or inner is None) and centering.get("_border_box_fallback"):
+        if outer is None and centering.get("_border_box_fallback"):
+            logger.warning("Rendering using geometric fallback - AI detection likely ignored!")
             bb = centering["_border_box_fallback"]
             ob = bb.get("outer_border")
             ib = bb.get("inner_border")

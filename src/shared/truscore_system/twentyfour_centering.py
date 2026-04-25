@@ -173,6 +173,39 @@ def sample_points_on_side(poly: Polygon, side: Tuple[int, int], count: int) -> L
         pts.append(lerp(a, b, t))
     return pts
 
+def resample_polygon_perimeter(poly: Polygon, n: int) -> Polygon:
+    """Return n points evenly spaced along the polygon perimeter (closed)."""
+    if len(poly) < 2:
+        return poly
+
+    pts = [(float(x), float(y)) for x, y in poly]
+    if pts[0] != pts[-1]:
+        pts = pts + [pts[0]]
+
+    seg_lens = []
+    cum = [0.0]
+    for i in range(len(pts) - 1):
+        L = distance(pts[i], pts[i + 1])
+        seg_lens.append(L)
+        cum.append(cum[-1] + L)
+
+    perim = cum[-1]
+    if perim <= 1e-9:
+        return [pts[0]] * n
+
+    targets = [perim * k / n for k in range(n)]
+    out: Polygon = []
+
+    j = 0
+    for t in targets:
+        while j < len(seg_lens) - 1 and cum[j + 1] < t:
+            j += 1
+        a, b = pts[j], pts[j + 1]
+        L = seg_lens[j] if seg_lens[j] > 1e-12 else 1.0
+        u = (t - cum[j]) / L
+        out.append(lerp(a, b, u))
+
+    return out
 
 def inward_normal(a: Point, b: Point, cw: bool = True) -> Point:
     # Edge vector a->b
@@ -248,8 +281,12 @@ class CenteringAnalyzer:
         self.image_path = image_path
         self.force_cw = force_clockwise  # Set this BEFORE calling _normalize_border
         self.default_dpi = default_dpi
-        self.outer = self._normalize_border(outer_border)
-        self.inner = self._normalize_border(graphic_border)
+        self.outer = resample_polygon_perimeter(
+            self._normalize_border(outer_border), 48
+        )
+        self.inner = resample_polygon_perimeter(
+            self._normalize_border(graphic_border), 48
+        )
 
         self.image = QImage(self.image_path)
         if self.image.isNull():

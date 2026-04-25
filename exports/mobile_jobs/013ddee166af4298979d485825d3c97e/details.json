@@ -1,0 +1,462 @@
+{
+  "front": {
+    "scores": {
+      "final_grade": 5.0,
+      "corners": 701.9500064849854,
+      "centering": 9.099999999999966,
+      "surface": 800.3599978983402,
+      "edges": 880.0,
+      "total": 2391.4100043833255
+    },
+    "centering_analysis": {
+      "measurements_mm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.529,
+        0.529,
+        0.529,
+        0.529,
+        0.529,
+        0.036,
+        0.03,
+        0.025,
+        0.019,
+        0.014,
+        0.008,
+        0.003,
+        2.081,
+        2.087,
+        2.092,
+        2.098,
+        2.103,
+        2.109,
+        2.114
+      ],
+      "groups": {
+        "top": {
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "avg": 0.0
+        },
+        "bottom": {
+          "values": [
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529
+          ],
+          "avg": 0.529
+        },
+        "left": {
+          "values": [
+            0.036,
+            0.03,
+            0.025,
+            0.019,
+            0.014,
+            0.008,
+            0.003
+          ],
+          "avg": 0.019
+        },
+        "right": {
+          "values": [
+            2.081,
+            2.087,
+            2.092,
+            2.098,
+            2.103,
+            2.109,
+            2.114
+          ],
+          "avg": 2.098
+        }
+      },
+      "ratios": {
+        "top_bottom": [
+          0.0,
+          100.0
+        ],
+        "left_right": [
+          0.91,
+          99.09
+        ]
+      },
+      "verdict": "Card is shifted down and right with ratios Top/Bottom = 0.00/100.00, Left/Right = 0.91/99.09.",
+      "overall_centering_score": 0.9099999999999966,
+      "analysis_type": "24_point_professional",
+      "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.529, 0.529, 0.529, 0.529, 0.529]  \u2192 Avg = 0.529 mm\nLeft (11\u201317): [0.036, 0.03, 0.025, 0.019, 0.014, 0.008, 0.003]  \u2192 Avg = 0.019 mm\nRight (18\u201324): [2.081, 2.087, 2.092, 2.098, 2.103, 2.109, 2.114]  \u2192 Avg = 2.098 mm\n\nTop/Bottom Centering: 0.00% / 100.00%\nLeft/Right Centering: 0.91% / 99.09%\n\nCard is shifted down and right with ratios Top/Bottom = 0.00/100.00, Left/Right = 0.91/99.09.",
+      "visualization_data": {
+        "pixmap_available": true,
+        "measurements_count": 24
+      }
+    },
+    "centering": {
+      "measurements_mm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.529,
+        0.529,
+        0.529,
+        0.529,
+        0.529,
+        0.036,
+        0.03,
+        0.025,
+        0.019,
+        0.014,
+        0.008,
+        0.003,
+        2.081,
+        2.087,
+        2.092,
+        2.098,
+        2.103,
+        2.109,
+        2.114
+      ],
+      "groups": {
+        "top": {
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "avg": 0.0
+        },
+        "bottom": {
+          "values": [
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529
+          ],
+          "avg": 0.529
+        },
+        "left": {
+          "values": [
+            0.036,
+            0.03,
+            0.025,
+            0.019,
+            0.014,
+            0.008,
+            0.003
+          ],
+          "avg": 0.019
+        },
+        "right": {
+          "values": [
+            2.081,
+            2.087,
+            2.092,
+            2.098,
+            2.103,
+            2.109,
+            2.114
+          ],
+          "avg": 2.098
+        }
+      },
+      "ratios": {
+        "top_bottom": [
+          0.0,
+          100.0
+        ],
+        "left_right": [
+          0.91,
+          99.09
+        ]
+      },
+      "verdict": "Card is shifted down and right with ratios Top/Bottom = 0.00/100.00, Left/Right = 0.91/99.09.",
+      "overall_centering_score": 0.9099999999999966,
+      "analysis_type": "24_point_professional",
+      "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.529, 0.529, 0.529, 0.529, 0.529]  \u2192 Avg = 0.529 mm\nLeft (11\u201317): [0.036, 0.03, 0.025, 0.019, 0.014, 0.008, 0.003]  \u2192 Avg = 0.019 mm\nRight (18\u201324): [2.081, 2.087, 2.092, 2.098, 2.103, 2.109, 2.114]  \u2192 Avg = 2.098 mm\n\nTop/Bottom Centering: 0.00% / 100.00%\nLeft/Right Centering: 0.91% / 99.09%\n\nCard is shifted down and right with ratios Top/Bottom = 0.00/100.00, Left/Right = 0.91/99.09.",
+      "visualization_data": {
+        "pixmap_available": true,
+        "measurements_count": 24
+      }
+    },
+    "corner_analysis": {
+      "scores": {
+        "tl_corner": 94.91226196289062,
+        "tr_corner": 94.96431732177734,
+        "bl_corner": 55.09393310546875,
+        "br_corner": 35.80949020385742
+      }
+    },
+    "corners": {
+      "scores": {
+        "tl_corner": 94.91226196289062,
+        "tr_corner": 94.96431732177734,
+        "bl_corner": 55.09393310546875,
+        "br_corner": 35.80949020385742
+      }
+    },
+    "photometric_analysis": {
+      "surface_integrity": 80.03599978983402,
+      "defect_count": 2728,
+      "surface_roughness": 0.47322750091552734,
+      "surface_quality": null
+    },
+    "surface_analysis": {
+      "surface_integrity": 80.03599978983402,
+      "defect_count": 2728,
+      "surface_roughness": 0.47322750091552734,
+      "surface_quality": null
+    },
+    "insights": {
+      "overall_grade_estimate": "Grade 5.0",
+      "grade_confidence": 59.78525010958313,
+      "should_grade": false,
+      "estimated_value_impact": "Limited impact",
+      "confidence_explanation": "Master Pipeline Score: 2391.4/4000 points"
+    },
+    "smart_defects": []
+  },
+  "back": {
+    "scores": {
+      "final_grade": 8.0,
+      "corners": 927.2247695922852,
+      "centering": 800.0,
+      "surface": 777.5333374738693,
+      "edges": 880.0,
+      "total": 3384.7581070661545
+    },
+    "centering_analysis": {
+      "measurements_mm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.852,
+        1.852,
+        1.852,
+        1.852,
+        1.852,
+        1.852,
+        1.852,
+        0.794,
+        0.794,
+        0.794,
+        0.794,
+        0.794,
+        0.794,
+        0.794
+      ],
+      "groups": {
+        "top": {
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "avg": 0.0
+        },
+        "bottom": {
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "avg": 0.0
+        },
+        "left": {
+          "values": [
+            1.852,
+            1.852,
+            1.852,
+            1.852,
+            1.852,
+            1.852,
+            1.852
+          ],
+          "avg": 1.852
+        },
+        "right": {
+          "values": [
+            0.794,
+            0.794,
+            0.794,
+            0.794,
+            0.794,
+            0.794,
+            0.794
+          ],
+          "avg": 0.794
+        }
+      },
+      "ratios": {
+        "top_bottom": [
+          50.0,
+          50.0
+        ],
+        "left_right": [
+          70.0,
+          30.0
+        ]
+      },
+      "verdict": "Card is shifted centered and left with ratios Top/Bottom = 50.00/50.00, Left/Right = 70.00/30.00.",
+      "overall_centering_score": 80.0,
+      "analysis_type": "24_point_professional",
+      "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nLeft (11\u201317): [1.852, 1.852, 1.852, 1.852, 1.852, 1.852, 1.852]  \u2192 Avg = 1.852 mm\nRight (18\u201324): [0.794, 0.794, 0.794, 0.794, 0.794, 0.794, 0.794]  \u2192 Avg = 0.794 mm\n\nTop/Bottom Centering: 50.00% / 50.00%\nLeft/Right Centering: 70.00% / 30.00%\n\nCard is shifted centered and left with ratios Top/Bottom = 50.00/50.00, Left/Right = 70.00/30.00.",
+      "visualization_data": {
+        "pixmap_available": true,
+        "measurements_count": 24
+      }
+    },
+    "centering": {
+      "measurements_mm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.852,
+        1.852,
+        1.852,
+        1.852,
+        1.852,
+        1.852,
+        1.852,
+        0.794,
+        0.794,
+        0.794,
+        0.794,
+        0.794,
+        0.794,
+        0.794
+      ],
+      "groups": {
+        "top": {
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "avg": 0.0
+        },
+        "bottom": {
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "avg": 0.0
+        },
+        "left": {
+          "values": [
+            1.852,
+            1.852,
+            1.852,
+            1.852,
+            1.852,
+            1.852,
+            1.852
+          ],
+          "avg": 1.852
+        },
+        "right": {
+          "values": [
+            0.794,
+            0.794,
+            0.794,
+            0.794,
+            0.794,
+            0.794,
+            0.794
+          ],
+          "avg": 0.794
+        }
+      },
+      "ratios": {
+        "top_bottom": [
+          50.0,
+          50.0
+        ],
+        "left_right": [
+          70.0,
+          30.0
+        ]
+      },
+      "verdict": "Card is shifted centered and left with ratios Top/Bottom = 50.00/50.00, Left/Right = 70.00/30.00.",
+      "overall_centering_score": 80.0,
+      "analysis_type": "24_point_professional",
+      "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nLeft (11\u201317): [1.852, 1.852, 1.852, 1.852, 1.852, 1.852, 1.852]  \u2192 Avg = 1.852 mm\nRight (18\u201324): [0.794, 0.794, 0.794, 0.794, 0.794, 0.794, 0.794]  \u2192 Avg = 0.794 mm\n\nTop/Bottom Centering: 50.00% / 50.00%\nLeft/Right Centering: 70.00% / 30.00%\n\nCard is shifted centered and left with ratios Top/Bottom = 50.00/50.00, Left/Right = 70.00/30.00.",
+      "visualization_data": {
+        "pixmap_available": true,
+        "measurements_count": 24
+      }
+    },
+    "corner_analysis": {
+      "scores": {
+        "tl_corner": 94.68234252929688,
+        "tr_corner": 94.23613739013672,
+        "bl_corner": 94.97544860839844,
+        "br_corner": 86.99597930908203
+      }
+    },
+    "corners": {
+      "scores": {
+        "tl_corner": 94.68234252929688,
+        "tr_corner": 94.23613739013672,
+        "bl_corner": 94.97544860839844,
+        "br_corner": 86.99597930908203
+      }
+    },
+    "photometric_analysis": {
+      "surface_integrity": 77.75333374738693,
+      "defect_count": 4024,
+      "surface_roughness": 0.47401073575019836,
+      "surface_quality": null
+    },
+    "surface_analysis": {
+      "surface_integrity": 77.75333374738693,
+      "defect_count": 4024,
+      "surface_roughness": 0.47401073575019836,
+      "surface_quality": null
+    },
+    "insights": {
+      "overall_grade_estimate": "Grade 8.0",
+      "grade_confidence": 84.61895267665386,
+      "should_grade": true,
+      "estimated_value_impact": "Significant positive impact",
+      "confidence_explanation": "Master Pipeline Score: 3384.8/4000 points"
+    },
+    "smart_defects": []
+  }
+}

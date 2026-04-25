@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "brainsync": {
+      "command": "node",
+      "args": [
+        "/home/dewster/.cursor/extensions/dawoodahmad.brainsync-3.0.11-universal/dist/mcp-server.js",
+        "--db",
+        "/home/dewster/.brainsync/truscoregradingsystem/state.dat"
+      ],
+      "type": "stdio",
+      "env": {
+        "BRAINSYNC_ENV_FILE": "/home/dewster/.brainsync/truscoregradingsystem/mcp-secret-env.json"
+      }
+    }
+  }
+}

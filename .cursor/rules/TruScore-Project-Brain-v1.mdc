@@ -1,0 +1,47 @@
+---
+alwaysApply: true
+---
+
+# TruScoreGradingSystem --- Project Brain (v1)
+
+## 1. SYSTEM PURPOSE
+
+Automated sports card pre-grading and decision analysis.
+
+Outputs: - Estimated grade (with confidence distribution) - Market
+analysis by grade - Recommendation: submit or not
+
+## 2. CORE PIPELINE
+
+image → identify_card → grade_card → analyze_market → make_decision
+
+## 3. MODULES
+
+Ingestion: image preprocessing only\
+Identification: CardSight API\
+Grading: defects, corners, edges, centering → grade distribution\
+Market: pricing + population\
+Decision: expected value + recommendation\
+App: UI only
+
+## 4. RULES
+
+-   No duplicate functions\
+-   No placeholders\
+-   Strict module boundaries\
+-   Always follow pipeline
+
+## 5. AI USAGE RULES
+
+-   Modify only relevant files\
+-   Reuse existing logic\
+-   Do not duplicate\
+-   Follow architecture strictly
+
+## 6. PRIORITY
+
+Refactor before adding features.
+
+## 7. NOTE
+
+This document acts as system memory for AI tools.

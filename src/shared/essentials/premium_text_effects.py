@@ -168,6 +168,12 @@ class GradientTextLabel(QLabel):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setMinimumHeight(font_size + 20)
     
+    def setText(self, text):
+        """Update display text and trigger repaint"""
+        self.display_text = text
+        super().setText(text)
+        self.update()
+
     def paintEvent(self, event):
         """Custom paint with gradient"""
         painter = QPainter(self)

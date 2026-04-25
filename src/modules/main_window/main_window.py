@@ -272,8 +272,8 @@ class TruScoreMainWindow(QMainWindow):
     def setup_window(self):
         """Configure main window properties - PyDracula style"""
         self.setWindowTitle("TruScore Grading Platform")
-        self.resize(2000, 1200)  # Better default for 2560x1440 screens
-        self.setMinimumSize(1600, 900)  # Increased minimum for text
+        self.resize(2000, 1300)  # Better default for 2560x1440 screens
+        self.setMinimumSize(1600, 1000)  # Increased minimum for text
         
         # Modern look with Wayland compatibility
         if TruScoreSettings.ENABLE_CUSTOM_TITLE_BAR:

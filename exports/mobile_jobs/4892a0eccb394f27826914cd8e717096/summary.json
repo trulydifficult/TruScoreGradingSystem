@@ -1,0 +1,1030 @@
+{
+  "status": "completed",
+  "submitted_at": 1770197742.1940823,
+  "front_path": "/home/dewster/Vanguard/exports/mobile_jobs/4892a0eccb394f27826914cd8e717096/front.jpeg",
+  "back_path": "/home/dewster/Vanguard/exports/mobile_jobs/4892a0eccb394f27826914cd8e717096/back.jpeg",
+  "metadata": {
+    "source": "flutter-mobile",
+    "front_from_gallery": false,
+    "back_from_gallery": false
+  },
+  "started_at": 1770197742.1982684,
+  "completed_at": 1770197751.8586655,
+  "result": {
+    "front": {
+      "success": true,
+      "grade": 6.0,
+      "grade_confidence": null,
+      "surface_integrity": 90.81933312118053,
+      "defects_count": 3300,
+      "centering_score": 9.090000000000003,
+      "corner_scores": {
+        "tl_corner": 94.96882629394531,
+        "tr_corner": 86.44806671142578,
+        "bl_corner": 82.59326171875,
+        "br_corner": 75.63704681396484
+      },
+      "processing_time": 2.8945279121398926,
+      "timestamp": "2026-02-04T03:35:47.701953"
+    },
+    "back": {
+      "success": true,
+      "grade": 5.5,
+      "grade_confidence": null,
+      "surface_integrity": 79.62033376097679,
+      "defects_count": 2341,
+      "centering_score": 1.8900000000000006,
+      "corner_scores": {
+        "tl_corner": 94.86608123779297,
+        "tr_corner": 91.48249816894531,
+        "bl_corner": 87.12428283691406,
+        "br_corner": 86.5925521850586
+      },
+      "processing_time": 3.428414821624756,
+      "timestamp": "2026-02-04T03:35:51.130423"
+    },
+    "metadata": {
+      "source": "flutter-mobile",
+      "front_from_gallery": false,
+      "back_from_gallery": false
+    },
+    "details": {
+      "front": {
+        "scores": {
+          "final_grade": 6.0,
+          "corners": 849.1180038452148,
+          "centering": 90.90000000000003,
+          "surface": 908.1933312118053,
+          "edges": 880.0,
+          "total": 2728.2113350570203
+        },
+        "centering_analysis": {
+          "measurements_mm": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.265,
+            0.265,
+            0.265,
+            0.265,
+            0.265,
+            5.291,
+            5.291,
+            5.291,
+            5.291,
+            5.291,
+            5.291,
+            5.291,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529
+          ],
+          "groups": {
+            "top": {
+              "values": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "avg": 0.0
+            },
+            "bottom": {
+              "values": [
+                0.265,
+                0.265,
+                0.265,
+                0.265,
+                0.265
+              ],
+              "avg": 0.265
+            },
+            "left": {
+              "values": [
+                5.291,
+                5.291,
+                5.291,
+                5.291,
+                5.291,
+                5.291,
+                5.291
+              ],
+              "avg": 5.291
+            },
+            "right": {
+              "values": [
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529
+              ],
+              "avg": 0.529
+            }
+          },
+          "ratios": {
+            "top_bottom": [
+              0.0,
+              100.0
+            ],
+            "left_right": [
+              90.91,
+              9.09
+            ]
+          },
+          "verdict": "Card is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 90.91/9.09.",
+          "overall_centering_score": 9.090000000000003,
+          "analysis_type": "24_point_professional",
+          "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.265, 0.265, 0.265, 0.265, 0.265]  \u2192 Avg = 0.265 mm\nLeft (11\u201317): [5.291, 5.291, 5.291, 5.291, 5.291, 5.291, 5.291]  \u2192 Avg = 5.291 mm\nRight (18\u201324): [0.529, 0.529, 0.529, 0.529, 0.529, 0.529, 0.529]  \u2192 Avg = 0.529 mm\n\nTop/Bottom Centering: 0.00% / 100.00%\nLeft/Right Centering: 90.91% / 9.09%\n\nCard is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 90.91/9.09.",
+          "visualization_data": {
+            "pixmap_available": true,
+            "measurements_count": 24
+          }
+        },
+        "centering": {
+          "measurements_mm": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.265,
+            0.265,
+            0.265,
+            0.265,
+            0.265,
+            5.291,
+            5.291,
+            5.291,
+            5.291,
+            5.291,
+            5.291,
+            5.291,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529
+          ],
+          "groups": {
+            "top": {
+              "values": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "avg": 0.0
+            },
+            "bottom": {
+              "values": [
+                0.265,
+                0.265,
+                0.265,
+                0.265,
+                0.265
+              ],
+              "avg": 0.265
+            },
+            "left": {
+              "values": [
+                5.291,
+                5.291,
+                5.291,
+                5.291,
+                5.291,
+                5.291,
+                5.291
+              ],
+              "avg": 5.291
+            },
+            "right": {
+              "values": [
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529
+              ],
+              "avg": 0.529
+            }
+          },
+          "ratios": {
+            "top_bottom": [
+              0.0,
+              100.0
+            ],
+            "left_right": [
+              90.91,
+              9.09
+            ]
+          },
+          "verdict": "Card is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 90.91/9.09.",
+          "overall_centering_score": 9.090000000000003,
+          "analysis_type": "24_point_professional",
+          "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.265, 0.265, 0.265, 0.265, 0.265]  \u2192 Avg = 0.265 mm\nLeft (11\u201317): [5.291, 5.291, 5.291, 5.291, 5.291, 5.291, 5.291]  \u2192 Avg = 5.291 mm\nRight (18\u201324): [0.529, 0.529, 0.529, 0.529, 0.529, 0.529, 0.529]  \u2192 Avg = 0.529 mm\n\nTop/Bottom Centering: 0.00% / 100.00%\nLeft/Right Centering: 90.91% / 9.09%\n\nCard is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 90.91/9.09.",
+          "visualization_data": {
+            "pixmap_available": true,
+            "measurements_count": 24
+          }
+        },
+        "corner_analysis": {
+          "scores": {
+            "tl_corner": 94.96882629394531,
+            "tr_corner": 86.44806671142578,
+            "bl_corner": 82.59326171875,
+            "br_corner": 75.63704681396484
+          }
+        },
+        "corners": {
+          "scores": {
+            "tl_corner": 94.96882629394531,
+            "tr_corner": 86.44806671142578,
+            "bl_corner": 82.59326171875,
+            "br_corner": 75.63704681396484
+          }
+        },
+        "photometric_analysis": {
+          "surface_integrity": 90.81933312118053,
+          "defect_count": 3300,
+          "surface_roughness": 0.4742427468299866,
+          "surface_quality": null
+        },
+        "surface_analysis": {
+          "surface_integrity": 90.81933312118053,
+          "defect_count": 3300,
+          "surface_roughness": 0.4742427468299866,
+          "surface_quality": null
+        },
+        "insights": {
+          "overall_grade_estimate": "Grade 6.0",
+          "grade_confidence": 68.20528337642551,
+          "should_grade": true,
+          "estimated_value_impact": "Moderate impact",
+          "confidence_explanation": "Master Pipeline Score: 2728.2/4000 points"
+        },
+        "smart_defects": []
+      },
+      "back": {
+        "scores": {
+          "final_grade": 5.5,
+          "corners": 900.1635360717773,
+          "centering": 18.900000000000006,
+          "surface": 796.2033376097679,
+          "edges": 880.0,
+          "total": 2595.2668736815453
+        },
+        "centering_analysis": {
+          "measurements_mm": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.794,
+            27.513,
+            27.513,
+            27.513,
+            27.513,
+            27.513,
+            27.513,
+            27.513,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529
+          ],
+          "groups": {
+            "top": {
+              "values": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "avg": 0.0
+            },
+            "bottom": {
+              "values": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.794
+              ],
+              "avg": 0.159
+            },
+            "left": {
+              "values": [
+                27.513,
+                27.513,
+                27.513,
+                27.513,
+                27.513,
+                27.513,
+                27.513
+              ],
+              "avg": 27.513
+            },
+            "right": {
+              "values": [
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529
+              ],
+              "avg": 0.529
+            }
+          },
+          "ratios": {
+            "top_bottom": [
+              0.0,
+              100.0
+            ],
+            "left_right": [
+              98.11,
+              1.89
+            ]
+          },
+          "verdict": "Card is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 98.11/1.89.",
+          "overall_centering_score": 1.8900000000000006,
+          "analysis_type": "24_point_professional",
+          "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.0, 0.0, 0.0, 0.0, 0.794]  \u2192 Avg = 0.159 mm\nLeft (11\u201317): [27.513, 27.513, 27.513, 27.513, 27.513, 27.513, 27.513]  \u2192 Avg = 27.513 mm\nRight (18\u201324): [0.529, 0.529, 0.529, 0.529, 0.529, 0.529, 0.529]  \u2192 Avg = 0.529 mm\n\nTop/Bottom Centering: 0.00% / 100.00%\nLeft/Right Centering: 98.11% / 1.89%\n\nCard is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 98.11/1.89.",
+          "visualization_data": {
+            "pixmap_available": true,
+            "measurements_count": 24
+          }
+        },
+        "centering": {
+          "measurements_mm": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.794,
+            27.513,
+            27.513,
+            27.513,
+            27.513,
+            27.513,
+            27.513,
+            27.513,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529,
+            0.529
+          ],
+          "groups": {
+            "top": {
+              "values": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "avg": 0.0
+            },
+            "bottom": {
+              "values": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.794
+              ],
+              "avg": 0.159
+            },
+            "left": {
+              "values": [
+                27.513,
+                27.513,
+                27.513,
+                27.513,
+                27.513,
+                27.513,
+                27.513
+              ],
+              "avg": 27.513
+            },
+            "right": {
+              "values": [
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529,
+                0.529
+              ],
+              "avg": 0.529
+            }
+          },
+          "ratios": {
+            "top_bottom": [
+              0.0,
+              100.0
+            ],
+            "left_right": [
+              98.11,
+              1.89
+            ]
+          },
+          "verdict": "Card is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 98.11/1.89.",
+          "overall_centering_score": 1.8900000000000006,
+          "analysis_type": "24_point_professional",
+          "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.0, 0.0, 0.0, 0.0, 0.794]  \u2192 Avg = 0.159 mm\nLeft (11\u201317): [27.513, 27.513, 27.513, 27.513, 27.513, 27.513, 27.513]  \u2192 Avg = 27.513 mm\nRight (18\u201324): [0.529, 0.529, 0.529, 0.529, 0.529, 0.529, 0.529]  \u2192 Avg = 0.529 mm\n\nTop/Bottom Centering: 0.00% / 100.00%\nLeft/Right Centering: 98.11% / 1.89%\n\nCard is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 98.11/1.89.",
+          "visualization_data": {
+            "pixmap_available": true,
+            "measurements_count": 24
+          }
+        },
+        "corner_analysis": {
+          "scores": {
+            "tl_corner": 94.86608123779297,
+            "tr_corner": 91.48249816894531,
+            "bl_corner": 87.12428283691406,
+            "br_corner": 86.5925521850586
+          }
+        },
+        "corners": {
+          "scores": {
+            "tl_corner": 94.86608123779297,
+            "tr_corner": 91.48249816894531,
+            "bl_corner": 87.12428283691406,
+            "br_corner": 86.5925521850586
+          }
+        },
+        "photometric_analysis": {
+          "surface_integrity": 79.62033376097679,
+          "defect_count": 2341,
+          "surface_roughness": 0.4733245074748993,
+          "surface_quality": null
+        },
+        "surface_analysis": {
+          "surface_integrity": 79.62033376097679,
+          "defect_count": 2341,
+          "surface_roughness": 0.4733245074748993,
+          "surface_quality": null
+        },
+        "insights": {
+          "overall_grade_estimate": "Grade 5.5",
+          "grade_confidence": 64.88167184203863,
+          "should_grade": false,
+          "estimated_value_impact": "Limited impact",
+          "confidence_explanation": "Master Pipeline Score: 2595.3/4000 points"
+        },
+        "smart_defects": []
+      }
+    },
+    "visualizations": {
+      "front": {
+        "assets": [
+          {
+            "name": "surface_normals",
+            "label": "Surface Normals (3D)",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_normals.png"
+          },
+          {
+            "name": "depth_map",
+            "label": "Depth Map / Texture",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_depth.png"
+          },
+          {
+            "name": "albedo_map",
+            "label": "Surface Albedo",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_albedo.png"
+          },
+          {
+            "name": "defect_map",
+            "label": "Defect Heatmap",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_defect_map.png"
+          },
+          {
+            "name": "confidence_map",
+            "label": "Confidence Map",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_confidence_map.png"
+          },
+          {
+            "name": "centering_overlay",
+            "label": "24-Point Centering",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_centering_overlay.png"
+          },
+          {
+            "name": "tl_corner",
+            "label": "Top Left Corner",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_tl_corner.png"
+          },
+          {
+            "name": "tr_corner",
+            "label": "Top Right Corner",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_tr_corner.png"
+          },
+          {
+            "name": "bl_corner",
+            "label": "Bottom Left Corner",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_bl_corner.png"
+          },
+          {
+            "name": "br_corner",
+            "label": "Bottom Right Corner",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_br_corner.png"
+          },
+          {
+            "name": "image_path",
+            "label": "Image Path",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_front.jpeg"
+          },
+          {
+            "name": "enhanced_visualizations",
+            "label": "Enhanced Visualizations",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/front_enhanced_visualizations.png"
+          }
+        ],
+        "meta": {
+          "centering": {
+            "measurements_mm": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.265,
+              0.265,
+              0.265,
+              0.265,
+              0.265,
+              5.291,
+              5.291,
+              5.291,
+              5.291,
+              5.291,
+              5.291,
+              5.291,
+              0.529,
+              0.529,
+              0.529,
+              0.529,
+              0.529,
+              0.529,
+              0.529
+            ],
+            "groups": {
+              "top": {
+                "values": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "avg": 0.0
+              },
+              "bottom": {
+                "values": [
+                  0.265,
+                  0.265,
+                  0.265,
+                  0.265,
+                  0.265
+                ],
+                "avg": 0.265
+              },
+              "left": {
+                "values": [
+                  5.291,
+                  5.291,
+                  5.291,
+                  5.291,
+                  5.291,
+                  5.291,
+                  5.291
+                ],
+                "avg": 5.291
+              },
+              "right": {
+                "values": [
+                  0.529,
+                  0.529,
+                  0.529,
+                  0.529,
+                  0.529,
+                  0.529,
+                  0.529
+                ],
+                "avg": 0.529
+              }
+            },
+            "ratios": {
+              "top_bottom": [
+                0.0,
+                100.0
+              ],
+              "left_right": [
+                90.91,
+                9.09
+              ]
+            },
+            "verdict": "Card is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 90.91/9.09.",
+            "overall_centering_score": 9.090000000000003,
+            "analysis_type": "24_point_professional",
+            "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.265, 0.265, 0.265, 0.265, 0.265]  \u2192 Avg = 0.265 mm\nLeft (11\u201317): [5.291, 5.291, 5.291, 5.291, 5.291, 5.291, 5.291]  \u2192 Avg = 5.291 mm\nRight (18\u201324): [0.529, 0.529, 0.529, 0.529, 0.529, 0.529, 0.529]  \u2192 Avg = 0.529 mm\n\nTop/Bottom Centering: 0.00% / 100.00%\nLeft/Right Centering: 90.91% / 9.09%\n\nCard is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 90.91/9.09."
+          },
+          "corner_analysis": {
+            "scores": {
+              "tl_corner": 94.96882629394531,
+              "tr_corner": 86.44806671142578,
+              "bl_corner": 82.59326171875,
+              "br_corner": 75.63704681396484
+            }
+          },
+          "border_analysis": {
+            "outer_border": [
+              0,
+              0,
+              1499,
+              1994
+            ],
+            "inner_border": [
+              20,
+              0,
+              1497,
+              1993
+            ],
+            "border_types": {},
+            "confidence_scores": {
+              "outer": 0.9634020924568176,
+              "inner": 0.954198956489563
+            },
+            "detected_defects": [
+              {
+                "type": "corner_damage",
+                "location": "top_left",
+                "severity": 0.7970100012345679,
+                "position": [
+                  0,
+                  0
+                ]
+              },
+              {
+                "type": "corner_damage",
+                "location": "top_right",
+                "severity": 0.5697532790123456,
+                "position": [
+                  1469,
+                  0
+                ]
+              },
+              {
+                "type": "corner_damage",
+                "location": "bottom_left",
+                "severity": 0.9006643716049383,
+                "position": [
+                  0,
+                  1964
+                ]
+              }
+            ],
+            "wear_assessment": {
+              "corner_wear": 0.75,
+              "edge_wear": 0.0,
+              "surface_wear": 0.0,
+              "print_defects": 0.0
+            },
+            "surface_validation": {
+              "surface_confidence": 0.8,
+              "depth_validation": 0.9,
+              "3d_border_quality": 0.85
+            },
+            "depth_analysis": null,
+            "centering_score": 85.0,
+            "corner_score": 55.98858522222221,
+            "edge_score": 88.0,
+            "surface_score": 92.0,
+            "processing_time": 0.23293042182922363,
+            "model_version": "TruScore v1.0 (AI-Priority)",
+            "detection_method": "AI-YOLO",
+            "confidence_explanation": " DETECTION CONFIDENCE ANALYSIS:\n\n Outer border: 96.3% (Excellent detection)\n Inner border: 95.4% (Excellent detection)\n\n\u26a0\ufe0f 3 potential defects detected - review recommended"
+          },
+          "smart_defects": [],
+          "insights": {
+            "overall_grade_estimate": "Grade 6.0",
+            "grade_confidence": 68.20528337642551,
+            "should_grade": true,
+            "estimated_value_impact": "Moderate impact",
+            "confidence_explanation": "Master Pipeline Score: 2728.2/4000 points"
+          },
+          "success": true,
+          "processing_time": 2.894470691680908,
+          "timestamp": "2026-02-04T03:35:47.701946",
+          "grading_analysis": {
+            "total_defects": 0,
+            "defect_types": {},
+            "grading_impact": {},
+            "corner_condition": 90,
+            "edge_condition": 90,
+            "surface_condition": 90,
+            "overall_condition": 90.0,
+            "estimated_grade": "9-10 (Mint)",
+            "grade_confidence": 70
+          }
+        }
+      },
+      "back": {
+        "assets": [
+          {
+            "name": "surface_normals",
+            "label": "Surface Normals (3D)",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_normals.png"
+          },
+          {
+            "name": "depth_map",
+            "label": "Depth Map / Texture",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_depth.png"
+          },
+          {
+            "name": "albedo_map",
+            "label": "Surface Albedo",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_albedo.png"
+          },
+          {
+            "name": "defect_map",
+            "label": "Defect Heatmap",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_defect_map.png"
+          },
+          {
+            "name": "confidence_map",
+            "label": "Confidence Map",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_confidence_map.png"
+          },
+          {
+            "name": "centering_overlay",
+            "label": "24-Point Centering",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_centering_overlay.png"
+          },
+          {
+            "name": "tl_corner",
+            "label": "Top Left Corner",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_tl_corner.png"
+          },
+          {
+            "name": "tr_corner",
+            "label": "Top Right Corner",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_tr_corner.png"
+          },
+          {
+            "name": "bl_corner",
+            "label": "Bottom Left Corner",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_bl_corner.png"
+          },
+          {
+            "name": "br_corner",
+            "label": "Bottom Right Corner",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_br_corner.png"
+          },
+          {
+            "name": "image_path",
+            "label": "Image Path",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_back.jpeg"
+          },
+          {
+            "name": "enhanced_visualizations",
+            "label": "Enhanced Visualizations",
+            "url": "/api/v1/cards/4892a0eccb394f27826914cd8e717096/viz/back_enhanced_visualizations.png"
+          }
+        ],
+        "meta": {
+          "centering": {
+            "measurements_mm": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.794,
+              27.513,
+              27.513,
+              27.513,
+              27.513,
+              27.513,
+              27.513,
+              27.513,
+              0.529,
+              0.529,
+              0.529,
+              0.529,
+              0.529,
+              0.529,
+              0.529
+            ],
+            "groups": {
+              "top": {
+                "values": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "avg": 0.0
+              },
+              "bottom": {
+                "values": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.794
+                ],
+                "avg": 0.159
+              },
+              "left": {
+                "values": [
+                  27.513,
+                  27.513,
+                  27.513,
+                  27.513,
+                  27.513,
+                  27.513,
+                  27.513
+                ],
+                "avg": 27.513
+              },
+              "right": {
+                "values": [
+                  0.529,
+                  0.529,
+                  0.529,
+                  0.529,
+                  0.529,
+                  0.529,
+                  0.529
+                ],
+                "avg": 0.529
+              }
+            },
+            "ratios": {
+              "top_bottom": [
+                0.0,
+                100.0
+              ],
+              "left_right": [
+                98.11,
+                1.89
+              ]
+            },
+            "verdict": "Card is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 98.11/1.89.",
+            "overall_centering_score": 1.8900000000000006,
+            "analysis_type": "24_point_professional",
+            "formatted_text": "24-Point Measurements (mm):\nTop (1\u20135):    [0.0, 0.0, 0.0, 0.0, 0.0]  \u2192 Avg = 0.0 mm\nBottom (6\u201310): [0.0, 0.0, 0.0, 0.0, 0.794]  \u2192 Avg = 0.159 mm\nLeft (11\u201317): [27.513, 27.513, 27.513, 27.513, 27.513, 27.513, 27.513]  \u2192 Avg = 27.513 mm\nRight (18\u201324): [0.529, 0.529, 0.529, 0.529, 0.529, 0.529, 0.529]  \u2192 Avg = 0.529 mm\n\nTop/Bottom Centering: 0.00% / 100.00%\nLeft/Right Centering: 98.11% / 1.89%\n\nCard is shifted down and left with ratios Top/Bottom = 0.00/100.00, Left/Right = 98.11/1.89."
+          },
+          "corner_analysis": {
+            "scores": {
+              "tl_corner": 94.86608123779297,
+              "tr_corner": 91.48249816894531,
+              "bl_corner": 87.12428283691406,
+              "br_corner": 86.5925521850586
+            }
+          },
+          "border_analysis": {
+            "outer_border": [
+              3,
+              0,
+              1499,
+              1996
+            ],
+            "inner_border": [
+              107,
+              0,
+              1497,
+              1993
+            ],
+            "border_types": {},
+            "confidence_scores": {
+              "outer": 0.9682033658027649,
+              "inner": 0.9562554955482483
+            },
+            "detected_defects": [
+              {
+                "type": "corner_damage",
+                "location": "top_left",
+                "severity": 0.8294051222222222,
+                "position": [
+                  0,
+                  0
+                ]
+              },
+              {
+                "type": "corner_damage",
+                "location": "top_right",
+                "severity": 0.7043667901234567,
+                "position": [
+                  1466,
+                  0
+                ]
+              },
+              {
+                "type": "corner_damage",
+                "location": "bottom_left",
+                "severity": 0.8886352160493827,
+                "position": [
+                  0,
+                  1966
+                ]
+              },
+              {
+                "type": "corner_damage",
+                "location": "bottom_right",
+                "severity": 0.6748216555555555,
+                "position": [
+                  1466,
+                  1966
+                ]
+              }
+            ],
+            "wear_assessment": {
+              "corner_wear": 1.0,
+              "edge_wear": 0.0,
+              "surface_wear": 0.0,
+              "print_defects": 0.0
+            },
+            "surface_validation": {
+              "surface_confidence": 0.8,
+              "depth_validation": 0.9,
+              "3d_border_quality": 0.85
+            },
+            "depth_analysis": null,
+            "centering_score": 85.0,
+            "corner_score": 43.54156824074075,
+            "edge_score": 88.0,
+            "surface_score": 92.0,
+            "processing_time": 0.15773797035217285,
+            "model_version": "TruScore v1.0 (AI-Priority)",
+            "detection_method": "AI-YOLO",
+            "confidence_explanation": " DETECTION CONFIDENCE ANALYSIS:\n\n Outer border: 96.8% (Excellent detection)\n Inner border: 95.6% (Excellent detection)\n\n\u26a0\ufe0f 4 potential defects detected - review recommended"
+          },
+          "smart_defects": [],
+          "insights": {
+            "overall_grade_estimate": "Grade 5.5",
+            "grade_confidence": 64.88167184203863,
+            "should_grade": false,
+            "estimated_value_impact": "Limited impact",
+            "confidence_explanation": "Master Pipeline Score: 2595.3/4000 points"
+          },
+          "success": true,
+          "processing_time": 3.4283607006073,
+          "timestamp": "2026-02-04T03:35:51.130416",
+          "grading_analysis": {
+            "total_defects": 0,
+            "defect_types": {},
+            "grading_impact": {},
+            "corner_condition": 90,
+            "edge_condition": 90,
+            "surface_condition": 90,
+            "overall_condition": 90.0,
+            "estimated_grade": "9-10 (Mint)",
+            "grade_confidence": 70
+          }
+        }
+      }
+    }
+  },
+  "job_id": "4892a0eccb394f27826914cd8e717096"
+}

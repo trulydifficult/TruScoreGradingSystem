@@ -57,12 +57,12 @@ class YOLOToMaskRCNNConverter:
         }
     
     def setup_categories(self, class_names: List[str] = None):
-        """Setup COCO categories from class names"""
+        """Setup COCO categories from class names (1-based IDs)"""
         if class_names:
             self.class_names = class_names
-            
+
         self.coco_data["categories"] = []
-        for i, class_name in enumerate(self.class_names):
+        for i, class_name in enumerate(self.class_names, start=1):
             self.coco_data["categories"].append({
                 "id": i,
                 "name": class_name,
@@ -181,52 +181,161 @@ class YOLOToMaskRCNNConverter:
     
     def parse_yolo_file(self, yolo_file_path: Path) -> List[Dict]:
         """
-        Parse YOLO format file (handles both standard and tracking formats)
-        
-        Args:
-            yolo_file_path: Path to YOLO .txt file
-            
-        Returns:
-            List of parsed annotations
+        Parse YOLO format file:
+        - bbox: class cx cy w h
+        - bbox+track: class track cx cy w h
+        - seg/poly: class x1 y1 x2 y2 ... (normalized, even count)
         """
         annotations = []
-        
+
         try:
             with open(yolo_file_path, 'r') as f:
-                for line_num, line in enumerate(f):
+                for line_num, line in enumerate(f, start=1):
                     line = line.strip()
                     if not line:
                         continue
-                    
+
                     parts = line.split()
-                    
-                    # Handle different YOLO formats
-                    if len(parts) >= 5:
-                        if len(parts) == 5:
-                            # Standard YOLO: class_id x_center y_center width height
-                            class_id, x_center, y_center, width, height = map(float, parts)
-                            track_id = None
-                        elif len(parts) == 6:
-                            # YOLO with tracking: class_id track_id x_center y_center width height
-                            class_id, track_id, x_center, y_center, width, height = map(float, parts)
-                        else:
-                            print(f"⚠️ Unsupported YOLO format in {yolo_file_path}, line {line_num + 1}")
+                    if len(parts) < 5:
+                        print(f"⚠️ Invalid YOLO line in {yolo_file_path}, line {line_num}: {line}")
+                        continue
+
+                    # Polygon/seg format: class + >=6 coords, even count
+                    if len(parts) > 6:
+                        class_id = int(float(parts[0]))
+                        coords = list(map(float, parts[1:]))
+
+                        if len(coords) < 6 or (len(coords) % 2) != 0:
+                            print(f"⚠️ Invalid polygon in {yolo_file_path}, line {line_num}: {line}")
                             continue
-                        
+
                         annotations.append({
-                            'class_id': int(class_id),
-                            'track_id': int(track_id) if track_id is not None else None,
-                            'bbox': [x_center, y_center, width, height],
-                            'line_num': line_num + 1
+                            'class_id': class_id,
+                            'track_id': None,
+                            'poly': coords,        # normalized polygon
+                            'bbox': None,
+                            'line_num': line_num
                         })
+                        continue
+
+                    # bbox formats (5 or 6 tokens)
+                    if len(parts) == 5:
+                        class_id, x_center, y_center, width, height = map(float, parts)
+                        track_id = None
+                    elif len(parts) == 6:
+                        class_id, track_id, x_center, y_center, width, height = map(float, parts)
                     else:
-                        print(f"⚠️ Invalid YOLO line in {yolo_file_path}, line {line_num + 1}: {line}")
-        
+                        print(f"⚠️ Unsupported YOLO format in {yolo_file_path}, line {line_num}: {line}")
+                        continue
+
+                    annotations.append({
+                        'class_id': int(class_id),
+                        'track_id': int(track_id) if track_id is not None else None,
+                        'bbox': [x_center, y_center, width, height],
+                        'poly': None,
+                        'line_num': line_num
+                    })
+
         except Exception as e:
             print(f"❌ Error parsing YOLO file {yolo_file_path}: {e}")
-        
+
         return annotations
-    
+
+    def _canonicalize_poly_px(self, poly_px: List[float]) -> List[float]:
+        """
+        Make polygon stable:
+        - force clockwise winding
+        - rotate so it starts at top-most (then left-most) vertex
+        """
+        pts = np.array(poly_px, dtype=np.float32).reshape(-1, 2)
+
+        # Remove duplicate last point if present
+        if len(pts) >= 2 and np.allclose(pts[0], pts[-1]):
+            pts = pts[:-1]
+
+        if len(pts) < 3:
+            return poly_px
+
+        # Force clockwise: cv2.contourArea sign depends on winding
+        # We'll just enforce clockwise by checking signed area via shoelace.
+        area2 = float(np.sum(pts[:, 0] * np.roll(pts[:, 1], -1) - np.roll(pts[:, 0], -1) * pts[:, 1]))
+        if area2 > 0:  # CCW in typical coord convention -> reverse to make CW
+            pts = pts[::-1]
+
+        # Anchor start at top-most, then left-most
+        idx = np.lexsort((pts[:, 0], pts[:, 1]))[0]
+        pts = np.roll(pts, -int(idx), axis=0)
+
+        return pts.reshape(-1).astype(float).tolist()
+
+
+    def _resample_poly_perimeter_px(self, poly_px: List[float], n: int) -> List[float]:
+        """
+        Resample polygon to exactly n points evenly spaced along perimeter.
+        Input/Output are flat [x1,y1,x2,y2,...] in pixel space.
+        """
+        pts = np.array(poly_px, dtype=np.float32).reshape(-1, 2)
+
+        # Remove duplicate last point if present
+        if len(pts) >= 2 and np.allclose(pts[0], pts[-1]):
+            pts = pts[:-1]
+
+        if len(pts) < 2:
+            return poly_px
+
+        # Close
+        closed = np.vstack([pts, pts[0]])
+
+        seg = closed[1:] - closed[:-1]
+        seg_len = np.sqrt((seg ** 2).sum(axis=1))
+        cum = np.concatenate([[0.0], np.cumsum(seg_len)])
+        perim = float(cum[-1])
+
+        if perim <= 1e-6:
+            out = np.repeat(pts[:1], n, axis=0)
+            return out.reshape(-1).astype(float).tolist()
+
+        targets = np.linspace(0, perim, num=n, endpoint=False).astype(np.float32)
+
+        out = np.zeros((n, 2), dtype=np.float32)
+        j = 0
+        for i, t in enumerate(targets):
+            while j < len(seg_len) - 1 and cum[j + 1] < t:
+                j += 1
+            L = seg_len[j] if seg_len[j] > 1e-12 else 1.0
+            u = (t - cum[j]) / L
+            out[i] = closed[j] + u * (closed[j + 1] - closed[j])
+
+        return out.reshape(-1).astype(float).tolist()
+
+
+    def _norm_poly_to_px(self, poly_norm: List[float], w: int, h: int) -> List[float]:
+        """Convert normalized polygon [x1,y1,x2,y2...] to pixel coords."""
+        px = []
+        for i in range(0, len(poly_norm), 2):
+            x = max(0.0, min(w, poly_norm[i] * w))
+            y = max(0.0, min(h, poly_norm[i + 1] * h))
+            px.extend([float(x), float(y)])
+        return px
+
+    def _poly_to_bbox_area(self, poly_px: List[float]) -> Tuple[List[float], float]:
+        arr = np.array(poly_px, dtype=np.float32).reshape(-1, 2)
+
+        # bbox from polygon points
+        xs = arr[:, 0]
+        ys = arr[:, 1]
+        x0 = float(xs.min())
+        y0 = float(ys.min())
+        bw = float(xs.max() - xs.min())
+        bh = float(ys.max() - ys.min())
+        bbox = [x0, y0, bw, bh]
+
+        # true polygon area (pixels^2)
+        # contourArea expects Nx1x2 or Nx2
+        area = float(abs(cv2.contourArea(arr)))
+
+        return bbox, area
+
     def convert_image_annotations(self, image_path: Path, yolo_annotations: List[Dict],
                                  use_refined_polygons: bool = True) -> Dict:
         """
@@ -260,43 +369,38 @@ class YOLOToMaskRCNNConverter:
             # Convert annotations
             converted_annotations = []
             for ann in yolo_annotations:
-                # Convert YOLO bbox to polygon
-                if use_refined_polygons:
-                    polygon = self.create_refined_polygon(
-                        ann['bbox'], image_width, image_height
-                    )
+                # 1) Build polygon (either from YOLO poly or from bbox)
+                if ann.get('poly') is not None:
+                    polygon = self._norm_poly_to_px(ann['poly'], image_width, image_height)
                 else:
-                    polygon = self.convert_yolo_to_polygon(
-                        ann['bbox'], image_width, image_height
-                    )
-                
-                # Calculate area and bounding box for COCO format
-                polygon_array = np.array(polygon).reshape(-1, 2)
-                x_coords = polygon_array[:, 0]
-                y_coords = polygon_array[:, 1]
-                
-                bbox_x = float(np.min(x_coords))
-                bbox_y = float(np.min(y_coords))
-                bbox_width = float(np.max(x_coords) - np.min(x_coords))
-                bbox_height = float(np.max(y_coords) - np.min(y_coords))
-                area = float(bbox_width * bbox_height)
-                
-                # Create COCO annotation
+                    if use_refined_polygons:
+                        polygon = self.create_refined_polygon(ann['bbox'], image_width, image_height)
+                    else:
+                        polygon = self.convert_yolo_to_polygon(ann['bbox'], image_width, image_height)
+
+                # 2) Canonicalize + resample for consistent training masks
+                polygon = self._canonicalize_poly_px(polygon)
+                polygon = self._resample_poly_perimeter_px(polygon, 48)
+                polygon = self._canonicalize_poly_px(polygon)
+
+                # 3) bbox + area
+                bbox, area = self._poly_to_bbox_area(polygon)
+
                 coco_annotation = {
                     "id": self.annotation_id_counter,
                     "image_id": self.image_id_counter,
-                    "category_id": int(ann['class_id']),
+                    "category_id": int(ann['class_id']) + 1,
                     "segmentation": [polygon],
                     "area": area,
-                    "bbox": [bbox_x, bbox_y, bbox_width, bbox_height],
+                    "bbox": bbox,
                     "iscrowd": 0,
                     "attributes": {
-                        "track_id": ann['track_id'],
+                        "track_id": ann.get('track_id'),
                         "source": "yolo_conversion",
                         "refinement_status": "initial"
                     }
                 }
-                
+
                 converted_annotations.append(coco_annotation)
                 self.annotation_id_counter += 1
             
@@ -392,7 +496,7 @@ class YOLOToMaskRCNNConverter:
                 # Track class distribution
                 for ann in conversion_result["annotations"]:
                     class_id = ann["category_id"]
-                    class_name = self.class_names[class_id] if class_id < len(self.class_names) else f"class_{class_id}"
+                    class_name = self.class_names[class_id - 1] if 1 <= class_id <= len(self.class_names) else f"class_{class_id}"
                     conversion_stats["class_distribution"][class_name] = conversion_stats["class_distribution"].get(class_name, 0) + 1
                 
                 self.logger.debug(f"Converted {image_path.name}: {len(conversion_result['annotations'])} annotations")

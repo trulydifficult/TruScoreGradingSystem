@@ -97,78 +97,6 @@ class ProfessionalDatasetSelector(QWidget):
                 difficulty_level='Expert',
                 estimated_time='8-12 hours training'
             ),
-            'vision_language_fusion': DatasetTypeInfo(
-                key='vision_language_fusion',
-                name='Vision-Language Fusion',
-                description='Prompt-controllable segmentation with natural language guidance (FusionSAM/FILM).',
-                category='Experimental',
-                accuracy_target='99.99%+',
-                requirements=['Aligned RGB + prompts; optional normals/depth/reflectance layers'],
-                compatible_pipelines=['FusionSAM Promptable Segmentation', 'LLM Meta-Learner (Multi-Modal)'],
-                example_use_cases=['Promptable edge/surface analysis', 'Explainable segmentation', 'Interactive grading helpers'],
-                difficulty_level='Expert',
-                estimated_time='8-12 hours training'
-            ),
-            'neural_rendering_hybrid': DatasetTypeInfo(
-                key='neural_rendering_hybrid',
-                name='Neural Rendering Hybrid',
-                description='3D-2D analysis fusion with neural scene understanding (NeRF/3DGS).',
-                category='Experimental',
-                accuracy_target='99.99%+',
-                requirements=['Multi-view captures; depth/point clouds; controlled lighting'],
-                compatible_pipelines=['EventPS Real-Time Photometric Stereo'],
-                example_use_cases=['Surface topology benchmarking', 'Photometric-depth fusion', 'Premium 3D grading'],
-                difficulty_level='Expert',
-                estimated_time='10-16 hours training'
-            ),
-            'uncertainty_quantification': DatasetTypeInfo(
-                key='uncertainty_quantification',
-                name='Uncertainty Quantification',
-                description='Bayesian confidence datasets for reliability-critical grading.',
-                category='Experimental',
-                accuracy_target='99.99999999999%',
-                requirements=['Annotations with confidence/entropy labels; diverse edge cases'],
-                compatible_pipelines=['Bayesian / Deep Ensembles'],
-                example_use_cases=['Auto triage to human', 'Low-confidence routing', 'Calibration studies'],
-                difficulty_level='Advanced',
-                estimated_time='6-10 hours training'
-            ),
-            'tesla_hydra_phoenix': DatasetTypeInfo(
-                key='tesla_hydra_phoenix',
-                name='Tesla Hydra Phoenix',
-                description='Multi-task awakening architecture for revolutionary AI training.',
-                category='Experimental',
-                accuracy_target='99.999%+',
-                requirements=['Multi-task labels; high-quality annotations across heads'],
-                compatible_pipelines=['LLM Meta-Learner (Multi-Modal)'],
-                example_use_cases=['All-in-one grading heads', 'Continual multi-task learning'],
-                difficulty_level='Expert',
-                estimated_time='10-16 hours training'
-            ),
-            'photometric_depth': DatasetTypeInfo(
-                key='photometric_depth',
-                name='Photometric Depth Reconstruction',
-                description='Multi-view + photometric stereo depth and point clouds.',
-                category='Photometric Stereo',
-                accuracy_target='99.9%+',
-                requirements=['Normals/depth/reflectance aligned with RGB; calibrated rigs'],
-                compatible_pipelines=['EventPS Real-Time Photometric Stereo'],
-                example_use_cases=['Surface topology maps', 'Precision centering/depth cues'],
-                difficulty_level='Advanced',
-                estimated_time='8-12 hours training'
-            ),
-            'photometric_reflectance': DatasetTypeInfo(
-                key='photometric_reflectance',
-                name='Photometric Reflectance',
-                description='Material property analysis via photometric stereo reflectance maps.',
-                category='Photometric Stereo',
-                accuracy_target='99.4%+',
-                requirements=['Reflectance/albedo layers aligned; controlled illumination'],
-                compatible_pipelines=['EventPS Real-Time Photometric Stereo'],
-                example_use_cases=['Foil/holo analysis', 'Print quality reflectance cues'],
-                difficulty_level='Advanced',
-                estimated_time='6-10 hours training'
-            ),
             
             # CORNER ANALYSIS CATEGORY
             'corner_quality_classification': DatasetTypeInfo(
@@ -220,6 +148,32 @@ class ProfessionalDatasetSelector(QWidget):
                 example_use_cases=['Quality scoring', 'Grade assignment', 'Condition evaluation'],
                 difficulty_level='Expert',
                 estimated_time='7-10 hours training'
+            ),
+            
+            # PHOTOMETRIC STEREO CATEGORY
+            'photometric_depth': DatasetTypeInfo(
+                key='photometric_depth',
+                name='Photometric Depth Reconstruction',
+                description='Multi-view + photometric stereo depth and point clouds.',
+                category='Photometric Stereo',
+                accuracy_target='99.9%+',
+                requirements=['Normals/depth/reflectance aligned with RGB; calibrated rigs'],
+                compatible_pipelines=['EventPS Real-Time Photometric Stereo'],
+                example_use_cases=['Surface topology maps', 'Precision centering/depth cues'],
+                difficulty_level='Advanced',
+                estimated_time='8-12 hours training'
+            ),
+            'photometric_reflectance': DatasetTypeInfo(
+                key='photometric_reflectance',
+                name='Photometric Reflectance',
+                description='Material property analysis via photometric stereo reflectance maps.',
+                category='Photometric Stereo',
+                accuracy_target='99.4%+',
+                requirements=['Reflectance/albedo layers aligned; controlled illumination'],
+                compatible_pipelines=['EventPS Real-Time Photometric Stereo'],
+                example_use_cases=['Foil/holo analysis', 'Print quality reflectance cues'],
+                difficulty_level='Advanced',
+                estimated_time='6-10 hours training'
             ),
             
             # SPECIALIZED PHOENIX MODELS CATEGORY
@@ -299,6 +253,30 @@ class ProfessionalDatasetSelector(QWidget):
             ),
             
             # EXPERIMENTAL CATEGORY
+            'uncertainty_quantification': DatasetTypeInfo(
+                key='uncertainty_quantification',
+                name='Uncertainty Quantification',
+                description='Bayesian confidence datasets for reliability-critical grading.',
+                category='Experimental',
+                accuracy_target='99.99999999999%',
+                requirements=['Annotations with confidence/entropy labels; diverse edge cases'],
+                compatible_pipelines=['Bayesian / Deep Ensembles'],
+                example_use_cases=['Auto triage to human', 'Low-confidence routing', 'Calibration studies'],
+                difficulty_level='Advanced',
+                estimated_time='6-10 hours training'
+            ),
+            'tesla_hydra_phoenix': DatasetTypeInfo(
+                key='tesla_hydra_phoenix',
+                name='Tesla Hydra Phoenix',
+                description='Multi-task awakening architecture for revolutionary AI training.',
+                category='Experimental',
+                accuracy_target='99.999%+',
+                requirements=['Multi-task labels; high-quality annotations across heads'],
+                compatible_pipelines=['LLM Meta-Learner (Multi-Modal)'],
+                example_use_cases=['All-in-one grading heads', 'Continual multi-task learning'],
+                difficulty_level='Expert',
+                estimated_time='10-16 hours training'
+            ),
             'vision_language_fusion': DatasetTypeInfo(
                 key='vision_language_fusion',
                 name='Vision-Language Fusion',
@@ -318,9 +296,10 @@ class ProfessionalDatasetSelector(QWidget):
             'Border Analysis': ['border_detection_single', 'border_detection_2class', 'border_ultra_precision'],
             'Corner Analysis': ['corner_quality_classification', 'corner_damage_detection'],
             'Surface Analysis': ['surface_defect_detection', 'surface_quality_rating'],
+            'Photometric Stereo': ['photometric_depth', 'photometric_reflectance'],
             'Phoenix Specialized Models': ['photometric_integration', 'multi_modal_fusion', 'defect_detection_specialist', 'centering_analysis_expert', 'edge_definition_specialist'],
             'Advanced Analysis': ['photometric_surface_normals'],
-            'Experimental': ['vision_language_fusion']
+            'Experimental': ['uncertainty_quantification', 'tesla_hydra_phoenix', 'vision_language_fusion']
         }
         
         self.logger.info(f"Loaded {len(self.dataset_types)} dataset types across {len(self.categories)} categories")
