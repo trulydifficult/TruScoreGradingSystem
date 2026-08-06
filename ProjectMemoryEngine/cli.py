@@ -3,6 +3,7 @@ from pathlib import Path
 from rich import print
 
 from scanner import RepositoryScanner
+from context_builder import ContextBuilder
 from bootstrap import ProjectBootstrap
 
 app = typer.Typer()
@@ -11,7 +12,10 @@ app = typer.Typer()
 @app.command()
 def bootstrap():
     engine = ProjectBootstrap(Path("."))
-    print(engine.reconstruct())
+    result = engine.reconstruct()
+
+    print(result)
+    print("\nBootstrap state saved: memory/bootstrap_state.md\n")
 
 
 @app.command()
@@ -62,3 +66,16 @@ def scan():
 
     print(f"\nFiles scanned: {result['file_count']}")
     print(f"Saved: {output}\n")
+    
+@app.command()
+def context():
+    builder = ContextBuilder(Path("."))
+    result = builder.build()
+
+    output = Path("memory/project_context.md")
+
+    output.parent.mkdir(exist_ok=True)
+
+    output.write_text(result, encoding="utf-8")
+
+    print(f"\nContext saved: {output}\n")

@@ -65,13 +65,36 @@ class ProjectBootstrap:
                 decisions.append(content)
 
         return decisions
+        
+    def save_context(self, data: dict):
+        output = self.project_root / "memory" / "bootstrap_state.md"
+
+        output.parent.mkdir(exist_ok=True)
+
+        content = "# Project Bootstrap State\n\n"
+
+        content += f"Generated: {data['timestamp']}\n\n"
+
+        content += "## Documents\n\n"
+
+        for name, text in data["documents"].items():
+            content += f"### {name}\n\n{text}\n\n"
+
+        content += "## Latest Session\n\n"
+        content += data["latest_session"]
+
+        output.write_text(content, encoding="utf-8")
 
     def reconstruct(self) -> dict:
         """Reconstruct known project state."""
 
-        return {
+        data = {
             "timestamp": datetime.now().isoformat(),
             "documents": self.load_documents(),
             "latest_session": self.load_latest_session(),
             "decisions": self.load_decisions(),
         }
+
+        self.save_context(data)
+
+        return data
