@@ -1,0 +1,87 @@
+{
+  "project": "ProjectMemoryEngine",
+  "root": ".",
+  "file_count": 16,
+  "files": [
+    {
+      "path": "requirements.txt",
+      "type": "txt",
+      "size": 165
+    },
+    {
+      "path": "main.py",
+      "type": "py",
+      "size": 58
+    },
+    {
+      "path": "bootstrap.py",
+      "type": "py",
+      "size": 2066
+    },
+    {
+      "path": "scanner.py",
+      "type": "py",
+      "size": 1082
+    },
+    {
+      "path": "indexer.py",
+      "type": "py",
+      "size": 0
+    },
+    {
+      "path": "sessions.py",
+      "type": "py",
+      "size": 860
+    },
+    {
+      "path": "decisions.py",
+      "type": "py",
+      "size": 0
+    },
+    {
+      "path": "knowledge_graph.py",
+      "type": "py",
+      "size": 0
+    },
+    {
+      "path": "context_builder.py",
+      "type": "py",
+      "size": 0
+    },
+    {
+      "path": "cli.py",
+      "type": "py",
+      "size": 1257
+    },
+    {
+      "path": "STATUS.md",
+      "type": "md",
+      "size": 0
+    },
+    {
+      "path": "newchat.md",
+      "type": "md",
+      "size": 1733
+    },
+    {
+      "path": "test_scanner.py",
+      "type": "py",
+      "size": 183
+    },
+    {
+      "path": "docs/VISION.md",
+      "type": "md",
+      "size": 0
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "type": "md",
+      "size": 0
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "type": "md",
+      "size": 0
+    }
+  ]
+}
