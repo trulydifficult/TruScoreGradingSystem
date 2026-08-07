@@ -41,3 +41,17 @@ class RepositoryScanner:
             "file_count": len(files),
             "files": files,
         }
+    
+    def save(self, result):
+        output = self.root_path / "memory" / "repository_map.json"
+
+        output.parent.mkdir(exist_ok=True)
+
+        import json
+
+        output.write_text(
+            json.dumps(result, indent=2),
+            encoding="utf-8",
+        )
+
+        return output

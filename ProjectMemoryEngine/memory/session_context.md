@@ -1,3 +1,32 @@
+
+
+===== STATUS.md =====
+
+## Current Version
+
+Project Memory Engine v0.2.0
+
+## Completed
+
+- Repository Scanner implemented
+- CLI scan command added
+- Repository map generation added
+- Ignore filtering added
+- Project identity detection added
+
+## Current Version
+
+Project Memory Engine v0.3.0
+
+## Completed
+
+- Context Builder implemented
+- Context CLI command added
+- Persistent project context generation added
+- Bootstrap state generation added
+
+===== memory/repository_map.json =====
+
 {
   "project": "ProjectMemoryEngine",
   "root": ".",
@@ -105,3 +134,25 @@
     }
   ]
 }
+
+===== sessions/2026-08-07-scanner.md =====
+
+# Session: Repository Scanner
+
+## Completed
+
+- Repository scanner implemented
+- Scanner integrated into CLI
+- Repository map persistence added
+- Ignore filtering added
+- Project identity detection added
+- Context Builder implemented
+- Session context persistence added
+
+## Current State
+
+Project Memory Engine v0.3.0.
+
+## Next
+
+Continue building the project memory reconstruction workflow.

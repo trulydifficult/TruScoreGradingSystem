@@ -11,11 +11,20 @@ app = typer.Typer()
 
 @app.command()
 def bootstrap():
+    scanner = RepositoryScanner(Path("."))
+    scan_result = scanner.scan()
+    scanner.save(scan_result)
+
     engine = ProjectBootstrap(Path("."))
     result = engine.reconstruct()
 
-    print(result)
-    print("\nBootstrap state saved: memory/bootstrap_state.md\n")
+    builder = ContextBuilder(Path("."))
+    context = builder.build()
+    output = builder.save(context)
+
+    print(f"\nFiles scanned: {scan_result['file_count']}")
+    print("Bootstrap state saved: memory/bootstrap_state.md")
+    print(f"Session context saved: {output}\n")
 
 
 @app.command()
@@ -52,30 +61,19 @@ def doctor():
     
 @app.command()
 def scan():
-    import json
-
     scanner = RepositoryScanner(Path("."))
+
     result = scanner.scan()
-
-    output = Path("memory/repository_map.json")
-
-    output.parent.mkdir(exist_ok=True)
-
-    with open(output, "w", encoding="utf-8") as file:
-        json.dump(result, file, indent=2)
+    output = scanner.save(result)
 
     print(f"\nFiles scanned: {result['file_count']}")
-    print(f"Saved: {output}\n")
+    print(f"Repository map saved: {output}\n")
     
 @app.command()
 def context():
     builder = ContextBuilder(Path("."))
+
     result = builder.build()
+    output = builder.save(result)
 
-    output = Path("memory/project_context.md")
-
-    output.parent.mkdir(exist_ok=True)
-
-    output.write_text(result, encoding="utf-8")
-
-    print(f"\nContext saved: {output}\n")
+    print(f"\nSession context saved: {output}\n")
