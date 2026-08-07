@@ -1,7 +1,7 @@
 {
   "project": "ProjectMemoryEngine",
   "root": ".",
-  "file_count": 16,
+  "file_count": 20,
   "files": [
     {
       "path": "requirements.txt",
@@ -16,12 +16,12 @@
     {
       "path": "bootstrap.py",
       "type": "py",
-      "size": 2066
+      "size": 2675
     },
     {
       "path": "scanner.py",
       "type": "py",
-      "size": 1082
+      "size": 1380
     },
     {
       "path": "indexer.py",
@@ -46,17 +46,17 @@
     {
       "path": "context_builder.py",
       "type": "py",
-      "size": 0
+      "size": 1898
     },
     {
       "path": "cli.py",
       "type": "py",
-      "size": 1257
+      "size": 1722
     },
     {
       "path": "STATUS.md",
       "type": "md",
-      "size": 0
+      "size": 420
     },
     {
       "path": "newchat.md",
@@ -67,6 +67,11 @@
       "path": "test_scanner.py",
       "type": "py",
       "size": 183
+    },
+    {
+      "path": "test_context_builder.py",
+      "type": "py",
+      "size": 145
     },
     {
       "path": "docs/VISION.md",
@@ -82,6 +87,21 @@
       "path": "docs/ROADMAP.md",
       "type": "md",
       "size": 0
+    },
+    {
+      "path": "memory/bootstrap_state.md",
+      "type": "md",
+      "size": 546
+    },
+    {
+      "path": "memory/session_context.md",
+      "type": "md",
+      "size": 2691
+    },
+    {
+      "path": "sessions/2026-08-07-scanner.md",
+      "type": "md",
+      "size": 390
     }
   ]
 }
