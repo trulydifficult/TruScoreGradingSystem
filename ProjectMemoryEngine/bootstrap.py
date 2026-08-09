@@ -4,6 +4,7 @@ import json
 from sessions import SessionManager
 from scanner import RepositoryScanner
 from decisions import DecisionManager
+from indexer import RepositoryIndexer
 
 
 class ProjectBootstrap:
@@ -20,6 +21,7 @@ class ProjectBootstrap:
         
         self.session_manager = SessionManager(self.sessions_dir)
         self.decision_manager = DecisionManager(self.decisions_dir)
+        self.indexer = RepositoryIndexer(self.project_root)
 
     def _read_file(self, path: Path) -> str:
         if not path.exists():
@@ -94,6 +96,23 @@ class ProjectBootstrap:
 
         content += f"Project: {repository_map.get('project', '')}\n"
         content += f"Files: {repository_map.get('file_count', 0)}\n"
+        
+        content += "\n## Changes\n\n"
+
+        changes = data.get("changes", {})
+
+        content += f"Added: {len(changes.get('added', []))}\n"
+        content += f"Modified: {len(changes.get('modified', []))}\n"
+        content += f"Deleted: {len(changes.get('deleted', []))}\n"
+
+        for path in changes.get("added", []):
+            content += f"+ {path}\n"
+
+        for path in changes.get("modified", []):
+            content += f"~ {path}\n"
+
+        for path in changes.get("deleted", []):
+            content += f"- {path}\n"
 
         output.write_text(content, encoding="utf-8")
 
@@ -101,6 +120,11 @@ class ProjectBootstrap:
         """Reconstruct known project state."""
 
         self.scanner.scan()
+        
+        index_result = self.indexer.refresh()
+
+        changes = index_result["changes"]
+        indexed_files = index_result["files"]
 
         data = {
             "timestamp": datetime.now().isoformat(),
@@ -108,6 +132,8 @@ class ProjectBootstrap:
             "latest_session": self.load_latest_session(),
             "decisions": self.load_decisions(),
             "repository_map": self.load_repository_map(),
+            "repository_index": self.load_repository_index(),
+            "changes": changes,
         }
 
         self.save_context(data)
@@ -121,5 +147,15 @@ class ProjectBootstrap:
 
         if not path.exists():
             return {}
+
+        return json.loads(path.read_text(encoding="utf-8"))
+        
+    def load_repository_index(self) -> list[dict]:
+        """Load the persistent repository index."""
+
+        path = self.memory_dir / "repository_index.json"
+
+        if not path.exists():
+            return []
 
         return json.loads(path.read_text(encoding="utf-8"))

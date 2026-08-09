@@ -20,6 +20,7 @@ class ContextBuilder:
             "docs/ARCHITECTURE.md",
             "docs/ROADMAP.md",
             "memory/repository_map.json",
+            "memory/repository_index.json",
         ]
 
         for file in sources:
