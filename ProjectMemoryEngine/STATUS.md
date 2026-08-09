@@ -63,3 +63,20 @@ Project Memory Engine v0.6.0
 - Decision deletion
 - Decision counting
 - Decision integration with bootstrap
+
+## Current Version
+
+Project Memory Engine v0.7.0
+
+## Completed
+
+- Repository index implemented
+- File metadata indexing added
+- Persistent repository index added
+- File lookup added
+- Repository index statistics added
+- File hash tracking added
+- Repository change detection added
+- Index refresh workflow added
+- Repository index integrated with bootstrap
+- Repository index integrated with session context
