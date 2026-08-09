@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 from sessions import SessionManager
 from scanner import RepositoryScanner
+from decisions import DecisionManager
 
 
 class ProjectBootstrap:
@@ -18,6 +19,7 @@ class ProjectBootstrap:
         self.memory_dir = self.project_root / "memory"
         
         self.session_manager = SessionManager(self.sessions_dir)
+        self.decision_manager = DecisionManager(self.decisions_dir)
 
     def _read_file(self, path: Path) -> str:
         if not path.exists():
@@ -53,13 +55,10 @@ class ProjectBootstrap:
     def load_decisions(self) -> list[str]:
         """Load persistent architectural/project decisions."""
 
-        if not self.decisions_dir.exists():
-            return []
-
         decisions = []
 
-        for file in sorted(self.decisions_dir.glob("*.md")):
-            content = self._read_file(file)
+        for path in self.decision_manager.list_decisions():
+            content = self.decision_manager.read_decision(path.name)
 
             if content:
                 decisions.append(content)

@@ -35,3 +35,17 @@ Project Memory Engine v0.4.0
 - Session deletion
 - Session counting
 - Automatic session context updates
+
+## Current Version
+
+Project Memory Engine v0.6.0
+
+## Completed
+
+- Decision creation
+- Decision listing
+- Decision retrieval
+- Decision filename search
+- Decision deletion
+- Decision counting
+- Decision integration with bootstrap
