@@ -20,3 +20,18 @@ Project Memory Engine v0.3.0
 - Context CLI command added
 - Persistent project context generation added
 - Bootstrap state generation added
+
+## Current Version
+
+Project Memory Engine v0.4.0
+
+## Completed
+
+- Session creation
+- Session listing
+- Latest session retrieval
+- Specific session retrieval
+- Session filename search
+- Session deletion
+- Session counting
+- Automatic session context updates

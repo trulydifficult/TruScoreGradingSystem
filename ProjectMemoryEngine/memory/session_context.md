@@ -30,7 +30,7 @@ Project Memory Engine v0.3.0
 {
   "project": "ProjectMemoryEngine",
   "root": ".",
-  "file_count": 20,
+  "file_count": 21,
   "files": [
     {
       "path": "requirements.txt",
@@ -60,7 +60,7 @@ Project Memory Engine v0.3.0
     {
       "path": "sessions.py",
       "type": "py",
-      "size": 860
+      "size": 1328
     },
     {
       "path": "decisions.py",
@@ -80,7 +80,7 @@ Project Memory Engine v0.3.0
     {
       "path": "cli.py",
       "type": "py",
-      "size": 1722
+      "size": 2439
     },
     {
       "path": "STATUS.md",
@@ -101,6 +101,11 @@ Project Memory Engine v0.3.0
       "path": "test_context_builder.py",
       "type": "py",
       "size": 145
+    },
+    {
+      "path": "test_sessions.py",
+      "type": "py",
+      "size": 265
     },
     {
       "path": "docs/VISION.md",
@@ -125,7 +130,7 @@ Project Memory Engine v0.3.0
     {
       "path": "memory/session_context.md",
       "type": "md",
-      "size": 2691
+      "size": 2397
     },
     {
       "path": "sessions/2026-08-07-scanner.md",

@@ -2,6 +2,7 @@ import typer
 from pathlib import Path
 from rich import print
 
+from sessions import SessionManager
 from scanner import RepositoryScanner
 from context_builder import ContextBuilder
 from bootstrap import ProjectBootstrap
@@ -77,3 +78,107 @@ def context():
     output = builder.save(result)
 
     print(f"\nSession context saved: {output}\n")
+    
+@app.command()
+def session(title: str):
+    manager = SessionManager(Path("sessions"))
+
+    print(f"\nCreating session: {title}\n")
+    print("Enter session content.")
+    print("Press Enter on a blank line when finished.\n")
+
+    lines = []
+
+    while True:
+        line = input()
+
+        if not line:
+            break
+
+        lines.append(line)
+
+    content = "\n".join(lines)
+
+    session_content = f"# Session: {title}\n\n{content}"
+
+    path = manager.create_session(title, session_content)
+
+    builder = ContextBuilder(Path("."))
+    context = builder.build()
+    builder.save(context)
+
+    print(f"\nSession created: {path}")
+    print("Session context updated.\n")
+    
+@app.command()
+def sessions():
+    manager = SessionManager(Path("sessions"))
+
+    session_files = manager.list_sessions()
+
+    if not session_files:
+        print("\nNo sessions found.\n")
+        return
+
+    print("\nSessions:\n")
+
+    for path in session_files:
+        print(path.name)
+
+    print()
+    
+@app.command()
+def latest():
+    manager = SessionManager(Path("sessions"))
+
+    content = manager.read_latest_session()
+
+    if content is None:
+        print("\nNo sessions found.\n")
+        return
+
+    print(f"\n{content}\n")
+    
+@app.command()
+def show(filename: str):
+    manager = SessionManager(Path("sessions"))
+
+    content = manager.read_session(filename)
+
+    if content is None:
+        print(f"\nSession not found: {filename}\n")
+        return
+
+    print(f"\n{content}\n")
+    
+@app.command()
+def find(query: str):
+    manager = SessionManager(Path("sessions"))
+
+    results = manager.find_sessions(query)
+
+    if not results:
+        print(f"\nNo sessions found matching: {query}\n")
+        return
+
+    print("\nMatching sessions:\n")
+
+    for path in results:
+        print(path.name)
+
+    print()
+    
+@app.command()
+def delete(filename: str):
+    manager = SessionManager(Path("sessions"))
+
+    if manager.delete_session(filename):
+        print(f"\nSession deleted: {filename}\n")
+    else:
+        print(f"\nSession not found: {filename}\n")
+        
+@app.command()
+def count():
+    manager = SessionManager(Path("sessions"))
+
+    print(f"\nSessions: {manager.count_sessions()}\n")
