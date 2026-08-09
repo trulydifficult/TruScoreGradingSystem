@@ -7,6 +7,7 @@ from scanner import RepositoryScanner
 from context_builder import ContextBuilder
 from bootstrap import ProjectBootstrap
 from decisions import DecisionManager
+from indexer import RepositoryIndexer
 
 app = typer.Typer()
 
@@ -40,6 +41,20 @@ def bootstrap():
     print(
         f"Repository files: "
         f"{repository_map.get('file_count', 0)}"
+    )
+    
+    print(
+        f"Indexed files: "
+        f"{len(result.get('repository_index', []))}"
+    )
+    
+    changes = result.get("changes", {})
+
+    print(
+        f"Changes: "
+        f"{len(changes.get('added', []))} added, "
+        f"{len(changes.get('modified', []))} modified, "
+        f"{len(changes.get('deleted', []))} deleted"
     )
 
     print("\nBootstrap state saved.\n")
@@ -281,3 +296,74 @@ def count_decisions():
     manager = DecisionManager(Path("decisions"))
 
     print(f"\nDecisions: {manager.count_decisions()}\n")
+    
+@app.command()
+def find_file(query: str):
+    indexer = RepositoryIndexer(Path("."))
+
+    results = indexer.find_file(query)
+
+    if not results:
+        print(f"\nNo files found matching: {query}\n")
+        return
+
+    print("\nMatching files:\n")
+
+    for file in results:
+        print(
+            f"{file['path']} "
+            f"({file['lines']} lines)"
+        )
+
+    print()
+    
+@app.command()
+def index_stats():
+    indexer = RepositoryIndexer(Path("."))
+
+    stats = indexer.stats()
+
+    print("\nRepository Index\n")
+    print(f"Files: {stats['file_count']}")
+    print(f"Lines: {stats['total_lines']}")
+    print(f"Bytes: {stats['total_size']}")
+    print()
+    
+@app.command()
+def changes():
+    indexer = RepositoryIndexer(Path("."))
+
+    result = indexer.detect_changes()
+
+    print("\nRepository Changes\n")
+
+    print(f"Added: {len(result['added'])}")
+    for path in result["added"]:
+        print(f"  + {path}")
+
+    print(f"Modified: {len(result['modified'])}")
+    for path in result["modified"]:
+        print(f"  ~ {path}")
+
+    print(f"Deleted: {len(result['deleted'])}")
+    for path in result["deleted"]:
+        print(f"  - {path}")
+
+    print()
+    
+@app.command()
+def refresh_index():
+    indexer = RepositoryIndexer(Path("."))
+
+    result = indexer.refresh()
+
+    changes = result["changes"]
+
+    print("\nRepository Index Refreshed\n")
+
+    print(f"Files: {len(result['files'])}")
+    print(f"Added: {len(changes['added'])}")
+    print(f"Modified: {len(changes['modified'])}")
+    print(f"Deleted: {len(changes['deleted'])}")
+
+    print()
