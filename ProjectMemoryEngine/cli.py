@@ -6,6 +6,7 @@ from sessions import SessionManager
 from scanner import RepositoryScanner
 from context_builder import ContextBuilder
 from bootstrap import ProjectBootstrap
+from decisions import DecisionManager
 
 app = typer.Typer()
 
@@ -197,3 +198,86 @@ def count():
     manager = SessionManager(Path("sessions"))
 
     print(f"\nSessions: {manager.count_sessions()}\n")
+    
+@app.command()
+def decision(title: str):
+    manager = DecisionManager(Path("decisions"))
+
+    print(f"\nCreating decision: {title}")
+    print("Enter decision content.")
+    print("Press Enter on a blank line when finished.\n")
+
+    lines = []
+
+    while True:
+        line = input()
+
+        if not line:
+            break
+
+        lines.append(line)
+
+    content = "\n".join(lines)
+
+    path = manager.create_decision(title, content)
+
+    print(f"\nDecision created: {path}\n")
+    
+@app.command()
+def decisions():
+    manager = DecisionManager(Path("decisions"))
+
+    decision_files = manager.list_decisions()
+
+    if not decision_files:
+        print("\nNo decisions found.\n")
+        return
+
+    print("\nDecisions:\n")
+
+    for path in decision_files:
+        print(path.name)
+
+    print()
+    
+@app.command()
+def show_decision(filename: str):
+    manager = DecisionManager(Path("decisions"))
+
+    content = manager.read_decision(filename)
+
+    if content is None:
+        print(f"\nDecision not found: {filename}\n")
+        return
+
+    print(f"\n{content}\n")
+    
+@app.command()
+def find_decisions(query: str):
+    manager = DecisionManager(Path("decisions"))
+
+    results = manager.find_decisions(query)
+
+    if not results:
+        print(f"\nNo decisions found matching: {query}\n")
+        return
+
+    print("\nMatching decisions:\n")
+
+    for path in results:
+        print(path.name)
+
+@app.command()
+def delete_decision(filename: str):
+    manager = DecisionManager(Path("decisions"))
+
+    if manager.delete_decision(filename):
+        print(f"\nDecision deleted: {filename}\n")
+    else:
+        print(f"\nDecision not found: {filename}\n")
+        
+@app.command()
+def count_decisions():
+    manager = DecisionManager(Path("decisions"))
+
+    print(f"\nDecisions: {manager.count_decisions()}\n")

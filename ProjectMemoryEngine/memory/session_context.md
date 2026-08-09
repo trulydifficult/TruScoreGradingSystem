@@ -155,6 +155,14 @@ Project Memory Engine v0.4.0
   ]
 }
 
+===== decisions/2026-08-09_01-58-26_Use_Local_Project_Memory.md =====
+
+# Decision: Use Local Project Memory
+
+Date: 2026-08-09T01:58:26.655633
+
+Project memory must remain local and model agnostic.
+
 ===== sessions/2026-08-07-scanner.md =====
 
 # Session: Repository Scanner

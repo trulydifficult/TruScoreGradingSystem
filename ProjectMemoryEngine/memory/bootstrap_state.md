@@ -1,6 +1,6 @@
 # Project Bootstrap State
 
-Generated: 2026-08-08T21:59:34.204535
+Generated: 2026-08-09T02:10:55.940708
 
 ## Documents
 
@@ -40,6 +40,13 @@ Continue building the project memory reconstruction workflow.
 
 
 ## Decisions
+
+# Decision: Use Local Project Memory
+
+Date: 2026-08-09T01:58:26.655633
+
+Project memory must remain local and model agnostic.
+
 
 
 ## Repository Map
