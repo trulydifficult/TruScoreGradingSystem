@@ -16,7 +16,7 @@
     {
       "path": "bootstrap.py",
       "type": "py",
-      "size": 2675
+      "size": 3518
     },
     {
       "path": "scanner.py",
@@ -31,7 +31,7 @@
     {
       "path": "sessions.py",
       "type": "py",
-      "size": 1328
+      "size": 2466
     },
     {
       "path": "decisions.py",
@@ -51,12 +51,12 @@
     {
       "path": "cli.py",
       "type": "py",
-      "size": 2439
+      "size": 3957
     },
     {
       "path": "STATUS.md",
       "type": "md",
-      "size": 420
+      "size": 678
     },
     {
       "path": "newchat.md",
@@ -96,12 +96,12 @@
     {
       "path": "memory/bootstrap_state.md",
       "type": "md",
-      "size": 546
+      "size": 622
     },
     {
       "path": "memory/session_context.md",
       "type": "md",
-      "size": 2397
+      "size": 3035
     },
     {
       "path": "sessions/2026-08-07-scanner.md",

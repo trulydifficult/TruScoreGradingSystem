@@ -12,21 +12,36 @@ app = typer.Typer()
 
 @app.command()
 def bootstrap():
-    scanner = RepositoryScanner(Path("."))
-    scan_result = scanner.scan()
-    scanner.save(scan_result)
-
     engine = ProjectBootstrap(Path("."))
-    result = engine.reconstruct()
 
+    result = engine.reconstruct()
+    
     builder = ContextBuilder(Path("."))
     context = builder.build()
-    output = builder.save(context)
+    builder.save(context)
 
-    print(f"\nFiles scanned: {scan_result['file_count']}")
-    print("Bootstrap state saved: memory/bootstrap_state.md")
-    print(f"Session context saved: {output}\n")
+    print("\nProject Bootstrap Complete\n")
 
+    print(f"Documents: {len(result['documents'])}")
+    print(
+        f"Latest session: "
+        f"{'loaded' if result['latest_session'] else 'none'}"
+    )
+    print(f"Decisions: {len(result['decisions'])}")
+
+    repository_map = result.get("repository_map", {})
+    
+    print(
+        f"Project: "
+        f"{repository_map.get('project', 'Unknown')}"
+    )
+
+    print(
+        f"Repository files: "
+        f"{repository_map.get('file_count', 0)}"
+    )
+
+    print("\nBootstrap state saved.\n")
 
 @app.command()
 def doctor():

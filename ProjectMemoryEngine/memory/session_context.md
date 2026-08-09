@@ -25,6 +25,21 @@ Project Memory Engine v0.3.0
 - Persistent project context generation added
 - Bootstrap state generation added
 
+## Current Version
+
+Project Memory Engine v0.4.0
+
+## Completed
+
+- Session creation
+- Session listing
+- Latest session retrieval
+- Specific session retrieval
+- Session filename search
+- Session deletion
+- Session counting
+- Automatic session context updates
+
 ===== memory/repository_map.json =====
 
 {
@@ -45,7 +60,7 @@ Project Memory Engine v0.3.0
     {
       "path": "bootstrap.py",
       "type": "py",
-      "size": 2675
+      "size": 3518
     },
     {
       "path": "scanner.py",
@@ -60,7 +75,7 @@ Project Memory Engine v0.3.0
     {
       "path": "sessions.py",
       "type": "py",
-      "size": 1328
+      "size": 2466
     },
     {
       "path": "decisions.py",
@@ -80,12 +95,12 @@ Project Memory Engine v0.3.0
     {
       "path": "cli.py",
       "type": "py",
-      "size": 2439
+      "size": 3957
     },
     {
       "path": "STATUS.md",
       "type": "md",
-      "size": 420
+      "size": 678
     },
     {
       "path": "newchat.md",
@@ -125,12 +140,12 @@ Project Memory Engine v0.3.0
     {
       "path": "memory/bootstrap_state.md",
       "type": "md",
-      "size": 546
+      "size": 622
     },
     {
       "path": "memory/session_context.md",
       "type": "md",
-      "size": 2397
+      "size": 3035
     },
     {
       "path": "sessions/2026-08-07-scanner.md",
