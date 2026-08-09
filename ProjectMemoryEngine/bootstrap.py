@@ -1,5 +1,8 @@
 from pathlib import Path
 from datetime import datetime
+import json
+from sessions import SessionManager
+from scanner import RepositoryScanner
 
 
 class ProjectBootstrap:
@@ -7,10 +10,14 @@ class ProjectBootstrap:
 
     def __init__(self, project_root: Path):
         self.project_root = Path(project_root)
-
+        self.scanner = RepositoryScanner(self.project_root)
+        
         self.docs_dir = self.project_root / "docs"
         self.sessions_dir = self.project_root / "sessions"
         self.decisions_dir = self.project_root / "decisions"
+        self.memory_dir = self.project_root / "memory"
+        
+        self.session_manager = SessionManager(self.sessions_dir)
 
     def _read_file(self, path: Path) -> str:
         if not path.exists():
@@ -36,19 +43,12 @@ class ProjectBootstrap:
     def load_latest_session(self) -> str:
         """Return the newest session record."""
 
-        if not self.sessions_dir.exists():
+        content = self.session_manager.read_latest_session()
+
+        if content is None:
             return ""
 
-        session_files = sorted(
-            self.sessions_dir.glob("*.md"),
-            key=lambda p: p.stat().st_mtime,
-            reverse=True,
-        )
-
-        if not session_files:
-            return ""
-
-        return self._read_file(session_files[0])
+        return content
 
     def load_decisions(self) -> list[str]:
         """Load persistent architectural/project decisions."""
@@ -83,18 +83,44 @@ class ProjectBootstrap:
         content += "## Latest Session\n\n"
         content += data["latest_session"]
 
+        content += "\n\n## Decisions\n\n"
+
+        for decision in data["decisions"]:
+            content += decision
+            content += "\n\n"
+            
+        content += "\n## Repository Map\n\n"
+
+        repository_map = data["repository_map"]
+
+        content += f"Project: {repository_map.get('project', '')}\n"
+        content += f"Files: {repository_map.get('file_count', 0)}\n"
+
         output.write_text(content, encoding="utf-8")
 
     def reconstruct(self) -> dict:
         """Reconstruct known project state."""
+
+        self.scanner.scan()
 
         data = {
             "timestamp": datetime.now().isoformat(),
             "documents": self.load_documents(),
             "latest_session": self.load_latest_session(),
             "decisions": self.load_decisions(),
+            "repository_map": self.load_repository_map(),
         }
 
         self.save_context(data)
 
         return data
+        
+    def load_repository_map(self) -> dict:
+        """Load the latest repository map."""
+
+        path = self.memory_dir / "repository_map.json"
+
+        if not path.exists():
+            return {}
+
+        return json.loads(path.read_text(encoding="utf-8"))
