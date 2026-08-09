@@ -38,6 +38,20 @@ Project Memory Engine v0.4.0
 
 ## Current Version
 
+Project Memory Engine v0.5.0
+
+## Completed
+
+- Bootstrap integration completed
+- SessionManager integrated with bootstrap
+- Decision memory integrated with bootstrap
+- Repository map integrated with bootstrap
+- Repository scanner integrated with bootstrap
+- Session context automatically refreshed during bootstrap
+- Bootstrap summary output added
+
+## Current Version
+
 Project Memory Engine v0.6.0
 
 ## Completed
