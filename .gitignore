@@ -174,3 +174,6 @@ cython_debug/
 AGENT.md
 CLAUDE.md
 .agent-mem/
+.mcp.json
+.agentsroom/handoff-transcript-*.txt
+.agentsroom/handoff-summary-*.md

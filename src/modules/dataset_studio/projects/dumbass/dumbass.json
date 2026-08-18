@@ -1,0 +1,16 @@
+{
+  "name": "dumbass",
+  "description": "TruScore dataset project",
+  "dataset_type": "border_detection_2class",
+  "pipeline": "Detectron2 (Mask R-CNN + RPN) - Professional",
+  "model_architecture": "Mask R-CNN + ResNet-101 + Feature Pyramid Network (FPN)",
+  "batch_size": 8,
+  "quality_threshold": 85.0,
+  "export_format": "COCO JSON",
+  "created_date": "2024-12-19",
+  "last_modified": "2026-06-19T22:07:00.996462",
+  "version": "1.0",
+  "image_count": 31,
+  "label_count": 31,
+  "data_path": "/home/dewster/Pictures/images"
+}

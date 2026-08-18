@@ -296,34 +296,195 @@ class QueueManager:
                 self.callbacks['on_job_failed'](job, str(e))
     
     def _create_trainer(self, job: TrainingJob):
-        """
-        Create trainer instance based on job model type
+            """
+            Create trainer instance based on job model type
+
+            Args:
+                job: TrainingJob
+
+            Returns:
+                Trainer instance or None if unknown type
+            """
+            # Get model info from job config (dataset_type, model_architecture, model_type)
+            model_type = job.model_type.lower()
+            model_arch = job.config.get('model_architecture', '').lower()
+            dataset_type = job.config.get('dataset_type', '').lower()
+
+            # Log for debugging
+            logger.info(f"Creating trainer for model_type={model_type}, model_arch={model_arch}, dataset_type={dataset_type}")
+
+            # ============================================
+            # BORDER DETECTION - Detectron2/Mask R-CNN
+            # ============================================
+            border_detection_types = [
+                'border_detection_single',
+                'border_detection_2class', 
+                'border_ultra_precision',
+            ]
         
-        Args:
-            job: TrainingJob
+            if (any(t in dataset_type for t in border_detection_types) or
+                "detectron2" in model_type or "mask r-cnn" in model_type or
+                "mask r-cnn" in model_arch or "detectron2" in model_arch):
+                from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
+                # Configure num_classes based on dataset type
+                if '2class' in dataset_type or '2-class' in dataset_type or 'dual' in dataset_type:
+                    job.config['num_classes'] = 2
+                elif 'ultra_precision' in dataset_type:
+                    job.config['num_classes'] = 2
+                else:
+                    job.config['num_classes'] = 1  # single class border
+                logger.info(f"Using Detectron2Trainer for border detection (num_classes={job.config['num_classes']})")
+                return Detectron2Trainer(job.config)
+
+            # ============================================
+            # CORNER ANALYSIS - ViT / Classification
+            # ============================================
+            corner_types = [
+                'corner_quality_classification',
+                'corner_damage_detection',
+                'corner_sharpness_rating',
+            ]
+        
+            if (any(t in dataset_type for t in corner_types) or
+                "vit" in model_type or "vision transformer" in model_type or
+                "vit" in model_arch or "vision transformer" in model_arch or
+                "resnet" in model_arch or "efficientnet" in model_arch or "deit" in model_arch):
+                from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
+                # Configure num_classes based on dataset type
+                if 'quality_classification' in dataset_type:
+                    job.config['num_classes'] = 4  # Perfect, Slight, Damaged, Severe
+                elif 'damage_detection' in dataset_type:
+                    job.config['num_classes'] = 3  # No damage, Minor, Major
+                elif 'sharpness_rating' in dataset_type:
+                    job.config['num_classes'] = 5  # Rating scale 1-5
+                logger.info(f"Using ViTTrainer for corner analysis (num_classes={job.config['num_classes']})")
+                return ViTTrainer(job.config)
+
+            # ============================================
+            # EDGE ANALYSIS - U-Net / Segmentation
+            # ============================================
+            edge_types = [
+                'edge_wear_detection',
+                'edge_damage_classification',
+            ]
+        
+            if (any(t in dataset_type for t in edge_types) or
+                "u-net" in model_type or "unet" in model_type or "surface" in model_type or
+                "u-net" in model_arch or "deeplab" in model_arch or "segment anything" in model_arch or "sam" in model_arch):
+                from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
+                job.config['num_classes'] = 2  # Background, Wear/Damage
+                logger.info(f"Using UNetTrainer for edge analysis (num_classes={job.config['num_classes']})")
+                return UNetTrainer(job.config)
+
+            # ============================================
+            # SURFACE ANALYSIS - U-Net / FPN / ConvNext / Swin
+            # ============================================
+            surface_types = [
+                'surface_defect_detection',
+                'surface_quality_rating', 
+                'surface_damage_classification',
+            ]
+        
+            if (any(t in dataset_type for t in surface_types) or
+                "feature pyramid" in model_arch or "fpn" in model_arch or
+                "swin" in model_arch or "convnext" in model_arch or
+                "photometric surface" in model_arch or "surface quality" in model_arch):
+                from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
+                job.config['num_classes'] = 2  # Background, Defect
+                logger.info(f"Using UNetTrainer for surface analysis (num_classes={job.config['num_classes']})")
+                return UNetTrainer(job.config)
+
+            # ============================================
+            # PHOTOMETRIC STEREO - U-Net / Custom PS-Net
+            # ============================================
+            photometric_types = [
+                'photometric_surface_normals',
+                'photometric_reflectance',
+                'photometric_depth',
+            ]
+        
+            if (any(t in dataset_type for t in photometric_types) or
+                "ps-net" in model_arch or "eventps" in model_arch or "photometric" in model_arch):
+                from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
+                job.config['num_classes'] = 3  # Normal X, Y, Z (or depth channels)
+                job.config['in_channels'] = 6  # RGB + Normal map
+                logger.info(f"Using UNetTrainer for photometric stereo (num_classes={job.config['num_classes']})")
+                return UNetTrainer(job.config)
+
+            # ============================================
+            # YOLO PROFESSIONAL SYSTEMS - Use Detectron2 as fallback or custom YOLO trainer
+            # ============================================
+            yolo_types = [
+                'yolo_v10x_precision',
+                'yolo_v9_accuracy',
+                'yolo_11s_advanced',
+            ]
+        
+            if (any(t in dataset_type for t in yolo_types) or
+                "yolo" in model_arch or "yolov" in model_arch):
+                # For now, use Detectron2 as it handles object detection
+                # TODO: Add dedicated YOLO trainer
+                from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
+                job.config['num_classes'] = 2
+                logger.info(f"Using Detectron2Trainer as fallback for YOLO-based detection (num_classes={job.config['num_classes']})")
+                return Detectron2Trainer(job.config)
+
+            # ============================================
+            # EXPERIMENTAL/FUTURE SYSTEMS - Map to closest available
+            # ============================================
+            if 'vision_language_fusion' in dataset_type or 'fusion_sam' in model_arch:
+                # Use UNet with SAM-inspired architecture
+                from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
+                job.config['num_classes'] = 2
+                logger.info(f"Using UNetTrainer for vision-language fusion (num_classes={job.config['num_classes']})")
+                return UNetTrainer(job.config)
             
-        Returns:
-            Trainer instance or None if unknown type
-        """
-        model_type = job.model_type.lower()
-        
-        # Import and create appropriate trainer
-        if "detectron2" in model_type or "mask r-cnn" in model_type:
-            from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
-            return Detectron2Trainer(job.config)
-        
-        elif "vit" in model_type or "vision transformer" in model_type:
-            from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
-            return ViTTrainer(job.config)
-        
-        elif "u-net" in model_type or "surface" in model_type:
-            from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
-            return UNetTrainer(job.config)
-        
-        # TODO: Add more trainer types as they're implemented
-        
-        else:
-            logger.error(f"Unknown model type: {model_type}")
+            if 'neural_rendering_hybrid' in dataset_type or 'nerf' in model_arch or 'gaussian' in model_arch or 'bayessdf' in model_arch:
+                # Use ViT for neural rendering
+                from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
+                job.config['num_classes'] = 4
+                logger.info(f"Using ViTTrainer for neural rendering (num_classes={job.config['num_classes']})")
+                return ViTTrainer(job.config)
+            
+            if 'tesla_hydra_phoenix' in dataset_type:
+                # Multi-task - use FusionTrainer
+                from src.modules.phoenix_trainer.trainers.fusion_trainer import FusionTrainer
+                logger.info(f"Using FusionTrainer for Tesla Hydra Phoenix")
+                return FusionTrainer(job.config)
+            
+            if 'uncertainty_quantification' in dataset_type or 'bayesian' in model_arch:
+                # Use ViT with Bayesian extensions
+                from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
+                job.config['num_classes'] = 4
+                job.config['enable_uncertainty'] = True
+                logger.info(f"Using ViTTrainer for uncertainty quantification (num_classes={job.config['num_classes']})")
+                return ViTTrainer(job.config)
+
+            # ============================================
+            # TRADITIONAL CLASSIFICATION - ViT
+            # ============================================
+            if dataset_type == 'classification' or 'classification' in model_arch:
+                from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
+                job.config['num_classes'] = job.config.get('num_classes', 10)
+                logger.info(f"Using ViTTrainer for classification (num_classes={job.config['num_classes']})")
+                return ViTTrainer(job.config)
+
+            # Default fallback - try to infer from model_architecture
+            if model_arch:
+                if "mask" in model_arch or "detectron" in model_arch or "rcnn" in model_arch:
+                    from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
+                    job.config['num_classes'] = 2
+                    return Detectron2Trainer(job.config)
+                elif "vit" in model_arch or "transformer" in model_arch or "deit" in model_arch or "resnet" in model_arch or "efficientnet" in model_arch:
+                    from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
+                    job.config['num_classes'] = job.config.get('num_classes', 4)
+                    return ViTTrainer(job.config)
+                elif "unet" in model_arch or "segment" in model_arch or "deeplab" in model_arch:
+                    from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
+                    job.config['num_classes'] = 2
+                    return UNetTrainer(job.config)
+
+            logger.error(f"Unknown model type: model_type={model_type}, model_arch={model_arch}, dataset_type={dataset_type}")
             return None
     
     def _on_job_progress(self, job: TrainingJob, epoch: int, total: int, progress: float):
