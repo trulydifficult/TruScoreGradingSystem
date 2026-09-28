@@ -1,5 +1,3 @@
-# FILE: project_brain/CODE_ARCHAEOLOGY.md
-
 # TruScoreGradingSystem — Code Archaeology
 
 ## Purpose
