@@ -1,5 +1,3 @@
-# FILE: project_brain/HANDOFF.md
-
 # TruScoreGradingSystem — Current Handoff
 
 Last updated: 2026-09-28
