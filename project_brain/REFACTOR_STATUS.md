@@ -1,5 +1,3 @@
-# FILE: project_brain/REFACTOR_STATUS.md
-
 # TruScoreGradingSystem — Refactor Status
 
 Last updated: 2026-09-28
