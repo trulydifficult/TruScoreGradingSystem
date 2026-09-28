@@ -1,5 +1,3 @@
-# FILE: project_brain/CURRENT_STATE.md
-
 # TruScoreGradingSystem — Current State
 
 Last baseline review: 2026-09-28
