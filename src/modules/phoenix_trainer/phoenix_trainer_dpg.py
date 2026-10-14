@@ -163,7 +163,12 @@ class PhoenixTrainer:
 
         if self.auto_start and self.dataset_from_queue:
             if self.loaded_dataset:
-                self.start_training()
+                if not self.start_training():
+                    self.log_message(
+                        "Queued training could not start; trainer worker will exit.",
+                        "ERROR",
+                    )
+                    self._ui_events.put(("stop_app",))
             else:
                 self.log_message(
                     "Queued dataset could not be loaded; trainer worker will exit.",
@@ -863,26 +868,28 @@ class PhoenixTrainer:
         self.update_queue_display()
         self.log_message("Training queue cleared")
     
-    def start_training(self):
+    def start_training(self) -> bool:
         """Start training with the currently loaded completed dataset."""
         if not getattr(self, "loaded_dataset", None):
             self.log_message("No dataset loaded! Load a dataset first.", "ERROR")
-            return
+            return False
 
         if self.is_training:
             self.log_message("Training already in progress!", "WARNING")
-            return
+            return False
 
         requested_gpu = "GPU" in dpg.get_value("device")
         if not self.system_checks.get("base_ready", False):
             self.log_message(
                 "Base system pre-flight failed. Check disk/directories.", "ERROR"
             )
-            return
+            return False
         if requested_gpu and not self.system_checks.get("gpu", {}).get("available", False):
-            error = self.system_checks.get("gpu", {}).get("error", "GPU backend is not ready")
+            error = self.system_checks.get("gpu", {}).get(
+                "error", "GPU backend is not ready"
+            )
             self.log_message(f"GPU training blocked: {error}", "ERROR")
-            return
+            return False
 
         job = {
             "name": self.loaded_dataset["name"],
@@ -919,6 +926,7 @@ class PhoenixTrainer:
             name=f"phoenix-training-{job['name']}",
         )
         training_thread.start()
+        return True
     def _train_job(self, job: dict):
         """Execute one Phoenix training job in the background worker."""
         dataset_path = Path(job["path"])
