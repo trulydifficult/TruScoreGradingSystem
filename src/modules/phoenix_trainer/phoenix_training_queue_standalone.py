@@ -698,24 +698,70 @@ class PhoenixTrainingQueueApp:
         except Exception as e:
             pass  # Errors logged to file, not console
     
+    def _reconcile_pending_directory(self):
+        """Reconcile saved queue state with the authoritative pending directory."""
+        pending_dirs = sorted(
+            (path for path in self.pending_dir.iterdir() if path.is_dir()),
+            key=lambda path: path.name,
+        )
+        pending_paths = {str(path.resolve()) for path in pending_dirs}
+
+        # Remove stale pending/queued records whose directories no longer exist.
+        reconciled = []
+        for dataset in self.datasets:
+            status = str(dataset.get("status", "")).lower()
+            path_value = dataset.get("path")
+            if status in {"pending", "queued"} and path_value:
+                dataset_path = Path(path_value)
+                try:
+                    resolved = str(dataset_path.resolve())
+                except OSError:
+                    resolved = str(dataset_path)
+
+                if dataset_path.parent == self.pending_dir and resolved not in pending_paths:
+                    logger.info(
+                        "Dropping stale pending queue record: %s",
+                        dataset.get("name", dataset_path.name),
+                    )
+                    continue
+            reconciled.append(dataset)
+
+        self.datasets = reconciled
+
+        known_paths = set()
+        for dataset in self.datasets:
+            path_value = dataset.get("path")
+            if not path_value:
+                continue
+            try:
+                known_paths.add(str(Path(path_value).resolve()))
+            except OSError:
+                known_paths.add(str(Path(path_value)))
+
+        # Add datasets that were exported while the queue process was not running.
+        for dataset_dir in pending_dirs:
+            resolved = str(dataset_dir.resolve())
+            if resolved not in known_paths:
+                self.load_dataset_info(dataset_dir)
+                known_paths.add(resolved)
+
+        self.update_queue_display()
+        self.save_queue_state()
+
     def load_queue_state(self):
-        """Load queue state from file"""
+        """Load persisted state and reconcile it with pending datasets on disk."""
+        self.datasets = []
+
         if self.state_file.exists():
             try:
-                with open(self.state_file, 'r') as f:
+                with open(self.state_file, "r", encoding="utf-8") as f:
                     state = json.load(f)
-                
-                self.datasets = state.get('datasets', [])
-                # Logging suppressed for clean CLI
-                self.update_queue_display()
-                
-            except Exception as e:
-                # Errors logged to file, not console
-                self.refresh_queue()
-        else:
-            # No saved state, scan pending directory
-            self.refresh_queue()
-    
+                self.datasets = state.get("datasets", [])
+            except Exception:
+                logger.exception("Could not load queue state; rebuilding pending queue")
+                self.datasets = []
+
+        self._reconcile_pending_directory()
     def start_file_watcher(self):
         """Start watching pending directory for new datasets"""
         if not WATCHDOG_AVAILABLE:
