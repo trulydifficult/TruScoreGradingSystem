@@ -1,0 +1,49 @@
+name: Phoenix Foundation
+
+on:
+  pull_request:
+    paths:
+      - "src/modules/phoenix_trainer/**"
+      - "tests/phoenix/**"
+      - ".github/workflows/phoenix-foundation.yml"
+  push:
+    branches:
+      - "refactor/phoenix-foundation"
+    paths:
+      - "src/modules/phoenix_trainer/**"
+      - "tests/phoenix/**"
+      - ".github/workflows/phoenix-foundation.yml"
+
+jobs:
+  foundation-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install test dependency
+        run: python -m pip install --upgrade pytest
+
+      - name: Compile touched Phoenix modules
+        run: |
+          python -m py_compile \
+            src/modules/phoenix_trainer/trainer_registry.py \
+            src/modules/phoenix_trainer/hardware_backend.py \
+            src/modules/phoenix_trainer/phoenix_trainer_dpg.py \
+            src/modules/phoenix_trainer/queue_manager.py \
+            src/modules/phoenix_trainer/trainers/base_trainer.py \
+            src/modules/phoenix_trainer/trainers/detectron2_trainer.py
+
+      - name: Run Phoenix foundation unit tests
+        env:
+          PYTHONPATH: src
+        run: |
+          pytest -q \
+            tests/phoenix/test_trainer_registry.py \
+            tests/phoenix/test_hardware_backend.py
