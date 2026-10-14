@@ -17,12 +17,12 @@ import os
 
 # Import enterprise features
 try:
-    from src.modules.phoenix_trainer.utils.advanced_monitoring import AdvancedMonitor
-    from src.modules.phoenix_trainer.utils.advanced_training_features import EarlyStopping, MixedPrecisionManager
+    from ..utils.advanced_monitoring import AdvancedMonitor
+    from ..utils.advanced_training_features import EarlyStopping, MixedPrecisionManager
     ENTERPRISE_FEATURES_AVAILABLE = True
-except ImportError:
+except ImportError as exc:
     ENTERPRISE_FEATURES_AVAILABLE = False
-    logging.warning("Enterprise features not available")
+    logging.warning("Enterprise features not available: %s", exc)
 
 # Import Guru integration
 try:
