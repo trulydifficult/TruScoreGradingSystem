@@ -428,7 +428,7 @@ class PhoenixTrainer:
             dpg.add_text("Device:")
             dpg.add_combo(
                 items=["GPU (PyTorch CUDA/ROCm)", "CPU"],
-                default_value="CUDA (GPU)",
+                default_value="GPU (PyTorch CUDA/ROCm)",
                 tag="device",
                 width=-1
             )
@@ -945,6 +945,9 @@ class PhoenixTrainer:
             completed_path = self.completed_dir / dataset_path.name
             logger.info(f"Moving dataset to completed: {completed_path}")
             shutil.move(str(dataset_path), str(completed_path))
+            job["path"] = str(completed_path)
+            job["config"]["dataset_path"] = str(completed_path)
+            dataset_path = completed_path
 
             self.write_training_status(
                 job,
@@ -970,6 +973,9 @@ class PhoenixTrainer:
                     failed_path = self.failed_dir / dataset_path.name
                     logger.info(f"Moving dataset to failed: {failed_path}")
                     shutil.move(str(dataset_path), str(failed_path))
+                    job["path"] = str(failed_path)
+                    job["config"]["dataset_path"] = str(failed_path)
+                    dataset_path = failed_path
 
                     error_log = failed_path / "training_error.txt"
                     with open(error_log, "w", encoding="utf-8") as f:
