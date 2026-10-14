@@ -27,6 +27,7 @@ jobs:
             src/modules/phoenix_trainer
             src/modules/main_window/main_window.py
             src/shared/essentials
+            scripts/verify_phoenix_backend.py
             tests/phoenix
           sparse-checkout-cone-mode: false
 
@@ -51,7 +52,8 @@ jobs:
             src/modules/phoenix_trainer/queue_manager.py \
             src/modules/main_window/main_window.py \
             src/modules/phoenix_trainer/trainers/base_trainer.py \
-            src/modules/phoenix_trainer/trainers/detectron2_trainer.py
+            src/modules/phoenix_trainer/trainers/detectron2_trainer.py \
+            scripts/verify_phoenix_backend.py
 
       - name: Run Phoenix foundation unit tests
         env:
