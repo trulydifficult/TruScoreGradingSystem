@@ -74,3 +74,11 @@ The first foundation slice is in progress. It centralizes trainer resolution,
 repairs DPG/BaseTrainer contracts, and replaces silent unrelated-model fallback
 behavior with explicit unsupported errors. Runtime verification on the production
 ROCm workstation is still required before Phoenix can be marked VERIFIED.
+
+
+## Phoenix Runtime Verification Checkpoints
+
+- Queue launch from `run_truscore.py`: VERIFIED on production workstation
+- Queue -> Trainer worker dispatch: PENDING
+- ROCm/PyTorch backend in TruScore Python 3.11.17 env: PENDING INSTALL/VERIFY
+- Real model training smoke test on RX 7900 XTX: PENDING
