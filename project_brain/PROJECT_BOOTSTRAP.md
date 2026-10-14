@@ -115,3 +115,23 @@ Before substantial development work:
 The objective is not simply to make TruScore run.
 
 The objective is to transform the existing working application into a coherent, testable, maintainable professional architecture without losing valuable functionality created during earlier development.
+
+
+## Runtime Acceptance Protocol
+
+User acceptance testing for TruScore is end-to-end from the real application
+entrypoint.
+
+The standard acceptance sequence is:
+
+1. Activate the normal TruScore Python environment.
+2. Launch the application through `run_truscore.py`.
+3. Navigate through the real application UI to the subsystem under test.
+4. Exercise the target behavior from that point.
+
+Launching a module directly is useful for developer diagnostics and component
+smoke tests, but it does NOT count as runtime acceptance unless the same behavior
+has also been reached from `run_truscore.py`.
+
+This rule exists to catch integration defects in startup, navigation, environment,
+subprocess launching, and inter-module wiring that isolated tests can miss.
