@@ -179,3 +179,22 @@ AFK training without manual Start clicks between datasets.
 
 User runtime acceptance must always begin from the normal activated environment
 and `run_truscore.py`, then navigate through the real UI to the test point.
+
+
+### Latest verification checkpoint
+
+GitHub Actions run `38518806418` completed successfully after the process-boundary
+repairs.
+
+It verifies:
+
+- syntax compilation of touched Phoenix/main-window modules
+- Phoenix foundation unit/regression tests
+- executable trainer entrypoint
+- executable queue entrypoint
+- trainer process remains alive through GUI startup under Xvfb
+- queue process remains alive through GUI startup under Xvfb
+
+Production acceptance still requires the user's normal end-to-end path:
+activated TruScore environment -> `run_truscore.py` -> Phoenix UI -> queue/job
+dispatch on the RX 7900 XTX workstation.
