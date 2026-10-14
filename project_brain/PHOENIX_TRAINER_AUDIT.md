@@ -446,7 +446,13 @@ Completed:
 - GitHub Actions syntax compilation for every touched Phoenix module
 - GitHub Actions Phoenix foundation unit tests
 
-GitHub Actions run `38490732331` completed successfully.
+GitHub Actions run `38490732331` completed successfully for the initial
+foundation suite.
+
+After end-to-end testing exposed executable-entrypoint and process-boundary
+regressions, GitHub Actions run `38518806418` also completed successfully with
+expanded entrypoint regression tests and Xvfb GUI-process smoke launches for both
+Phoenix Trainer and Phoenix Training Queue.
 
 Not yet completed:
 
