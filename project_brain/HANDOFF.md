@@ -124,12 +124,15 @@ Implemented on the branch:
 
 ### Verification state
 
-Registry resolution behavior was independently exercised for supported and
-unsupported cases.
+Registry resolution behavior and backend-family identification were independently
+exercised.
 
-Full branch checkout/runtime execution was not possible in the remote verification
-container because it has no outbound DNS. Do not mark the slice VERIFIED until it
-is run on the production workstation.
+GitHub Actions run `38490732331` completed successfully, including syntax
+compilation of every touched Phoenix module and the Phoenix foundation unit tests.
+
+The remote verification container itself has no outbound DNS, and the GitHub
+runner has no RX 7900 XTX/ROCm device. Do not mark the slice VERIFIED until the
+runtime smoke test is executed on the production workstation.
 
 ### Immediate next work
 
