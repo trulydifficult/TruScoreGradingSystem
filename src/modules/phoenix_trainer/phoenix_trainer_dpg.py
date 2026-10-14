@@ -55,12 +55,14 @@ class PhoenixTrainer:
     def __init__(
         self,
         dataset_path: Optional[str] = None,
+        auto_start: bool = False,
         auto_exit_after_job: bool = False,
     ):
         self.training_queue = []
         self.current_job = None
         self.is_training = False
         self.dataset_from_queue = dataset_path  # Dataset passed from queue
+        self.auto_start = auto_start
         self.auto_exit_after_job = auto_exit_after_job
         self.loaded_dataset = None  # Currently loaded dataset
         self._last_metrics = {}
@@ -163,6 +165,16 @@ class PhoenixTrainer:
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.set_primary_window("primary_window", True)
+
+        if self.auto_start and self.dataset_from_queue:
+            if self.loaded_dataset:
+                self.start_training()
+            else:
+                self.log_message(
+                    "Queued dataset could not be loaded; trainer worker will exit.",
+                    "ERROR",
+                )
+                self._ui_events.put(("stop_app",))
         
     # Queue panel removed - using standalone queue application
         
@@ -1348,6 +1360,11 @@ def main():
         help="Path to dataset directory (from training queue)",
     )
     parser.add_argument(
+        "--auto-start",
+        action="store_true",
+        help="Start the supplied queued dataset immediately after Phoenix opens.",
+    )
+    parser.add_argument(
         "--auto-exit",
         action="store_true",
         help="Close Phoenix automatically after the queued job finishes or fails.",
@@ -1364,6 +1381,7 @@ def main():
 
     trainer = PhoenixTrainer(
         dataset_path=args.dataset,
+        auto_start=args.auto_start,
         auto_exit_after_job=args.auto_exit,
     )
     trainer.run()
