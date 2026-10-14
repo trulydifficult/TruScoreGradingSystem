@@ -948,7 +948,7 @@ class PhoenixTrainer:
 
                 learning_rate = metrics.get("learning_rate")
                 if learning_rate is not None:
-                    dpg.set_value(
+                    self._queue_ui_value(
                         "lr_text", f"Learning Rate: {float(learning_rate):.6f}"
                     )
 
@@ -960,7 +960,7 @@ class PhoenixTrainer:
                     "accuracy", metrics.get("train_accuracy")
                 )
                 if accuracy is not None:
-                    dpg.set_value(
+                    self._queue_ui_value(
                         "acc_text", f"Accuracy: {float(accuracy):.2f}%"
                     )
 
@@ -1009,7 +1009,7 @@ class PhoenixTrainer:
             job["status"] = "Completed"
             if job in self.training_queue:
                 self.training_queue.remove(job)
-                self.update_queue_display()
+                self._ui_events.put(("refresh_queue",))
 
         except Exception as exc:
             logger.exception("Training failed")
@@ -1046,10 +1046,8 @@ class PhoenixTrainer:
         finally:
             self.is_training = False
             self.current_job = None
-            if dpg.does_item_exist("current_job"):
-                dpg.set_value("current_job", "No active training")
-            if dpg.does_item_exist("model_type"):
-                dpg.set_value("model_type", "N/A")
+            self._queue_ui_value("current_job", "No active training")
+            self._queue_ui_value("model_type", "N/A")
     def get_training_config(self, job: dict, dataset_path: Path) -> dict:
         """Snapshot the training configuration shared by all concrete trainers."""
         dataset_config = job.get("dataset_config", {})
@@ -1294,6 +1292,8 @@ class PhoenixTrainer:
             elif kind == "log":
                 _, message, level = event
                 self._append_log_to_ui(message, level)
+            elif kind == "refresh_queue":
+                self.update_queue_display()
 
     def log_message(self, message: str, level: str = "INFO"):
         """Log immediately and marshal visual updates onto the DPG main thread."""
