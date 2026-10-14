@@ -1,6 +1,6 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last updated: 2026-10-13
+Last updated: 2026-10-14
 
 ## Status Legend
 
@@ -72,13 +72,15 @@ Active branch: `refactor/phoenix-foundation`
 
 The first foundation slice is in progress. It centralizes trainer resolution,
 repairs DPG/BaseTrainer contracts, and replaces silent unrelated-model fallback
-behavior with explicit unsupported errors. Runtime verification on the production
-ROCm workstation is still required before Phoenix can be marked VERIFIED.
+behavior with explicit unsupported errors. The production ROCm backend and the
+end-to-end queue -> Trainer -> real ViT training path are now verified. Phoenix
+remains IN PROGRESS because model-specific runtime repair and broader trainer
+contracts are not yet complete.
 
 
 ## Phoenix Runtime Verification Checkpoints
 
 - Queue launch from `run_truscore.py`: VERIFIED on production workstation
-- Queue -> Trainer worker dispatch: PENDING
+- Queue -> Trainer worker dispatch: VERIFIED
 - ROCm/PyTorch backend in TruScore Python 3.11.17 env: VERIFIED
-- Real model training smoke test on RX 7900 XTX: PENDING
+- Real model training smoke test on RX 7900 XTX: VERIFIED
