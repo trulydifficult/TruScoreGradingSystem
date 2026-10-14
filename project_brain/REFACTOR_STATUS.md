@@ -1,6 +1,6 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last updated: 2026-09-28
+Last updated: 2026-10-13
 
 ## Status Legend
 
@@ -21,7 +21,7 @@ Last updated: 2026-09-28
 | Photometric Runtime | PARTIAL AUDIT | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED |
 | Dataset Studio | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | Annotation Studio | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
-| Phoenix Trainer | PARTIAL AUDIT | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED |
+| Phoenix Trainer | AUDITED | AUDITED | PLANNED | IN PROGRESS | NOT STARTED |
 | Guru / Continuous Learning | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | Mobile API | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | Flutter Mobile App | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
@@ -60,3 +60,17 @@ The immediate objective is to determine:
 No subsystem should be marked AUDITED until both the current implementation and relevant historical implementations have been examined.
 
 No subsystem should be marked VERIFIED until appropriate tests or runtime checks confirm the refactor preserved or deliberately changed behavior.
+
+
+## Phoenix Trainer Active Refactor
+
+Formal audit: `project_brain/PHOENIX_TRAINER_AUDIT.md`
+
+Architecture decision: `project_brain/decisions/0001-phoenix-trainer-foundation.md`
+
+Active branch: `refactor/phoenix-foundation`
+
+The first foundation slice is in progress. It centralizes trainer resolution,
+repairs DPG/BaseTrainer contracts, and replaces silent unrelated-model fallback
+behavior with explicit unsupported errors. Runtime verification on the production
+ROCm workstation is still required before Phoenix can be marked VERIFIED.
