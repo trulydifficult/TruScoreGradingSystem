@@ -829,3 +829,14 @@ class PhoenixTrainingQueueApp:
 
         self.save_queue_state()
         dpg.destroy_context()
+
+
+def main():
+    """Launch the standalone Phoenix Training Queue."""
+    logger.info("Dataset Queue: Loaded")
+    app = PhoenixTrainingQueueApp()
+    app.run()
+
+
+if __name__ == "__main__":
+    main()
