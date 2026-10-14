@@ -147,3 +147,35 @@ runtime smoke test is executed on the production workstation.
    contract.
 6. Begin real smoke training on the RX 7900 XTX before expanding experimental
    trainers.
+
+
+## Runtime Integration Finding — 2026-10-14
+
+End-to-end testing from `run_truscore.py` exposed a regression that isolated
+compile/unit tests did not catch: `phoenix_trainer_dpg.py` had lost its top-level
+`main()` entrypoint during the first refactor slice, so the spawned trainer
+process exited immediately while the queue remained visible.
+
+The entrypoint has been restored and CI now contains an explicit entrypoint test
+plus real GUI-process startup smoke tests.
+
+The same investigation confirmed a second architectural regression: the current
+standalone queue had stopped launching a separate trainer and was instead
+executing training inside `QueueManager` in the queue process. That contradicts
+the intended unattended workflow.
+
+The active branch now restores the intended boundary:
+
+```text
+run_truscore.py
+    -> Phoenix Training Queue process
+        -> Phoenix Trainer worker process (one active dataset)
+        -> worker exits on terminal result
+        -> queue dispatches next pending dataset
+```
+
+Queued trainer workers receive `--auto-start --auto-exit`, allowing sequential
+AFK training without manual Start clicks between datasets.
+
+User runtime acceptance must always begin from the normal activated environment
+and `run_truscore.py`, then navigate through the real UI to the test point.
