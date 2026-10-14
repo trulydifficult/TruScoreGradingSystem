@@ -61,6 +61,11 @@ except Exception as e:
     TRAY_AVAILABLE = False
     # Silently disable tray if X11 connection fails
 
+try:
+    from .hardware_backend import build_torch_runtime_environment
+except ImportError:
+    from modules.phoenix_trainer.hardware_backend import build_torch_runtime_environment
+
 # Setup professional logging - suppress console output
 import logging
 logging.getLogger('watchdog').setLevel(logging.WARNING)
@@ -488,6 +493,8 @@ class PhoenixTrainingQueueApp:
             raise FileNotFoundError(f"Trainer script not found: {trainer_script}")
 
         logger.info(f"Launching Phoenix Trainer worker: {dataset_path}")
+        trainer_env = build_torch_runtime_environment(os.environ)
+
         return subprocess.Popen(
             [
                 sys.executable,
@@ -498,6 +505,7 @@ class PhoenixTrainingQueueApp:
                 "--auto-exit",
             ],
             cwd=str(trainer_script.parent),
+            env=trainer_env,
         )
     def start_queue(self):
         """Begin unattended sequential processing of pending datasets."""
