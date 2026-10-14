@@ -282,3 +282,34 @@ the same bootstrap behavior.
 
 This checkpoint verifies the production accelerator backend itself. It does not
 yet verify queue -> Trainer worker dispatch or a real model-training epoch.
+
+
+## Phoenix End-to-End GPU Training Accepted — 2026-10-14
+
+The user verified the complete production path from the normal application entrypoint:
+
+```text
+run_truscore.py
+-> Phoenix Training Queue
+-> queued smoke dataset
+-> separate Phoenix Trainer worker
+-> Vision Transformer training on ROCm / RX 7900 XTX
+-> epoch completed
+-> checkpoint saved
+-> training completed
+-> dataset moved to exports/training_queue/completed/
+```
+
+Observed runtime messages confirmed:
+- Phoenix started Vision Transformer training.
+- Guru received epoch/checkpoint/training completion events.
+- Phoenix reported training completion for the smoke dataset.
+- Phoenix moved the dataset into the completed queue directory.
+
+This is a real training-path acceptance test. The synthetic smoke dataset is only
+for pipeline verification; its accuracy is not model-quality evidence.
+
+A non-blocking `Enterprise features not available` warning was traced to an
+incorrect `src.modules...` package import in `trainers/base_trainer.py`.
+The import was corrected to package-relative Phoenix utility imports so this
+warning does not mask actual optional dependency state.
