@@ -27,7 +27,9 @@ jobs:
             src/modules/phoenix_trainer
             src/modules/main_window/main_window.py
             src/shared/essentials
-            scripts/verify_phoenix_backend.py
+            scripts/verify_phoenix_backend.py \
+            scripts/create_phoenix_vit_smoke_dataset.py
+            scripts/create_phoenix_vit_smoke_dataset.py
             tests/phoenix
           sparse-checkout-cone-mode: false
 
