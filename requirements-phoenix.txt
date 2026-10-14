@@ -1,0 +1,4 @@
+# Phoenix Trainer model/runtime dependencies that are not accelerator-specific.
+# Install inside the activated TruScore Python 3.11.17 environment.
+
+timm==1.0.23
