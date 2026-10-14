@@ -1,6 +1,6 @@
 # TruScoreGradingSystem — Current State
 
-Last baseline review: 2026-09-28
+Last baseline review: 2026-10-13
 
 ## Current Implementation
 
@@ -56,26 +56,30 @@ Contains the current modular annotation system and annotation plugins.
 
 `src/modules/phoenix_trainer/`
 
-Contains the current training application and trainer implementations.
+Phoenix received its first formal subsystem audit on 2026-10-13. See
+`project_brain/PHOENIX_TRAINER_AUDIT.md`.
 
-Known real trainer implementations currently include:
+Verified real trainer implementations currently include:
 
-- Vision Transformer training
-- U-Net surface-defect training
+- timm Vision Transformer classification
+- U-Net semantic segmentation with RGB + normal-map inputs
 - Detectron2 / Mask R-CNN training when Detectron2 is available
-- trainer queue and monitoring infrastructure
+- standalone queue/process infrastructure
+- monitoring/checkpoint infrastructure
 
-Phoenix has not yet been fully audited.
+The audit confirmed substantial integration defects around the real trainers,
+including DPG/BaseTrainer API mismatches, contradictory trainer-routing ownership,
+fail-open dataset validation, unwired advanced controls, invalid SUCCESS logging,
+Detectron2 lifecycle/split problems, simulated fallback code, and silent
+substitution of unrelated model families.
 
-Known issues discovered during preliminary inspection include:
+The active refactor branch is:
 
-- some advanced UI options are not fully wired into the underlying trainers
-- mixed-precision infrastructure exists but is not consistently used by current training loops
-- some trainer selections currently substitute unrelated implementations
-- a simplified Detectron2 fallback contains simulated loss values rather than a real training implementation
-- the Detectron2 training lifecycle requires review because its iteration model does not cleanly match the Phoenix epoch abstraction
+`refactor/phoenix-foundation`
 
-These findings must be verified and addressed during the formal Phoenix refactor.
+The first slice establishes truthful trainer resolution and repairs the execution
+contract without rewriting model algorithms. Runtime verification is not yet
+complete, so Phoenix is not VERIFIED.
 
 ### Continuous Learning / The Guru
 
