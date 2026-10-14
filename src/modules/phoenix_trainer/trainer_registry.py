@@ -25,6 +25,7 @@ class UnsupportedTrainingConfiguration(RuntimeError):
 # These dataset contracts require behavior that the current concrete trainers do
 # not implement. Keep this list explicit so support is added deliberately.
 _UNSUPPORTED_DATASET_TYPES = {
+    "border_ultra_precision",       # requires real sub-pixel localization
     "corner_damage_detection",       # localization/detection, not classification
     "surface_quality_rating",        # numerical quality regression
     "photometric_depth",
@@ -56,7 +57,6 @@ _UNSUPPORTED_MARKERS = {
     "meta learner",
     "swin",
     "convnext",
-    "feature pyramid",
     "sub-pixel",
     "subpixel",
 }
