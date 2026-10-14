@@ -45,7 +45,7 @@ It must not automatically be treated as obsolete code.
 
 Status:
 
-PARTIALLY INSPECTED
+AUDITED FOR PHOENIX REFACTOR
 
 Current counterpart:
 
@@ -134,3 +134,37 @@ Not yet sufficiently inspected.
 Never delete historical code solely because a newer file exists.
 
 First determine whether the newer implementation retained all valuable behavior.
+
+
+## Phoenix Trainer Formal Audit — 2026-10-13
+
+Full record: `project_brain/PHOENIX_TRAINER_AUDIT.md`
+
+### Current implementation
+
+The current ViT, U-Net, and Detectron2 implementations contain real training
+logic and are retained as the refactor anchors.
+
+The current fusion/routing layer is not reliable evidence of model support:
+several requested models were silently mapped to unrelated trainers. Trainer
+ownership is being consolidated so unsupported functionality fails explicitly.
+
+### Historical classifications
+
+- `photometric_dataset.py` — REFERENCE / SALVAGE CONCEPTS
+- `photometric_training.py` — BROKEN / REFERENCE
+- `model_architectures.py` — REFERENCE
+- `config_schemas.py` — REFERENCE / SALVAGE CONCEPTS
+- `revolutionary_training_engine.py` — REFERENCE
+- `enterprise_trainer.py` — BROKEN / REFERENCE
+- historical Phoenix Training Studio — BROKEN / REFERENCE
+- duplicate historical Phoenix queues — DUPLICATE / BROKEN
+- `revolutionary_llm_meta_learning.py` — REFERENCE / FUTURE AUDIT
+- `Checkplz/claude_fix/ai_development.py` — BROKEN / REFERENCE
+- `Checkplz/claude_fix/ai_development_enhanced.py` — BROKEN / REFERENCE
+- `trugrade_ai_trainer.py` — REFERENCE
+
+The older photometric material remains valuable, but it is not directly
+restorable as a working trainer. The dataset metadata contract, model input shape,
+and trainer/model interfaces conflict. Its multi-light design and photometric
+losses should be recovered deliberately after the shared Phoenix engine is stable.
