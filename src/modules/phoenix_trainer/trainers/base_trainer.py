@@ -100,32 +100,40 @@ class BaseTrainer(ABC):
         logger.info(f"Output: {self.output_dir}")
     
     def _setup_enterprise_features(self):
-        """Initialize enterprise monitoring and training features"""
+        """Initialize only the enterprise features enabled by the run config."""
         try:
-            # Advanced monitoring (TensorBoard + WandB)
-            experiment_name = f"{self.__class__.__name__}_{self.dataset_path.name}"
-            self.advanced_monitor = AdvancedMonitor(
-                log_dir=self.output_dir / "logs",
-                experiment_name=experiment_name,
-                config=self.config
-            )
-            logger.info("✅ Advanced monitoring enabled (TensorBoard + WandB)")
-            
-            # Early stopping
-            patience = self.config.get('early_stopping_patience', 10)
-            self.early_stopping = EarlyStopping(
-                patience=patience,
-                min_delta=0.001,
-                mode='max',
-                save_path=self.output_dir / "best_model_early_stop.pth"
-            )
-            logger.info(f"✅ Early stopping enabled (patience={patience})")
-            
-            # Mixed precision training
-            if self.config.get('mixed_precision', True):
+            if self.config.get("advanced_monitoring", True):
+                experiment_name = f"{self.__class__.__name__}_{self.dataset_path.name}"
+                self.advanced_monitor = AdvancedMonitor(
+                    log_dir=self.output_dir / "logs",
+                    experiment_name=experiment_name,
+                    config=self.config,
+                )
+                logger.info("Advanced monitoring enabled")
+            else:
+                self.advanced_monitor = None
+                logger.info("Advanced monitoring disabled by run configuration")
+
+            if self.config.get("early_stopping", True):
+                patience = self.config.get("early_stopping_patience", 10)
+                self.early_stopping = EarlyStopping(
+                    patience=patience,
+                    min_delta=0.001,
+                    mode="max",
+                    save_path=self.output_dir / "best_model_early_stop.pth",
+                )
+                logger.info(f"Early stopping enabled (patience={patience})")
+            else:
+                self.early_stopping = None
+                logger.info("Early stopping disabled by run configuration")
+
+            if self.config.get("mixed_precision", True):
                 self.mixed_precision = MixedPrecisionManager(enabled=True)
-                logger.info("✅ Mixed precision training enabled (FP16)")
-            
+                logger.info("Mixed precision manager initialized")
+            else:
+                self.mixed_precision = None
+                logger.info("Mixed precision disabled by run configuration")
+
         except Exception as e:
             logger.warning(f"Failed to initialize enterprise features: {e}")
             self.advanced_monitor = None
