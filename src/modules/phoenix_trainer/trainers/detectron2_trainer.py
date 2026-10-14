@@ -31,7 +31,7 @@ class Detectron2Trainer(BaseTrainer):
         super().__init__(config)
         
         # Detectron2-specific config
-        self.num_classes = 2  # outer_border, inner_border
+        self.num_classes = int(config.get('num_classes', 2))
         self.model = None
         self.cfg = None
         self.data_loader_train = None
@@ -101,8 +101,20 @@ class Detectron2Trainer(BaseTrainer):
             str(images_dir)
         )
         
-        # Set class names
-        MetadataCatalog.get(dataset_name).thing_classes = ["outer_border", "inner_border"]
+        # Derive class names from the COCO contract when available. This keeps
+        # Detectron2's head count aligned with the dataset instead of hard-coding
+        # a two-class border problem.
+        categories = sorted(coco_data.get("categories", []), key=lambda item: item.get("id", 0))
+        if categories:
+            class_names = [
+                category.get("name", f"class_{category.get('id', index)}")
+                for index, category in enumerate(categories)
+            ]
+            self.num_classes = len(class_names)
+        else:
+            class_names = [f"class_{index}" for index in range(self.num_classes)]
+
+        MetadataCatalog.get(dataset_name).thing_classes = class_names
         
         self.dataset_name = dataset_name
         self.log(f"Dataset registered: {dataset_name}", "SUCCESS")
