@@ -12,9 +12,10 @@ hardware assumptions, UI controls, and historical fallback behavior are
 inconsistent.
 
 The production training workstation is currently an AMD Radeon RX 7900 XTX using
-ROCm. The TruScore application environment currently runs Python 3.11.17. Its
-ROCm/PyTorch GPU packages have not yet been installed, so GPU runtime verification
-for Phoenix is still pending. Phoenix is operated as a separate process from
+ROCm. The TruScore application environment runs Python 3.11.17. Its production
+ROCm/PyTorch stack is now installed and verified on the AMD Radeon RX 7900 XTX:
+PyTorch 2.13.0+rocm7.2, torchvision 0.28.0+rocm7.2, HIP 7.2.53211, with FP32,
+FP16, BF16, backward, optimizer-step, and 23.98 GB VRAM checks passing. Phoenix is operated as a separate process from
 Dataset Studio, Annotation Studio, and the training queue.
 
 ## Decision
