@@ -258,3 +258,27 @@ re-execs itself with the same runtime environment.
 
 This checkpoint verifies the production accelerator backend itself. It does not
 yet verify queue -> trainer dispatch or a real model-training epoch.
+
+
+## Phoenix ROCm Backend Verified — 2026-10-14
+
+Verified inside the user's actual TruScore Python 3.11.17 environment:
+
+- PyTorch: 2.13.0+rocm7.2
+- torchvision: 0.28.0+rocm7.2
+- HIP/ROCm runtime: 7.2.53211
+- GPU: AMD Radeon RX 7900 XTX
+- VRAM detected: 23.98 GB
+- FP32 compute: PASS
+- FP16 compute: PASS
+- BF16 compute: PASS
+- backward pass + optimizer step: PASS
+- Phoenix backend probe: READY
+
+The previous native-library load failure was a dynamic-loader path issue, not a
+broken ROCm/PyTorch installation. Phoenix now constructs the required runtime
+library path before launching Trainer workers, and the standalone verifier uses
+the same bootstrap behavior.
+
+This checkpoint verifies the production accelerator backend itself. It does not
+yet verify queue -> Trainer worker dispatch or a real model-training epoch.
