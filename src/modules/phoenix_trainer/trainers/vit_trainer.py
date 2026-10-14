@@ -218,13 +218,15 @@ class ViTTrainer(BaseTrainer):
         # Create ViT model (pretrained on ImageNet)
         model_name = self.config.get('model_name', 'vit_base_patch16_224')
         
+        pretrained = bool(self.config.get("pretrained", True))
         self.model = timm.create_model(
             model_name,
-            pretrained=True,
-            num_classes=self.num_classes
+            pretrained=pretrained,
+            num_classes=self.num_classes,
         )
         
         self.log(f"Model: {model_name}", "INFO")
+        self.log(f"Pretrained weights: {pretrained}", "INFO")
         self.log(f"Parameters: {sum(p.numel() for p in self.model.parameters()) / 1e6:.2f}M", "INFO")
         
         # Move to device
