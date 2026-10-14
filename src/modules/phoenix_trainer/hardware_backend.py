@@ -8,7 +8,60 @@ backend (ROCm, CUDA, CPU) separately.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, Optional
+import importlib.util
+import os
+from pathlib import Path
+from typing import Any, Dict, Mapping, Optional
+
+
+
+def torch_runtime_library_paths() -> list[str]:
+    """Return loader paths needed by the active PyTorch/ROCm installation.
+
+    This intentionally avoids importing torch so callers can construct a child
+    process environment before PyTorch's native libraries are initialized.
+    """
+    paths: list[str] = []
+
+    try:
+        spec = importlib.util.find_spec("torch")
+    except (ImportError, AttributeError, ValueError):
+        spec = None
+
+    if spec and spec.submodule_search_locations:
+        torch_root = Path(next(iter(spec.submodule_search_locations)))
+        torch_lib = torch_root / "lib"
+        if torch_lib.is_dir():
+            paths.append(str(torch_lib))
+
+    for candidate in (Path("/opt/rocm/lib"), Path("/opt/rocm/lib64")):
+        if candidate.is_dir():
+            paths.append(str(candidate))
+
+    return paths
+
+
+def build_torch_runtime_environment(
+    base_env: Optional[Mapping[str, str]] = None,
+) -> Dict[str, str]:
+    """Build an environment whose dynamic loader can resolve PyTorch ROCm libs."""
+    env = dict(os.environ if base_env is None else base_env)
+
+    existing = [
+        item
+        for item in env.get("LD_LIBRARY_PATH", "").split(os.pathsep)
+        if item
+    ]
+
+    ordered: list[str] = []
+    for item in [*torch_runtime_library_paths(), *existing]:
+        if item not in ordered:
+            ordered.append(item)
+
+    if ordered:
+        env["LD_LIBRARY_PATH"] = os.pathsep.join(ordered)
+
+    return env
 
 
 @dataclass
