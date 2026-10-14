@@ -522,92 +522,128 @@ class PhoenixTrainer:
         logger.info("✓ Premium glassmorphism theme applied")
     
     def run_preflight_checks(self):
-        """Run pre-flight system checks before training"""
+        """Run real backend, disk, and filesystem pre-flight checks."""
         logger.info("Running pre-flight system checks...")
-        
-        # Check 1: GPU availability
+
         try:
-            import torch
-            cuda_available = torch.cuda.is_available()
-            if cuda_available:
-                gpu_name = torch.cuda.get_device_name(0)
-                gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1e9
-                self.system_checks['gpu'] = {
-                    'available': True,
-                    'name': gpu_name,
-                    'memory_gb': f"{gpu_memory:.2f}"
-                }
-                logger.info(f"✓ GPU: {gpu_name} ({gpu_memory:.2f} GB)")
-            else:
-                self.system_checks['gpu'] = {
-                    'available': False,
-                    'message': 'CUDA not available - will use CPU'
-                }
-                logger.warning("⚠ GPU: Not available - training will use CPU (slower)")
+            from .hardware_backend import probe_torch_accelerator
         except ImportError:
-            self.system_checks['gpu'] = {
-                'available': False,
-                'message': 'PyTorch not installed'
-            }
-            logger.error("✗ PyTorch not installed")
-        
-        # Check 2: Disk space
-        import shutil
+            from modules.phoenix_trainer.hardware_backend import probe_torch_accelerator
+
+        accelerator = probe_torch_accelerator()
+        gpu_info = accelerator.to_dict()
+        gpu_info["available"] = accelerator.ready
+        gpu_info["memory_gb"] = (
+            f"{accelerator.total_memory_gb:.2f}"
+            if accelerator.total_memory_gb is not None
+            else None
+        )
+        self.system_checks["gpu"] = gpu_info
+
+        if accelerator.ready:
+            precision = [
+                name.upper()
+                for name, available in (
+                    ("fp32", accelerator.fp32_compute),
+                    ("fp16", accelerator.fp16_compute),
+                    ("bf16", accelerator.bf16_compute),
+                )
+                if available
+            ]
+            logger.info(
+                "✓ Accelerator: %s | %s | %.2f GB | precision=%s",
+                accelerator.backend.upper(),
+                accelerator.name,
+                accelerator.total_memory_gb or 0.0,
+                ",".join(precision),
+            )
+        else:
+            logger.error(
+                "✗ GPU accelerator pre-flight failed: %s",
+                accelerator.error or "unknown accelerator error",
+            )
+
         disk_stats = shutil.disk_usage(str(self.project_root))
-        free_gb = disk_stats.free / 1e9
-        self.system_checks['disk'] = {
-            'free_gb': f"{free_gb:.2f}",
-            'sufficient': free_gb > 10  # At least 10GB free
+        free_gb = disk_stats.free / (1024 ** 3)
+        self.system_checks["disk"] = {
+            "free_gb": f"{free_gb:.2f}",
+            "sufficient": free_gb > 10,
         }
         if free_gb > 10:
             logger.info(f"✓ Disk Space: {free_gb:.2f} GB free")
         else:
-            logger.warning(f"⚠ Disk Space: Only {free_gb:.2f} GB free (recommend 10+ GB)")
-        
-        # Check 3: Required directories exist
+            logger.warning(
+                f"⚠ Disk Space: Only {free_gb:.2f} GB free (recommend 10+ GB)"
+            )
+
         for dir_path in [self.active_dir, self.completed_dir, self.failed_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
-        self.system_checks['directories'] = {'ready': True}
+        self.system_checks["directories"] = {"ready": True}
         logger.info("✓ Training directories ready")
-        
-        # Overall system readiness
-        self.system_ready = (
-            self.system_checks.get('directories', {}).get('ready', False) and
-            self.system_checks.get('disk', {}).get('sufficient', False)
+
+        base_ready = (
+            self.system_checks["directories"]["ready"]
+            and self.system_checks["disk"]["sufficient"]
         )
-        
+        self.system_checks["base_ready"] = base_ready
+        self.system_ready = base_ready and accelerator.ready
+
         if self.system_ready:
-            logger.info("✓ System ready for training!")
+            logger.info("✓ Phoenix GPU training backend is ready")
+        elif base_ready:
+            logger.warning(
+                "⚠ Phoenix base system is ready, but GPU training is not ready"
+            )
         else:
-            logger.warning("⚠ System has issues - check pre-flight status")
-    
+            logger.warning("⚠ Phoenix system pre-flight failed")
     def create_preflight_banner(self):
-        """Create pre-flight status banner with premium styling"""
+        """Render current backend and disk readiness."""
         with dpg.group(horizontal=True):
-            dpg.add_text("System Status:", color=self.theme_colors['text_dim'])
-            
-            # GPU status with enhanced colors
-            if self.system_checks.get('gpu', {}).get('available'):
-                gpu_info = self.system_checks['gpu']
-                dpg.add_text(f"✓ GPU: {gpu_info['name']}", color=self.theme_colors['success'])
+            dpg.add_text("System Status:", color=self.theme_colors["text_dim"])
+
+            gpu_info = self.system_checks.get("gpu", {})
+            if gpu_info.get("available"):
+                backend = str(gpu_info.get("backend", "gpu")).upper()
+                name = gpu_info.get("name", "Unknown GPU")
+                dpg.add_text(
+                    f"✓ {backend}: {name}",
+                    color=self.theme_colors["success"],
+                )
             else:
-                dpg.add_text("⚠ GPU: Not Available", color=self.theme_colors['warning'])
-            
+                error = gpu_info.get("error", "GPU not ready")
+                dpg.add_text(
+                    f"⚠ GPU: {error}",
+                    color=self.theme_colors["warning"],
+                )
+
             dpg.add_spacer(width=20)
-            
-            # Disk space with conditional coloring
-            disk_info = self.system_checks.get('disk', {})
-            disk_color = self.theme_colors['success'] if disk_info.get('sufficient') else self.theme_colors['warning']
-            dpg.add_text(f"Disk: {disk_info.get('free_gb', '?')} GB free", color=disk_color)
-            
+
+            disk_info = self.system_checks.get("disk", {})
+            disk_color = (
+                self.theme_colors["success"]
+                if disk_info.get("sufficient")
+                else self.theme_colors["warning"]
+            )
+            dpg.add_text(
+                f"Disk: {disk_info.get('free_gb', '?')} GB free",
+                color=disk_color,
+            )
+
             dpg.add_spacer(width=20)
-            
-            # Overall status with icon
+
             if self.system_ready:
-                dpg.add_text("✓ System Ready", color=self.theme_colors['success'])
+                dpg.add_text(
+                    "✓ GPU Training Ready", color=self.theme_colors["success"]
+                )
+            elif self.system_checks.get("base_ready"):
+                dpg.add_text(
+                    "⚠ CPU Only / GPU Check Failed",
+                    color=self.theme_colors["warning"],
+                )
             else:
-                dpg.add_text("⚠ Check Status", color=self.theme_colors['warning'])
-    
+                dpg.add_text(
+                    "⚠ Check Status", color=self.theme_colors["warning"]
+                )
     def _assert_trainable_queue_entry(self, dataset_path: Path, dataset_config: dict) -> int:
         """Reject configuration-only or empty queue entries before training."""
         export_source = str(dataset_config.get("export_source", "")).lower()
@@ -820,8 +856,15 @@ class PhoenixTrainer:
             self.log_message("Training already in progress!", "WARNING")
             return
 
-        if not self.system_ready:
-            self.log_message("System not ready! Check pre-flight status.", "ERROR")
+        requested_gpu = "GPU" in dpg.get_value("device")
+        if not self.system_checks.get("base_ready", False):
+            self.log_message(
+                "Base system pre-flight failed. Check disk/directories.", "ERROR"
+            )
+            return
+        if requested_gpu and not self.system_checks.get("gpu", {}).get("available", False):
+            error = self.system_checks.get("gpu", {}).get("error", "GPU backend is not ready")
+            self.log_message(f"GPU training blocked: {error}", "ERROR")
             return
 
         job = {
