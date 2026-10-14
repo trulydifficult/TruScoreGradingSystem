@@ -117,6 +117,10 @@ Implemented on the branch:
 - safe completion handling for direct-launch jobs
 - Detectron class count aligned to COCO categories
 - trainer registry tests
+- real accelerator capability probe (ROCm/CUDA identification, real FP32 compute,
+  backward/optimizer step, FP16/BF16 capability checks)
+- DPG manual callback management and worker-to-main-thread UI event queue
+- Phoenix foundation GitHub Actions compile/unit-test workflow
 
 ### Verification state
 
@@ -129,11 +133,12 @@ is run on the production workstation.
 
 ### Immediate next work
 
-1. Add the Phoenix hardware/runtime backend abstraction with ROCm as the primary
-   production backend.
-2. Move DPG worker-to-UI communication onto a safe event queue.
-3. Wire real precision, gradient accumulation/clipping, optimizers, schedulers,
+1. Expand the new hardware probe into the Phoenix training-runtime/backend policy
+   with ROCm as the primary production backend.
+2. Wire real precision, gradient accumulation/clipping, optimizers, schedulers,
    seeds, checkpoint resume, and metric direction into the common training engine.
+3. Add an explicit cancellation/pause job-state contract before enabling the
+   existing Pause/Stop controls.
 4. Repair ViT, U-Net, then Detectron2 against that engine.
 5. Define one versioned Dataset Studio -> Phoenix dataset manifest and validator
    contract.
