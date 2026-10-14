@@ -21,8 +21,8 @@ def _method(tree: ast.AST, class_name: str, method_name: str) -> ast.FunctionDef
     raise AssertionError(f"{class_name}.{method_name} not found")
 
 
-def test_trainer_script_has_executable_main_guard():
-    tree = _tree(TRAINER)
+def _assert_executable_main(path: Path):
+    tree = _tree(path)
 
     assert any(
         isinstance(node, ast.FunctionDef) and node.name == "main"
@@ -36,7 +36,7 @@ def test_trainer_script_has_executable_main_guard():
         and isinstance(node.test, ast.Compare)
         and ast.unparse(node.test) == "__name__ == '__main__'"
     ]
-    assert guards, "phoenix_trainer_dpg.py must execute main() when run as a script"
+    assert guards, f"{path.name} must execute main() when run as a script"
     assert any(
         isinstance(node, ast.Expr)
         and isinstance(node.value, ast.Call)
@@ -44,6 +44,14 @@ def test_trainer_script_has_executable_main_guard():
         and node.value.func.id == "main"
         for node in guards[0].body
     )
+
+
+def test_trainer_script_has_executable_main_guard():
+    _assert_executable_main(TRAINER)
+
+
+def test_queue_script_has_executable_main_guard():
+    _assert_executable_main(QUEUE)
 
 
 def test_queue_launches_real_trainer_worker_process():
