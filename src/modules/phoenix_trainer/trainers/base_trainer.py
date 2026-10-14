@@ -100,7 +100,7 @@ class BaseTrainer(ABC):
         logger.info(f"Output: {self.output_dir}")
     
     def _setup_enterprise_features(self):
-        """Initialize only the enterprise features enabled by the run config."""
+        """Initialize only enterprise features enabled by the run configuration."""
         try:
             if self.config.get("advanced_monitoring", True):
                 experiment_name = f"{self.__class__.__name__}_{self.dataset_path.name}"
@@ -112,7 +112,7 @@ class BaseTrainer(ABC):
                 logger.info("Advanced monitoring enabled")
             else:
                 self.advanced_monitor = None
-                logger.info("Advanced monitoring disabled by run configuration")
+                logger.info("Advanced monitoring disabled")
 
             if self.config.get("early_stopping", True):
                 patience = self.config.get("early_stopping_patience", 10)
@@ -125,21 +125,21 @@ class BaseTrainer(ABC):
                 logger.info(f"Early stopping enabled (patience={patience})")
             else:
                 self.early_stopping = None
-                logger.info("Early stopping disabled by run configuration")
+                logger.info("Early stopping disabled")
 
             if self.config.get("mixed_precision", True):
                 self.mixed_precision = MixedPrecisionManager(enabled=True)
                 logger.info("Mixed precision manager initialized")
             else:
                 self.mixed_precision = None
-                logger.info("Mixed precision disabled by run configuration")
+                logger.info("Mixed precision disabled")
 
         except Exception as e:
             logger.warning(f"Failed to initialize enterprise features: {e}")
             self.advanced_monitor = None
             self.early_stopping = None
             self.mixed_precision = None
-    
+
     def register_callback(self, event: str, callback: Callable):
         """Register callback for training events"""
         if event in self.callbacks:
