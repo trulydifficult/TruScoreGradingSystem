@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "src/modules/phoenix_trainer/**"
+      - "scripts/verify_phoenix_backend.py"
+      - "scripts/create_phoenix_vit_smoke_dataset.py"
       - "tests/phoenix/**"
       - ".github/workflows/phoenix-foundation.yml"
   push:
@@ -11,6 +13,8 @@ on:
       - "refactor/phoenix-foundation"
     paths:
       - "src/modules/phoenix_trainer/**"
+      - "scripts/verify_phoenix_backend.py"
+      - "scripts/create_phoenix_vit_smoke_dataset.py"
       - "tests/phoenix/**"
       - ".github/workflows/phoenix-foundation.yml"
 
@@ -27,8 +31,7 @@ jobs:
             src/modules/phoenix_trainer
             src/modules/main_window/main_window.py
             src/shared/essentials
-            scripts/verify_phoenix_backend.py \
-            scripts/create_phoenix_vit_smoke_dataset.py
+            scripts/verify_phoenix_backend.py
             scripts/create_phoenix_vit_smoke_dataset.py
             tests/phoenix
           sparse-checkout-cone-mode: false
@@ -55,7 +58,8 @@ jobs:
             src/modules/main_window/main_window.py \
             src/modules/phoenix_trainer/trainers/base_trainer.py \
             src/modules/phoenix_trainer/trainers/detectron2_trainer.py \
-            scripts/verify_phoenix_backend.py
+            scripts/verify_phoenix_backend.py \
+            scripts/create_phoenix_vit_smoke_dataset.py
 
       - name: Run Phoenix foundation unit tests
         env:
