@@ -1,10 +1,10 @@
 # TruScoreGradingSystem — Current Handoff
 
-Last updated: 2026-09-28
+Last updated: 2026-10-13
 
 ## Current Objective
 
-Establish reliable project memory and repository-understanding procedures before beginning substantial enterprise refactoring.
+Stabilize and refactor Phoenix Trainer first, then align Dataset Studio so production model training can begin while the wider enterprise refactor continues.
 
 ## Completed
 
@@ -87,3 +87,55 @@ Phoenix Trainer is a strong candidate because preliminary investigation has alre
 - photometric-training opportunities
 
 However, the final refactoring order should be deliberately chosen before implementation begins.
+
+
+## Phoenix Work Started — 2026-10-13
+
+The first formal Phoenix audit is complete and recorded in:
+
+`project_brain/PHOENIX_TRAINER_AUDIT.md`
+
+Architecture decision:
+
+`project_brain/decisions/0001-phoenix-trainer-foundation.md`
+
+Active branch:
+
+`refactor/phoenix-foundation`
+
+### First foundation slice
+
+Implemented on the branch:
+
+- one trainer registry/factory for DPG and QueueManager
+- explicit unsupported errors instead of unrelated-model substitution
+- repaired `epochs` configuration key
+- repaired BaseTrainer callback usage from DPG
+- repaired invalid SUCCESS logging
+- rejection of configuration-only/empty queue entries
+- removal of the DPG fail-open placeholder-validation path
+- safe completion handling for direct-launch jobs
+- Detectron class count aligned to COCO categories
+- trainer registry tests
+
+### Verification state
+
+Registry resolution behavior was independently exercised for supported and
+unsupported cases.
+
+Full branch checkout/runtime execution was not possible in the remote verification
+container because it has no outbound DNS. Do not mark the slice VERIFIED until it
+is run on the production workstation.
+
+### Immediate next work
+
+1. Add the Phoenix hardware/runtime backend abstraction with ROCm as the primary
+   production backend.
+2. Move DPG worker-to-UI communication onto a safe event queue.
+3. Wire real precision, gradient accumulation/clipping, optimizers, schedulers,
+   seeds, checkpoint resume, and metric direction into the common training engine.
+4. Repair ViT, U-Net, then Detectron2 against that engine.
+5. Define one versioned Dataset Studio -> Phoenix dataset manifest and validator
+   contract.
+6. Begin real smoke training on the RX 7900 XTX before expanding experimental
+   trainers.
