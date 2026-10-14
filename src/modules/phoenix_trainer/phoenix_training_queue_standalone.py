@@ -63,7 +63,6 @@ except Exception as e:
 
 # Setup professional logging - suppress console output
 import logging
-logging.getLogger('src.core.training.queue_manager').setLevel(logging.WARNING)
 logging.getLogger('watchdog').setLevel(logging.WARNING)
 
 
@@ -610,11 +609,26 @@ class PhoenixTrainingQueueApp:
                 dataset["path"] = str(failed_path)
             else:
                 dataset["status"] = "failed"
+                active_path = Path(dataset["path"])
+                if active_path.exists() and active_path.parent == self.active_dir:
+                    import shutil
+
+                    failed_path = self.failed_dir / active_path.name
+                    if not failed_path.exists():
+                        shutil.move(str(active_path), str(failed_path))
+                        dataset["path"] = str(failed_path)
+                        error_file = failed_path / "queue_worker_error.txt"
+                        error_file.write_text(
+                            "Phoenix Trainer worker exited before recording a "
+                            f"completed/failed result. Exit code: {return_code}\n",
+                            encoding="utf-8",
+                        )
+
                 logger.error(
-                    "Phoenix Trainer exited with code %s but dataset was not "
-                    "moved to completed/failed: %s",
+                    "Phoenix Trainer exited with code %s before recording a "
+                    "completed/failed result for %s",
                     return_code,
-                    dataset["path"],
+                    dataset["name"],
                 )
 
         self.save_queue_state()
