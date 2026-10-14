@@ -409,6 +409,10 @@ Completed:
 - independent trainer-registry resolution checks for supported and unsupported
   cases
 - independent backend-family identification checks for ROCm/CUDA/unknown GPU
+- GitHub Actions syntax compilation for every touched Phoenix module
+- GitHub Actions Phoenix foundation unit tests
+
+GitHub Actions run `38490732331` completed successfully.
 
 Not yet completed:
 
