@@ -457,10 +457,34 @@ Phoenix Trainer and Phoenix Training Queue.
 Not yet completed:
 
 - full repository pytest run
-- Phoenix GUI runtime launch from this branch
-- real RX 7900 XTX training smoke test
 - Detectron2 runtime verification
+- common-engine work for deterministic seeds, precision policy, gradient
+  accumulation/clipping, resumable checkpoints, metric direction, and explicit
+  cancellation semantics
 
 The remote execution environment used for this audit cannot reach GitHub from its
 verification container, so full branch checkout/runtime tests were not fabricated.
 Those checks remain required before this slice can be marked VERIFIED.
+
+
+## Production End-to-End Training Verification — 2026-10-14
+
+The user verified the normal production application path through
+`run_truscore.py` using a deliberately tiny synthetic ViT smoke dataset.
+
+Verified runtime chain:
+
+- Phoenix Training Queue discovered the pending dataset.
+- Queue launched a separate Phoenix Trainer worker.
+- Trainer performed real Vision Transformer training on the AMD Radeon RX 7900 XTX.
+- Guru received epoch-completed and checkpoint-saved events.
+- Trainer reported successful completion.
+- Dataset was moved to `exports/training_queue/completed/`.
+
+This validates process isolation, queue dispatch, ROCm model execution, backward
+training work, checkpoint flow, worker completion, and queue terminal-state
+handling together. Smoke-dataset metrics are not model-quality evidence.
+
+The warning `Enterprise features not available` observed during the run was
+traced to an incorrect package import in `trainers/base_trainer.py` and was
+corrected to package-relative Phoenix utility imports.
