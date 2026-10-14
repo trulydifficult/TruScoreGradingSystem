@@ -96,11 +96,16 @@ class PhoenixTrainer:
         # Pre-flight check results
         self.system_ready = False
         self.system_checks = {}
+
+        # Training workers never mutate Dear PyGui directly. They publish small
+        # UI events which the main render loop applies.
+        self._ui_events = queue.Queue()
         
     def setup_dpg(self):
         """Initialize DearPyGUI and create main window"""
         dpg.create_context()
-        
+        dpg.configure_app(manual_callback_management=True)
+
         # Setup viewport with static background support
         dpg.create_viewport(
             title="TruScore Phoenix Trainer",
@@ -925,8 +930,8 @@ class PhoenixTrainer:
                 "SUCCESS",
             )
 
-            dpg.set_value("current_job", job["name"])
-            dpg.set_value("model_type", job["model_type"])
+            self._queue_ui_value("current_job", job["name"])
+            self._queue_ui_value("model_type", job["model_type"])
 
             self.log_message("Initializing trainer...", "INFO")
             trainer = self.create_trainer(job["model_type"], job["config"])
@@ -939,7 +944,7 @@ class PhoenixTrainer:
                     "val_loss", metrics.get("train_loss", metrics.get("loss"))
                 )
                 if loss is not None:
-                    dpg.set_value("loss_text", f"Loss: {float(loss):.4f}")
+                    self._queue_ui_value("loss_text", f"Loss: {float(loss):.4f}")
 
                 learning_rate = metrics.get("learning_rate")
                 if learning_rate is not None:
@@ -949,7 +954,7 @@ class PhoenixTrainer:
 
                 map_value = metrics.get("mAP")
                 if map_value is not None:
-                    dpg.set_value("map_text", f"mAP: {float(map_value):.4f}")
+                    self._queue_ui_value("map_text", f"mAP: {float(map_value):.4f}")
 
                 accuracy = metrics.get(
                     "accuracy", metrics.get("train_accuracy")
@@ -963,8 +968,8 @@ class PhoenixTrainer:
                 if not self.is_training:
                     return
 
-                dpg.set_value("epoch_progress", float(progress))
-                dpg.set_value("epoch_text", f"Epoch {epoch}/{total_epochs}")
+                self._queue_ui_value("epoch_progress", float(progress))
+                self._queue_ui_value("epoch_text", f"Epoch {epoch}/{total_epochs}")
 
                 self.write_training_status(
                     job,
@@ -1250,16 +1255,49 @@ class PhoenixTrainer:
         self.update_queue_display()
         self.log_message(f"Removed job #{job_id} from queue", "INFO")
     
-    def log_message(self, message: str, level: str = "INFO"):
-        """Add a color-coded Phoenix message without inventing logging levels."""
-        normalized_level = str(level).upper()
+    def _queue_ui_value(self, tag: str, value):
+        """Publish a widget-value update from a training worker."""
+        self._ui_events.put(("set_value", tag, value))
+
+    def _append_log_to_ui(self, message: str, level: str):
+        """Render a log line. This method is only called on the main thread."""
         color_map = {
+            "DEBUG": self.theme_colors["text_dim"],
             "INFO": self.theme_colors["text"],
             "SUCCESS": self.theme_colors["success"],
             "WARNING": self.theme_colors["warning"],
             "ERROR": self.theme_colors["error"],
             "CRITICAL": self.theme_colors["error"],
         }
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        log_text = f"[{timestamp}] {message}"
+        if dpg.does_item_exist("training_log"):
+            dpg.add_text(
+                log_text,
+                color=color_map.get(level, self.theme_colors["text"]),
+                parent="training_log",
+            )
+
+    def _drain_ui_events(self):
+        """Apply worker-originated UI events on the Dear PyGui main thread."""
+        while True:
+            try:
+                event = self._ui_events.get_nowait()
+            except queue.Empty:
+                break
+
+            kind = event[0]
+            if kind == "set_value":
+                _, tag, value = event
+                if dpg.does_item_exist(tag):
+                    dpg.set_value(tag, value)
+            elif kind == "log":
+                _, message, level = event
+                self._append_log_to_ui(message, level)
+
+    def log_message(self, message: str, level: str = "INFO"):
+        """Log immediately and marshal visual updates onto the DPG main thread."""
+        normalized_level = str(level).upper()
         logging_levels = {
             "DEBUG": logging.DEBUG,
             "INFO": logging.INFO,
@@ -1271,47 +1309,22 @@ class PhoenixTrainer:
         if normalized_level not in logging_levels:
             raise ValueError(f"Unsupported Phoenix log level: {level}")
 
-        color = color_map.get(normalized_level, self.theme_colors["text"])
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        log_text = f"[{timestamp}] {message}"
-
-        if dpg.does_item_exist("training_log"):
-            dpg.add_text(log_text, color=color, parent="training_log")
-
         logger.log(logging_levels[normalized_level], message)
+
+        if threading.current_thread() is threading.main_thread():
+            self._append_log_to_ui(message, normalized_level)
+        else:
+            self._ui_events.put(("log", message, normalized_level))
     def run(self):
-        """Start the trainer application"""
+        """Start the trainer application."""
         self.setup_dpg()
-        
-        # Main loop
+
         while dpg.is_dearpygui_running():
+            callback_jobs = dpg.get_callback_queue()
+            if callback_jobs:
+                dpg.run_callbacks(callback_jobs)
+
+            self._drain_ui_events()
             dpg.render_dearpygui_frame()
-        
+
         dpg.destroy_context()
-
-
-def main():
-    """Launch Phoenix Trainer"""
-    # Parse command-line arguments
-    parser = argparse.ArgumentParser(description="TruScore Phoenix Trainer")
-    parser.add_argument(
-        '--dataset',
-        type=str,
-        help='Path to dataset directory (from training queue)'
-    )
-    args = parser.parse_args()
-    
-    logger.info("=" * 60)
-    logger.info("TruScore Phoenix Trainer - Starting")
-    logger.info("The Ultimate Training System")
-    logger.info("=" * 60)
-    
-    if args.dataset:
-        logger.info(f"Loading dataset from queue: {args.dataset}")
-    
-    trainer = PhoenixTrainer(dataset_path=args.dataset)
-    trainer.run()
-
-
-if __name__ == "__main__":
-    main()
