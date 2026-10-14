@@ -12,7 +12,7 @@ Supports:
 
 Enhancements:
 - Command-line dataset loading from queue
-- EXISTING TruScoreDatasetValidator integration
+- Queue dataset contract checks
 - Pre-flight system checks (GPU, disk space, CUDA)
 - Progress reporting to training_status.json
 - Automatic dataset movement (completed/failed)
@@ -37,8 +37,6 @@ SRC_PATH = PROJECT_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-# Import EXISTING validation infrastructure
-from shared.dataset_tools.dataset_validator import TruScoreDatasetValidator
 try:
     from . import phoenix_logger as logger
 except ImportError:  # Fallback when executed directly
@@ -76,9 +74,6 @@ class PhoenixTrainer:
         self.failed_dir = self.queue_dir / "failed"
         # Priority/hardware weights for scheduling
         self.priority_weights = {"fusion_sam": 2, "eventps_real_time": 2, "llm_meta_learner": 1, "default": 1}
-        
-        # Dataset validator
-        self.validator = TruScoreDatasetValidator()
         
         # Theme colors matching TruScore - Enhanced Dark Theme
         # DearPyGUI uses RGB tuples (0-255) for colors
