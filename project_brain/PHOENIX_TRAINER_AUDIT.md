@@ -214,6 +214,15 @@ ensembles, and an LLM meta-learner.
 Those definitions are design/configuration choices; they are not proof that
 Phoenix currently implements those trainers.
 
+### 16. Pause/Stop lifecycle is not implemented
+
+The current DPG training panel displays Pause and Stop controls, but they are
+disabled and have no callbacks. BaseTrainer also currently treats a user stop
+inside its epoch loop as a normal path to final-model saving/completion.
+
+These controls must remain disabled until Phoenix has an explicit cancellation
+state and job outcome contract.
+
 ## Dataset Contract Findings
 
 The current professional Dataset Studio defines more dataset types than the
@@ -384,6 +393,13 @@ Implemented:
 - prevented direct-launch completion from removing a nonexistent internal-queue job
 - aligned Detectron class count with COCO category metadata
 - added focused trainer-registry tests
+- added a ROCm/CUDA-aware hardware probe that verifies real FP32 compute and
+  backward/optimizer behavior, then probes FP16/BF16 capability
+- moved DPG callback execution to the main render loop and marshals training-worker
+  UI changes through an event queue
+- added focused backend-identification tests
+- added a lightweight GitHub Actions workflow for syntax compilation and Phoenix
+  foundation unit tests
 
 ## Verification
 
@@ -392,6 +408,7 @@ Completed:
 - repository-wide code archaeology described above
 - independent trainer-registry resolution checks for supported and unsupported
   cases
+- independent backend-family identification checks for ROCm/CUDA/unknown GPU
 
 Not yet completed:
 
