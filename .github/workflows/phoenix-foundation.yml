@@ -68,7 +68,8 @@ jobs:
           pytest -q \
             tests/phoenix/test_trainer_registry.py \
             tests/phoenix/test_hardware_backend.py \
-            tests/phoenix/test_process_entrypoints.py
+            tests/phoenix/test_process_entrypoints.py \
+            tests/phoenix/test_queue_reconciliation.py
 
       - name: Smoke launch Phoenix Trainer
         env:
