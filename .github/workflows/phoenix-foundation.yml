@@ -36,7 +36,9 @@ jobs:
             src/modules/phoenix_trainer/trainer_registry.py \
             src/modules/phoenix_trainer/hardware_backend.py \
             src/modules/phoenix_trainer/phoenix_trainer_dpg.py \
+            src/modules/phoenix_trainer/phoenix_training_queue_standalone.py \
             src/modules/phoenix_trainer/queue_manager.py \
+            src/modules/main_window/main_window.py \
             src/modules/phoenix_trainer/trainers/base_trainer.py \
             src/modules/phoenix_trainer/trainers/detectron2_trainer.py
 
@@ -46,4 +48,5 @@ jobs:
         run: |
           pytest -q \
             tests/phoenix/test_trainer_registry.py \
-            tests/phoenix/test_hardware_backend.py
+            tests/phoenix/test_hardware_backend.py \
+            tests/phoenix/test_process_entrypoints.py
