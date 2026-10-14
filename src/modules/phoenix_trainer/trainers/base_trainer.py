@@ -139,10 +139,22 @@ class BaseTrainer(ABC):
             logger.debug(f"Registered callback for: {event}")
     
     def log(self, message: str, level: str = "INFO"):
-        """Log message and call log callback"""
-        logger.log(getattr(logging, level), message)
+        """Log a trainer message and preserve Phoenix's UI-level labels."""
+        normalized_level = str(level).upper()
+        log_levels = {
+            "DEBUG": logging.DEBUG,
+            "INFO": logging.INFO,
+            "SUCCESS": logging.INFO,
+            "WARNING": logging.WARNING,
+            "ERROR": logging.ERROR,
+            "CRITICAL": logging.CRITICAL,
+        }
+        if normalized_level not in log_levels:
+            raise ValueError(f"Unsupported Phoenix log level: {level}")
+
+        logger.log(log_levels[normalized_level], message)
         if self.callbacks['on_log_message']:
-            self.callbacks['on_log_message'](message, level)
+            self.callbacks['on_log_message'](message, normalized_level)
     
     def update_progress(self, epoch: int, total_epochs: int, progress: float):
         """Update progress and call progress callback"""
