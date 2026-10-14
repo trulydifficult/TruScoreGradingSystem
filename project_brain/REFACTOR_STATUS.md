@@ -80,5 +80,5 @@ ROCm workstation is still required before Phoenix can be marked VERIFIED.
 
 - Queue launch from `run_truscore.py`: VERIFIED on production workstation
 - Queue -> Trainer worker dispatch: PENDING
-- ROCm/PyTorch backend in TruScore Python 3.11.17 env: PENDING INSTALL/VERIFY
+- ROCm/PyTorch backend in TruScore Python 3.11.17 env: VERIFIED
 - Real model training smoke test on RX 7900 XTX: PENDING
