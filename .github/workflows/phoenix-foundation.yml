@@ -19,8 +19,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Check out Phoenix paths
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/workflows/phoenix-foundation.yml
+            src/modules/phoenix_trainer
+            src/modules/main_window/main_window.py
+            src/shared/essentials
+            tests/phoenix
+          sparse-checkout-cone-mode: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
