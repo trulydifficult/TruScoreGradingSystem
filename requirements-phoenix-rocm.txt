@@ -1,0 +1,11 @@
+# Phoenix Trainer - AMD ROCm production backend
+#
+# Keep accelerator-specific dependencies out of requirements.txt so the core
+# application remains hardware-neutral. Install this file inside the activated
+# TruScore Python 3.11.17 environment on the production AMD workstation.
+#
+# PyTorch publishes ROCm 7.2 wheels for this matched pair.
+--index-url https://download.pytorch.org/whl/rocm7.2
+
+torch==2.13.0
+torchvision==0.28.0
