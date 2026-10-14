@@ -17,6 +17,8 @@ from pathlib import Path
 import json
 import time
 import threading
+import queue as thread_queue
+import subprocess
 from typing import Dict, List, Optional
 from datetime import datetime
 
@@ -59,11 +61,6 @@ except Exception as e:
     TRAY_AVAILABLE = False
     # Silently disable tray if X11 connection fails
 
-try:
-    from .queue_manager import QueueManager, TrainingJob, JobStatus
-except ImportError:
-    from modules.phoenix_trainer.queue_manager import QueueManager, TrainingJob, JobStatus
-
 # Setup professional logging - suppress console output
 import logging
 logging.getLogger('src.core.training.queue_manager').setLevel(logging.WARNING)
@@ -95,9 +92,15 @@ class PhoenixTrainingQueueApp:
     """
     
     def __init__(self):
-        self.queue_manager = QueueManager()
         self.datasets: List[Dict] = []
         self.selected_dataset_id = None
+
+        # The queue is the control plane. Actual training always runs in a
+        # separate Phoenix Trainer process.
+        self.queue_running = False
+        self.trainer_process = None
+        self.active_dataset_id = None
+        self._ui_events = thread_queue.Queue()
         
         # Paths
         self.project_root = Path(__file__).parents[3]
@@ -134,7 +137,8 @@ class PhoenixTrainingQueueApp:
     def setup_dpg(self):
         """Initialize DearPyGUI and create main window"""
         dpg.create_context()
-        
+        dpg.configure_app(manual_callback_management=True)
+
         # Setup viewport
         dpg.create_viewport(
             title="TruScore Phoenix Training Queue",
@@ -194,21 +198,37 @@ class PhoenixTrainingQueueApp:
         dpg.bind_theme(global_theme)
     
     def create_header(self):
-        """Create header section"""
+        """Create queue controls and runtime status."""
         with dpg.group(horizontal=False):
-            dpg.add_text("Phoenix Training Queue", color=self.colors['accent'])
-            dpg.add_text("Manage and prioritize your training datasets", 
-                        color=self.colors['text_dim'])
-            
+            dpg.add_text("Phoenix Training Queue", color=self.colors["accent"])
+            dpg.add_text(
+                "Queue datasets now; Phoenix Trainer workers run one at a time.",
+                color=self.colors["text_dim"],
+            )
+
             with dpg.group(horizontal=True):
                 dpg.add_button(label="Refresh Queue", callback=self.refresh_queue)
+                dpg.add_button(
+                    label="Start Queue",
+                    tag="start_queue_btn",
+                    callback=self.start_queue,
+                )
+                dpg.add_button(
+                    label="Stop After Current",
+                    tag="stop_queue_btn",
+                    callback=self.stop_queue,
+                    enabled=False,
+                )
                 dpg.add_button(label="Clear Completed", callback=self.clear_completed)
                 dpg.add_button(label="Save State", callback=self.save_queue_state)
                 dpg.add_button(label="Minimize", callback=self.minimize_window)
-                
+
                 dpg.add_spacer(width=20)
-                dpg.add_text("", tag="queue_status_text", color=self.colors['text_dim'])
-    
+                dpg.add_text(
+                    "",
+                    tag="queue_status_text",
+                    color=self.colors["text_dim"],
+                )
     def create_queue_panel(self):
         """Create the dataset queue list panel"""
         dpg.add_text("Training Queue", color=self.colors['success'])
@@ -327,11 +347,25 @@ class PhoenixTrainingQueueApp:
         self.update_status_text()
     
     def update_status_text(self):
-        """Update queue status text"""
-        status = f"Queue: {len(self.datasets)} datasets"
+        """Update queue and trainer-process status."""
+        pending = sum(1 for d in self.datasets if d.get("status") == "pending")
+        running_name = None
+        if self.active_dataset_id is not None:
+            active = next(
+                (d for d in self.datasets if d["id"] == self.active_dataset_id),
+                None,
+            )
+            running_name = active["name"] if active else None
+
+        if running_name:
+            status = f"Running: {running_name} | Pending: {pending}"
+        elif self.queue_running:
+            status = f"Queue running | Pending: {pending}"
+        else:
+            status = f"Queue stopped | Pending: {pending}"
+
         if dpg.does_item_exist("queue_status_text"):
             dpg.set_value("queue_status_text", status)
-    
     def select_dataset(self, dataset_id: int):
         """Select a dataset and show details"""
         self.selected_dataset_id = dataset_id
@@ -424,64 +458,185 @@ class PhoenixTrainingQueueApp:
                         color=self.colors['text_dim'], parent="details_container")
     
     def train_selected(self):
-        """Train the selected dataset"""
+        """Start the selected dataset immediately in a separate trainer process."""
         if not self.selected_dataset_id:
             return
-        
-        # Find dataset
-        dataset = next((d for d in self.datasets if d['id'] == self.selected_dataset_id), None)
+
+        dataset = next(
+            (d for d in self.datasets if d["id"] == self.selected_dataset_id),
+            None,
+        )
         if not dataset:
             return
-        
-        logger.info(f"Training dataset selected: {dataset['name']}")
-        
-        # Move dataset to active directory
-        dataset_path = Path(dataset['path'])
-        active_path = self.active_dir / dataset_path.name
-        
-        try:
-            import shutil
-            shutil.move(str(dataset_path), str(active_path))
-            
-            # Update dataset status
-            dataset['status'] = 'training'
-            dataset['path'] = str(active_path)
-            
-            # Option A: Launch trainer process (legacy)
-            # self.launch_trainer(active_path)
 
-            # Option B: Dispatch into QueueManager (priority-aware)
-            job_config = dataset.get('config', {})
-            job_config['priority'] = dataset.get('priority', 1)
-            job_config['hardware_hint'] = dataset.get('hardware_hint', 'cpu')
-            self.queue_manager.add_job(
-                dataset_path=str(active_path),
-                model_type=dataset['model_type'],
-                config=job_config,
-                priority=job_config.get('priority', 1),
-                hardware_hint=job_config.get('hardware_hint', 'cpu')
-            )
-            # Start processing if not already
-            if not self.queue_manager.is_processing:
-                self.queue_manager.start_processing()
-            
-            self.update_queue_display()
-            
-        except Exception as e:
-            logger.exception(f"Error moving dataset to active: {e}")
-    
+        if self.trainer_process and self.trainer_process.poll() is None:
+            logger.warning("A Phoenix Trainer worker is already running")
+            return
+
+        self.queue_running = False
+        self._start_dataset(dataset)
     def launch_trainer(self, dataset_path: Path):
-        """Launch Phoenix Trainer with specified dataset"""
-        import subprocess
-        
-        trainer_script = self.project_root / "src" / "modules" / "phoenix_trainer" / "phoenix_trainer_dpg.py"
-        
-        if trainer_script.exists():
-            # Launch trainer as separate process
-            subprocess.Popen([sys.executable, str(trainer_script), "--dataset", str(dataset_path)])
+        """Launch one Phoenix Trainer worker for a queued dataset."""
+        trainer_script = (
+            self.project_root
+            / "src"
+            / "modules"
+            / "phoenix_trainer"
+            / "phoenix_trainer_dpg.py"
+        )
+
+        if not trainer_script.exists():
+            raise FileNotFoundError(f"Trainer script not found: {trainer_script}")
+
+        logger.info(f"Launching Phoenix Trainer worker: {dataset_path}")
+        return subprocess.Popen(
+            [
+                sys.executable,
+                str(trainer_script),
+                "--dataset",
+                str(dataset_path),
+                "--auto-exit",
+            ],
+            cwd=str(trainer_script.parent),
+        )
+    def start_queue(self):
+        """Begin unattended sequential processing of pending datasets."""
+        self.queue_running = True
+        if dpg.does_item_exist("start_queue_btn"):
+            dpg.configure_item("start_queue_btn", enabled=False)
+        if dpg.does_item_exist("stop_queue_btn"):
+            dpg.configure_item("stop_queue_btn", enabled=True)
+        self.update_status_text()
+        self._dispatch_next_if_idle()
+
+    def stop_queue(self):
+        """Stop automatic dispatch after the current trainer process finishes."""
+        self.queue_running = False
+        if dpg.does_item_exist("start_queue_btn"):
+            dpg.configure_item("start_queue_btn", enabled=True)
+        if dpg.does_item_exist("stop_queue_btn"):
+            dpg.configure_item("stop_queue_btn", enabled=False)
+        self.update_status_text()
+
+    def _start_dataset(self, dataset: Dict):
+        """Move one pending dataset to active and launch its trainer worker."""
+        if dataset.get("status") not in {"pending", "queued"}:
+            logger.warning(
+                "Dataset %s is not pending (status=%s)",
+                dataset.get("name"),
+                dataset.get("status"),
+            )
+            return
+
+        dataset_path = Path(dataset["path"])
+        active_path = self.active_dir / dataset_path.name
+
+        if dataset_path.parent == self.pending_dir:
+            import shutil
+
+            if active_path.exists():
+                raise FileExistsError(
+                    f"Active dataset directory already exists: {active_path}"
+                )
+            shutil.move(str(dataset_path), str(active_path))
+            dataset["path"] = str(active_path)
         else:
-            logger.error(f"Trainer script not found: {trainer_script}")
-    
+            active_path = dataset_path
+
+        dataset["status"] = "training"
+        self.active_dataset_id = dataset["id"]
+
+        try:
+            self.trainer_process = self.launch_trainer(active_path)
+        except Exception:
+            dataset["status"] = "failed"
+            self.active_dataset_id = None
+            self.trainer_process = None
+            logger.exception("Could not launch Phoenix Trainer worker")
+            raise
+
+        self.save_queue_state()
+        self.update_queue_display()
+
+    def _dispatch_next_if_idle(self):
+        """Launch the next pending job when unattended queue processing is active."""
+        if not self.queue_running:
+            return
+        if self.trainer_process and self.trainer_process.poll() is None:
+            return
+
+        next_dataset = next(
+            (d for d in self.datasets if d.get("status") == "pending"),
+            None,
+        )
+        if next_dataset is None:
+            self.queue_running = False
+            if dpg.does_item_exist("start_queue_btn"):
+                dpg.configure_item("start_queue_btn", enabled=True)
+            if dpg.does_item_exist("stop_queue_btn"):
+                dpg.configure_item("stop_queue_btn", enabled=False)
+            self.update_status_text()
+            return
+
+        self._start_dataset(next_dataset)
+
+    def _poll_trainer_process(self):
+        """Observe the active trainer without blocking the queue UI."""
+        if not self.trainer_process:
+            return
+
+        return_code = self.trainer_process.poll()
+        if return_code is None:
+            return
+
+        dataset = next(
+            (d for d in self.datasets if d["id"] == self.active_dataset_id),
+            None,
+        )
+        self.trainer_process = None
+        self.active_dataset_id = None
+
+        if dataset:
+            name = Path(dataset["path"]).name
+            completed_path = self.completed_dir / name
+            failed_path = self.failed_dir / name
+
+            if completed_path.exists():
+                dataset["status"] = "completed"
+                dataset["path"] = str(completed_path)
+            elif failed_path.exists():
+                dataset["status"] = "failed"
+                dataset["path"] = str(failed_path)
+            else:
+                dataset["status"] = "failed"
+                logger.error(
+                    "Phoenix Trainer exited with code %s but dataset was not "
+                    "moved to completed/failed: %s",
+                    return_code,
+                    dataset["path"],
+                )
+
+        self.save_queue_state()
+        self.update_queue_display()
+
+    def _drain_ui_events(self):
+        """Apply watcher events on the Dear PyGui main thread."""
+        while True:
+            try:
+                event = self._ui_events.get_nowait()
+            except thread_queue.Empty:
+                break
+
+            kind = event[0]
+            if kind == "new_dataset":
+                dataset_path = Path(event[1])
+                if dataset_path.exists() and not any(
+                    Path(d["path"]) == dataset_path for d in self.datasets
+                ):
+                    self.load_dataset_info(dataset_path)
+                    self.save_queue_state()
+                    self.update_queue_display()
+
     def view_dataset(self):
         """View dataset in file manager"""
         if not self.selected_dataset_id:
@@ -551,12 +706,8 @@ class PhoenixTrainingQueueApp:
         logger.info(f"Started watching for new datasets in: {self.pending_dir}")
     
     def on_new_dataset(self, dataset_path: Path):
-        """Called when new dataset is detected"""
-        # Logging suppressed for clean CLI
-        self.load_dataset_info(dataset_path)
-        self.update_queue_display()
-        self.save_queue_state()
-    
+        """Queue a filesystem event for the Dear PyGui main thread."""
+        self._ui_events.put(("new_dataset", str(dataset_path)))
     def on_viewport_resize(self):
         """Handle viewport resize events"""
         pass  # Placeholder for future resize logic
@@ -644,28 +795,22 @@ class PhoenixTrainingQueueApp:
         dpg.stop_dearpygui()
     
     def run(self):
-        """Run the application"""
+        """Run the queue control process."""
         self.setup_dpg()
-        
-        # Start render loop
+
         while dpg.is_dearpygui_running():
+            callback_jobs = dpg.get_callback_queue()
+            if callback_jobs:
+                dpg.run_callbacks(callback_jobs)
+
+            self._drain_ui_events()
+            self._poll_trainer_process()
+            self._dispatch_next_if_idle()
             dpg.render_dearpygui_frame()
-        
-        # Cleanup
+
         if self.observer:
             self.observer.stop()
             self.observer.join()
-        
+
         self.save_queue_state()
         dpg.destroy_context()
-
-
-def main():
-    """Main entry point"""
-    logger.info("Dataset Queue: Loaded")
-    app = PhoenixTrainingQueueApp()
-    app.run()
-
-
-if __name__ == "__main__":
-    main()
