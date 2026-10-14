@@ -12,8 +12,10 @@ hardware assumptions, UI controls, and historical fallback behavior are
 inconsistent.
 
 The production training workstation is currently an AMD Radeon RX 7900 XTX using
-ROCm. Phoenix is operated as a separate process from Dataset Studio, Annotation
-Studio, and the training queue.
+ROCm. The TruScore application environment currently runs Python 3.11.17. Its
+ROCm/PyTorch GPU packages have not yet been installed, so GPU runtime verification
+for Phoenix is still pending. Phoenix is operated as a separate process from
+Dataset Studio, Annotation Studio, and the training queue.
 
 ## Decision
 
