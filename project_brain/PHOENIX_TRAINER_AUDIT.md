@@ -85,9 +85,15 @@ Detectron2 is available. Detectron2-native AMP can be enabled.
 
 ### Queue and process separation
 
-The standalone training queue launches Phoenix in a separate process. Dataset
-Studio, Annotation Studio, the queue, and Phoenix can therefore operate
-independently. This separation is valuable and must be preserved.
+The intended architecture is a separate queue/control process and a separate
+Phoenix Trainer worker process. The queue should serialize queued datasets,
+launch one trainer worker for the active dataset, wait for its terminal result,
+and then launch the next worker.
+
+During runtime integration testing on 2026-10-14, the current standalone queue was
+confirmed to have drifted from that architecture: its legacy subprocess launch
+was commented out and training was dispatched into `QueueManager` inside the
+queue process. This has now been corrected on the active refactor branch.
 
 ## Confirmed Correctness Defects
 
@@ -222,6 +228,28 @@ inside its epoch loop as a normal path to final-model saving/completion.
 
 These controls must remain disabled until Phoenix has an explicit cancellation
 state and job outcome contract.
+
+### 17. Executable trainer entrypoint regression
+
+End-to-end launch from `run_truscore.py` exposed that an earlier refactor edit
+accidentally removed the top-level `main()` and `if __name__ == "__main__"`
+entrypoint from `phoenix_trainer_dpg.py`. The subprocess therefore started,
+loaded the module, and exited without creating Phoenix.
+
+This was not detected by syntax compilation or the initial unit suite. The
+entrypoint is restored and an explicit regression test plus GUI-process smoke
+launch has been added to CI.
+
+### 18. Queue process boundary had regressed
+
+The standalone queue retained a `launch_trainer()` subprocess function, but the
+active `train_selected()` path had that call commented out and instead used
+`QueueManager` to execute training inside the queue process.
+
+This violated the intended queue/trainer process isolation and prevented the
+unattended queue from being the sole orchestration layer. The active refactor
+restores subprocess dispatch, automatic worker start/exit, and sequential queue
+processing.
 
 ## Dataset Contract Findings
 
@@ -400,6 +428,12 @@ Implemented:
 - added focused backend-identification tests
 - added a lightweight GitHub Actions workflow for syntax compilation and Phoenix
   foundation unit tests
+- restored the executable Phoenix Trainer entrypoint
+- restored queue -> separate trainer-worker process isolation
+- added unattended sequential queue dispatch
+- queued trainer workers now auto-start and auto-exit
+- added regression tests for process entrypoints and queue/trainer ownership
+- added Xvfb GUI-process startup smoke tests to CI
 
 ## Verification
 
