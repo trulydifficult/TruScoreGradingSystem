@@ -1544,7 +1544,7 @@ class TruScoreMainWindow(QMainWindow):
         launcher_layout.addWidget(title)
         
         # Description
-        desc = QLabel("Advanced AI model training studio for sports card grading")
+        desc = QLabel("Queue datasets now; Phoenix Trainer workers run independently one at a time")
         desc.setFont(TruScoreTheme.get_font("Arial", 14))
         desc.setStyleSheet(f"color: {TruScoreSettings.GOLD_ELITE};")
         desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1558,7 +1558,7 @@ class TruScoreMainWindow(QMainWindow):
         button_container.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         button_layout = QHBoxLayout(button_container)
         
-        self.launch_phoenix_btn = QPushButton("Launch Phoenix Trainer")
+        self.launch_phoenix_btn = QPushButton("Launch Phoenix Training System")
         self.launch_phoenix_btn.setFont(TruScoreTheme.get_font("Arial", 16))
         self.launch_phoenix_btn.setMinimumSize(280, 60)
         self.launch_phoenix_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1592,52 +1592,53 @@ class TruScoreMainWindow(QMainWindow):
         self.pages_stack.addWidget(page)
     
     def launch_phoenix_trainer(self):
-        """Launch Phoenix Trainer as subprocess"""
+        """Launch the Phoenix training control process.
+
+        The queue is the control plane. It launches one Phoenix Trainer worker
+        process per active dataset, preserving queue/trainer process isolation.
+        """
         try:
             module_dir = Path(__file__).parent.parent / "phoenix_trainer"
-            phoenix_trainer_path = module_dir / "phoenix_trainer_dpg.py"
             phoenix_queue_path = module_dir / "phoenix_training_queue_standalone.py"
-            
-            if not phoenix_trainer_path.exists():
-                raise FileNotFoundError(f"Phoenix Trainer not found at: {phoenix_trainer_path}")
-            
-            logger.info(f"Launching Phoenix Trainer: {phoenix_trainer_path}")
-            
-            # Launch Phoenix Trainer UI
-            self.phoenix_trainer_process = subprocess.Popen(
-                [sys.executable, str(phoenix_trainer_path)],
-                cwd=str(module_dir)
+
+            if not phoenix_queue_path.exists():
+                raise FileNotFoundError(
+                    f"Phoenix Training Queue not found at: {phoenix_queue_path}"
+                )
+
+            if (
+                hasattr(self, "phoenix_queue_process")
+                and self.phoenix_queue_process.poll() is None
+            ):
+                logger.info("Phoenix Training Queue already running")
+                return
+
+            logger.info(f"Launching Phoenix Training Queue: {phoenix_queue_path}")
+            self.phoenix_queue_process = subprocess.Popen(
+                [sys.executable, str(phoenix_queue_path)],
+                cwd=str(module_dir),
             )
-            logger.info(f"Phoenix Trainer launched with PID: {self.phoenix_trainer_process.pid}")
-            
-            # Launch training queue (standalone) if available and not already running
-            if phoenix_queue_path.exists():
-                if not hasattr(self, "phoenix_queue_process") or self.phoenix_queue_process.poll() is not None:
-                    logger.info(f"Launching Phoenix Training Queue: {phoenix_queue_path}")
-                    self.phoenix_queue_process = subprocess.Popen(
-                        [sys.executable, str(phoenix_queue_path)],
-                        cwd=str(module_dir)
-                    )
-                    logger.info(f"Phoenix Training Queue launched with PID: {self.phoenix_queue_process.pid}")
-                else:
-                    logger.info("Phoenix Training Queue already running")
-            else:
-                logger.warning(f"Phoenix Training Queue not found at: {phoenix_queue_path}")
-            
-            self.launch_phoenix_btn.setText("Phoenix Trainer Running...")
+            logger.info(
+                "Phoenix Training Queue launched with PID: %s",
+                self.phoenix_queue_process.pid,
+            )
+
+            self.launch_phoenix_btn.setText("Phoenix Training System Running...")
             self.launch_phoenix_btn.setEnabled(False)
-            
-            # Monitor trainer process to re-enable button when closed
-            self.monitor_subprocess(self.phoenix_trainer_process, self.launch_phoenix_btn, "Launch Phoenix Trainer")
-            
+
+            self.monitor_subprocess(
+                self.phoenix_queue_process,
+                self.launch_phoenix_btn,
+                "Launch Phoenix Training System",
+            )
+
         except Exception as e:
-            logger.error(f"Failed to launch Phoenix Trainer: {e}")
+            logger.error(f"Failed to launch Phoenix training system: {e}")
             QMessageBox.critical(
                 self,
                 "Launch Error",
-                f"Failed to launch Phoenix Trainer:\n{str(e)}"
+                f"Failed to launch Phoenix training system:\n{str(e)}",
             )
-    
     def create_continuous_learning_page(self):
         """Create Continuous Learning Model launcher page"""
         page = QWidget()
