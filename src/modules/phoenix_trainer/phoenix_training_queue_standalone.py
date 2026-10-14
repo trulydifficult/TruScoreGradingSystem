@@ -495,6 +495,7 @@ class PhoenixTrainingQueueApp:
                 str(trainer_script),
                 "--dataset",
                 str(dataset_path),
+                "--auto-start",
                 "--auto-exit",
             ],
             cwd=str(trainer_script.parent),
