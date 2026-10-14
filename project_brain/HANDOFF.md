@@ -198,3 +198,19 @@ It verifies:
 Production acceptance still requires the user's normal end-to-end path:
 activated TruScore environment -> `run_truscore.py` -> Phoenix UI -> queue/job
 dispatch on the RX 7900 XTX workstation.
+
+
+## Production Python / GPU Environment — 2026-10-14
+
+The user's actual TruScore environment is Python 3.11.17.
+
+The TruScore environment does not yet contain the AMD/ROCm PyTorch GPU packages.
+The working Unsloth ROCm stack is in a separate environment and must not be treated
+as proof that Phoenix can currently train on the GPU from the TruScore environment.
+
+Phoenix CI has been changed from Python 3.13 to Python 3.11.17 so the foundation
+suite tracks the real application runtime.
+
+Queued workers now return a failed start state and auto-exit if the requested GPU
+runtime is unavailable, preventing an unattended queue from hanging forever on an
+idle worker.
