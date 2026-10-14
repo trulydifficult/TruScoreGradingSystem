@@ -52,11 +52,16 @@ class PhoenixTrainer:
     Standalone training application with queue system
     """
     
-    def __init__(self, dataset_path: Optional[str] = None):
+    def __init__(
+        self,
+        dataset_path: Optional[str] = None,
+        auto_exit_after_job: bool = False,
+    ):
         self.training_queue = []
         self.current_job = None
         self.is_training = False
         self.dataset_from_queue = dataset_path  # Dataset passed from queue
+        self.auto_exit_after_job = auto_exit_after_job
         self.loaded_dataset = None  # Currently loaded dataset
         self._last_metrics = {}
         
@@ -1048,6 +1053,8 @@ class PhoenixTrainer:
             self.current_job = None
             self._queue_ui_value("current_job", "No active training")
             self._queue_ui_value("model_type", "N/A")
+            if self.auto_exit_after_job:
+                self._ui_events.put(("stop_app",))
     def get_training_config(self, job: dict, dataset_path: Path) -> dict:
         """Snapshot the training configuration shared by all concrete trainers."""
         dataset_config = job.get("dataset_config", {})
@@ -1294,6 +1301,8 @@ class PhoenixTrainer:
                 self._append_log_to_ui(message, level)
             elif kind == "refresh_queue":
                 self.update_queue_display()
+            elif kind == "stop_app":
+                dpg.stop_dearpygui()
 
     def log_message(self, message: str, level: str = "INFO"):
         """Log immediately and marshal visual updates onto the DPG main thread."""
@@ -1328,3 +1337,37 @@ class PhoenixTrainer:
             dpg.render_dearpygui_frame()
 
         dpg.destroy_context()
+
+
+def main():
+    """Launch Phoenix Trainer."""
+    parser = argparse.ArgumentParser(description="TruScore Phoenix Trainer")
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        help="Path to dataset directory (from training queue)",
+    )
+    parser.add_argument(
+        "--auto-exit",
+        action="store_true",
+        help="Close Phoenix automatically after the queued job finishes or fails.",
+    )
+    args = parser.parse_args()
+
+    logger.info("=" * 60)
+    logger.info("TruScore Phoenix Trainer - Starting")
+    logger.info("The Ultimate Training System")
+    logger.info("=" * 60)
+
+    if args.dataset:
+        logger.info(f"Loading dataset from queue: {args.dataset}")
+
+    trainer = PhoenixTrainer(
+        dataset_path=args.dataset,
+        auto_exit_after_job=args.auto_exit,
+    )
+    trainer.run()
+
+
+if __name__ == "__main__":
+    main()
