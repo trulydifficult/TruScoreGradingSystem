@@ -214,3 +214,23 @@ suite tracks the real application runtime.
 Queued workers now return a failed start state and auto-exit if the requested GPU
 runtime is unavailable, preventing an unattended queue from hanging forever on an
 idle worker.
+
+
+## End-to-End Runtime Acceptance — 2026-10-14
+
+Verified on the user's normal production path:
+
+```text
+activate TruScore environment
+-> run_truscore.py
+-> navigate to Phoenix Trainer page
+-> launch Phoenix Training System
+-> Phoenix Training Queue opens successfully
+```
+
+This verifies the main-app-to-queue subprocess integration on the production
+workstation.
+
+It does NOT yet verify GPU training, queue-to-trainer job dispatch, or model
+training. The TruScore Python 3.11.17 environment does not yet contain its own
+ROCm/PyTorch GPU stack.
