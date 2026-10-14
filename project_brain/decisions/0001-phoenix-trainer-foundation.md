@@ -20,7 +20,10 @@ Studio, and the training queue.
 1. Preserve Dear PyGui as the Phoenix user interface.
 2. Keep the training engine independent of Dear PyGui.
 3. Preserve the separate-process workflow between annotation, dataset creation,
-   queue management, and training.
+   queue management, and training. The Phoenix Training Queue is the control
+   process; actual model training executes in a separate Phoenix Trainer worker
+   process. The queue launches at most one trainer worker at a time, waits for its
+   terminal result, then dispatches the next queued dataset.
 4. Establish one trainer registry/factory as the sole owner of model-to-trainer
    resolution.
 5. Never substitute an unrelated trainer for an unavailable requested model.
@@ -52,3 +55,7 @@ Studio, and the training queue.
   compute checks.
 - Runtime verification on the RX 7900 XTX is required before Phoenix changes are
   marked VERIFIED.
+- The main TruScore application launches the Phoenix queue/control process. An
+  idle trainer process is not started merely to open the subsystem; the trainer
+  starts when a dataset is dispatched.
+- Queue implementation must not execute model training inside the queue process.
