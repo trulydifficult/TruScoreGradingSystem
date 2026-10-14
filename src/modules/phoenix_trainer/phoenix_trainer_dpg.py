@@ -1071,10 +1071,13 @@ class PhoenixTrainer:
             if self.auto_exit_after_job:
                 self._ui_events.put(("stop_app",))
     def get_training_config(self, job: dict, dataset_path: Path) -> dict:
-        """Snapshot the training configuration shared by all concrete trainers."""
+        """Resolve a run config from UI values plus queued dataset overrides."""
         dataset_config = job.get("dataset_config", {})
+        saved_training = dataset_config.get("training_config", {})
+        if not isinstance(saved_training, dict):
+            saved_training = {}
 
-        return {
+        config = {
             "dataset_path": str(dataset_path),
             "dataset_name": job["name"],
             "model_type": job["model_type"],
@@ -1112,6 +1115,7 @@ class PhoenixTrainer:
                 "crop": dpg.get_value("aug_crop"),
                 "noise": dpg.get_value("aug_noise"),
             },
+            "advanced_monitoring": True,
             "enable_uncertainty": (
                 dpg.get_value("enable_uncertainty")
                 if dpg.does_item_exist("enable_uncertainty")
@@ -1126,6 +1130,28 @@ class PhoenixTrainer:
             "fusion_mode": job.get("fusion_mode"),
             "entropy_threshold": 0.2,
         }
+
+        # Unattended queue jobs must honor the training configuration exported
+        # with the dataset rather than silently using Trainer UI defaults.
+        if self.auto_start:
+            for key, value in saved_training.items():
+                if value is not None:
+                    config[key] = value
+
+            # Allow a small set of trainer-specific smoke/production overrides at
+            # the dataset root without making the DPG layer model-aware.
+            for key in ("model_name", "pretrained", "num_workers", "advanced_monitoring"):
+                if key in dataset_config:
+                    config[key] = dataset_config[key]
+
+            hardware_hint = str(job.get("hardware_hint", "")).lower()
+            if hardware_hint in {"gpu", "rocm", "cuda"}:
+                config["device"] = "cuda"
+            elif hardware_hint == "cpu":
+                config["device"] = "cpu"
+
+        return config
+
     def create_trainer(self, model_type: str, config: dict):
         """Create a verified trainer or fail explicitly for unsupported models."""
         try:
