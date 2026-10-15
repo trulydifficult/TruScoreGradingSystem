@@ -607,3 +607,40 @@ smoke, and Queue GUI smoke.
 Production workstation verification remains pending for the Operations Monitor
 itself. The worker process architecture remains unchanged: Queue controls and
 observes; Trainer workers train.
+
+
+## Monitor IPC Race / CLI Channel Separation — 2026-10-15
+
+A production workstation run exposed a Queue-side JSONDecodeError while polling
+`training_status.json`. The Trainer subsequently saved final artifacts,
+completed normally, and moved the dataset to `completed/`, proving the error was
+not a model-training failure.
+
+Root cause:
+- Trainer rewrote `training_status.json` with direct truncating file writes.
+- Queue polled the same file concurrently.
+- Queue could observe the file after truncation but before complete JSON was
+  written.
+
+Repair:
+- new `atomic_io.py` writes JSON to a same-directory temporary file, flushes,
+  fsyncs, and publishes with `os.replace()`.
+- run metadata and Queue state use the same atomic helper where appropriate.
+- Queue monitor reads treat transient absence or legacy partial JSON as a skipped
+  poll, not as an error traceback.
+
+The same production run also showed that opening all Phoenix INFO records to the
+terminal was operationally harmful. It made genuine errors easy to lose among
+class discovery, split, batch, metric, and checkpoint detail.
+
+Repair:
+- new `operator_logging.py` defines an explicit sparse CLI allowlist.
+- only records marked `phoenix_cli=True` reach Phoenix console handlers.
+- detailed INFO remains in run/file logs and the Queue Operations Monitor.
+- warnings/errors are summarized in CLI with direct diagnostic log path.
+- full traceback remains in file/run logs.
+- Trainer preflight CLI now intentionally summarizes accelerator/VRAM, available
+  system RAM, and disk.
+- Run ID and run.log path are terminal-visible.
+
+This separation is formalized in Decision 0005.
