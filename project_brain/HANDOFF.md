@@ -409,3 +409,67 @@ Implemented:
 - Queue exposes/open/copy run directory
 
 Runs created before this change do not gain these artifacts retroactively.
+
+
+## Phoenix Persistent Operations Console — 2026-10-15
+
+Decision: `project_brain/decisions/0004-phoenix-queue-operations-console.md`
+
+Production feedback showed that even with immutable per-run provenance, the Queue
+still did not provide a persistent operator narrative. Fast workers appeared for
+less than a second, exited, and left only a Pending -> Completed status change.
+This is insufficient for unattended multi-hour queues.
+
+Implemented:
+
+- Queue is now the persistent operations console across all Trainer workers.
+- New durable event stream:
+  `exports/training_queue/monitor/queue_events.jsonl`
+- Queue window now includes a persistent Operations Monitor with:
+  - current state
+  - current dataset
+  - progress bar
+  - epoch/total epochs
+  - live metrics
+  - chronological event/worker timeline
+- Monitor history survives Queue restarts.
+- Trainer writes `training_run.json` at run start so Queue can tail the active
+  `run.log`, not only inspect a completed run.
+- Queue records lifecycle events for:
+  - session open/close
+  - queue start/stop
+  - dataset dispatch
+  - worker launch
+  - active status/epoch/metrics
+  - worker run.log lines
+  - completion/failure/unresolved exits
+  - queue becoming idle
+- Selected dataset details automatically refresh when its status/path changes, so
+  a selected Pending job becomes its completed Run Summary without re-selection.
+- Trainer and Queue INFO lifecycle output is allowed through their own console
+  handlers without weakening global TruScore console filtering.
+- Clearing completed jobs from the visible list does not delete monitor history.
+
+Historical monitor concepts were reviewed in:
+- Checkplz/phoenix_tensorzero_training/training/phoenix_training_queue.py
+- Checkplz/phoenix_tensorzero_training/phoenix_training_queue.py
+- training/components/training_panel.py
+- training/components/metrics_panel.py
+- training/phoenix_training_studio.py
+
+Only the useful persistent-status/progress/metrics concepts were recovered.
+Historical simulated training and duplicate Queue-side training ownership remain
+rejected.
+
+Automated verification:
+GitHub Actions run `38796016470` completed successfully:
+- compile: PASS
+- Phoenix tests/regressions: PASS
+- Trainer GUI-process smoke: PASS
+- Queue GUI-process smoke with Operations Monitor: PASS
+
+Production acceptance still required:
+`run_truscore.py -> Phoenix Queue -> dispatch smoke dataset`, then verify that
+the Queue Operations Monitor visibly preserves start, training details, completion,
+and final run details after the Trainer worker exits. A multi-job sequential
+acceptance test should follow after the single-job monitor path is verified.
