@@ -1020,7 +1020,7 @@ class PhoenixTrainer:
                 f"deterministic={job['config'].get('deterministic')}",
                 "INFO",
             )
-            recorder.log(
+            self.log_message(
                 "Resolved config persisted to training_config.json",
                 "INFO",
             )
@@ -1029,13 +1029,11 @@ class PhoenixTrainer:
             self._queue_ui_value("model_type", job["model_type"])
 
             self.log_message("Initializing trainer...", "INFO")
-            recorder.log("Initializing trainer", "INFO")
             trainer = self.create_trainer(job["model_type"], job["config"])
 
             model_config_written = False
 
             def trainer_log_callback(message, level):
-                recorder.log(message, level)
                 self.log_message(message, level)
 
             def epoch_start_callback(epoch):
@@ -1043,10 +1041,8 @@ class PhoenixTrainer:
                 if not model_config_written:
                     recorder.write_model_config(trainer)
                     model_config_written = True
-                recorder.log(
-                    f"Epoch {epoch + 1}/{job['config']['epochs']} started",
-                    "INFO",
-                )
+                # BaseTrainer logs the epoch start; model config is persisted here
+                # because the model has been constructed by this point.
 
             def metrics_callback(metrics):
                 metrics = dict(metrics or {})
@@ -1091,7 +1087,7 @@ class PhoenixTrainer:
                 self._queue_ui_value("epoch_progress", float(progress))
                 self._queue_ui_value("epoch_text", f"Epoch {epoch}/{total_epochs}")
 
-                recorder.log(
+                self.log_message(
                     f"Progress: epoch={epoch}/{total_epochs}, "
                     f"progress={float(progress) * 100:.1f}%",
                     "INFO",
@@ -1113,7 +1109,6 @@ class PhoenixTrainer:
             self.log_message(
                 f"Starting {job['model_type']} training...", "SUCCESS"
             )
-            recorder.log(f"Starting {job['model_type']} training", "INFO")
             trainer.train()
 
             if not model_config_written:
@@ -1504,6 +1499,13 @@ class PhoenixTrainer:
             raise ValueError(f"Unsupported Phoenix log level: {level}")
 
         logger.log(logging_levels[normalized_level], message)
+
+        recorder = getattr(self, "_active_run_recorder", None)
+        if recorder is not None:
+            try:
+                recorder.log(message, normalized_level)
+            except Exception:
+                logger.exception("Could not append to Phoenix run log")
 
         if threading.current_thread() is threading.main_thread():
             self._append_log_to_ui(message, normalized_level)
