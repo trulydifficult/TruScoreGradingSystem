@@ -330,13 +330,17 @@ class BaseTrainer(ABC):
             self.log("Building model...", "INFO")
             self.build_model()
             self.log("Model built successfully", "SUCCESS")
+
+            resume_from = self.config.get("resume_from")
+            if resume_from:
+                self.load_checkpoint(Path(resume_from))
             
             # Profile model with advanced monitoring
             if self.advanced_monitor:
                 self.log("Profiling model...", "INFO")
                 profile_results = self.advanced_monitor.profile_model(
                     self.model if hasattr(self, 'model') else None,
-                    input_size=(3, 224, 224)  # Override in subclass if needed
+                    input_size=self.get_profile_input_size()
                 )
                 self.log(f"Model parameters: {profile_results.get('total_parameters', 'N/A')}", "INFO")
                 self.log(f"Model FLOPs: {profile_results.get('gflops', 'N/A')} GFLOPs", "INFO")
@@ -359,7 +363,7 @@ class BaseTrainer(ABC):
                     }
                 )
             
-            for epoch in range(total_epochs):
+            for epoch in range(self.start_epoch, total_epochs):
                 if not self.is_training:
                     self.log("Training stopped by user", "WARNING")
                     break
@@ -411,14 +415,25 @@ class BaseTrainer(ABC):
                         metadata={'all_metrics': all_metrics}
                     )
                 
-                # Save best model
-                metric_value = val_metrics.get('mAP', val_metrics.get('accuracy', val_metrics.get('IoU', val_metrics.get('val_loss', 0))))
-                if metric_value > self.best_metric:
+                # Resolve the monitored validation metric and its direction.
+                metric_name, metric_value, metric_mode = select_monitor_metric(
+                    val_metrics,
+                    self.config,
+                )
+                self.monitor_metric_name = metric_name
+                self.monitor_mode = metric_mode
+                self._ensure_early_stopping(metric_mode)
+
+                if metric_improved(metric_value, self.best_metric, metric_mode):
                     self.best_metric = metric_value
                     best_path = self.output_dir / "best_model.pth"
                     self.save_checkpoint(best_path)
-                    self.log(f"Saved best model: {metric_value:.4f}", "SUCCESS")
-                    
+                    self.log(
+                        f"Saved best model: {metric_name}={metric_value:.4f} "
+                        f"({metric_mode})",
+                        "SUCCESS",
+                    )
+
                     # GURU EVENT #3: Checkpoint Saved
                     if GURU_AVAILABLE:
                         guru.send_checkpoint_saved(
@@ -426,20 +441,34 @@ class BaseTrainer(ABC):
                             validation_accuracy=metric_value,
                             is_best=True,
                             epoch=epoch + 1,
-                            metadata={'checkpoint_type': 'best_model'}
+                            metadata={
+                                'checkpoint_type': 'best_model',
+                                'monitor_metric': metric_name,
+                                'monitor_mode': metric_mode,
+                            }
                         )
-                
-                # Check early stopping
+
+                # Check early stopping using the same metric direction.
                 if self.early_stopping:
-                    if self.early_stopping(metric_value, self.model if hasattr(self, 'model') else None):
-                        self.log("Early stopping triggered - restoring best model", "WARNING")
+                    if self.early_stopping(
+                        metric_value,
+                        self.model if hasattr(self, 'model') else None,
+                    ):
+                        self.log(
+                            "Early stopping triggered - restoring best model",
+                            "WARNING",
+                        )
                         if hasattr(self, 'model'):
                             self.early_stopping.restore_best_model(self.model)
                         break
-                
-                # Save checkpoint every N epochs
-                if (epoch + 1) % 10 == 0:
-                    checkpoint_path = self.output_dir / f"checkpoint_epoch_{epoch + 1}.pth"
+
+                checkpoint_interval = int(
+                    self.config.get("checkpoint_interval", 10)
+                )
+                if checkpoint_interval > 0 and (epoch + 1) % checkpoint_interval == 0:
+                    checkpoint_path = (
+                        self.output_dir / f"checkpoint_epoch_{epoch + 1}.pth"
+                    )
                     self.save_checkpoint(checkpoint_path)
                 
                 # Update progress
@@ -458,7 +487,9 @@ class BaseTrainer(ABC):
             if GURU_AVAILABLE:
                 converged = self.early_stopping.early_stop if self.early_stopping else (self.current_epoch >= total_epochs - 1)
                 guru.send_training_completed(
-                    final_accuracy=self.best_metric,
+                    final_accuracy=(
+                        self.best_metric if self.best_metric is not None else 0.0
+                    ),
                     total_epochs=self.current_epoch + 1,
                     total_time=elapsed,
                     final_model_path=str(self.output_dir / "best_model.pth"),
