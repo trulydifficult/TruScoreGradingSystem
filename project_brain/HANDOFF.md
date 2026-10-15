@@ -362,3 +362,20 @@ changes. It passed:
 
 Production verification of the new BF16/accumulation/clipping/checkpoint behavior
 remains pending on the RX 7900 XTX.
+
+
+### Deterministic attention correction — 2026-10-15
+
+During the BF16/common-runtime smoke run, PyTorch emitted a warning that ROCm
+Flash Attention backward was using a nondeterministic algorithm. The run could
+still validate BF16, accumulation, clipping, and checkpoint plumbing, but it
+cannot count as deterministic verification.
+
+Phoenix deterministic mode is now strict:
+- fused Flash SDPA disabled
+- memory-efficient SDPA disabled
+- cuDNN SDPA disabled when exposed
+- math SDPA enabled
+- torch.use_deterministic_algorithms(True, warn_only=False)
+
+A deterministic run must now use deterministic kernels or fail explicitly.
