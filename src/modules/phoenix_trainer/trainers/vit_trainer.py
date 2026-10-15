@@ -324,9 +324,11 @@ class ViTTrainer(BaseTrainer):
             total += labels.size(0)
             correct += predicted.eq(labels).sum().item()
 
-            if batch_idx % 10 == 0:
+            log_interval = max(1, int(self.config.get("log_interval_batches", 10)))
+            if batch_idx % log_interval == 0 or batch_idx + 1 == total_batches:
                 self.log(
-                    f"Batch {batch_idx}/{total_batches}: Loss={loss.item():.4f}",
+                    f"Batch {batch_idx + 1}/{total_batches}: "
+                    f"Loss={loss.item():.4f}",
                     "INFO",
                 )
 
