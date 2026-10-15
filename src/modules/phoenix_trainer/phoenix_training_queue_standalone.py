@@ -635,6 +635,12 @@ class PhoenixTrainingQueueApp:
         
         # Update status text
         self.update_status_text()
+
+        # Keep the selected dataset details synchronized with status/path changes.
+        if self.selected_dataset_id is not None and any(
+            d["id"] == self.selected_dataset_id for d in self.datasets
+        ):
+            self.select_dataset(self.selected_dataset_id)
     
     def update_status_text(self):
         """Update queue and trainer-process status."""
