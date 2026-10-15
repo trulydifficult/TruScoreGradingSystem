@@ -82,6 +82,7 @@ jobs:
             tests/phoenix/test_training_lifecycle_logging.py \
             tests/phoenix/test_detectron2_fallback.py \
             tests/phoenix/test_detectron2_split_contract.py \
+            tests/phoenix/test_detectron2_native_lifecycle.py \
             tests/phoenix/test_run_artifacts.py \
             tests/phoenix/test_queue_monitor.py \
             tests/phoenix/test_operator_io.py
