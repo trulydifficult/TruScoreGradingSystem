@@ -527,3 +527,23 @@ Next production acceptance:
 pull the latest branch and run one new smoke dataset. Confirm the terminal remains
 sparse, the Operations Monitor retains full detail, no monitor JSON traceback
 occurs, and any failure is shown as concise CLI error + direct log path.
+
+
+### Sparse CLI / atomic IPC automated verification
+
+GitHub Actions run `38800987215` completed successfully after the production
+feedback fixes:
+
+- Python 3.11.17: PASS
+- compilation including atomic_io.py / operator_logging.py: PASS
+- Phoenix regression suite: 43 passed
+- Trainer GUI-process smoke: PASS
+- Queue GUI-process smoke: PASS
+
+Next workstation acceptance criteria:
+1. CLI remains sparse.
+2. Accelerator/VRAM, available RAM, disk, Run ID, and run.log path are visible.
+3. Dataset start/completion are visible.
+4. Detailed class/split/batch/checkpoint telemetry remains in Operations Monitor/run.log.
+5. No JSONDecodeError/partial training_status traceback occurs.
+6. If an error occurs, CLI shows concise error + exact diagnostic log path.
