@@ -123,3 +123,11 @@ def test_trainer_publishes_active_run_reference_before_completion():
     source = TRAINER.read_text(encoding="utf-8")
 
     assert "recorder.write_dataset_reference(dataset_path)" in source
+
+
+
+def test_queue_refreshes_selected_details_after_status_changes():
+    source = QUEUE.read_text(encoding="utf-8")
+
+    assert "Keep the selected dataset details synchronized" in source
+    assert "self.select_dataset(self.selected_dataset_id)" in source
