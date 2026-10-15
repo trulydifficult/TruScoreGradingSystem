@@ -34,6 +34,7 @@ jobs:
             scripts/verify_phoenix_backend.py
             scripts/create_phoenix_vit_smoke_dataset.py
             tests/phoenix
+            tests/fixtures/detectron2/coco_20_image_test.zip
           sparse-checkout-cone-mode: false
 
       - name: Set up Python
