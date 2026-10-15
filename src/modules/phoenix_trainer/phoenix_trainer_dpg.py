@@ -616,8 +616,9 @@ class PhoenixTrainer:
                 )
                 if available
             ]
-            logger.info(
-                "✓ Accelerator: %s | %s | %.2f GB | precision=%s",
+            cli_info(
+                logger,
+                "Phoenix | Accelerator: %s | %s | %.2f GB VRAM | precision=%s",
                 accelerator.backend.upper(),
                 accelerator.name,
                 accelerator.total_memory_gb or 0.0,
@@ -625,7 +626,12 @@ class PhoenixTrainer:
             )
         else:
             logger.error(
-                "✗ GPU accelerator pre-flight failed: %s",
+                "GPU accelerator pre-flight failed: %s",
+                accelerator.error or "unknown accelerator error",
+            )
+            cli_error(
+                logger,
+                "Phoenix | ERROR: GPU pre-flight failed: %s",
                 accelerator.error or "unknown accelerator error",
             )
 
@@ -636,11 +642,32 @@ class PhoenixTrainer:
             "sufficient": free_gb > 10,
         }
         if free_gb > 10:
-            logger.info(f"✓ Disk Space: {free_gb:.2f} GB free")
+            cli_info(logger, "Phoenix | Disk: %.2f GB free", free_gb)
         else:
             logger.warning(
-                f"⚠ Disk Space: Only {free_gb:.2f} GB free (recommend 10+ GB)"
+                "Disk space low: %.2f GB free (recommend 10+ GB)",
+                free_gb,
             )
+            cli_warning(
+                logger,
+                "Phoenix | WARNING: Disk space low: %.2f GB free",
+                free_gb,
+            )
+
+        try:
+            page_size = os.sysconf("SC_PAGE_SIZE")
+            available_pages = os.sysconf("SC_AVPHYS_PAGES")
+            available_ram_gb = (page_size * available_pages) / (1024 ** 3)
+            self.system_checks["memory"] = {
+                "available_gb": f"{available_ram_gb:.2f}"
+            }
+            cli_info(
+                logger,
+                "Phoenix | System RAM: %.2f GB available",
+                available_ram_gb,
+            )
+        except (AttributeError, OSError, ValueError):
+            self.system_checks["memory"] = {"available_gb": None}
 
         for dir_path in [self.active_dir, self.completed_dir, self.failed_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
@@ -655,13 +682,18 @@ class PhoenixTrainer:
         self.system_ready = base_ready and accelerator.ready
 
         if self.system_ready:
-            logger.info("✓ Phoenix GPU training backend is ready")
+            logger.info("Phoenix GPU training backend is ready")
         elif base_ready:
             logger.warning(
-                "⚠ Phoenix base system is ready, but GPU training is not ready"
+                "Phoenix base system is ready, but GPU training is not ready"
+            )
+            cli_warning(
+                logger,
+                "Phoenix | WARNING: GPU training backend is not ready",
             )
         else:
-            logger.warning("⚠ Phoenix system pre-flight failed")
+            logger.warning("Phoenix system pre-flight failed")
+            cli_warning(logger, "Phoenix | WARNING: System pre-flight failed")
     def create_preflight_banner(self):
         """Render current backend and disk readiness."""
         with dpg.group(horizontal=True):
