@@ -32,6 +32,14 @@ def configure_operator_console(logger: logging.Logger) -> None:
             handler.addFilter(PhoenixCliFilter())
 
 
+def logger_file_path(logger: logging.Logger) -> str | None:
+    """Return the first file-handler path attached to a Phoenix logger."""
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            return str(handler.baseFilename)
+    return None
+
+
 def cli_log(
     logger: logging.Logger,
     level: int,
