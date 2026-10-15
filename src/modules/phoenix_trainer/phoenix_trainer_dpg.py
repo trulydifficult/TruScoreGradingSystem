@@ -967,8 +967,10 @@ class PhoenixTrainer:
         training_thread.start()
         return True
     def _train_job(self, job: dict):
-        """Execute one Phoenix training job in the background worker."""
+        """Execute one Phoenix training job with persistent provenance."""
         dataset_path = Path(job["path"])
+        recorder = None
+        trainer = None
 
         try:
             self._assert_trainable_queue_entry(
@@ -984,20 +986,75 @@ class PhoenixTrainer:
                 job["config"]["dataset_path"] = str(active_path)
                 dataset_path = active_path
 
+            output_root = Path(job["config"]["output_dir"]).expanduser()
+            if not output_root.is_absolute():
+                output_root = self.project_root / output_root
+
+            recorder = RunRecorder(
+                output_root=output_root,
+                dataset_name=job["name"],
+                dataset_path=dataset_path,
+                resolved_config=job["config"],
+                dataset_config=job.get("dataset_config", {}),
+            )
+            self._active_run_recorder = recorder
+            job["config"] = dict(recorder.resolved_config)
+            job["config"]["dataset_path"] = str(dataset_path)
+
             self.log_message(
                 "Queue structure verified; trainer-specific dataset loading is next.",
                 "SUCCESS",
+            )
+            self.log_message(f"Run ID: {recorder.run_id}", "INFO")
+            self.log_message(f"Run directory: {recorder.run_dir}", "INFO")
+            self.log_message(
+                "Resolved training config: "
+                f"epochs={job['config'].get('epochs')}, "
+                f"batch_size={job['config'].get('batch_size')}, "
+                f"lr={job['config'].get('learning_rate')}, "
+                f"optimizer={job['config'].get('optimizer')}, "
+                f"precision={job['config'].get('precision')}, "
+                f"accumulation={job['config'].get('accumulation_steps') if job['config'].get('grad_accumulation') else 1}, "
+                f"clip={job['config'].get('gradient_clipping')}, "
+                f"seed={job['config'].get('seed')}, "
+                f"deterministic={job['config'].get('deterministic')}",
+                "INFO",
+            )
+            recorder.log(
+                "Resolved config persisted to training_config.json",
+                "INFO",
             )
 
             self._queue_ui_value("current_job", job["name"])
             self._queue_ui_value("model_type", job["model_type"])
 
             self.log_message("Initializing trainer...", "INFO")
+            recorder.log("Initializing trainer", "INFO")
             trainer = self.create_trainer(job["model_type"], job["config"])
+
+            model_config_written = False
+
+            def trainer_log_callback(message, level):
+                recorder.log(message, level)
+                self.log_message(message, level)
+
+            def epoch_start_callback(epoch):
+                nonlocal model_config_written
+                if not model_config_written:
+                    recorder.write_model_config(trainer)
+                    model_config_written = True
+                recorder.log(
+                    f"Epoch {epoch + 1}/{job['config']['epochs']} started",
+                    "INFO",
+                )
 
             def metrics_callback(metrics):
                 metrics = dict(metrics or {})
                 self._last_metrics = metrics
+                recorder.record_metrics(
+                    metrics,
+                    epoch=getattr(trainer, "current_epoch", 0) + 1,
+                )
 
                 loss = metrics.get(
                     "val_loss", metrics.get("train_loss", metrics.get("loss"))
@@ -1016,7 +1073,11 @@ class PhoenixTrainer:
                     self._queue_ui_value("map_text", f"mAP: {float(map_value):.4f}")
 
                 accuracy = metrics.get(
-                    "accuracy", metrics.get("train_accuracy")
+                    "accuracy",
+                    metrics.get(
+                        "train_accuracy",
+                        metrics.get("train_pixel_accuracy"),
+                    ),
                 )
                 if accuracy is not None:
                     self._queue_ui_value(
@@ -1030,6 +1091,11 @@ class PhoenixTrainer:
                 self._queue_ui_value("epoch_progress", float(progress))
                 self._queue_ui_value("epoch_text", f"Epoch {epoch}/{total_epochs}")
 
+                recorder.log(
+                    f"Progress: epoch={epoch}/{total_epochs}, "
+                    f"progress={float(progress) * 100:.1f}%",
+                    "INFO",
+                )
                 self.write_training_status(
                     job,
                     "training",
@@ -1039,15 +1105,27 @@ class PhoenixTrainer:
                 )
                 self._export_low_confidence(job, epoch, self._last_metrics)
 
+            trainer.register_callback("on_log_message", trainer_log_callback)
+            trainer.register_callback("on_epoch_start", epoch_start_callback)
             trainer.register_callback("on_metrics_update", metrics_callback)
             trainer.register_callback("on_progress_update", progress_callback)
 
             self.log_message(
                 f"Starting {job['model_type']} training...", "SUCCESS"
             )
+            recorder.log(f"Starting {job['model_type']} training", "INFO")
             trainer.train()
 
+            if not model_config_written:
+                recorder.write_model_config(trainer)
+
             self.log_message(f"Training completed: {job['name']}", "SUCCESS")
+            recorder.finalize(
+                status="completed",
+                final_metrics=self._last_metrics,
+                artifacts=recorder.artifact_inventory(),
+            )
+            recorder.write_dataset_reference(dataset_path)
 
             completed_path = self.completed_dir / dataset_path.name
             logger.info(f"Moving dataset to completed: {completed_path}")
@@ -1073,6 +1151,19 @@ class PhoenixTrainer:
         except Exception as exc:
             logger.exception("Training failed")
             self.log_message(f"Training failed: {exc}", "ERROR")
+
+            if recorder is not None:
+                try:
+                    recorder.finalize(
+                        status="failed",
+                        final_metrics=self._last_metrics,
+                        error=str(exc),
+                        artifacts=recorder.artifact_inventory(),
+                    )
+                    if dataset_path.exists():
+                        recorder.write_dataset_reference(dataset_path)
+                except Exception:
+                    logger.exception("Could not finalize Phoenix run record")
 
             try:
                 dataset_path = Path(job["path"])
@@ -1103,12 +1194,14 @@ class PhoenixTrainer:
                 self.update_queue_display()
 
         finally:
+            self._active_run_recorder = None
             self.is_training = False
             self.current_job = None
             self._queue_ui_value("current_job", "No active training")
             self._queue_ui_value("model_type", "N/A")
             if self.auto_exit_after_job:
                 self._ui_events.put(("stop_app",))
+
     def get_training_config(self, job: dict, dataset_path: Path) -> dict:
         """Resolve a run config from UI values plus queued dataset overrides."""
         dataset_config = job.get("dataset_config", {})
