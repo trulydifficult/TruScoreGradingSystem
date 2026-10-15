@@ -1,6 +1,6 @@
 # TruScoreGradingSystem — Current State
 
-Last baseline review: 2026-10-13
+Last baseline review: 2026-10-15
 
 ## Current Implementation
 
@@ -77,9 +77,17 @@ The active refactor branch is:
 
 `refactor/phoenix-foundation`
 
-The first slice establishes truthful trainer resolution and repairs the execution
-contract without rewriting model algorithms. Runtime verification is not yet
-complete, so Phoenix is not VERIFIED.
+Verified production checkpoints now include the ROCm backend, main-app-to-Queue
+launch, Queue-to-Trainer worker dispatch, and a real ViT GPU training smoke run.
+
+Phoenix now also contains:
+- shared conventional PyTorch runtime for precision/accumulation/clipping/resume
+- immutable per-run provenance artifacts
+- persistent Queue Operations Monitor with cross-job lifecycle history
+
+These newer common-runtime/provenance/operations-monitor slices are still pending
+their complete production acceptance sequence, so Phoenix remains IN PROGRESS
+rather than VERIFIED.
 
 ### Continuous Learning / The Guru
 
