@@ -18,7 +18,7 @@ import os
 # Import enterprise features
 try:
     from ..utils.advanced_monitoring import AdvancedMonitor
-    from ..utils.advanced_training_features import EarlyStopping, MixedPrecisionManager
+    from ..utils.advanced_training_features import EarlyStopping
     ENTERPRISE_FEATURES_AVAILABLE = True
 except ImportError as exc:
     ENTERPRISE_FEATURES_AVAILABLE = False
@@ -32,6 +32,14 @@ try:
 except ImportError:
     GURU_AVAILABLE = False
     logging.warning("Guru integration not available")
+
+from ..training_runtime import (
+    capture_rng_state,
+    metric_improved,
+    restore_rng_state,
+    seed_everything,
+    select_monitor_metric,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +72,18 @@ class BaseTrainer(ABC):
         
         # Training state
         self.current_epoch = 0
+        self.start_epoch = 0
         self.current_iteration = 0
-        self.best_metric = 0.0
+        self.best_metric: Optional[float] = None
+        self.monitor_metric_name: Optional[str] = None
+        self.monitor_mode: Optional[str] = None
         self.is_training = False
         self.is_paused = False
+
+        # Reproducibility is owned by the shared runtime contract.
+        self.seed = int(config.get("seed", 42))
+        self.deterministic = bool(config.get("deterministic", True))
+        seed_everything(self.seed, self.deterministic)
         
         # Callbacks for UI updates
         self.callbacks = {
@@ -89,7 +105,7 @@ class BaseTrainer(ABC):
         # Enterprise features
         self.advanced_monitor = None
         self.early_stopping = None
-        self.mixed_precision = None
+        self.early_stopping_enabled = bool(config.get("early_stopping", True))
         
         # Initialize enterprise features if available
         if ENTERPRISE_FEATURES_AVAILABLE:
