@@ -342,22 +342,26 @@ class Detectron2TrainerSimple(BaseTrainer):
         """Build simple PyTorch model"""
         self.log("Building simple PyTorch model...", "INFO")
         
-        # TODO: Implement simple border detection model
-        # For now, this is a placeholder for when Detectron2 isn't available
-        
-        self.log("Simple model built", "SUCCESS")
+        raise NotImplementedError(
+            "Detectron2TrainerSimple has no implemented model; "
+            "install/configure real Detectron2 instead."
+        )
     
     def train_epoch(self) -> Dict[str, float]:
         """Train one epoch"""
-        # TODO: Implement simple training loop
-        return {'train_loss': 0.5}
+        raise NotImplementedError(
+            "Detectron2TrainerSimple has no training implementation."
+        )
     
     def validate(self) -> Dict[str, float]:
         """Validate"""
-        # TODO: Implement simple validation
-        return {'val_loss': 0.4}
+        raise NotImplementedError(
+            "Detectron2TrainerSimple cannot produce validation metrics."
+        )
     
     def save_checkpoint(self, filepath: Path):
         """Save checkpoint"""
         self.log(f"Saving simple checkpoint: {filepath}", "INFO")
-        # TODO: Implement checkpoint saving
+        raise NotImplementedError(
+            "Detectron2TrainerSimple cannot create real model checkpoints."
+        )
