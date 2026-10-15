@@ -547,3 +547,35 @@ Next workstation acceptance criteria:
 4. Detailed class/split/batch/checkpoint telemetry remains in Operations Monitor/run.log.
 5. No JSONDecodeError/partial training_status traceback occurs.
 6. If an error occurs, CLI shows concise error + exact diagnostic log path.
+
+
+## Sparse CLI / Atomic IPC Production Acceptance — VERIFIED — 2026-10-15
+
+The user reran the normal production path through `run_truscore.py` after the
+sparse-CLI and atomic-IPC fixes.
+
+Observed CLI was intentionally concise and contained only:
+- Queue monitor path
+- dataset training start
+- ROCm / RX 7900 XTX accelerator + 23.98 GB VRAM
+- FP32 / FP16 / BF16 capability
+- free disk space
+- available system RAM
+- Run ID
+- exact immutable run.log path
+- dataset training completion
+
+No JSONDecodeError or partial `training_status.json` traceback appeared.
+
+The user explicitly confirmed the CLI is now "simple and straight to the point"
+and matches the desired operational behavior.
+
+Production verification status:
+- sparse Phoenix CLI: VERIFIED
+- atomic training-status IPC behavior: VERIFIED
+- single-job Queue Operations Monitor + completed-run visibility: VERIFIED
+- immutable run/provenance workflow: VERIFIED for this smoke path
+
+Next acceptance gate:
+sequential multi-job unattended Queue processing, proving lifecycle handoff and
+persistent monitoring across multiple datasets/workers.
