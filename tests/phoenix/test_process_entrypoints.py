@@ -70,3 +70,20 @@ def test_main_window_launches_queue_control_process_not_idle_trainer():
 
     assert "phoenix_training_queue_standalone.py" in method_source
     assert "phoenix_trainer_dpg.py" not in method_source
+
+
+
+def test_trainer_uses_explicit_precision_control_not_removed_amp_widget():
+    source = TRAINER.read_text(encoding="utf-8")
+
+    assert 'dpg.get_value("mixed_precision")' not in source
+    assert 'tag="precision"' in source
+    assert 'dpg.get_value("precision")' in source
+
+
+def test_dataset_detection_does_not_default_unknown_data_to_detectron2():
+    tree = _tree(TRAINER)
+    method = _method(tree, "PhoenixTrainer", "detect_dataset_type")
+    method_source = ast.unparse(method)
+
+    assert "Could not infer a supported trainer" in method_source
