@@ -579,3 +579,176 @@ Production verification status:
 Next acceptance gate:
 sequential multi-job unattended Queue processing, proving lifecycle handoff and
 persistent monitoring across multiple datasets/workers.
+
+
+# NEW SESSION START HERE — 2026-10-15 15:40 CDT
+
+This block is the authoritative continuation point for the next TruScore session.
+Read the surrounding project-brain documents for context, but use this block to
+determine what is currently proven and what should happen next.
+
+## Repository / branch
+
+- Repository: `trulydifficult/TruScoreGradingSystem`
+- Active branch: `refactor/phoenix-foundation`
+- Draft PR: #1 — `Phoenix foundation: formal audit and truthful trainer contract`
+- Last code-changing commit verified by CI: `ad8a01c5ea283cc43390184922151392137e3585`
+- CI run: `38800987215` — SUCCESS
+  - Python 3.11.17
+  - compilation PASS
+  - 43 Phoenix tests PASS
+  - Phoenix Trainer GUI-process smoke PASS
+  - Phoenix Queue GUI-process smoke PASS
+- Commits after that verified code commit are project-brain/documentation updates.
+
+## Production workstation — verified
+
+Normal acceptance path is always:
+
+`activate TruScore environment -> python run_truscore.py -> navigate through real UI`
+
+Direct module launches are diagnostics only.
+
+Verified on the user's production workstation:
+
+- PyTorch `2.13.0+rocm7.2`
+- ROCm/HIP `7.2.53211`
+- AMD Radeon RX 7900 XTX
+- 23.98 GB VRAM
+- FP32 / FP16 / BF16 compute
+- backward + optimizer step
+- main app -> Phoenix Queue
+- Queue -> isolated Phoenix Trainer worker
+- real ViT GPU training
+- BF16 common-runtime path
+- gradient accumulation
+- gradient clipping
+- deterministic attention policy with no recurrence of the prior Flash Attention
+  nondeterminism warning
+- best/checkpoint/final model writes
+- completed dataset transition
+- immutable per-run provenance
+- copyable requested/resolved training config
+- persistent Queue Operations Monitor
+- sparse operator CLI
+- atomic Queue/Trainer JSON status IPC with no recurrence of the prior
+  `JSONDecodeError` monitor race
+
+## Operator observability contract — preserve this
+
+The user intentionally keeps the CLI sparse so real errors remain obvious.
+
+The CLI should contain only high-signal operational information such as:
+- Queue monitor path
+- dataset training started
+- accelerator/backend + VRAM
+- available system RAM
+- free disk
+- Run ID
+- exact run.log path
+- dataset training completed
+- concise warnings/errors
+- exact diagnostic log path after an error
+
+Do NOT move class discovery, train/val splits, per-batch loss, checkpoint chatter,
+resolved config dumps, or detailed metrics back into the CLI.
+
+Detailed information belongs in:
+1. Queue Operations Monitor — persistent cross-job operational timeline
+2. immutable per-run record — full forensic model history
+
+Decision record:
+`project_brain/decisions/0005-phoenix-observability-and-atomic-ipc.md`
+
+## Current Phoenix ownership
+
+- `trainer_registry.py` — truthful trainer resolution; unsupported means explicit failure
+- `training_runtime.py` — conventional PyTorch precision/autocast/scaler,
+  accumulation, clipping, deterministic seeding, RNG/runtime state
+- `base_trainer.py` — orchestration, monitored metric direction, best-model logic,
+  early stopping, common resume/checkpoint state
+- `run_artifacts.py` — immutable per-training-run provenance
+- `queue_monitor.py` — durable cross-job operational event history/log tailing
+- `atomic_io.py` — atomic cross-process JSON publication
+- `operator_logging.py` — sparse Phoenix CLI allowlist
+- `phoenix_training_queue_standalone.py` — Queue control plane + persistent
+  Operations Monitor
+- `phoenix_trainer_dpg.py` — isolated Trainer worker/UI
+- ViT and U-Net use the shared conventional runtime
+- Detectron2 remains outside that conventional runtime until its lifecycle/split
+  contract is repaired
+
+## Architecture decisions now in force
+
+- 0001 — Phoenix Trainer Foundation
+- 0002 — Phoenix Common Training Runtime
+- 0003 — Phoenix Training Run Provenance
+- 0004 — Phoenix Queue as Persistent Operations Console
+- 0005 — Phoenix Observability Channels and Atomic IPC
+
+Do not bypass these decisions by introducing a second queue, second monitoring
+console, second AMP/checkpoint implementation, or silent trainer/model fallback.
+
+## NEXT ACTION — do this first in the new chat
+
+Run the **sequential multi-job unattended Queue acceptance test**.
+
+Goal:
+prove Phoenix can be trusted when the user queues several datasets and leaves the
+machine unattended.
+
+Test from `run_truscore.py` with multiple pending smoke datasets and use
+**Start Queue**, not individual Train Now dispatches.
+
+Verify:
+1. dataset A dispatches and trains
+2. A reaches completed before B dispatches
+3. B dispatches automatically and completes
+4. subsequent jobs continue the same way
+5. every job receives a unique Run ID/run directory
+6. Operations Monitor preserves one chronological A -> B -> C timeline
+7. CLI stays sparse across every worker
+8. no duplicate/partial JSON monitor errors
+9. completed datasets retain copyable requested/resolved config and run/log paths
+10. Queue ends idle with coherent state after the final job
+
+Do not mark sequential Queue operation VERIFIED until the user performs this from
+the normal application entrypoint.
+
+## After the multi-job Queue test
+
+Next foundation gates, in order:
+
+1. real checkpoint-resume acceptance test
+   - prove model/optimizer/scheduler/runtime scaler/RNG state restore
+   - prove resumed epoch numbering and metric history are correct
+   - prove incompatible precision/accumulation settings fail explicitly
+2. repair Detectron2 lifecycle and actual train/validation split behavior
+3. validate Detectron2 on the production path before calling that trainer reliable
+4. continue ViT/U-Net configuration fidelity and artifact/run-manifest hardening
+5. expand trainer/task support only through explicit adapters/contracts; do not
+   restore historical silent model substitutions
+
+## Important known limitations — do not forget
+
+- Phoenix as a whole is still IN PROGRESS.
+- Checkpoint resume is implemented but not yet production-accepted.
+- Detectron2 lifecycle/split behavior remains unresolved.
+- ViT still has configuration-fidelity work beyond the verified smoke path.
+- U-Net shared-runtime wiring is automated-test covered but not yet production
+  GPU accepted.
+- Dataset fingerprint is currently structure/size/mtime-based, not a full
+  content-addressed dataset hash.
+- Historical photometric material remains REFERENCE/SALVAGE material and must be
+  evaluated before new photometric-training functionality is created.
+- Synthetic smoke accuracy is never model-quality evidence.
+
+## Session-close result
+
+The purpose of this handoff is to test whether a fresh ChatGPT session can recover
+the project without asking the user to repeat this conversation.
+
+A successful new session should independently identify the first task as:
+**sequential multi-job unattended Phoenix Queue acceptance testing**, explain why
+that is the next gate, and continue from the existing branch/project brain rather
+than restarting the Phoenix audit.
