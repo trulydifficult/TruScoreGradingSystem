@@ -109,3 +109,21 @@ Implemented on `refactor/phoenix-foundation`:
 Automated verification is in progress. Production RX 7900 XTX verification of
 this new common-runtime slice remains PENDING until a BF16 + accumulation +
 clipping + checkpoint smoke run completes through `run_truscore.py`.
+
+
+## Phoenix Run Provenance Slice — 2026-10-15
+
+Implemented, pending production workstation verification:
+
+- immutable per-run output directories
+- local run manifests and environment snapshots
+- Git revision / dirty-state capture
+- metrics JSONL and readable per-run logs
+- dataset-to-run reference after completion/failure
+- live BaseTrainer logs routed to Phoenix CLI/UI
+- copyable requested/resolved configs in Queue
+- completed run summary and run-folder access in Queue
+
+This slice addresses model forensic/reproducibility requirements. Automated CI is
+required before workstation acceptance; prior completed smoke runs do not count
+as provenance verification because they predate this implementation.
