@@ -308,6 +308,251 @@ class PhoenixTrainingQueueApp:
             dpg.add_button(label="🚀 Train Now", callback=self.train_selected, width=150, height=40)
             dpg.add_button(label="📊 View Dataset", callback=self.view_dataset, width=150, height=40)
     
+    def create_monitor_panel(self):
+        """Create the persistent queue operations monitor."""
+        dpg.add_text("Operations Monitor", color=self.colors["success"])
+        dpg.add_text(
+            "Persistent lifecycle, progress, metrics, and worker events.",
+            color=self.colors["text_dim"],
+        )
+        dpg.add_separator()
+
+        with dpg.group(horizontal=True):
+            dpg.add_text("State:")
+            dpg.add_text("Idle", tag="monitor_state_text", color=self.colors["accent"])
+            dpg.add_spacer(width=20)
+            dpg.add_text("Job:")
+            dpg.add_text("None", tag="monitor_job_text", color=self.colors["text_dim"])
+
+        dpg.add_progress_bar(
+            tag="monitor_progress_bar",
+            default_value=0.0,
+            width=-1,
+            height=20,
+        )
+        dpg.add_text(
+            "No active training",
+            tag="monitor_progress_text",
+            color=self.colors["text_dim"],
+        )
+        dpg.add_text(
+            "Metrics: --",
+            tag="monitor_metrics_text",
+            color=self.colors["text_dim"],
+            wrap=800,
+        )
+
+        with dpg.group(horizontal=True):
+            dpg.add_button(
+                label="Copy Timeline",
+                callback=self._copy_monitor_timeline,
+            )
+            dpg.add_button(
+                label="Open Monitor Log",
+                callback=self._open_external_path,
+                user_data=str(self.monitor_event_file),
+            )
+            dpg.add_button(
+                label="Refresh Monitor",
+                callback=lambda: self._refresh_monitor_view(),
+            )
+
+        dpg.add_input_text(
+            tag="operations_monitor_text",
+            default_value="",
+            multiline=True,
+            readonly=True,
+            width=-1,
+            height=-1,
+        )
+
+    def _copy_monitor_timeline(self, sender=None, app_data=None, user_data=None):
+        """Copy the visible persistent operations timeline."""
+        del sender, app_data, user_data
+        dpg.set_clipboard_text(self._monitor_text_cache)
+
+    def _record_monitor_event(
+        self,
+        event_type: str,
+        message: str,
+        *,
+        dataset: Optional[str] = None,
+        run_id: Optional[str] = None,
+        status: Optional[str] = None,
+        details: Optional[Dict] = None,
+        refresh: bool = True,
+    ):
+        """Append one durable operator event and optionally refresh the UI."""
+        event = self.monitor_store.append(
+            event_type,
+            message,
+            dataset=dataset,
+            run_id=run_id,
+            status=status,
+            details=details,
+        )
+        logger.info("MONITOR | %s", message)
+        if refresh and dpg.does_item_exist("operations_monitor_text"):
+            self._refresh_monitor_view()
+        return event
+
+    def _refresh_monitor_view(self):
+        """Render the recent durable event timeline into the Queue UI."""
+        lines = [
+            self.monitor_store.format_event(event)
+            for event in self.monitor_store.recent(350)
+        ]
+        self._monitor_text_cache = "\n".join(lines)
+
+        if dpg.does_item_exist("operations_monitor_text"):
+            dpg.set_value("operations_monitor_text", self._monitor_text_cache)
+
+    @staticmethod
+    def _read_json_file(path: Path) -> Optional[Dict]:
+        try:
+            if not path.exists():
+                return None
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            logger.exception("Could not read monitor JSON: %s", path)
+            return None
+
+    def _set_monitor_runtime_display(
+        self,
+        *,
+        state: str,
+        dataset_name: Optional[str],
+        progress: float = 0.0,
+        epoch: int = 0,
+        total_epochs: int = 0,
+        metrics: Optional[Dict] = None,
+    ):
+        """Update persistent current-job monitor widgets."""
+        if dpg.does_item_exist("monitor_state_text"):
+            dpg.set_value("monitor_state_text", state)
+        if dpg.does_item_exist("monitor_job_text"):
+            dpg.set_value("monitor_job_text", dataset_name or "None")
+        if dpg.does_item_exist("monitor_progress_bar"):
+            dpg.set_value(
+                "monitor_progress_bar",
+                min(max(float(progress), 0.0), 1.0),
+            )
+        if dpg.does_item_exist("monitor_progress_text"):
+            if dataset_name:
+                epoch_text = (
+                    f" | epoch {epoch}/{total_epochs}"
+                    if total_epochs
+                    else ""
+                )
+                dpg.set_value(
+                    "monitor_progress_text",
+                    f"{float(progress) * 100:.1f}%{epoch_text}",
+                )
+            else:
+                dpg.set_value("monitor_progress_text", "No active training")
+        if dpg.does_item_exist("monitor_metrics_text"):
+            if metrics:
+                metric_text = ", ".join(
+                    f"{key}={value:.4f}" if isinstance(value, (int, float))
+                    else f"{key}={value}"
+                    for key, value in metrics.items()
+                )
+                dpg.set_value("monitor_metrics_text", f"Metrics: {metric_text}")
+            else:
+                dpg.set_value("monitor_metrics_text", "Metrics: --")
+
+    def _poll_active_training(self):
+        """Mirror active worker status and run.log into the persistent monitor."""
+        if self.active_dataset_id is None:
+            return
+
+        dataset = next(
+            (d for d in self.datasets if d["id"] == self.active_dataset_id),
+            None,
+        )
+        if not dataset:
+            return
+
+        dataset_path = Path(dataset["path"])
+        dataset_name = dataset.get("name", dataset_path.name)
+
+        status_data = self._read_json_file(dataset_path / "training_status.json")
+        if status_data:
+            progress = float(status_data.get("progress", 0.0) or 0.0)
+            epoch = int(status_data.get("current_epoch", 0) or 0)
+            total_epochs = int(status_data.get("total_epochs", 0) or 0)
+            metrics = status_data.get("metrics") or {}
+            status = str(status_data.get("status", "training"))
+
+            self._set_monitor_runtime_display(
+                state=status,
+                dataset_name=dataset_name,
+                progress=progress,
+                epoch=epoch,
+                total_epochs=total_epochs,
+                metrics=metrics,
+            )
+
+            signature = (
+                status,
+                epoch,
+                total_epochs,
+                round(progress, 6),
+                json.dumps(metrics, sort_keys=True, default=str),
+                status_data.get("error"),
+            )
+            if signature != self._last_status_signature:
+                self._last_status_signature = signature
+                message = (
+                    f"{status.upper()} | epoch {epoch}/{total_epochs} | "
+                    f"{progress * 100:.1f}%"
+                )
+                if metrics:
+                    message += " | " + ", ".join(
+                        f"{key}={value:.4f}" if isinstance(value, (int, float))
+                        else f"{key}={value}"
+                        for key, value in metrics.items()
+                    )
+                if status_data.get("error"):
+                    message += f" | error={status_data['error']}"
+
+                self._record_monitor_event(
+                    "training_status",
+                    message,
+                    dataset=dataset_name,
+                    status=status,
+                    details=status_data,
+                )
+
+        run_reference = self._read_json_file(dataset_path / "training_run.json")
+        if not run_reference:
+            return
+
+        run_id = run_reference.get("run_id")
+        run_dir = run_reference.get("run_dir")
+        if run_id:
+            dataset["run_id"] = run_id
+        if run_dir:
+            dataset["run_dir"] = run_dir
+
+        run_log = run_reference.get("log")
+        if not run_log:
+            return
+
+        new_lines = self.run_log_tailer.read_new(Path(run_log))
+        if not new_lines:
+            return
+
+        for line in new_lines:
+            self.monitor_store.append(
+                "worker_log",
+                line,
+                dataset=dataset_name,
+                run_id=run_id,
+                status="training",
+            )
+        self._refresh_monitor_view()
+
     def refresh_queue(self):
         """Refresh the queue by scanning pending directory"""
         self.datasets.clear()
