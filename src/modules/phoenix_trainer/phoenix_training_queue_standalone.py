@@ -370,57 +370,173 @@ class PhoenixTrainingQueueApp:
 
         if dpg.does_item_exist("queue_status_text"):
             dpg.set_value("queue_status_text", status)
+    def _copy_text_to_clipboard(self, sender=None, app_data=None, user_data=None):
+        """Copy queue/run details as plain text for diagnostics and reporting."""
+        del sender, app_data
+        if user_data is not None:
+            dpg.set_clipboard_text(str(user_data))
+
+    def _open_external_path(self, sender=None, app_data=None, user_data=None):
+        """Open a dataset or run directory in the platform file manager."""
+        del sender, app_data
+        if not user_data:
+            return
+
+        path = str(user_data)
+        import platform
+
+        if platform.system() == "Linux":
+            subprocess.Popen(["xdg-open", path])
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", path])
+        elif platform.system() == "Windows":
+            subprocess.Popen(["explorer", path])
+
     def select_dataset(self, dataset_id: int):
-        """Select a dataset and show details"""
+        """Select a dataset and show copyable requested/resolved run details."""
         self.selected_dataset_id = dataset_id
-        
-        # Find dataset
-        dataset = next((d for d in self.datasets if d['id'] == dataset_id), None)
+
+        dataset = next((d for d in self.datasets if d["id"] == dataset_id), None)
         if not dataset:
             return
-        
-        # Update details panel
+
         if dpg.does_item_exist("details_container"):
             dpg.delete_item("details_container", children_only=True)
-        
+
+        config = dataset.get("config", {})
+        dataset_path = Path(dataset["path"])
+        requested_training = config.get("training_config", {})
+        requested_json = json.dumps(
+            requested_training,
+            indent=2,
+            sort_keys=True,
+        )
+
+        run_reference = None
+        resolved_training = None
+        run_ref_path = dataset_path / "training_run.json"
+        if run_ref_path.exists():
+            try:
+                run_reference = json.loads(
+                    run_ref_path.read_text(encoding="utf-8")
+                )
+                resolved_path = Path(run_reference["training_config"])
+                if resolved_path.exists():
+                    resolved_training = json.loads(
+                        resolved_path.read_text(encoding="utf-8")
+                    )
+            except Exception:
+                logger.exception(
+                    "Could not load training run reference for %s",
+                    dataset_path,
+                )
+
         with dpg.group(parent="details_container"):
-            dpg.add_text(f"{dataset['name']}", color=self.colors['accent'])
+            dpg.add_text(dataset["name"], color=self.colors["accent"])
             dpg.add_separator()
-            
-            # 🚨 FIX: Show correct fields from config
-            config = dataset.get('config', {})
-            
-            dpg.add_text(f"Dataset Type: {config.get('dataset_type', 'Unknown')}")
-            dpg.add_text(f"Model Architecture: {config.get('model_architecture', 'Unknown')}")
-            dpg.add_text(f"Pipeline: {dataset['model_type']}")  # model_type contains pipeline
+
+            dpg.add_text(
+                f"Dataset Type: {config.get('dataset_type', 'Unknown')}"
+            )
+            dpg.add_text(
+                f"Model Architecture: {config.get('model_architecture', 'Unknown')}"
+            )
+            dpg.add_text(f"Pipeline: {dataset['model_type']}")
             dpg.add_text(f"Images: {dataset['image_count']}")
             dpg.add_text(f"Status: {dataset['status']}")
-            dpg.add_text(f"Priority: {dataset.get('priority',1)} | HW: {dataset.get('hardware_hint','cpu')}")
-            dpg.add_text(f"Added: {dataset['added'][:16]}")  # Truncate timestamp
-            
+            dpg.add_text(
+                f"Priority: {dataset.get('priority', 1)} | "
+                f"HW: {dataset.get('hardware_hint', 'cpu')}"
+            )
+            dpg.add_text(f"Added: {dataset['added'][:16]}")
+
             dpg.add_separator()
-            dpg.add_text("Paths:", color=self.colors['accent'])
-            
-            # 🚨 FIX: Show paths with word wrapping
-            paths = config.get('paths', {})
-            if paths:
-                for path_key, path_value in paths.items():
-                    # Shorten path for display
-                    short_path = str(path_value).replace('/home/dewster/Projects/Vanguard/', '.../')
-                    dpg.add_text(f"  {path_key}:", color=self.colors['text_dim'])
-                    dpg.add_text(f"    {short_path}", color=self.colors['text_dim'], wrap=350)
+            dpg.add_text("Dataset Path:", color=self.colors["accent"])
+            dpg.add_input_text(
+                default_value=str(dataset_path),
+                readonly=True,
+                width=-1,
+            )
+            dpg.add_button(
+                label="Copy Dataset Path",
+                callback=self._copy_text_to_clipboard,
+                user_data=str(dataset_path),
+            )
+
+            dpg.add_separator()
+            dpg.add_text(
+                "Requested Training Config:",
+                color=self.colors["accent"],
+            )
+            if requested_training:
+                dpg.add_input_text(
+                    default_value=requested_json,
+                    multiline=True,
+                    readonly=True,
+                    width=-1,
+                    height=180,
+                )
+                dpg.add_button(
+                    label="Copy Requested Config",
+                    callback=self._copy_text_to_clipboard,
+                    user_data=requested_json,
+                )
             else:
-                dpg.add_text(f"    {dataset['path']}", color=self.colors['text_dim'], wrap=350)
-            
-            dpg.add_separator()
-            dpg.add_text("Training Config:", color=self.colors['accent'])
-            
-            # Show training config details
-            training_config = config.get('training_config', {})
-            if training_config:
-                for key, value in training_config.items():
-                    dpg.add_text(f"  {key}: {value}", color=self.colors['text_dim'])
-    
+                dpg.add_text(
+                    "No training_config was stored in dataset_config.json",
+                    color=self.colors["text_dim"],
+                )
+
+            if run_reference:
+                dpg.add_separator()
+                dpg.add_text(
+                    "Completed Training Run:",
+                    color=self.colors["success"],
+                )
+                dpg.add_text(
+                    f"Run ID: {run_reference.get('run_id', 'Unknown')}"
+                )
+                run_dir = run_reference.get("run_dir", "")
+                dpg.add_input_text(
+                    default_value=run_dir,
+                    readonly=True,
+                    width=-1,
+                )
+                with dpg.group(horizontal=True):
+                    dpg.add_button(
+                        label="Copy Run Path",
+                        callback=self._copy_text_to_clipboard,
+                        user_data=run_dir,
+                    )
+                    dpg.add_button(
+                        label="Open Run Folder",
+                        callback=self._open_external_path,
+                        user_data=run_dir,
+                    )
+
+                if resolved_training is not None:
+                    resolved_json = json.dumps(
+                        resolved_training,
+                        indent=2,
+                        sort_keys=True,
+                    )
+                    dpg.add_text(
+                        "Resolved Training Config:",
+                        color=self.colors["accent"],
+                    )
+                    dpg.add_input_text(
+                        default_value=resolved_json,
+                        multiline=True,
+                        readonly=True,
+                        width=-1,
+                        height=220,
+                    )
+                    dpg.add_button(
+                        label="Copy Resolved Config",
+                        callback=self._copy_text_to_clipboard,
+                        user_data=resolved_json,
+                    )
+
     def move_dataset_up(self):
         """Move selected dataset up in priority"""
         if not self.selected_dataset_id or len(self.datasets) < 2:
