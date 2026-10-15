@@ -61,6 +61,8 @@ class ViTTrainer(BaseTrainer):
     """
     
     def __init__(self, config: Dict[str, Any]):
+        config.setdefault("monitor_metric", "accuracy")
+        config.setdefault("monitor_mode", "max")
         super().__init__(config)
         
         # ViT-specific config
