@@ -281,7 +281,6 @@ class UNetTrainer(BaseTrainer):
             generator=make_dataloader_generator(self.seed + 1),
         )
         
-        self.log("Dataset loaded successfully", "SUCCESS")
     
     def build_model(self):
         """
@@ -342,7 +341,6 @@ class UNetTrainer(BaseTrainer):
             "INFO",
         )
         
-        self.log("Model built successfully", "SUCCESS")
     
     def train_epoch(self) -> Dict[str, float]:
         """Train one real U-Net epoch using the shared Phoenix runtime."""
