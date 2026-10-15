@@ -347,3 +347,18 @@ BF16, accumulation=4 over six training batches (forcing a final partial group),
 gradient clipping, deterministic seed, and checkpoint_interval=1. A successful
 run will validate the new runtime mechanics together. A separate checkpoint
 resume acceptance should follow.
+
+
+### Common-runtime automated verification
+
+GitHub Actions run `38786467474` completed successfully after the common-runtime
+changes. It passed:
+
+- Python 3.11.17 setup
+- syntax compilation including training_runtime.py, ViT, U-Net, BaseTrainer
+- Phoenix foundation/unit/regression tests
+- Phoenix Trainer GUI-process smoke launch
+- Phoenix Training Queue GUI-process smoke launch
+
+Production verification of the new BF16/accumulation/clipping/checkpoint behavior
+remains pending on the RX 7900 XTX.
