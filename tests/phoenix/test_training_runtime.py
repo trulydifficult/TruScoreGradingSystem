@@ -1,6 +1,7 @@
 import pytest
 
 from modules.phoenix_trainer.training_runtime import (
+    _configure_deterministic_attention,
     accumulation_divisor,
     infer_metric_mode,
     metric_improved,
@@ -67,3 +68,46 @@ def test_precision_normalization_preserves_legacy_amp_toggle():
 def test_invalid_precision_fails_explicitly():
     with pytest.raises(ValueError):
         normalize_precision_mode({"precision": "tf32"})
+
+
+
+def test_deterministic_attention_forces_math_sdpa():
+    calls = []
+
+    class FakeCuda:
+        @staticmethod
+        def is_available():
+            return True
+
+    class FakeCudaBackends:
+        @staticmethod
+        def enable_flash_sdp(value):
+            calls.append(("flash", value))
+
+        @staticmethod
+        def enable_mem_efficient_sdp(value):
+            calls.append(("mem_efficient", value))
+
+        @staticmethod
+        def enable_cudnn_sdp(value):
+            calls.append(("cudnn", value))
+
+        @staticmethod
+        def enable_math_sdp(value):
+            calls.append(("math", value))
+
+    class FakeBackends:
+        cuda = FakeCudaBackends()
+
+    class FakeTorch:
+        cuda = FakeCuda()
+        backends = FakeBackends()
+
+    _configure_deterministic_attention(FakeTorch())
+
+    assert calls == [
+        ("flash", False),
+        ("mem_efficient", False),
+        ("cudnn", False),
+        ("math", True),
+    ]
