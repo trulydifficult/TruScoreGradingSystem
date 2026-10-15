@@ -397,7 +397,26 @@ class PhoenixTrainingQueueApp:
             status=status,
             details=details,
         )
-        logger.info("MONITOR | %s", message)
+
+        cli_events = {
+            "queue_started",
+            "queue_stop_requested",
+            "dataset_dispatched",
+            "dataset_completed",
+            "dataset_failed",
+            "worker_launch_failed",
+            "worker_exit_unresolved",
+        }
+        if event_type in cli_events:
+            if status == "failed" or "failed" in event_type or "unresolved" in event_type:
+                cli_error(logger, "Phoenix | %s", message)
+            elif event_type == "queue_stop_requested":
+                cli_warning(logger, "Phoenix | %s", message)
+            else:
+                cli_info(logger, "Phoenix | %s", message)
+        else:
+            logger.info("MONITOR | %s", message)
+
         if refresh and dpg.does_item_exist("operations_monitor_text"):
             self._refresh_monitor_view()
         return event
@@ -415,12 +434,21 @@ class PhoenixTrainingQueueApp:
 
     @staticmethod
     def _read_json_file(path: Path) -> Optional[Dict]:
+        """Read monitor IPC JSON without treating transient absence as failure."""
         try:
             if not path.exists():
                 return None
-            return json.loads(path.read_text(encoding="utf-8"))
-        except Exception:
-            logger.exception("Could not read monitor JSON: %s", path)
+            text = path.read_text(encoding="utf-8")
+            if not text.strip():
+                return None
+            return json.loads(text)
+        except json.JSONDecodeError:
+            # Cross-process IPC is published atomically by Phoenix. If an older
+            # pre-atomic file is encountered, skip this frame and retry next poll.
+            logger.debug("Monitor JSON not yet readable: %s", path)
+            return None
+        except OSError:
+            logger.debug("Monitor JSON temporarily unavailable: %s", path)
             return None
 
     def _set_monitor_runtime_display(
@@ -1253,11 +1281,9 @@ class PhoenixTrainingQueueApp:
         }
         
         try:
-            with open(self.state_file, 'w') as f:
-                json.dump(state, f, indent=2)
-            # Logging suppressed for clean CLI
-        except Exception as e:
-            pass  # Errors logged to file, not console
+            atomic_write_json(self.state_file, state, indent=2)
+        except Exception:
+            logger.exception("Could not save Phoenix queue state")
     
     def _reconcile_pending_directory(self):
         """Reconcile saved queue state with the authoritative pending directory."""
