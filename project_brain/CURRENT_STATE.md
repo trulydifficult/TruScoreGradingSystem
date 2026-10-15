@@ -182,3 +182,21 @@ The following have NOT yet received a complete repository-wide audit:
 - model ownership and deployment paths
 
 Do not assume these areas are clean or fully understood until their audit is recorded.
+
+
+## Immediate Continuation Point — 2026-10-15
+
+The next Phoenix production gate is sequential multi-job Queue processing through
+the normal `run_truscore.py` entrypoint.
+
+Verify:
+- multiple pending datasets dispatch sequentially without manual intervention
+- every dataset receives its own immutable run record
+- the Queue Operations Monitor retains one chronological timeline across workers
+- terminal output remains sparse and error-focused
+- completed datasets retain copyable run/config/log provenance
+- Queue state remains coherent after the full sequence completes
+
+After the sequential Queue test, perform a real checkpoint-resume acceptance test.
+Detectron2 lifecycle/split repair remains a later foundation task before broad
+model-family expansion.
