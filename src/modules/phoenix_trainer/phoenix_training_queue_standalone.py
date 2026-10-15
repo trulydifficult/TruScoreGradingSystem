@@ -1191,12 +1191,21 @@ class PhoenixTrainingQueueApp:
                 dataset["status"] = "failed"
                 dataset["path"] = str(failed_path)
                 dataset["completed_at"] = datetime.now().isoformat()
+
+                run_reference = self._read_json_file(
+                    failed_path / "training_run.json"
+                ) or {}
                 self._record_monitor_event(
                     "dataset_failed",
                     f"Training failed on dataset {dataset.get('name')}.",
                     dataset=dataset.get("name"),
+                    run_id=run_reference.get("run_id"),
                     status="failed",
-                    details={"return_code": return_code},
+                    details={
+                        "return_code": return_code,
+                        "run_log": run_reference.get("log"),
+                        "run_dir": run_reference.get("run_dir"),
+                    },
                 )
                 self._set_monitor_runtime_display(
                     state="failed",
@@ -1232,7 +1241,12 @@ class PhoenixTrainingQueueApp:
                     f"(exit code {return_code}).",
                     dataset=dataset.get("name"),
                     status="failed",
-                    details={"return_code": return_code},
+                    details={
+                        "return_code": return_code,
+                        "error_log": str(
+                            (Path(dataset["path"]) / "queue_worker_error.txt")
+                        ),
+                    },
                 )
                 self._set_monitor_runtime_display(
                     state="failed",
@@ -1493,8 +1507,12 @@ class PhoenixTrainingQueueApp:
 
 def main():
     """Launch the standalone Phoenix Training Queue."""
-    logger.info("Dataset Queue: Loaded")
     app = PhoenixTrainingQueueApp()
+    cli_info(
+        logger,
+        "Phoenix Queue | Ready | monitor=%s",
+        app.monitor_event_file,
+    )
     app.run()
 
 
