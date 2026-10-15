@@ -210,7 +210,9 @@ class BaseTrainer(ABC):
         self.log(f"Loading checkpoint: {filepath}", "INFO")
         checkpoint = torch.load(
             filepath,
-            map_location=getattr(self, "device", "cpu"),
+            # CPU RNG snapshots must remain ByteTensors on CPU; model and optimizer
+            # load_state_dict() restore parameters/state to their configured devices.
+            map_location="cpu",
             weights_only=False,
         )
 
