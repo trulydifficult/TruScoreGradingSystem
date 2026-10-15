@@ -488,3 +488,43 @@ handling together. Smoke-dataset metrics are not model-quality evidence.
 The warning `Enterprise features not available` observed during the run was
 traced to an incorrect package import in `trainers/base_trainer.py` and was
 corrected to package-relative Phoenix utility imports.
+
+
+## Common Training Runtime Implementation — 2026-10-15
+
+The Phase 3 common-engine work has begun with a new owned runtime layer rather
+than copying the historical revolutionary trainer.
+
+Implemented for conventional PyTorch trainers:
+
+- explicit FP32 / FP16 / BF16 precision
+- FP16 gradient scaling
+- BF16 autocast without a scaler
+- gradient accumulation
+- correct optimizer stepping and loss division for final partial accumulation groups
+- gradient clipping
+- non-finite loss rejection
+- deterministic global seeding
+- deterministic ViT/U-Net train/validation splits
+- DataLoader worker/generator seeding
+- common checkpoint payloads
+- model/optimizer/scheduler/runtime/scaler/RNG restore
+- resume compatibility checks
+- min/max metric direction
+- metric-aware early stopping
+- ViT accuracy monitor
+- U-Net IoU monitor
+
+Historical `revolutionary_training_engine.py` was used as a reference for AMP,
+accumulation, and checkpoint concepts. Its defective partial-accumulation
+behavior, incomplete resume state, and hardcoded metric maximization were not
+retained.
+
+`MixedPrecisionManager` is no longer an active BaseTrainer owner of precision;
+the shared runtime owns this behavior. The historical utility remains in the
+utility module for archaeology/other callers until repository-wide ownership is
+audited.
+
+Production verification of this new runtime slice is still pending. The prior
+successful ViT smoke run verified the older FP32 path before these common-runtime
+changes.
