@@ -528,3 +528,15 @@ audited.
 Production verification of this new runtime slice is still pending. The prior
 successful ViT smoke run verified the older FP32 path before these common-runtime
 changes.
+
+
+## Deterministic Attention Finding — 2026-10-15
+
+The first common-runtime workstation attempt exposed a ROCm Flash Attention
+warning during backward: PyTorch used a nondeterministic attention kernel because
+Phoenix had deterministic algorithms enabled with warn_only=True.
+
+That behavior was rejected as too weak for a run advertised as deterministic.
+Phoenix now forces the math SDPA backend for deterministic runs and enables strict
+deterministic-algorithm enforcement. Performance-oriented nondeterministic/fused
+attention remains available when deterministic mode is disabled.
