@@ -473,3 +473,57 @@ Production acceptance still required:
 the Queue Operations Monitor visibly preserves start, training details, completion,
 and final run details after the Trainer worker exits. A multi-job sequential
 acceptance test should follow after the single-job monitor path is verified.
+
+
+## Phoenix Production Feedback — Sparse CLI + Atomic Monitor IPC — 2026-10-15
+
+Latest production workstation run through `run_truscore.py` provided important
+acceptance feedback.
+
+Verified from the run:
+- Queue Operations Monitor is visible and useful.
+- copyable dataset training details / run-location workflow is useful.
+- ViT smoke job completed on ROCm with resolved:
+  - BF16
+  - gradient accumulation = 4
+  - gradient clipping = true
+  - deterministic seed = 20261015
+- no prior ROCm Flash Attention nondeterminism warning appeared in this run.
+- best/checkpoint/final model artifacts were written.
+- training history was written.
+- dataset moved to completed successfully.
+
+Observed defect:
+The Queue raised `JSONDecodeError: Expecting value` while polling
+`training_status.json`. Training continued and completed successfully. This was
+a cross-process read/write race: the Queue observed the status file while the
+Trainer had truncated/reopened it but had not finished writing the next JSON
+document.
+
+Operator feedback also established the desired terminal contract:
+- CLI must remain intentionally sparse so errors are visually obvious.
+- acceptable CLI information includes accelerator/VRAM, available RAM, disk,
+  dataset start/completion, Run ID, direct run-log path, warnings/errors.
+- dataset discovery, class lists, splits, batches, metrics, checkpoint chatter,
+  resolved config, and repeated milestones belong in the Queue Operations Monitor
+  and immutable run record instead of the CLI.
+- CLI errors should provide a concise message plus an exact diagnostic log path;
+  full traceback belongs in that log.
+
+Implemented response:
+- Decision 0005: observability channels + atomic IPC.
+- `atomic_io.py` publishes cross-process JSON through temp+flush+fsync+os.replace.
+- `training_status.json`, run metadata, and Queue state use atomic publication.
+- Queue monitor reads treat absent/legacy partial JSON as "no update this frame",
+  not as a training failure.
+- `operator_logging.py` owns an explicit `phoenix_cli` allowlist filter.
+- Trainer/Queue detailed INFO remains in file/run logs and monitor.
+- sparse CLI now emits only selected operational events.
+- Trainer preflight adds available system RAM to accelerator/VRAM/disk summary.
+- Trainer exposes Run ID and exact run.log path.
+- Phoenix CLI failures point directly to run.log or the Queue log.
+
+Next production acceptance:
+pull the latest branch and run one new smoke dataset. Confirm the terminal remains
+sparse, the Operations Monitor retains full detail, no monitor JSON traceback
+occurs, and any failure is shown as concise CLI error + direct log path.
