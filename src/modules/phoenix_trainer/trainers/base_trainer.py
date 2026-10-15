@@ -192,7 +192,6 @@ class BaseTrainer(ABC):
                     "counter": self.early_stopping.counter,
                     "best_score": self.early_stopping.best_score,
                     "early_stop": self.early_stopping.early_stop,
-                    "best_model_state": self.early_stopping.best_model_state,
                 }
                 if self.early_stopping is not None
                 else None
@@ -244,9 +243,9 @@ class BaseTrainer(ABC):
                 self.early_stopping.early_stop = bool(
                     early_state.get("early_stop", False)
                 )
-                self.early_stopping.best_model_state = early_state.get(
-                    "best_model_state"
-                )
+                # Best weights are persisted separately by EarlyStopping; avoid
+                # duplicating a full model state inside every resume checkpoint.
+                self.early_stopping.best_model_state = None
 
         if checkpoint.get("rng_state"):
             restore_rng_state(checkpoint["rng_state"])
@@ -432,8 +431,14 @@ class BaseTrainer(ABC):
                         epoch=epoch + 1,
                         training_loss=train_metrics.get('loss', train_metrics.get('train_loss', 0.0)),
                         validation_loss=val_metrics.get('loss', val_metrics.get('val_loss', 0.0)),
-                        training_accuracy=train_metrics.get('accuracy', train_metrics.get('mAP', 0.0)),
-                        validation_accuracy=val_metrics.get('accuracy', val_metrics.get('mAP', val_metrics.get('IoU', 0.0))),
+                        training_accuracy=train_metrics.get(
+                            'train_accuracy',
+                            train_metrics.get(
+                                'train_pixel_accuracy',
+                                train_metrics.get('accuracy', 0.0),
+                            ),
+                        ),
+                        validation_accuracy=val_metrics.get('accuracy', 0.0),
                         time_per_epoch=epoch_time,
                         metadata={'all_metrics': all_metrics}
                     )
@@ -447,7 +452,22 @@ class BaseTrainer(ABC):
                 self.monitor_mode = metric_mode
                 self._ensure_early_stopping(metric_mode)
 
-                if metric_improved(metric_value, self.best_metric, metric_mode):
+                is_best = metric_improved(
+                    metric_value,
+                    self.best_metric,
+                    metric_mode,
+                )
+
+                # Update early-stopping state before writing a checkpoint so a
+                # resumed run preserves patience/counter state exactly.
+                early_stopped = False
+                if self.early_stopping:
+                    early_stopped = self.early_stopping(
+                        metric_value,
+                        self.model if hasattr(self, 'model') else None,
+                    )
+
+                if is_best:
                     self.best_metric = metric_value
                     best_path = self.output_dir / "best_model.pth"
                     self.save_checkpoint(best_path)
@@ -461,29 +481,25 @@ class BaseTrainer(ABC):
                     if GURU_AVAILABLE:
                         guru.send_checkpoint_saved(
                             checkpoint_path=str(best_path),
-                            validation_accuracy=metric_value,
+                            validation_accuracy=val_metrics.get('accuracy', 0.0),
                             is_best=True,
                             epoch=epoch + 1,
                             metadata={
                                 'checkpoint_type': 'best_model',
                                 'monitor_metric': metric_name,
                                 'monitor_mode': metric_mode,
+                                'monitor_value': metric_value,
                             }
                         )
 
-                # Check early stopping using the same metric direction.
-                if self.early_stopping:
-                    if self.early_stopping(
-                        metric_value,
-                        self.model if hasattr(self, 'model') else None,
-                    ):
-                        self.log(
-                            "Early stopping triggered - restoring best model",
-                            "WARNING",
-                        )
-                        if hasattr(self, 'model'):
-                            self.early_stopping.restore_best_model(self.model)
-                        break
+                if early_stopped:
+                    self.log(
+                        "Early stopping triggered - restoring best model",
+                        "WARNING",
+                    )
+                    if hasattr(self, 'model'):
+                        self.early_stopping.restore_best_model(self.model)
+                    break
 
                 checkpoint_interval = int(
                     self.config.get("checkpoint_interval", 10)
@@ -509,9 +525,12 @@ class BaseTrainer(ABC):
             # GURU EVENT #4: Training Completed
             if GURU_AVAILABLE:
                 converged = self.early_stopping.early_stop if self.early_stopping else (self.current_epoch >= total_epochs - 1)
+                final_accuracy_history = self.metrics_history.get("accuracy", [])
                 guru.send_training_completed(
                     final_accuracy=(
-                        self.best_metric if self.best_metric is not None else 0.0
+                        final_accuracy_history[-1]
+                        if final_accuracy_history
+                        else 0.0
                     ),
                     total_epochs=self.current_epoch + 1,
                     total_time=elapsed,
@@ -519,7 +538,9 @@ class BaseTrainer(ABC):
                     converged=converged,
                     metadata={
                         'final_metrics': self.metrics_history,
-                        'best_metric': self.best_metric
+                        'best_metric': self.best_metric,
+                        'monitor_metric': self.monitor_metric_name,
+                        'monitor_mode': self.monitor_mode,
                     }
                 )
             
