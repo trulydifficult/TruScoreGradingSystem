@@ -153,7 +153,7 @@ def seed_everything(seed: int, deterministic: bool = True) -> None:
             torch.backends.cudnn.benchmark = False
             torch.backends.cudnn.deterministic = True
         try:
-            torch.use_deterministic_algorithms(True, warn_only=True)
+            torch.use_deterministic_algorithms(True, warn_only=False)
         except TypeError:
             torch.use_deterministic_algorithms(True)
 
