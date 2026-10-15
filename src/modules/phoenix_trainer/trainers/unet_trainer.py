@@ -156,6 +156,8 @@ class UNetTrainer(BaseTrainer):
     """
     
     def __init__(self, config: Dict[str, Any]):
+        config.setdefault("monitor_metric", "IoU")
+        config.setdefault("monitor_mode", "max")
         super().__init__(config)
         
         # U-Net specific config
