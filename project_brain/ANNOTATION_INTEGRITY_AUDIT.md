@@ -129,3 +129,65 @@ Additional concern: `ModularAnnotationStudio.canvas_to_image_coords()`
 converts canvas scaling/translation but does not reverse the displayed
 rotation. Check with synthetic rotated coordinates and widget tests before
 making claims of precise border placement.
+
+## User-confirmed original workflow and refactor invariants
+
+User clarification (2026-10-15): In Annotation Studio, the rotation control
+was deliberately implemented to rotate the **card image**, because the outer
+and inner bounding boxes were not independently rotatable. Earlier image
+exports lost the image rotation, causing boxes to misalign with the image.
+The adopted workaround is to **save/export the rotated image together with
+the annotations in the same coordinate frame**. This is INTENDED FUNCTIONALITY,
+not accidental corruption. Do not "fix" it by reverting exports to an
+unrotated image, or by independently rotating boxes without designing and
+testing the coordinate-frame transform.
+
+The Space-bar operation is intentionally optimized for repetitive labeling:
+(a) save the user's corrected current-card boundaries and appropriately
+rotated image; (b) move to the next card; (c) run the user's **single
+two-class detector** to produce an approximate outer box (class 0) and inner
+box (class 1); (d) allow the user to adjust those boxes with fine control.
+Preserve automatic detection and editing, not replace it with two separate
+inference models. The three single/dual-class export directory variants are
+**outputs**, not evidence of three separate inference models.
+
+Current source confirmation:
+- `ModularAnnotationStudio.setup_keyboard_shortcuts` connects Space to
+  `save_and_next_image`.
+- `save_and_next_image` persists rotated pixels on nonzero rotation,
+  exports labels, resets the rotation slider, then navigates.
+- `next_image_placeholder` independently invokes annotation auto-save,
+  so Space causes **two** auto-save requests. Verify idempotency and
+  whether second save can overwrite good data.
+- `load_current_image` calls the border plugin's `on_image_changed` and
+  the settings widget's `set_current_image`.
+- `BorderDetectionPlugin.on_image_changed` schedules the settings
+  widget's `run_detection` after 500ms **conditional on the main plugin's
+  model_loaded flag**. The settings widget also has its own model state;
+  verify single-model ownership and that detector warmup/loaded-state
+  updates are synchronized. This is a test target, not a proven regression.
+- The main studio's `save_rotated_image()` overwrites the original path,
+  while the plugin writes a rotated-image/label pair to export folders.
+  Rotated pixels and labels MUST be transformed once, against identical
+  dimensions and provenance; verify no double rotation or mixed frames.
+- `canvas_to_image_coords()` accounts for zoom/pixmap offset but does not
+  invert the displayed rotation. Test mouse edits on nonzero rotation.
+
+Required preservation/acceptance tests:
+1. Nonzero-degree image rotation, manual outer/inner box edits, Space save:
+   verify exported saved image and both boxes align at known pixel locations.
+2. Next card auto-load invokes the existing single two-class model exactly
+   once and places two initial editable predictions, preserving user changes
+   on the previous card.
+3. No save-time re-rotation of already-rotated image or annotations; repeated
+   save must be idempotent; original source image retention/replacement
+   should be explicit and reversible.
+4. Source export pairing tracks image content (not just an ambiguous basename)
+   and annotation-frame provenance, including duplicate stems.
+5. Test zero rotation, nonzero rotation, zoom and fit mode before changing
+   any coordinate transform or current Space-bar behavior.
+
+The present precision objective is not to *automatically* replace the
+workflow with rotating boxes. It is to preserve working image-rotation
+normalization and add an explicit, verified coordinate-frame contract for
+export and future polygon-based 24-point measurement.
