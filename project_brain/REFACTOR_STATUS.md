@@ -1,6 +1,6 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last updated: 2026-10-14
+Last updated: 2026-10-15
 
 ## Status Legend
 
@@ -127,3 +127,25 @@ Implemented, pending production workstation verification:
 This slice addresses model forensic/reproducibility requirements. Automated CI is
 required before workstation acceptance; prior completed smoke runs do not count
 as provenance verification because they predate this implementation.
+
+
+## Phoenix Persistent Operations Console — 2026-10-15
+
+Implemented, automated verification complete, production workstation acceptance pending:
+
+- persistent Queue Operations Monitor
+- append-only queue lifecycle history in `queue_events.jsonl`
+- current dataset/state/epoch/progress/metrics display
+- worker `run.log` tailing while training is active
+- cross-dataset chronological history for unattended sequential queues
+- active `training_run.json` publication
+- automatic selected-dataset detail refresh on completion/failure
+- Queue/Trainer operator INFO output visible in their own CLI processes
+- historical queue/training-monitor UI concepts recovered without restoring
+  simulated training or duplicate Queue-side training ownership
+
+GitHub Actions run `38796016470`: PASS.
+
+Next production acceptance gate:
+single-job monitor visibility from `run_truscore.py`, followed by a sequential
+multi-job unattended test.
