@@ -84,3 +84,28 @@ contracts are not yet complete.
 - Queue -> Trainer worker dispatch: VERIFIED
 - ROCm/PyTorch backend in TruScore Python 3.11.17 env: VERIFIED
 - Real model training smoke test on RX 7900 XTX: VERIFIED
+
+
+## Phoenix Common Runtime Slice — 2026-10-15
+
+Implemented on `refactor/phoenix-foundation`:
+
+- shared conventional PyTorch runtime in `training_runtime.py`
+- explicit FP32 / FP16 / BF16 precision policy
+- gradient scaling for FP16
+- gradient accumulation with correct final partial-group stepping/scaling
+- gradient clipping
+- deterministic seed + DataLoader worker/generator seeding
+- RNG capture/restore for resume
+- model/optimizer/scheduler/runtime checkpoint state
+- runtime compatibility checks during resume
+- metric-aware min/max best-model logic
+- task defaults: ViT monitors accuracy, U-Net monitors IoU
+- early-stopping state preserved without duplicating a second model in checkpoints
+- explicit precision/seed/deterministic/checkpoint/resume controls in Phoenix DPG
+- historical `mixed_precision` queue manifests remain compatible
+- unknown dataset structure no longer defaults silently to Detectron2
+
+Automated verification is in progress. Production RX 7900 XTX verification of
+this new common-runtime slice remains PENDING until a BF16 + accumulation +
+clipping + checkpoint smoke run completes through `run_truscore.py`.
