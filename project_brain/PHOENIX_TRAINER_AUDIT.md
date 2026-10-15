@@ -565,3 +565,45 @@ routing, and copyable requested/resolved config UI.
 The dataset fingerprint is explicitly structure/size/mtime-based, not a full
 content hash. A content-addressed dataset manifest belongs in the future versioned
 Dataset Studio/Phoenix contract and is not claimed as implemented here.
+
+
+## Persistent Queue Operations Monitor — 2026-10-15
+
+Production testing exposed a distinction between run provenance and operator
+observability. Per-run artifacts were present, but a short-lived Trainer worker
+could still disappear before the operator could inspect its UI. The Queue then
+showed little more than a terminal Completed status.
+
+Root cause:
+- process isolation was correct, but persistent operator monitoring was not owned
+  by the Queue.
+- Trainer worker UI lifetime was incorrectly acting as the practical live view.
+- Queue did not poll `training_status.json` or active `run.log` into a durable
+  cross-job timeline.
+- selected dataset details were not automatically refreshed after a worker moved
+  the dataset to completed/failed.
+
+Repair:
+- new `queue_monitor.py` owns append-only operational event history and
+  incremental worker-log tailing.
+- Queue now provides the persistent Operations Monitor.
+- Trainer publishes active `training_run.json` immediately after creating the
+  immutable run record.
+- Queue mirrors active status, epochs, metrics, worker logs, state transitions,
+  completion/failure, and dispatch of subsequent jobs.
+- selected run details refresh automatically after status/path changes.
+- Phoenix-specific CLI INFO output is no longer hidden by the application-wide
+  positive/emergency console filter.
+
+Historical recovery:
+The current design salvages persistent current-job/progress/metrics concepts from
+older Phoenix Queue/Training Panel code while explicitly rejecting their simulated
+training loops and duplicate training ownership.
+
+Automated verification:
+GitHub Actions run `38796016470` passed compilation, Phoenix tests, Trainer GUI
+smoke, and Queue GUI smoke.
+
+Production workstation verification remains pending for the Operations Monitor
+itself. The worker process architecture remains unchanged: Queue controls and
+observes; Trainer workers train.
