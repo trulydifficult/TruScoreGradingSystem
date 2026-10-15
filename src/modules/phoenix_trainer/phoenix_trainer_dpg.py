@@ -45,17 +45,24 @@ except ImportError:  # Fallback when executed directly
 
 try:
     from .run_artifacts import RunRecorder
+    from .atomic_io import atomic_write_json
+    from .operator_logging import (
+        cli_error,
+        cli_info,
+        cli_warning,
+        configure_operator_console,
+    )
 except ImportError:
     from modules.phoenix_trainer.run_artifacts import RunRecorder
+    from modules.phoenix_trainer.atomic_io import atomic_write_json
+    from modules.phoenix_trainer.operator_logging import (
+        cli_error,
+        cli_info,
+        cli_warning,
+        configure_operator_console,
+    )
 
-# Phoenix training is operator-facing. Preserve global TruScore filtering rules,
-# but allow this process's INFO lifecycle/progress messages to reach its console.
-for handler in logger.handlers:
-    if (
-        isinstance(handler, logging.StreamHandler)
-        and not isinstance(handler, logging.FileHandler)
-    ):
-        handler.filters.clear()
+configure_operator_console(logger)
 
 
 class PhoenixTrainer:
