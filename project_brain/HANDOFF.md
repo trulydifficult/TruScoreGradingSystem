@@ -774,3 +774,10 @@ Detected two still-unrepaired correctness defects in real Detectron2Trainer: (1)
 Removed fabricated placeholder results in legacy Detectron2TrainerSimple: its model construction, training, validation, and checkpoint functions now fail explicitly with NotImplementedError instead of reporting fake training/validation values or model success. No change to real Detectron2Trainer behavior in this slice. Added AST regression test to CI. Production Detectron2 training remains unverified.
 
 Next: audit native Detectron2 iteration/checkpoint/COCOEvaluator contracts and historical alternatives in detail; implement correct disjoint COCO train/val registration, native single-owner training lifecycle and real metrics as a cohesive subsystem slice; test on a genuine annotated dataset with Detectron2 installed.
+
+
+## Detectron2 COCO Split Contract — 2026-10-15
+
+The preceding truthfulness guard passed GitHub Actions run 38816720079. The next bounded Detectron2 change replaces the inert Python-only 80/20 split with a deterministic seed-based partition of COCO image IDs. It writes disjoint COCO train/validation subsets to the per-run output directory and registers both in Detectron2; cfg.DATASETS.TRAIN selects train, cfg.DATASETS.TEST and COCOEvaluator/build_detection_test_loader select validation. Duplicate image IDs, unknown annotation image IDs, undersized datasets, and empty categories fail explicitly. AST regression coverage was added to Phoenix CI.
+
+This is structural/configuration verification only, not proof that Detectron2 is installed or native training/evaluation succeeds on the production workstation. The existing DefaultTrainer.train() invocation inside BaseTrainer's epoch loop remains a correctness defect and is next. Do not mark real Detectron2 training VERIFIED until the complete iteration lifecycle, checkpoint contract, validation metrics, and annotated-dataset GPU smoke test pass.
