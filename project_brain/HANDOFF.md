@@ -313,3 +313,37 @@ A non-blocking `Enterprise features not available` warning was traced to an
 incorrect `src.modules...` package import in `trainers/base_trainer.py`.
 The import was corrected to package-relative Phoenix utility imports so this
 warning does not mask actual optional dependency state.
+
+
+## Phoenix Common Training Runtime — 2026-10-15
+
+Decision: `project_brain/decisions/0002-phoenix-common-training-runtime.md`
+
+A shared conventional PyTorch runtime now owns:
+
+- FP32 / FP16 / BF16 precision selection
+- autocast and FP16 GradScaler behavior
+- gradient accumulation and final partial-group stepping
+- gradient clipping
+- deterministic seed setup
+- DataLoader worker/generator seeding
+- RNG capture/restore
+- runtime state serialization and resume compatibility checks
+
+`BaseTrainer` now owns common resumable checkpoint orchestration and metric
+direction. Checkpoints preserve model, optimizer, scheduler, scaler/runtime
+state, RNG state, metric history, monitored metric/direction, best metric, and
+early-stopping counters.
+
+ViT and U-Net are wired to the shared runtime. Detectron2 intentionally remains
+outside this conventional epoch runtime until its lifecycle/split repair.
+
+The Phoenix DPG now exposes explicit precision, seed, deterministic mode,
+checkpoint interval, and resume checkpoint fields. Old queue manifests that only
+contain `mixed_precision` remain compatible.
+
+The next workstation acceptance job is the updated synthetic ViT smoke dataset:
+BF16, accumulation=4 over six training batches (forcing a final partial group),
+gradient clipping, deterministic seed, and checkpoint_interval=1. A successful
+run will validate the new runtime mechanics together. A separate checkpoint
+resume acceptance should follow.
