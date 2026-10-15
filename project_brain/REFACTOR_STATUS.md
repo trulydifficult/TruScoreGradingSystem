@@ -106,14 +106,16 @@ Implemented on `refactor/phoenix-foundation`:
 - historical `mixed_precision` queue manifests remain compatible
 - unknown dataset structure no longer defaults silently to Detectron2
 
-Automated verification is in progress. Production RX 7900 XTX verification of
-this new common-runtime slice remains PENDING until a BF16 + accumulation +
-clipping + checkpoint smoke run completes through `run_truscore.py`.
+Production RX 7900 XTX verification has now confirmed BF16 execution, gradient
+accumulation, gradient clipping, deterministic-mode attention policy without the
+prior Flash Attention warning, and checkpoint/final-model creation through
+`run_truscore.py`. Checkpoint RESUME behavior itself remains a separate pending
+acceptance test.
 
 
 ## Phoenix Run Provenance Slice — 2026-10-15
 
-Implemented, pending production workstation verification:
+Implemented and VERIFIED on the single-job production smoke path:
 
 - immutable per-run output directories
 - local run manifests and environment snapshots
@@ -124,14 +126,16 @@ Implemented, pending production workstation verification:
 - copyable requested/resolved configs in Queue
 - completed run summary and run-folder access in Queue
 
-This slice addresses model forensic/reproducibility requirements. Automated CI is
-required before workstation acceptance; prior completed smoke runs do not count
-as provenance verification because they predate this implementation.
+This slice addresses model forensic/reproducibility requirements. Production
+acceptance confirmed copyable requested/resolved configuration, immutable run
+identity/path, completed-run visibility, and retained run provenance for the
+single-job smoke path.
 
 
 ## Phoenix Persistent Operations Console — 2026-10-15
 
-Implemented, automated verification complete, production workstation acceptance pending:
+Implemented; single-job production acceptance VERIFIED; sequential multi-job
+unattended acceptance remains PENDING:
 
 - persistent Queue Operations Monitor
 - append-only queue lifecycle history in `queue_events.jsonl`
@@ -146,9 +150,11 @@ Implemented, automated verification complete, production workstation acceptance 
 
 GitHub Actions run `38796016470`: PASS.
 
+Single-job monitor visibility from `run_truscore.py` is VERIFIED.
+
 Next production acceptance gate:
-single-job monitor visibility from `run_truscore.py`, followed by a sequential
-multi-job unattended test.
+sequential multi-job unattended processing with persistent cross-worker timeline,
+correct handoff, completion/failure state, and retained per-run provenance.
 
 
 ## Phoenix Sparse CLI / Atomic IPC Slice — 2026-10-15
