@@ -355,6 +355,25 @@ class TrainingRuntime:
         }
 
     def load_state_dict(self, state: Mapping[str, Any]) -> None:
+        """Restore scaler state only when runtime-critical settings match."""
+        expected = self.state_dict()
+        for key in (
+            "precision",
+            "accumulation_steps",
+            "gradient_clipping",
+            "grad_clip_norm",
+        ):
+            if key in state and state[key] != expected[key]:
+                raise RuntimeError(
+                    f"Checkpoint runtime mismatch for {key}: "
+                    f"checkpoint={state[key]!r}, current={expected[key]!r}"
+                )
+
         scaler_state = state.get("scaler_state_dict")
-        if scaler_state is not None and self.scaler is not None:
+        if scaler_state is not None:
+            if self.scaler is None:
+                raise RuntimeError(
+                    "Checkpoint contains FP16 scaler state but the current "
+                    "precision policy does not use a scaler"
+                )
             self.scaler.load_state_dict(scaler_state)
