@@ -379,3 +379,33 @@ Phoenix deterministic mode is now strict:
 - torch.use_deterministic_algorithms(True, warn_only=False)
 
 A deterministic run must now use deterministic kernels or fail explicitly.
+
+
+## Phoenix Training Run Provenance — 2026-10-15
+
+Decision: `project_brain/decisions/0003-phoenix-training-run-provenance.md`
+
+The latest workstation smoke run completed too quickly to provide useful operator
+visibility. The user also could not copy the Queue's rendered training config.
+This exposed an observability/provenance gap even though the underlying GPU
+training path was real.
+
+Implemented:
+
+- unique run ID and unique run directory for every training attempt
+- resolved config persisted to `training_config.json`
+- dataset provenance persisted to `dataset_manifest.json`
+- Python/platform/PyTorch/ROCm/GPU/source-revision snapshot in `environment.json`
+- trainer/model identity in `model_config.json`
+- epoch metrics appended to `metrics.jsonl`
+- readable `run.log`
+- terminal `run.json` with status, timestamps, final metrics, artifacts, errors
+- `training_run.json` reference travels with completed/failed datasets
+- BaseTrainer log callback is now routed into Phoenix CLI/UI and run.log
+- batch progress logs include final batch as well as configured intervals
+- epoch duration is recorded as a metric
+- Queue shows requested config as copyable JSON
+- Queue shows completed run summary and resolved config as copyable JSON
+- Queue exposes/open/copy run directory
+
+Runs created before this change do not gain these artifacts retroactively.
