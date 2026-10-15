@@ -84,7 +84,9 @@ Before substantial development work:
 1. Read this file.
 2. Read `CURRENT_STATE.md`.
 3. Read `REFACTOR_STATUS.md`.
-4. Read `HANDOFF.md`.
+4. Read `HANDOFF.md`. If it contains a **NEW SESSION START HERE** block,
+   treat the newest such block as the authoritative continuation point; older
+   status paragraphs may be historical snapshots that were later superseded.
 5. Read the relevant existing architecture files:
    - `TruScore_Project_Brain_v1.md`
    - `TruScore_Modules_v1.md`
