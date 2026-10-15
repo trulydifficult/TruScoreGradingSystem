@@ -19,6 +19,8 @@ import subprocess
 import sys
 from typing import Any, Dict, Mapping, Optional
 
+from .atomic_io import atomic_write_json
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -215,9 +217,11 @@ class RunRecorder:
         )
 
     def _write_json(self, name: str, payload: Mapping[str, Any]) -> None:
-        (self.run_dir / name).write_text(
-            json.dumps(_json_safe(payload), indent=2, sort_keys=True),
-            encoding="utf-8",
+        atomic_write_json(
+            self.run_dir / name,
+            _json_safe(payload),
+            indent=2,
+            sort_keys=True,
         )
 
     def log(self, message: str, level: str = "INFO") -> None:
@@ -291,9 +295,11 @@ class RunRecorder:
             "artifacts": _json_safe(dict(artifacts or {})),
             "error": error,
         }
-        self.manifest_path.write_text(
-            json.dumps(payload, indent=2, sort_keys=True),
-            encoding="utf-8",
+        atomic_write_json(
+            self.manifest_path,
+            payload,
+            indent=2,
+            sort_keys=True,
         )
 
     def finalize(
@@ -326,7 +332,9 @@ class RunRecorder:
             "metrics": str(self.metrics_path),
             "log": str(self.log_path),
         }
-        (dataset_path / "training_run.json").write_text(
-            json.dumps(payload, indent=2, sort_keys=True),
-            encoding="utf-8",
+        atomic_write_json(
+            dataset_path / "training_run.json",
+            payload,
+            indent=2,
+            sort_keys=True,
         )
