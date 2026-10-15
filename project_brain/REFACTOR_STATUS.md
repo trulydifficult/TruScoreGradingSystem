@@ -173,4 +173,16 @@ Latest production smoke run verified BF16 + accumulation + clipping training and
 useful run/provenance UI. It exposed the pre-atomic monitor read race while model
 training itself completed successfully.
 
-Automated verification for the corrected sparse-CLI/atomic-IPC slice is VERIFIED: GitHub Actions run `38800987215` passed 43 tests plus Trainer/Queue GUI smoke launches. Production workstation verification of the correction remains PENDING.
+Automated verification for the corrected sparse-CLI/atomic-IPC slice is VERIFIED: GitHub Actions run `38800987215` passed 43 tests plus Trainer/Queue GUI smoke launches. Production workstation verification of the correction is VERIFIED.
+
+
+### Verified production behavior — 2026-10-15
+
+A fresh end-to-end smoke run confirmed:
+- sparse operator CLI behaves as designed
+- no monitor JSON read-race traceback
+- atomic status publication works in the observed production path
+- Queue Operations Monitor remains the detailed live view
+- completed run retains Run ID, direct run-log path, and provenance details
+
+Next runtime gate: sequential unattended processing of multiple queued datasets.
