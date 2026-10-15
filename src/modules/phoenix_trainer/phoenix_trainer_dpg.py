@@ -422,10 +422,23 @@ class PhoenixTrainer:
             dpg.add_text("  Max Norm:", indent=20)
             dpg.add_input_float(tag="grad_clip_norm", default_value=1.0, format="%.2f", width=-1, indent=20)
             
-            dpg.add_checkbox(label="Mixed Precision (AMP)", default_value=True, tag="mixed_precision")
+            dpg.add_text("Precision:")
+            dpg.add_combo(
+                items=["FP32", "FP16", "BF16"],
+                default_value="FP16",
+                tag="precision",
+                width=-1,
+            )
             dpg.add_checkbox(label="Gradient Accumulation", default_value=False, tag="grad_accumulation")
             dpg.add_text("  Steps:", indent=20)
             dpg.add_input_int(tag="accumulation_steps", default_value=2, min_value=1, max_value=16, width=-1, indent=20)
+            dpg.add_text("Random Seed:")
+            dpg.add_input_int(tag="random_seed", default_value=42, min_value=0, width=-1)
+            dpg.add_checkbox(
+                label="Deterministic Algorithms",
+                default_value=True,
+                tag="deterministic",
+            )
             dpg.add_separator()
             
             # Data Augmentation
@@ -461,6 +474,15 @@ class PhoenixTrainer:
             dpg.add_text("Directory:")
             dpg.add_input_text(tag="output_dir", default_value="models/trained/", width=-1)
             dpg.add_checkbox(label="Save Best Only", default_value=True, tag="save_best_only")
+            dpg.add_text("Checkpoint Interval (epochs):")
+            dpg.add_input_int(
+                tag="checkpoint_interval",
+                default_value=10,
+                min_value=0,
+                width=-1,
+            )
+            dpg.add_text("Resume Checkpoint (optional):")
+            dpg.add_input_text(tag="resume_from", default_value="", width=-1)
 
             dpg.add_separator()
             dpg.add_text("Uncertainty & Active Learning", color=self.theme_colors['accent'])
@@ -1100,13 +1122,18 @@ class PhoenixTrainer:
             "early_stopping_patience": dpg.get_value("early_stop_patience"),
             "gradient_clipping": dpg.get_value("gradient_clipping"),
             "grad_clip_norm": dpg.get_value("grad_clip_norm"),
-            "mixed_precision": dpg.get_value("mixed_precision"),
+            "precision": dpg.get_value("precision").lower(),
+            "mixed_precision": dpg.get_value("precision") != "FP32",
             "grad_accumulation": dpg.get_value("grad_accumulation"),
             "accumulation_steps": dpg.get_value("accumulation_steps"),
+            "seed": dpg.get_value("random_seed"),
+            "deterministic": dpg.get_value("deterministic"),
             "dropout": dpg.get_value("dropout"),
             "label_smoothing": dpg.get_value("label_smoothing"),
             "device": "cuda" if "GPU" in dpg.get_value("device") else "cpu",
             "save_best_only": dpg.get_value("save_best_only"),
+            "checkpoint_interval": dpg.get_value("checkpoint_interval"),
+            "resume_from": dpg.get_value("resume_from").strip() or None,
             "num_workers": 2,
             "augmentation": {
                 "rotation": dpg.get_value("aug_rotation"),
@@ -1137,6 +1164,13 @@ class PhoenixTrainer:
             for key, value in saved_training.items():
                 if value is not None:
                     config[key] = value
+
+            # Backward compatibility for queue manifests created before explicit
+            # precision selection replaced the mixed_precision boolean.
+            if "precision" not in saved_training and "mixed_precision" in saved_training:
+                config["precision"] = (
+                    "fp16" if bool(saved_training["mixed_precision"]) else "fp32"
+                )
 
             # Allow a small set of trainer-specific smoke/production overrides at
             # the dataset root without making the DPG layer model-aware.
