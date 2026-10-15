@@ -22,6 +22,11 @@ from PIL import Image
 import cv2
 
 from .base_trainer import BaseTrainer
+from ..training_runtime import (
+    TrainingRuntime,
+    make_dataloader_generator,
+    seed_dataloader_worker,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -228,9 +233,9 @@ class UNetTrainer(BaseTrainer):
         
         self.log(f"Found {len(rgb_paths)} complete image sets", "INFO")
         
-        # Shuffle
-        indices = np.arange(len(rgb_paths))
-        np.random.shuffle(indices)
+        # Deterministic split for reproducible runs.
+        rng = np.random.default_rng(self.seed)
+        indices = rng.permutation(len(rgb_paths))
         
         rgb_paths = [rgb_paths[i] for i in indices]
         normal_paths = [normal_paths[i] for i in indices]
@@ -259,7 +264,9 @@ class UNetTrainer(BaseTrainer):
             batch_size=self.config['batch_size'],
             shuffle=True,
             num_workers=self.config.get('num_workers', 2),
-            pin_memory=True if torch.cuda.is_available() else False
+            pin_memory=True if torch.cuda.is_available() else False,
+            worker_init_fn=seed_dataloader_worker,
+            generator=make_dataloader_generator(self.seed),
         )
         
         self.val_loader = DataLoader(
@@ -267,7 +274,9 @@ class UNetTrainer(BaseTrainer):
             batch_size=self.config['batch_size'],
             shuffle=False,
             num_workers=self.config.get('num_workers', 2),
-            pin_memory=True if torch.cuda.is_available() else False
+            pin_memory=True if torch.cuda.is_available() else False,
+            worker_init_fn=seed_dataloader_worker,
+            generator=make_dataloader_generator(self.seed + 1),
         )
         
         self.log("Dataset loaded successfully", "SUCCESS")
@@ -316,136 +325,118 @@ class UNetTrainer(BaseTrainer):
             self.optimizer,
             T_max=self.config['epochs']
         )
+
+        self.training_runtime = TrainingRuntime(
+            self.config,
+            self.device,
+            self.optimizer,
+        )
+        runtime_state = self.training_runtime.describe()
+        self.log(
+            "Runtime: "
+            f"precision={runtime_state.precision}, "
+            f"accumulation={runtime_state.accumulation_steps}, "
+            f"clip={runtime_state.gradient_clipping}",
+            "INFO",
+        )
         
         self.log("Model built successfully", "SUCCESS")
     
     def train_epoch(self) -> Dict[str, float]:
-        """
-        Train one epoch - REAL TRAINING with gradient descent
-        
-        Returns:
-            Dictionary with training metrics
-        """
+        """Train one real U-Net epoch using the shared Phoenix runtime."""
         self.model.train()
-        
+
         running_loss = 0.0
         correct_pixels = 0
         total_pixels = 0
-        
+        total_batches = len(self.train_loader)
+        self.training_runtime.begin_epoch()
+
         for batch_idx, (images, masks) in enumerate(self.train_loader):
-            # Move to device
             images = images.to(self.device)
             masks = masks.to(self.device)
-            
-            # Zero gradients
-            self.optimizer.zero_grad()
-            
-            # Forward pass - REAL COMPUTATION
-            outputs = self.model(images)
-            loss = self.criterion(outputs, masks)
-            
-            # Backward pass - REAL GRADIENT DESCENT
-            loss.backward()
-            self.optimizer.step()
-            
-            # Statistics
+
+            with self.training_runtime.autocast():
+                outputs = self.model(images)
+                loss = self.criterion(outputs, masks)
+
+            self.training_runtime.backward_and_step(
+                loss,
+                self.model,
+                batch_idx,
+                total_batches,
+            )
+
             running_loss += loss.item()
             _, predicted = outputs.max(1)
             correct_pixels += (predicted == masks).sum().item()
             total_pixels += masks.numel()
-            
-            # Log progress every 10 batches
+
             if batch_idx % 10 == 0:
-                self.log(f"Batch {batch_idx}/{len(self.train_loader)}: Loss={loss.item():.4f}", "INFO")
-        
-        # Update learning rate
+                self.log(
+                    f"Batch {batch_idx}/{total_batches}: Loss={loss.item():.4f}",
+                    "INFO",
+                )
+
         self.scheduler.step()
-        
-        # Calculate metrics
-        avg_loss = running_loss / len(self.train_loader)
+
+        avg_loss = running_loss / total_batches
         pixel_accuracy = 100.0 * correct_pixels / total_pixels
         current_lr = self.optimizer.param_groups[0]['lr']
-        
-        metrics = {
+
+        return {
             'train_loss': avg_loss,
             'train_pixel_accuracy': pixel_accuracy,
-            'learning_rate': current_lr
+            'learning_rate': current_lr,
         }
-        
-        return metrics
-    
+
     def validate(self) -> Dict[str, float]:
-        """
-        Run validation - REAL evaluation with IoU calculation
-        
-        Returns:
-            Dictionary with validation metrics (pixel accuracy, IoU)
-        """
+        """Run U-Net validation with the shared precision policy."""
         self.model.eval()
-        
+
         running_loss = 0.0
         correct_pixels = 0
         total_pixels = 0
         intersection = 0
         union = 0
-        
+
         with torch.no_grad():
             for images, masks in self.val_loader:
                 images = images.to(self.device)
                 masks = masks.to(self.device)
-                
-                # Forward pass
-                outputs = self.model(images)
-                loss = self.criterion(outputs, masks)
-                
-                # Statistics
+
+                with self.training_runtime.autocast():
+                    outputs = self.model(images)
+                    loss = self.criterion(outputs, masks)
+
                 running_loss += loss.item()
                 _, predicted = outputs.max(1)
                 correct_pixels += (predicted == masks).sum().item()
                 total_pixels += masks.numel()
-                
-                # IoU calculation (for defect class)
-                defect_pred = (predicted == 1)
-                defect_true = (masks == 1)
-                
+
+                defect_pred = predicted == 1
+                defect_true = masks == 1
                 intersection += (defect_pred & defect_true).sum().item()
                 union += (defect_pred | defect_true).sum().item()
-        
-        # Calculate metrics
+
         avg_loss = running_loss / len(self.val_loader)
         pixel_accuracy = 100.0 * correct_pixels / total_pixels
         iou = intersection / union if union > 0 else 0.0
-        
-        metrics = {
+
+        return {
             'val_loss': avg_loss,
             'accuracy': pixel_accuracy,
-            'IoU': iou
+            'IoU': iou,
         }
-        
-        return metrics
-    
+
     def save_checkpoint(self, filepath: Path):
-        """
-        Save model checkpoint
-        
-        Args:
-            filepath: Path to save checkpoint
-        """
+        """Save a resumable checkpoint plus model-only weights."""
         self.log(f"Saving checkpoint: {filepath}", "INFO")
-        
-        checkpoint = {
-            'epoch': self.current_epoch,
-            'model_state_dict': self.model.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-            'scheduler_state_dict': self.scheduler.state_dict(),
-            'best_metric': self.best_metric,
-            'config': self.config
-        }
-        
+
+        checkpoint = self.build_common_checkpoint_payload()
         torch.save(checkpoint, filepath)
-        
-        # Also save just the model weights
+
         model_only_path = filepath.parent / f"{filepath.stem}_model_only.pth"
         torch.save(self.model.state_dict(), model_only_path)
-        
+
         self.log(f"Checkpoint saved to {filepath}", "SUCCESS")
