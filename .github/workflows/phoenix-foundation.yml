@@ -54,6 +54,7 @@ jobs:
             src/modules/phoenix_trainer/hardware_backend.py \
             src/modules/phoenix_trainer/training_runtime.py \
             src/modules/phoenix_trainer/run_artifacts.py \
+            src/modules/phoenix_trainer/queue_monitor.py \
             src/modules/phoenix_trainer/phoenix_trainer_dpg.py \
             src/modules/phoenix_trainer/phoenix_training_queue_standalone.py \
             src/modules/phoenix_trainer/queue_manager.py \
@@ -75,7 +76,8 @@ jobs:
             tests/phoenix/test_process_entrypoints.py \
             tests/phoenix/test_queue_reconciliation.py \
             tests/phoenix/test_training_runtime.py \
-            tests/phoenix/test_run_artifacts.py
+            tests/phoenix/test_run_artifacts.py \
+            tests/phoenix/test_queue_monitor.py
 
       - name: Smoke launch Phoenix Trainer
         env:
