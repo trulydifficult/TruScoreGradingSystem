@@ -187,6 +187,16 @@ class BaseTrainer(ABC):
             "monitor_metric": self.monitor_metric_name,
             "monitor_mode": self.monitor_mode,
             "metrics_history": self.metrics_history,
+            "early_stopping_state": (
+                {
+                    "counter": self.early_stopping.counter,
+                    "best_score": self.early_stopping.best_score,
+                    "early_stop": self.early_stopping.early_stop,
+                    "best_model_state": self.early_stopping.best_model_state,
+                }
+                if self.early_stopping is not None
+                else None
+            ),
             "config": self.config,
         }
 
@@ -224,6 +234,19 @@ class BaseTrainer(ABC):
             "metrics_history",
             self.metrics_history,
         )
+
+        early_state = checkpoint.get("early_stopping_state")
+        if early_state and self.monitor_mode:
+            self._ensure_early_stopping(self.monitor_mode)
+            if self.early_stopping is not None:
+                self.early_stopping.counter = int(early_state.get("counter", 0))
+                self.early_stopping.best_score = early_state.get("best_score")
+                self.early_stopping.early_stop = bool(
+                    early_state.get("early_stop", False)
+                )
+                self.early_stopping.best_model_state = early_state.get(
+                    "best_model_state"
+                )
 
         if checkpoint.get("rng_state"):
             restore_rng_state(checkpoint["rng_state"])
