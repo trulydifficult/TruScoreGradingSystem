@@ -116,7 +116,7 @@ class BaseTrainer(ABC):
         logger.info(f"Output: {self.output_dir}")
     
     def _setup_enterprise_features(self):
-        """Initialize only enterprise features enabled by the run configuration."""
+        """Initialize monitoring; runtime precision and early stopping are separate."""
         try:
             if self.config.get("advanced_monitoring", True):
                 experiment_name = f"{self.__class__.__name__}_{self.dataset_path.name}"
@@ -130,31 +130,112 @@ class BaseTrainer(ABC):
                 self.advanced_monitor = None
                 logger.info("Advanced monitoring disabled")
 
-            if self.config.get("early_stopping", True):
-                patience = self.config.get("early_stopping_patience", 10)
-                self.early_stopping = EarlyStopping(
-                    patience=patience,
-                    min_delta=0.001,
-                    mode="max",
-                    save_path=self.output_dir / "best_model_early_stop.pth",
-                )
-                logger.info(f"Early stopping enabled (patience={patience})")
-            else:
-                self.early_stopping = None
-                logger.info("Early stopping disabled")
-
-            if self.config.get("mixed_precision", True):
-                self.mixed_precision = MixedPrecisionManager(enabled=True)
-                logger.info("Mixed precision manager initialized")
-            else:
-                self.mixed_precision = None
-                logger.info("Mixed precision disabled")
+            # Early stopping is initialized lazily after validation establishes
+            # the monitored metric and its min/max direction.
+            self.early_stopping = None
 
         except Exception as e:
-            logger.warning(f"Failed to initialize enterprise features: {e}")
+            logger.warning(f"Failed to initialize enterprise monitoring: {e}")
             self.advanced_monitor = None
             self.early_stopping = None
-            self.mixed_precision = None
+
+    def _ensure_early_stopping(self, mode: str):
+        """Create early stopping once the monitored metric direction is known."""
+        if (
+            not ENTERPRISE_FEATURES_AVAILABLE
+            or not self.early_stopping_enabled
+            or self.early_stopping is not None
+        ):
+            return
+
+        patience = int(self.config.get("early_stopping_patience", 10))
+        self.early_stopping = EarlyStopping(
+            patience=patience,
+            min_delta=float(self.config.get("early_stopping_min_delta", 0.001)),
+            mode=mode,
+            save_path=self.output_dir / "best_model_early_stop.pth",
+        )
+        logger.info(
+            "Early stopping enabled (patience=%s, mode=%s)",
+            patience,
+            mode,
+        )
+
+    def get_profile_input_size(self):
+        """Return a model-appropriate profiling tensor shape."""
+        channels = int(getattr(self, "in_channels", 3))
+        size = int(getattr(self, "image_size", 224))
+        return (channels, size, size)
+
+    def build_common_checkpoint_payload(self) -> Dict[str, Any]:
+        """Build the shared checkpoint state used by ordinary PyTorch trainers."""
+        runtime = getattr(self, "training_runtime", None)
+        return {
+            "epoch": self.current_epoch,
+            "model_state_dict": self.model.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict(),
+            "scheduler_state_dict": (
+                self.scheduler.state_dict()
+                if getattr(self, "scheduler", None) is not None
+                else None
+            ),
+            "runtime_state_dict": (
+                runtime.state_dict() if runtime is not None else None
+            ),
+            "rng_state": capture_rng_state(),
+            "best_metric": self.best_metric,
+            "monitor_metric": self.monitor_metric_name,
+            "monitor_mode": self.monitor_mode,
+            "metrics_history": self.metrics_history,
+            "config": self.config,
+        }
+
+    def load_checkpoint(self, filepath: Path) -> None:
+        """Resume model, optimizer, scheduler, scaler, metrics, and RNG state."""
+        import torch
+
+        filepath = Path(filepath)
+        if not filepath.exists():
+            raise FileNotFoundError(f"Resume checkpoint not found: {filepath}")
+
+        self.log(f"Loading checkpoint: {filepath}", "INFO")
+        checkpoint = torch.load(
+            filepath,
+            map_location=getattr(self, "device", "cpu"),
+            weights_only=False,
+        )
+
+        self.model.load_state_dict(checkpoint["model_state_dict"])
+        self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+
+        scheduler_state = checkpoint.get("scheduler_state_dict")
+        if scheduler_state is not None and getattr(self, "scheduler", None) is not None:
+            self.scheduler.load_state_dict(scheduler_state)
+
+        runtime_state = checkpoint.get("runtime_state_dict")
+        runtime = getattr(self, "training_runtime", None)
+        if runtime_state and runtime is not None:
+            runtime.load_state_dict(runtime_state)
+
+        self.best_metric = checkpoint.get("best_metric")
+        self.monitor_metric_name = checkpoint.get("monitor_metric")
+        self.monitor_mode = checkpoint.get("monitor_mode")
+        self.metrics_history = checkpoint.get(
+            "metrics_history",
+            self.metrics_history,
+        )
+
+        if checkpoint.get("rng_state"):
+            restore_rng_state(checkpoint["rng_state"])
+
+        saved_epoch = int(checkpoint.get("epoch", -1))
+        self.current_epoch = max(saved_epoch, 0)
+        self.start_epoch = saved_epoch + 1
+
+        self.log(
+            f"Checkpoint restored; resuming at epoch {self.start_epoch + 1}",
+            "SUCCESS",
+        )
 
     def register_callback(self, event: str, callback: Callable):
         """Register callback for training events"""
