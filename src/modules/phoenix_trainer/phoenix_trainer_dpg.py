@@ -998,6 +998,7 @@ class PhoenixTrainer:
                 dataset_config=job.get("dataset_config", {}),
             )
             self._active_run_recorder = recorder
+            recorder.write_dataset_reference(dataset_path)
             job["config"] = dict(recorder.resolved_config)
             job["config"]["dataset_path"] = str(dataset_path)
 
