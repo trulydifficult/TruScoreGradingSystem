@@ -84,10 +84,18 @@ Phoenix now also contains:
 - shared conventional PyTorch runtime for precision/accumulation/clipping/resume
 - immutable per-run provenance artifacts
 - persistent Queue Operations Monitor with cross-job lifecycle history
+- sparse operator CLI separated from detailed monitor/run logging
+- atomic cross-process JSON publication for Queue/Trainer state
 
-These newer common-runtime/provenance/operations-monitor slices are still pending
-their complete production acceptance sequence, so Phoenix remains IN PROGRESS
-rather than VERIFIED.
+Production acceptance has now verified the single-job path for:
+- Queue monitoring and completed-run visibility
+- immutable run/provenance records
+- sparse CLI behavior
+- atomic status IPC without the prior JSON read-race traceback
+
+Phoenix remains IN PROGRESS rather than fully VERIFIED because sequential
+multi-job unattended operation and additional trainer/model families still
+require production acceptance.
 
 ### Continuous Learning / The Guru
 
