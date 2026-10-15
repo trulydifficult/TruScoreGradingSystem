@@ -763,3 +763,14 @@ A three-dataset unattended ViT smoke queue previously completed sequentially wit
 Duplicate generic lifecycle messages were traced to both BaseTrainer and concrete ViT/U-Net trainers emitting "Dataset loaded successfully" and "Model built successfully". The concrete copies were removed; BaseTrainer retains ownership. A regression test was added. Code changes await CI and workstation verification before being marked fully verified.
 
 Next: confirm CI for lifecycle deduplication, then test completed run's single lifecycle messages. Continue broader Phoenix trainer contract work (especially Detectron2), and dataset manifest handoff after completing resume and queue gates.
+
+
+## Detectron2 Truthfulness Guard — 2026-10-15
+
+Latest Phoenix foundation CI before this slice passed (run 38816375234), including the checkpoint resume policy and duplicate lifecycle logging checks. Production ROCm checkpoint resume independently passed on a 1 -> 2 total-epoch ViT training job.
+
+Detected two still-unrepaired correctness defects in real Detectron2Trainer: (1) train_epoch invokes DefaultTrainer.train() for the full native lifecycle inside the BaseTrainer epoch loop, and (2) the intended 80/20 Python train/val split is not the dataset actually registered in Detectron2's cfg train/evaluation fields. These must be fixed together with truthful evaluation and native checkpoint semantics before production Detectron2 acceptance. Do not treat current Detectron2 runtime as verified.
+
+Removed fabricated placeholder results in legacy Detectron2TrainerSimple: its model construction, training, validation, and checkpoint functions now fail explicitly with NotImplementedError instead of reporting fake training/validation values or model success. No change to real Detectron2Trainer behavior in this slice. Added AST regression test to CI. Production Detectron2 training remains unverified.
+
+Next: audit native Detectron2 iteration/checkpoint/COCOEvaluator contracts and historical alternatives in detail; implement correct disjoint COCO train/val registration, native single-owner training lifecycle and real metrics as a cohesive subsystem slice; test on a genuine annotated dataset with Detectron2 installed.
