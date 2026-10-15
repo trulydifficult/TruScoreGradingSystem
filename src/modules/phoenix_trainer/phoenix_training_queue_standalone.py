@@ -74,6 +74,7 @@ try:
         cli_info,
         cli_warning,
         configure_operator_console,
+        logger_file_path,
     )
 except ImportError:
     from modules.phoenix_trainer.hardware_backend import build_torch_runtime_environment
@@ -84,6 +85,7 @@ except ImportError:
         cli_info,
         cli_warning,
         configure_operator_console,
+        logger_file_path,
     )
 
 configure_operator_console(logger)
@@ -410,6 +412,16 @@ class PhoenixTrainingQueueApp:
         if event_type in cli_events:
             if status == "failed" or "failed" in event_type or "unresolved" in event_type:
                 cli_error(logger, "Phoenix | %s", message)
+                detail_path = None
+                if details:
+                    detail_path = (
+                        details.get("log")
+                        or details.get("run_log")
+                        or details.get("error_log")
+                    )
+                detail_path = detail_path or logger_file_path(logger)
+                if detail_path:
+                    cli_error(logger, "Phoenix | Details: %s", detail_path)
             elif event_type == "queue_stop_requested":
                 cli_warning(logger, "Phoenix | %s", message)
             else:
