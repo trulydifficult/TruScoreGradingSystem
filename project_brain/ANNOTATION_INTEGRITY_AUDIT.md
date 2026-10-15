@@ -76,3 +76,23 @@ CI outcome for that expanded audit was pending when recorded.
    geometry rather than inventing a training-ready interpretation.
 
 Do NOT report the 20-image COCO ZIP as production-validated until these pass.
+
+## Historical cross-check and test result
+
+The older `src/revolutionary_border_calibration.py` preserved human-correction
+metadata and a rotation-applied image property in its per-card report, but its
+YOLO export still emitted axis-aligned five-field boxes. This material is a
+salvage reference for human corrections and original annotation context; it is
+not a proven rotated-polygon export pipeline. It remains important to inspect
+other archived source before changing annotation ownership.
+
+GitHub Actions 38822223789 and 38822219622 passed 51 unit tests and both
+Phoenix Trainer/Queue GUI startup smoke checks. Those tests established that
+COCO box/class values in the committed ZIP correspond numerically to the
+original same-stem source `20image/yolo/TestNNN.txt` labels. They also
+established the negative fixture is missing all 40 segmentation arrays and
+contains at least one image whose true dimensions differ from the recorded
+640x480 metadata. This is PASS of an integrity *audit*, NOT PASS of the
+production dataset acceptance gate. Original YOLO box visual correctness,
+per-image annotation provenance and rotated quadrilateral geometry remain
+unverified.
