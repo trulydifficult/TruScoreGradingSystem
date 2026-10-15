@@ -105,3 +105,21 @@ def test_queue_exposes_copyable_requested_and_resolved_configs():
     assert "Resolved Training Config:" in source
     assert "Copy Resolved Config" in source
     assert "dpg.set_clipboard_text" in source
+
+
+
+def test_queue_has_persistent_operations_monitor():
+    source = QUEUE.read_text(encoding="utf-8")
+
+    assert "Operations Monitor" in source
+    assert "QueueMonitorStore" in source
+    assert "_poll_active_training()" in source
+    assert "Training started on dataset" in source
+    assert "Training complete on dataset" in source
+    assert "Copy Timeline" in source
+
+
+def test_trainer_publishes_active_run_reference_before_completion():
+    source = TRAINER.read_text(encoding="utf-8")
+
+    assert "recorder.write_dataset_reference(dataset_path)" in source
