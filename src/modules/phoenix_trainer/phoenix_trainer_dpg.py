@@ -43,6 +43,11 @@ except ImportError:  # Fallback when executed directly
     from shared.essentials.truscore_logging import setup_truscore_logging
     logger = setup_truscore_logging("PhoenixTrainer", "phoenix_trainer.log")
 
+try:
+    from .run_artifacts import RunRecorder
+except ImportError:
+    from modules.phoenix_trainer.run_artifacts import RunRecorder
+
 
 class PhoenixTrainer:
     """
@@ -64,6 +69,7 @@ class PhoenixTrainer:
         self.auto_exit_after_job = auto_exit_after_job
         self.loaded_dataset = None  # Currently loaded dataset
         self._last_metrics = {}
+        self._active_run_recorder = None
         
         # Paths
         self.project_root = Path(__file__).parents[3]
