@@ -149,3 +149,29 @@ GitHub Actions run `38796016470`: PASS.
 Next production acceptance gate:
 single-job monitor visibility from `run_truscore.py`, followed by a sequential
 multi-job unattended test.
+
+
+## Phoenix Sparse CLI / Atomic IPC Slice — 2026-10-15
+
+Production feedback established the final observability-channel split:
+
+- sparse operator CLI for readiness/lifecycle/errors
+- persistent Queue Operations Monitor for live operational detail
+- immutable run record for full model forensics
+
+Implemented:
+- explicit Phoenix CLI allowlist policy
+- accelerator/VRAM, available RAM, disk, Run ID, run-log path summaries
+- concise dataset start/completion events
+- concise warnings/errors with exact diagnostic log paths
+- detailed INFO suppressed from terminal but retained in logs/monitor
+- atomic cross-process JSON publication
+- tolerant monitor reads for absent/legacy partial JSON
+- atomic Queue state persistence
+
+Latest production smoke run verified BF16 + accumulation + clipping training and
+useful run/provenance UI. It exposed the pre-atomic monitor read race while model
+training itself completed successfully.
+
+Automated verification for the corrected sparse-CLI/atomic-IPC slice is running.
+Production verification of the correction remains PENDING.
