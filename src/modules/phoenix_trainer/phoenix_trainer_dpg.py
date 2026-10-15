@@ -48,6 +48,15 @@ try:
 except ImportError:
     from modules.phoenix_trainer.run_artifacts import RunRecorder
 
+# Phoenix training is operator-facing. Preserve global TruScore filtering rules,
+# but allow this process's INFO lifecycle/progress messages to reach its console.
+for handler in logger.handlers:
+    if (
+        isinstance(handler, logging.StreamHandler)
+        and not isinstance(handler, logging.FileHandler)
+    ):
+        handler.filters.clear()
+
 
 class PhoenixTrainer:
     """
