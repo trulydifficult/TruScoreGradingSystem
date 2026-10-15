@@ -951,6 +951,11 @@ class PhoenixTrainingQueueApp:
     def start_queue(self):
         """Begin unattended sequential processing of pending datasets."""
         self.queue_running = True
+        self._record_monitor_event(
+            "queue_started",
+            "Unattended queue processing started.",
+            status="running",
+        )
         if dpg.does_item_exist("start_queue_btn"):
             dpg.configure_item("start_queue_btn", enabled=False)
         if dpg.does_item_exist("stop_queue_btn"):
@@ -961,6 +966,11 @@ class PhoenixTrainingQueueApp:
     def stop_queue(self):
         """Stop automatic dispatch after the current trainer process finishes."""
         self.queue_running = False
+        self._record_monitor_event(
+            "queue_stop_requested",
+            "Queue will stop after the current training job.",
+            status="stopping",
+        )
         if dpg.does_item_exist("start_queue_btn"):
             dpg.configure_item("start_queue_btn", enabled=True)
         if dpg.does_item_exist("stop_queue_btn"):
@@ -993,15 +1003,46 @@ class PhoenixTrainingQueueApp:
             active_path = dataset_path
 
         dataset["status"] = "training"
+        dataset["started_at"] = datetime.now().isoformat()
         self.active_dataset_id = dataset["id"]
+        self._last_status_signature = None
+        self._set_monitor_runtime_display(
+            state="launching",
+            dataset_name=dataset.get("name"),
+            progress=0.0,
+        )
+        self._record_monitor_event(
+            "dataset_dispatched",
+            f"Training started on dataset {dataset.get('name')}.",
+            dataset=dataset.get("name"),
+            status="launching",
+            details={
+                "dataset_path": str(active_path),
+                "pipeline": dataset.get("model_type"),
+                "hardware_hint": dataset.get("hardware_hint"),
+            },
+        )
 
         try:
             self.trainer_process = self.launch_trainer(active_path)
+            self._record_monitor_event(
+                "worker_launched",
+                f"Phoenix Trainer worker launched for {dataset.get('name')}.",
+                dataset=dataset.get("name"),
+                status="training",
+                details={"pid": self.trainer_process.pid},
+            )
         except Exception:
             dataset["status"] = "failed"
             self.active_dataset_id = None
             self.trainer_process = None
             logger.exception("Could not launch Phoenix Trainer worker")
+            self._record_monitor_event(
+                "worker_launch_failed",
+                f"Could not launch trainer for {dataset.get('name')}.",
+                dataset=dataset.get("name"),
+                status="failed",
+            )
             raise
 
         self.save_queue_state()
@@ -1020,6 +1061,11 @@ class PhoenixTrainingQueueApp:
         )
         if next_dataset is None:
             self.queue_running = False
+            self._record_monitor_event(
+                "queue_idle",
+                "Queue has no remaining pending datasets.",
+                status="idle",
+            )
             if dpg.does_item_exist("start_queue_btn"):
                 dpg.configure_item("start_queue_btn", enabled=True)
             if dpg.does_item_exist("stop_queue_btn"):
@@ -1053,9 +1099,58 @@ class PhoenixTrainingQueueApp:
             if completed_path.exists():
                 dataset["status"] = "completed"
                 dataset["path"] = str(completed_path)
+                dataset["completed_at"] = datetime.now().isoformat()
+
+                run_reference = self._read_json_file(
+                    completed_path / "training_run.json"
+                ) or {}
+                run_manifest = self._read_json_file(
+                    Path(run_reference["run_manifest"])
+                ) if run_reference.get("run_manifest") else None
+
+                final_metrics = (
+                    run_manifest.get("final_metrics", {})
+                    if run_manifest
+                    else {}
+                )
+                self._record_monitor_event(
+                    "dataset_completed",
+                    f"Training complete on dataset {dataset.get('name')}.",
+                    dataset=dataset.get("name"),
+                    run_id=run_reference.get("run_id"),
+                    status="completed",
+                    details={
+                        "return_code": return_code,
+                        "run_dir": run_reference.get("run_dir"),
+                        "started_at": run_manifest.get("started_at") if run_manifest else dataset.get("started_at"),
+                        "ended_at": run_manifest.get("ended_at") if run_manifest else dataset.get("completed_at"),
+                        "final_metrics": final_metrics,
+                    },
+                )
+                self._set_monitor_runtime_display(
+                    state="completed",
+                    dataset_name=dataset.get("name"),
+                    progress=1.0,
+                    epoch=int((run_manifest or {}).get("resolved_training_config", {}).get("epochs", 0) or 0),
+                    total_epochs=int((run_manifest or {}).get("resolved_training_config", {}).get("epochs", 0) or 0),
+                    metrics=final_metrics,
+                )
             elif failed_path.exists():
                 dataset["status"] = "failed"
                 dataset["path"] = str(failed_path)
+                dataset["completed_at"] = datetime.now().isoformat()
+                self._record_monitor_event(
+                    "dataset_failed",
+                    f"Training failed on dataset {dataset.get('name')}.",
+                    dataset=dataset.get("name"),
+                    status="failed",
+                    details={"return_code": return_code},
+                )
+                self._set_monitor_runtime_display(
+                    state="failed",
+                    dataset_name=dataset.get("name"),
+                    progress=0.0,
+                )
             else:
                 dataset["status"] = "failed"
                 active_path = Path(dataset["path"])
@@ -1078,6 +1173,19 @@ class PhoenixTrainingQueueApp:
                     "completed/failed result for %s",
                     return_code,
                     dataset["name"],
+                )
+                self._record_monitor_event(
+                    "worker_exit_unresolved",
+                    f"Trainer worker exited unexpectedly for {dataset.get('name')} "
+                    f"(exit code {return_code}).",
+                    dataset=dataset.get("name"),
+                    status="failed",
+                    details={"return_code": return_code},
+                )
+                self._set_monitor_runtime_display(
+                    state="failed",
+                    dataset_name=dataset.get("name"),
+                    progress=0.0,
                 )
 
         self.save_queue_state()
@@ -1314,6 +1422,7 @@ class PhoenixTrainingQueueApp:
                 dpg.run_callbacks(callback_jobs)
 
             self._drain_ui_events()
+            self._poll_active_training()
             self._poll_trainer_process()
             self._dispatch_next_if_idle()
             dpg.render_dearpygui_frame()
@@ -1322,6 +1431,12 @@ class PhoenixTrainingQueueApp:
             self.observer.stop()
             self.observer.join()
 
+        self._record_monitor_event(
+            "queue_closed",
+            f"Queue monitor session ended: {self.monitor_session_id}",
+            status="closed",
+            refresh=False,
+        )
         self.save_queue_state()
         dpg.destroy_context()
 
