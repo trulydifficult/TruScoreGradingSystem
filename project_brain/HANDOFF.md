@@ -752,3 +752,14 @@ A successful new session should independently identify the first task as:
 **sequential multi-job unattended Phoenix Queue acceptance testing**, explain why
 that is the next gate, and continue from the existing branch/project brain rather
 than restarting the Phoenix audit.
+
+
+## Phoenix Checkpoint Resume Acceptance — 2026-10-15
+
+User workstation acceptance confirmed a one-epoch ViT checkpoint was restored in a fresh ROCm/BF16 training run configured for two total epochs. Run log showed "Checkpoint restored; resuming at epoch 2", executed only epoch 2/2, saved checkpoint_epoch_2.pth and final_model.pth, and finalized completed. The prior failure ("RNG state must be a torch.ByteTensor") came from loading CPU RNG tensors using GPU map_location; checkpoint deserialization was changed to map_location="cpu". This verifies the resume path executed without error; bit-for-bit continuation was not independently compared.
+
+A three-dataset unattended ViT smoke queue previously completed sequentially with unique Run IDs and separate output paths. Observed CLI showed each job's completion followed by the next job's start, with no traceback. Final Idle state and persisted timeline after restart were not independently confirmed by that CLI extract.
+
+Duplicate generic lifecycle messages were traced to both BaseTrainer and concrete ViT/U-Net trainers emitting "Dataset loaded successfully" and "Model built successfully". The concrete copies were removed; BaseTrainer retains ownership. A regression test was added. Code changes await CI and workstation verification before being marked fully verified.
+
+Next: confirm CI for lifecycle deduplication, then test completed run's single lifecycle messages. Continue broader Phoenix trainer contract work (especially Detectron2), and dataset manifest handoff after completing resume and queue gates.
