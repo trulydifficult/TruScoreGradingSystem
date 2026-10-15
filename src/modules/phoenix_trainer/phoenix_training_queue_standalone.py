@@ -68,19 +68,25 @@ except Exception as e:
 try:
     from .hardware_backend import build_torch_runtime_environment
     from .queue_monitor import QueueMonitorStore, RunLogTailer
+    from .atomic_io import atomic_write_json
+    from .operator_logging import (
+        cli_error,
+        cli_info,
+        cli_warning,
+        configure_operator_console,
+    )
 except ImportError:
     from modules.phoenix_trainer.hardware_backend import build_torch_runtime_environment
     from modules.phoenix_trainer.queue_monitor import QueueMonitorStore, RunLogTailer
+    from modules.phoenix_trainer.atomic_io import atomic_write_json
+    from modules.phoenix_trainer.operator_logging import (
+        cli_error,
+        cli_info,
+        cli_warning,
+        configure_operator_console,
+    )
 
-# Phoenix is an operator-facing subsystem. Keep global TruScore filtering intact,
-# but allow INFO messages from this queue process to reach its own console.
-for handler in logger.handlers:
-    if (
-        isinstance(handler, logging.StreamHandler)
-        and not isinstance(handler, logging.FileHandler)
-    ):
-        handler.filters.clear()
-
+configure_operator_console(logger)
 logging.getLogger('watchdog').setLevel(logging.WARNING)
 
 
