@@ -79,6 +79,7 @@ jobs:
             tests/phoenix/test_queue_reconciliation.py \
             tests/phoenix/test_training_runtime.py \
             tests/phoenix/test_checkpoint_resume_policy.py \
+            tests/phoenix/test_training_lifecycle_logging.py \
             tests/phoenix/test_run_artifacts.py \
             tests/phoenix/test_queue_monitor.py \
             tests/phoenix/test_operator_io.py
