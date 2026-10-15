@@ -35,6 +35,7 @@ jobs:
             scripts/create_phoenix_vit_smoke_dataset.py
             tests/phoenix
             tests/fixtures/detectron2/coco_20_image_test.zip
+            20image/yolo
           sparse-checkout-cone-mode: false
 
       - name: Set up Python
@@ -46,7 +47,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb libgl1 libx11-6 libxcursor1 libxinerama1 libxrandr2 libxi6
-          python -m pip install --upgrade pytest dearpygui==2.1.1
+          python -m pip install --upgrade pytest pillow dearpygui==2.1.1
 
       - name: Compile touched Phoenix modules
         run: |
