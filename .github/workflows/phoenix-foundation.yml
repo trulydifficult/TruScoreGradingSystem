@@ -52,11 +52,14 @@ jobs:
           python -m py_compile \
             src/modules/phoenix_trainer/trainer_registry.py \
             src/modules/phoenix_trainer/hardware_backend.py \
+            src/modules/phoenix_trainer/training_runtime.py \
             src/modules/phoenix_trainer/phoenix_trainer_dpg.py \
             src/modules/phoenix_trainer/phoenix_training_queue_standalone.py \
             src/modules/phoenix_trainer/queue_manager.py \
             src/modules/main_window/main_window.py \
             src/modules/phoenix_trainer/trainers/base_trainer.py \
+            src/modules/phoenix_trainer/trainers/vit_trainer.py \
+            src/modules/phoenix_trainer/trainers/unet_trainer.py \
             src/modules/phoenix_trainer/trainers/detectron2_trainer.py \
             scripts/verify_phoenix_backend.py \
             scripts/create_phoenix_vit_smoke_dataset.py
@@ -69,7 +72,8 @@ jobs:
             tests/phoenix/test_trainer_registry.py \
             tests/phoenix/test_hardware_backend.py \
             tests/phoenix/test_process_entrypoints.py \
-            tests/phoenix/test_queue_reconciliation.py
+            tests/phoenix/test_queue_reconciliation.py \
+            tests/phoenix/test_training_runtime.py
 
       - name: Smoke launch Phoenix Trainer
         env:
