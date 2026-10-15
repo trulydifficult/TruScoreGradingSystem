@@ -865,22 +865,33 @@ class PhoenixTrainer:
         if (dataset_path / "normal_maps").exists() and (dataset_path / "masks").exists():
             return "U-Net (Surface)"
         
-        # Default
-        return "Detectron2 (Mask R-CNN)"
+        raise ValueError(
+            f"Could not infer a supported trainer from dataset structure: {dataset_path}"
+        )
     
     def get_current_config(self) -> dict:
-        """Get current training configuration from UI"""
+        """Get the current runtime configuration from the DPG controls."""
+        precision = dpg.get_value("precision").lower()
         return {
             'learning_rate': dpg.get_value("learning_rate"),
             'batch_size': dpg.get_value("batch_size"),
             'epochs': dpg.get_value("epochs"),
             'optimizer': dpg.get_value("optimizer").lower(),
             'device': 'cuda' if 'GPU' in dpg.get_value("device") else 'cpu',
-            'mixed_precision': dpg.get_value("mixed_precision"),
+            'precision': precision,
+            'mixed_precision': precision != 'fp32',
+            'gradient_clipping': dpg.get_value("gradient_clipping"),
+            'grad_clip_norm': dpg.get_value("grad_clip_norm"),
+            'grad_accumulation': dpg.get_value("grad_accumulation"),
+            'accumulation_steps': dpg.get_value("accumulation_steps"),
+            'seed': dpg.get_value("random_seed"),
+            'deterministic': dpg.get_value("deterministic"),
+            'checkpoint_interval': dpg.get_value("checkpoint_interval"),
+            'resume_from': dpg.get_value("resume_from").strip() or None,
             'output_dir': dpg.get_value("output_dir"),
-            'use_wandb': False,  # Can add checkbox for this
-            'early_stopping_patience': 10,
-            'num_workers': 2
+            'use_wandb': False,
+            'early_stopping_patience': dpg.get_value("early_stop_patience"),
+            'num_workers': 2,
         }
     
     # DEPRECATED - Use standalone queue app
