@@ -87,3 +87,21 @@ def test_dataset_detection_does_not_default_unknown_data_to_detectron2():
     method_source = ast.unparse(method)
 
     assert "Could not infer a supported trainer" in method_source
+
+
+
+def test_trainer_streams_base_trainer_logs_into_phoenix_output():
+    source = TRAINER.read_text(encoding="utf-8")
+
+    assert 'register_callback("on_log_message"' in source
+    assert "Run ID:" in source
+    assert "Resolved training config:" in source
+
+
+def test_queue_exposes_copyable_requested_and_resolved_configs():
+    source = QUEUE.read_text(encoding="utf-8")
+
+    assert "Copy Requested Config" in source
+    assert "Resolved Training Config:" in source
+    assert "Copy Resolved Config" in source
+    assert "dpg.set_clipboard_text" in source
