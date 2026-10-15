@@ -1048,6 +1048,9 @@ class PhoenixTrainer:
             self._active_run_recorder = recorder
             recorder.write_dataset_reference(dataset_path)
             job["config"] = dict(recorder.resolved_config)
+
+            cli_info(logger, "Phoenix | Run ID: %s", recorder.run_id)
+            cli_info(logger, "Phoenix | Run log: %s", recorder.log_path)
             job["config"]["dataset_path"] = str(dataset_path)
 
             self.log_message(
@@ -1195,6 +1198,13 @@ class PhoenixTrainer:
         except Exception as exc:
             logger.exception("Training failed")
             self.log_message(f"Training failed: {exc}", "ERROR")
+
+            detail_log = (
+                recorder.log_path
+                if recorder is not None
+                else self.project_root / "src" / "Logs" / "phoenix_trainer.log"
+            )
+            cli_error(logger, "Phoenix | Details: %s", detail_log)
 
             if recorder is not None:
                 try:
@@ -1385,10 +1395,17 @@ class PhoenixTrainer:
             status_data['metrics'] = metrics
         
         try:
-            with open(status_file, 'w') as f:
-                json.dump(status_data, f, indent=2)
-        except Exception as e:
-            logger.error(f"Could not write training status: {e}")
+            atomic_write_json(status_file, status_data, indent=2)
+        except Exception as exc:
+            logger.exception("Could not write training status")
+            cli_error(
+                logger,
+                "Phoenix | ERROR: Could not publish training status: %s",
+                exc,
+            )
+            recorder = getattr(self, "_active_run_recorder", None)
+            if recorder is not None:
+                cli_error(logger, "Phoenix | Details: %s", recorder.log_path)
 
     def write_blockchain_export(self, job: dict, dataset_path: Path, metrics: dict = None):
         """Write blockchain/NFC-ready export stub for digital twin."""
@@ -1533,8 +1550,14 @@ class PhoenixTrainer:
             elif kind == "stop_app":
                 dpg.stop_dearpygui()
 
-    def log_message(self, message: str, level: str = "INFO"):
-        """Log immediately and marshal visual updates onto the DPG main thread."""
+    def log_message(
+        self,
+        message: str,
+        level: str = "INFO",
+        *,
+        cli: bool = False,
+    ):
+        """Write full detail to Phoenix logs/UI; keep the operator CLI sparse."""
         normalized_level = str(level).upper()
         logging_levels = {
             "DEBUG": logging.DEBUG,
@@ -1547,7 +1570,16 @@ class PhoenixTrainer:
         if normalized_level not in logging_levels:
             raise ValueError(f"Unsupported Phoenix log level: {level}")
 
-        logger.log(logging_levels[normalized_level], message)
+        console_visible = cli or normalized_level in {
+            "WARNING",
+            "ERROR",
+            "CRITICAL",
+        }
+        logger.log(
+            logging_levels[normalized_level],
+            message,
+            extra={"phoenix_cli": console_visible},
+        )
 
         recorder = getattr(self, "_active_run_recorder", None)
         if recorder is not None:
