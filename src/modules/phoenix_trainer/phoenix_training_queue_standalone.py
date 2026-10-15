@@ -414,6 +414,7 @@ class PhoenixTrainingQueueApp:
 
         run_reference = None
         resolved_training = None
+        run_manifest = None
         run_ref_path = dataset_path / "training_run.json"
         if run_ref_path.exists():
             try:
@@ -424,6 +425,12 @@ class PhoenixTrainingQueueApp:
                 if resolved_path.exists():
                     resolved_training = json.loads(
                         resolved_path.read_text(encoding="utf-8")
+                    )
+
+                manifest_path = Path(run_reference["run_manifest"])
+                if manifest_path.exists():
+                    run_manifest = json.loads(
+                        manifest_path.read_text(encoding="utf-8")
                     )
             except Exception:
                 logger.exception(
@@ -512,6 +519,38 @@ class PhoenixTrainingQueueApp:
                         label="Open Run Folder",
                         callback=self._open_external_path,
                         user_data=run_dir,
+                    )
+
+                if run_manifest is not None:
+                    final_metrics = run_manifest.get("final_metrics", {})
+                    summary_payload = {
+                        "run_id": run_manifest.get("run_id"),
+                        "status": run_manifest.get("status"),
+                        "started_at": run_manifest.get("started_at"),
+                        "ended_at": run_manifest.get("ended_at"),
+                        "final_metrics": final_metrics,
+                        "error": run_manifest.get("error"),
+                    }
+                    summary_json = json.dumps(
+                        summary_payload,
+                        indent=2,
+                        sort_keys=True,
+                    )
+                    dpg.add_text(
+                        "Run Summary:",
+                        color=self.colors["accent"],
+                    )
+                    dpg.add_input_text(
+                        default_value=summary_json,
+                        multiline=True,
+                        readonly=True,
+                        width=-1,
+                        height=150,
+                    )
+                    dpg.add_button(
+                        label="Copy Run Summary",
+                        callback=self._copy_text_to_clipboard,
+                        user_data=summary_json,
                     )
 
                 if resolved_training is not None:
