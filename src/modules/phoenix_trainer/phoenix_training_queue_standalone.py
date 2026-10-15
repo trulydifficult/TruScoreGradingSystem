@@ -178,11 +178,11 @@ class PhoenixTrainingQueueApp:
         # Setup viewport
         dpg.create_viewport(
             title="TruScore Phoenix Training Queue",
-            width=1200,
-            height=800,
+            width=1450,
+            height=900,
             resizable=True,
-            min_width=1000,  # Ensure both panels visible
-            min_height=600
+            min_width=1200,
+            min_height=700
         )
         
         # Apply theme
@@ -196,19 +196,28 @@ class PhoenixTrainingQueueApp:
             
             dpg.add_separator()
             
-            # Main layout - 2 panels
+            # Main layout: queue list + persistent operations console.
             with dpg.group(horizontal=True):
-                
-                # LEFT PANEL: Dataset Queue List (60% width)
-                with dpg.child_window(width=550, height=-1, tag="queue_panel"):
+                with dpg.child_window(width=500, height=-1, tag="queue_panel"):
                     self.create_queue_panel()
-                
-                # RIGHT PANEL: Dataset Details & Actions (minimum 400px for readability)
-                with dpg.child_window(width=-1, height=-1, tag="details_panel"):
-                    self.create_details_panel()
+
+                with dpg.child_window(width=-1, height=-1, tag="right_panel"):
+                    with dpg.child_window(height=395, tag="details_panel"):
+                        self.create_details_panel()
+
+                    dpg.add_separator()
+
+                    with dpg.child_window(height=-1, tag="monitor_panel"):
+                        self.create_monitor_panel()
         
         # Load saved queue state
         self.load_queue_state()
+        self._record_monitor_event(
+            "queue_opened",
+            f"Queue monitor session started: {self.monitor_session_id}",
+            status="ready",
+        )
+        self._refresh_monitor_view()
         
         # Start file watcher
         self.start_file_watcher()
