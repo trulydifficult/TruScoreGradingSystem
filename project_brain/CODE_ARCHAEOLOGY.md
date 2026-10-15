@@ -168,3 +168,33 @@ The older photometric material remains valuable, but it is not directly
 restorable as a working trainer. The dataset metadata contract, model input shape,
 and trainer/model interfaces conflict. Its multi-light design and photometric
 losses should be recovered deliberately after the shared Phoenix engine is stable.
+
+
+## Phoenix Queue / Training Monitor Recovery — 2026-10-15
+
+Historical sources inspected specifically for unattended training observability:
+
+- `Checkplz/phoenix_tensorzero_training/training/phoenix_training_queue.py`
+- `Checkplz/phoenix_tensorzero_training/phoenix_training_queue.py`
+- `Checkplz/phoenix_tensorzero_training/training/components/training_panel.py`
+- `Checkplz/phoenix_tensorzero_training/training/components/metrics_panel.py`
+- `Checkplz/phoenix_tensorzero_training/training/phoenix_training_studio.py`
+
+Classification remains DUPLICATE/BROKEN or BROKEN/REFERENCE for the historical
+executables because their training paths include simulations and duplicate
+ownership.
+
+Salvaged concepts:
+- persistent current-job panel
+- epoch/overall progress
+- live loss/LR/best-metric presentation
+- queue-level lifecycle visibility
+- multi-job operator continuity
+
+These concepts were reimplemented against the current real process-isolated
+architecture. They were not copied together with simulated training.
+
+Current owner:
+- `src/modules/phoenix_trainer/queue_monitor.py` — durable operational event history
+- `src/modules/phoenix_trainer/phoenix_training_queue_standalone.py` — Queue monitor UI/control plane
+- immutable model/run provenance remains owned by `run_artifacts.py`
