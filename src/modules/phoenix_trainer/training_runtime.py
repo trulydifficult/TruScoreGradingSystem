@@ -134,6 +134,27 @@ def metric_improved(
     raise ValueError("mode must be 'min' or 'max'")
 
 
+def _configure_deterministic_attention(torch_module: Any) -> None:
+    """Force deterministic SDPA backends for strict reproducible GPU runs."""
+    if not torch_module.cuda.is_available():
+        return
+
+    cuda_backends = getattr(torch_module.backends, "cuda", None)
+    if cuda_backends is None:
+        return
+
+    controls = (
+        ("enable_flash_sdp", False),
+        ("enable_mem_efficient_sdp", False),
+        ("enable_cudnn_sdp", False),
+        ("enable_math_sdp", True),
+    )
+    for name, enabled in controls:
+        setter = getattr(cuda_backends, name, None)
+        if callable(setter):
+            setter(enabled)
+
+
 def seed_everything(seed: int, deterministic: bool = True) -> None:
     """Seed Python, NumPy, and PyTorch for reproducible Phoenix runs."""
     os.environ["PYTHONHASHSEED"] = str(seed)
@@ -152,6 +173,12 @@ def seed_everything(seed: int, deterministic: bool = True) -> None:
         if hasattr(torch.backends, "cudnn"):
             torch.backends.cudnn.benchmark = False
             torch.backends.cudnn.deterministic = True
+
+        # Flash/memory-efficient SDPA may use nondeterministic backward kernels
+        # on ROCm. Deterministic Phoenix runs force the math fallback rather
+        # than silently accepting nondeterministic gradients.
+        _configure_deterministic_attention(torch)
+
         try:
             torch.use_deterministic_algorithms(True, warn_only=False)
         except TypeError:
