@@ -14,6 +14,7 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Any
 import json
+import random
 import cv2
 
 from .base_trainer import BaseTrainer
@@ -86,48 +87,75 @@ class Detectron2Trainer(BaseTrainer):
         
         self.log(f"Found {num_images} images with {num_annotations} annotations", "INFO")
         
-        # Register dataset
-        dataset_name = f"border_detection_{self.dataset_path.name}"
-        
-        # Remove if already registered
-        if dataset_name in DatasetCatalog:
-            DatasetCatalog.remove(dataset_name)
-            MetadataCatalog.remove(dataset_name)
-        
-        register_coco_instances(
-            dataset_name,
-            {},
-            str(annotations_file),
-            str(images_dir)
-        )
-        
-        # Derive class names from the COCO contract when available. This keeps
-        # Detectron2's head count aligned with the dataset instead of hard-coding
-        # a two-class border problem.
-        categories = sorted(coco_data.get("categories", []), key=lambda item: item.get("id", 0))
-        if categories:
-            class_names = [
-                category.get("name", f"class_{category.get('id', index)}")
-                for index, category in enumerate(categories)
-            ]
-            self.num_classes = len(class_names)
-        else:
-            class_names = [f"class_{index}" for index in range(self.num_classes)]
+        # Validate and split COCO image IDs, not only Python dataset dictionaries.
+        # Detectron2 and COCOEvaluator must consume the same disjoint partitions.
+        images = coco_data.get("images", [])
+        annotations = coco_data.get("annotations", [])
+        categories = coco_data.get("categories", [])
+        if len(images) < 2 or not categories:
+            raise ValueError(
+                "Detectron2 requires at least two COCO images and a non-empty categories list"
+            )
+        ids = [image["id"] for image in images]
+        if len(ids) != len(set(ids)):
+            raise ValueError("COCO images contain duplicate IDs")
+        unknown_ids = {annotation["image_id"] for annotation in annotations} - set(ids)
+        if unknown_ids:
+            raise ValueError(f"COCO annotations reference unknown image IDs: {sorted(unknown_ids)}")
 
-        MetadataCatalog.get(dataset_name).thing_classes = class_names
-        
-        self.dataset_name = dataset_name
-        self.log(f"Dataset registered: {dataset_name}", "SUCCESS")
-        
-        # Create train/val split (80/20)
-        dataset_dicts = DatasetCatalog.get(dataset_name)
-        num_train = int(len(dataset_dicts) * 0.8)
-        
-        self.train_dataset = dataset_dicts[:num_train]
-        self.val_dataset = dataset_dicts[num_train:]
-        
-        self.log(f"Split: {len(self.train_dataset)} train, {len(self.val_dataset)} val", "INFO")
-    
+        seed = int(self.config.get("seed", 42))
+        shuffled_ids = list(ids)
+        random.Random(seed).shuffle(shuffled_ids)
+        split_index = max(1, min(len(ids) - 1, int(len(ids) * 0.8)))
+        train_ids = set(shuffled_ids[:split_index])
+        val_ids = set(shuffled_ids[split_index:])
+        if train_ids & val_ids:
+            raise AssertionError("COCO train and validation partitions overlap")
+
+        split_root = self.output_dir / "coco_splits"
+        split_root.mkdir(parents=True, exist_ok=True)
+        self.train_dataset_name = f"border_train_{self.dataset_path.name}"
+        self.val_dataset_name = f"border_val_{self.dataset_path.name}"
+
+        category_names = [
+            category.get("name", f"class_{category.get('id', index)}")
+            for index, category in enumerate(
+                sorted(categories, key=lambda item: item["id"])
+            )
+        ]
+        self.num_classes = len(category_names)
+
+        for name, selected_ids, filename in (
+            (self.train_dataset_name, train_ids, "train.json"),
+            (self.val_dataset_name, val_ids, "val.json"),
+        ):
+            subset = dict(coco_data)
+            subset["images"] = [image for image in images if image["id"] in selected_ids]
+            subset["annotations"] = [
+                annotation for annotation in annotations
+                if annotation["image_id"] in selected_ids
+            ]
+            annotation_path = split_root / filename
+            annotation_path.write_text(
+                json.dumps(subset, indent=2), encoding="utf-8"
+            )
+            if name in DatasetCatalog:
+                DatasetCatalog.remove(name)
+                MetadataCatalog.remove(name)
+            register_coco_instances(
+                name, {}, str(annotation_path), str(images_dir)
+            )
+            MetadataCatalog.get(name).thing_classes = category_names
+
+        self.dataset_name = self.train_dataset_name
+        self.train_dataset = DatasetCatalog.get(self.train_dataset_name)
+        self.val_dataset = DatasetCatalog.get(self.val_dataset_name)
+        self.log(
+            f"COCO split (seed={seed}): "
+            f"{len(self.train_dataset)} train, {len(self.val_dataset)} validation",
+            "INFO",
+        )
+
     def build_model(self):
         """
         Build Mask R-CNN model with Detectron2
@@ -150,8 +178,8 @@ class Detectron2Trainer(BaseTrainer):
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = self.num_classes
         
         # Training config
-        cfg.DATASETS.TRAIN = (self.dataset_name,)
-        cfg.DATASETS.TEST = ()
+        cfg.DATASETS.TRAIN = (self.train_dataset_name,)
+        cfg.DATASETS.TEST = (self.val_dataset_name,)
         cfg.DATALOADER.NUM_WORKERS = self.config.get('num_workers', 2)
         
         # Solver (optimizer) config
@@ -240,13 +268,13 @@ class Detectron2Trainer(BaseTrainer):
         # Build validation data loader
         val_loader = build_detection_test_loader(
             self.cfg,
-            self.dataset_name,
+            self.val_dataset_name,
             mapper=None
         )
         
         # Create evaluator
         evaluator = COCOEvaluator(
-            self.dataset_name,
+            self.val_dataset_name,
             output_dir=str(self.output_dir / "validation")
         )
         
