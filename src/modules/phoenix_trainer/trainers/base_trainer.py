@@ -402,6 +402,7 @@ class BaseTrainer(ABC):
                     self.callbacks['on_epoch_start'](epoch)
                 
                 self.log(f"Epoch {epoch + 1}/{total_epochs}", "INFO")
+                epoch_started_at = time.time()
                 
                 # Train one epoch - REAL TRAINING HAPPENS HERE
                 train_metrics = self.train_epoch()
@@ -411,6 +412,7 @@ class BaseTrainer(ABC):
                 
                 # Combine metrics
                 all_metrics = {**train_metrics, **val_metrics}
+                all_metrics["epoch_time"] = time.time() - epoch_started_at
                 self.update_metrics(all_metrics)
                 
                 # Log to advanced monitoring
