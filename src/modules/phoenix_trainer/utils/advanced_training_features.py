@@ -107,11 +107,24 @@ class EarlyStopping:
             logger.info(f"Best model saved to {self.save_path}")
     
     def restore_best_model(self, model: torch.nn.Module):
-        """Restore best model weights"""
+        """Restore best model weights from memory or the persisted best checkpoint."""
+        device = next(model.parameters()).device
+
         if self.best_model_state:
-            device = next(model.parameters()).device
-            model.load_state_dict({k: v.to(device) for k, v in self.best_model_state.items()})
-            logger.info("Best model weights restored")
+            model.load_state_dict(
+                {k: v.to(device) for k, v in self.best_model_state.items()}
+            )
+            logger.info("Best model weights restored from memory")
+            return
+
+        if self.save_path and Path(self.save_path).exists():
+            state = torch.load(
+                self.save_path,
+                map_location=device,
+                weights_only=True,
+            )
+            model.load_state_dict(state)
+            logger.info("Best model weights restored from persisted early-stop checkpoint")
 
 
 class HyperparameterOptimizer:
