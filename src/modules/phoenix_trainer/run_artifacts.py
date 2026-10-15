@@ -148,6 +148,8 @@ class RunRecorder:
 
         self.resolved_config = _json_safe(dict(resolved_config))
         self.resolved_config["output_dir"] = str(self.run_dir)
+        self.resolved_config["run_id"] = self.run_id
+        self.resolved_config["run_dir"] = str(self.run_dir)
         self.dataset_config = _json_safe(dict(dataset_config))
         self.dataset_path = Path(dataset_path).resolve()
         self.dataset_fingerprint = dataset_structure_fingerprint(self.dataset_path)
