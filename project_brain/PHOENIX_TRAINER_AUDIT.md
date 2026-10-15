@@ -540,3 +540,28 @@ That behavior was rejected as too weak for a run advertised as deterministic.
 Phoenix now forces the math SDPA backend for deterministic runs and enables strict
 deterministic-algorithm enforcement. Performance-oriented nondeterministic/fused
 attention remains available when deterministic mode is disabled.
+
+
+## Training Observability / Provenance Finding — 2026-10-15
+
+A successful common-runtime smoke run exposed a major professional-operability gap:
+the trainer could finish in roughly one second while the CLI displayed almost no
+training detail, and Queue training config text could not be copied.
+
+Root causes:
+- BaseTrainer/ViT/U-Net used module loggers whose INFO messages were not routed
+  through the Phoenix console/UI logger.
+- `_train_job()` registered metrics/progress callbacks but omitted the existing
+  `on_log_message` callback contract.
+- repeated jobs could target a shared output directory, weakening provenance.
+- there was no mandatory self-contained local run record.
+- Queue rendered config as static text.
+
+The repair adds `run_artifacts.py`, unique run directories, resolved config,
+environment/source revision, dataset metadata fingerprint, model config,
+metrics.jsonl, run.log, terminal run manifest, dataset run reference, live log
+routing, and copyable requested/resolved config UI.
+
+The dataset fingerprint is explicitly structure/size/mtime-based, not a full
+content hash. A content-addressed dataset manifest belongs in the future versioned
+Dataset Studio/Phoenix contract and is not claimed as implemented here.
