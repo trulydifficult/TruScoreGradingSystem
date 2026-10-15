@@ -19,6 +19,7 @@ import time
 import threading
 import queue as thread_queue
 import subprocess
+import logging
 from typing import Dict, List, Optional
 from datetime import datetime
 
@@ -42,7 +43,10 @@ try:
     from . import phoenix_logger as logger
 except ImportError:  # Fallback for direct execution
     from shared.essentials.truscore_logging import setup_truscore_logging
-    logger = setup_truscore_logging("PhoenixTrainer", "phoenix_trainer.log")
+    logger = setup_truscore_logging(
+        "PhoenixTrainingQueue",
+        "phoenix_training_queue.log",
+    )
 
 # System tray support
 try:
@@ -63,11 +67,20 @@ except Exception as e:
 
 try:
     from .hardware_backend import build_torch_runtime_environment
+    from .queue_monitor import QueueMonitorStore, RunLogTailer
 except ImportError:
     from modules.phoenix_trainer.hardware_backend import build_torch_runtime_environment
+    from modules.phoenix_trainer.queue_monitor import QueueMonitorStore, RunLogTailer
 
-# Setup professional logging - suppress console output
-import logging
+# Phoenix is an operator-facing subsystem. Keep global TruScore filtering intact,
+# but allow INFO messages from this queue process to reach its own console.
+for handler in logger.handlers:
+    if (
+        isinstance(handler, logging.StreamHandler)
+        and not isinstance(handler, logging.FileHandler)
+    ):
+        handler.filters.clear()
+
 logging.getLogger('watchdog').setLevel(logging.WARNING)
 
 
