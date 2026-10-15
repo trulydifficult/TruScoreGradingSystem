@@ -147,6 +147,7 @@ class RunRecorder:
         self.manifest_path = self.run_dir / "run.json"
 
         self.resolved_config = _json_safe(dict(resolved_config))
+        self.resolved_config["output_dir"] = str(self.run_dir)
         self.dataset_config = _json_safe(dict(dataset_config))
         self.dataset_path = Path(dataset_path).resolve()
         self.dataset_fingerprint = dataset_structure_fingerprint(self.dataset_path)
@@ -215,6 +216,17 @@ class RunRecorder:
             ),
         }
         self._write_json("model_config.json", payload)
+
+    def artifact_inventory(self) -> Dict[str, Any]:
+        """Return a compact inventory of files produced in this run directory."""
+        files = []
+        for path in sorted(p for p in self.run_dir.rglob("*") if p.is_file()):
+            rel = path.relative_to(self.run_dir).as_posix()
+            files.append({
+                "path": rel,
+                "bytes": path.stat().st_size,
+            })
+        return {"files": files}
 
     def _write_manifest(
         self,
