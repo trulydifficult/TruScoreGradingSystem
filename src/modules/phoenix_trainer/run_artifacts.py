@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import platform
 import re
+import subprocess
 import sys
 from typing import Any, Dict, Mapping, Optional
 
@@ -67,6 +68,35 @@ def dataset_structure_fingerprint(dataset_path: Path) -> Dict[str, Any]:
     }
 
 
+def collect_source_revision() -> Dict[str, Any]:
+    """Capture the exact Git revision used for the training process."""
+    root = Path(__file__).resolve().parents[3]
+
+    def _git(*args: str) -> Optional[str]:
+        try:
+            result = subprocess.run(
+                ["git", *args],
+                cwd=root,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            return result.stdout.strip()
+        except Exception:
+            return None
+
+    commit = _git("rev-parse", "HEAD")
+    branch = _git("rev-parse", "--abbrev-ref", "HEAD")
+    status = _git("status", "--porcelain")
+
+    return {
+        "repository_root": str(root),
+        "commit": commit,
+        "branch": branch,
+        "dirty": bool(status) if status is not None else None,
+    }
+
+
 def collect_environment() -> Dict[str, Any]:
     """Capture the local runtime that materially affects a Phoenix run."""
     environment: Dict[str, Any] = {
@@ -84,6 +114,7 @@ def collect_environment() -> Dict[str, Any]:
         "process": {
             "pid": os.getpid(),
         },
+        "source_revision": collect_source_revision(),
     }
 
     try:
