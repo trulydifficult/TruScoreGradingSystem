@@ -131,3 +131,22 @@ def test_queue_refreshes_selected_details_after_status_changes():
 
     assert "Keep the selected dataset details synchronized" in source
     assert "self.select_dataset(self.selected_dataset_id)" in source
+
+
+
+def test_training_status_uses_atomic_json_publication():
+    source = TRAINER.read_text(encoding="utf-8")
+
+    assert "atomic_write_json(status_file, status_data" in source
+    assert "with open(status_file, 'w')" not in source
+    assert 'with open(status_file, "w")' not in source
+
+
+def test_phoenix_console_uses_sparse_operator_filter():
+    trainer_source = TRAINER.read_text(encoding="utf-8")
+    queue_source = QUEUE.read_text(encoding="utf-8")
+
+    assert "configure_operator_console(logger)" in trainer_source
+    assert "configure_operator_console(logger)" in queue_source
+    assert "handler.filters.clear()" not in trainer_source
+    assert "handler.filters.clear()" not in queue_source
