@@ -48,8 +48,17 @@ def dataset_structure_fingerprint(dataset_path: Path) -> Dict[str, Any]:
     file_count = 0
     total_bytes = 0
 
+    runtime_metadata = {
+        "training_status.json",
+        "training_run.json",
+        "training_error.txt",
+        "blockchain_export.json",
+    }
+
     for path in sorted(p for p in dataset_path.rglob("*") if p.is_file()):
         rel = path.relative_to(dataset_path).as_posix()
+        if path.name in runtime_metadata:
+            continue
         stat = path.stat()
         file_count += 1
         total_bytes += stat.st_size
