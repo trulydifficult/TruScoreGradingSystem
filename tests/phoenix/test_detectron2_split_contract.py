@@ -14,8 +14,8 @@ def test_detectron2_split_registration_and_consumers():
     source = ast.unparse(trainer)
     assert "random.Random(seed).shuffle(shuffled_ids)" in source
     assert "train_ids & val_ids" in source
-    assert '"train.json"' in source
-    assert '"val.json"' in source
+    assert "'train.json'" in source
+    assert "'val.json'" in source
     assert "register_coco_instances" in source
     assert "cfg.DATASETS.TRAIN = (self.train_dataset_name,)" in source
     assert "cfg.DATASETS.TEST = (self.val_dataset_name,)" in source
