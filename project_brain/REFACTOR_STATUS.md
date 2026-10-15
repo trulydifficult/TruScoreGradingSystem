@@ -173,5 +173,4 @@ Latest production smoke run verified BF16 + accumulation + clipping training and
 useful run/provenance UI. It exposed the pre-atomic monitor read race while model
 training itself completed successfully.
 
-Automated verification for the corrected sparse-CLI/atomic-IPC slice is running.
-Production verification of the correction remains PENDING.
+Automated verification for the corrected sparse-CLI/atomic-IPC slice is VERIFIED: GitHub Actions run `38800987215` passed 43 tests plus Trainer/Queue GUI smoke launches. Production workstation verification of the correction remains PENDING.
