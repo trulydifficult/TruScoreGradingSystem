@@ -96,3 +96,36 @@ contains at least one image whose true dimensions differ from the recorded
 production dataset acceptance gate. Original YOLO box visual correctness,
 per-image annotation provenance and rotated quadrilateral geometry remain
 unverified.
+
+## Current active Annotation Studio ownership (source verified)
+
+The current application is `src/modules/annotation_studio/modular_annotation_studio.py`
+(`ModularAnnotationStudio`) plus the active
+`src/modules/annotation_studio/plugins/border_detection_plugin.py`.
+These must be the primary implementation for repairs; the legacy
+`src/revolutionary_border_calibration.py` is archaeology, not the active UI.
+
+Actual path for border annotation saving:
+`ModularAnnotationStudio.save_and_next_image()` →
+`auto_save_current_annotations()` →
+`BorderDetectionPlugin.auto_create_training_labels()` →
+`BorderDetectionSettingsWidget.auto_create_training_labels()`.
+The plugin method delegates to its settings widget, which is the real owner
+of the triple YOLO export. It uses `ann.to_yolo_format(w,h)` to serialize
+five-field axis-aligned boxes, losing independent rotated corners. The
+`BorderAnnotation` dataclass represents x1,y1,x2,y2, not a polygon.
+
+The studio rotation slider redraws a transformed pixel image; its
+`save_rotated_image()` calls `cv2.imwrite` on the original path and explicitly
+OVERWRITES the image. The plugin `on_image_rotated()` is a no-op. It is not
+proven that annotations maintain the same coordinate frame as the overwritten
+rotated pixels; that is a high-priority integrity risk. Do not replace this
+workflow casually: isolate and test transforms and the current Space-bar save
+semantics before any change. The settings widget's actual triple export hardcodes
+`/home/dewster/Projects/Vanguard/src/shared/annotations`, which may differ
+from the user's current checkout at `/home/dewster/Vanguard`.
+
+Additional concern: `ModularAnnotationStudio.canvas_to_image_coords()`
+converts canvas scaling/translation but does not reverse the displayed
+rotation. Check with synthetic rotated coordinates and widget tests before
+making claims of precise border placement.
