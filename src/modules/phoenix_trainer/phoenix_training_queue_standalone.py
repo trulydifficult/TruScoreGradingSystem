@@ -127,9 +127,28 @@ class PhoenixTrainingQueueApp:
         self.completed_dir = self.queue_dir / "completed"
         self.failed_dir = self.queue_dir / "failed"
         self.state_file = self.queue_dir / "queue_state.json"
+        self.monitor_dir = self.queue_dir / "monitor"
+        self.monitor_event_file = self.monitor_dir / "queue_events.jsonl"
+        self.monitor_session_id = (
+            f"queue_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
+        )
+        self.monitor_store = QueueMonitorStore(
+            self.monitor_event_file,
+            self.monitor_session_id,
+            memory_limit=1000,
+        )
+        self.run_log_tailer = RunLogTailer()
+        self._last_status_signature = None
+        self._monitor_text_cache = ""
         
         # Ensure directories exist
-        for dir_path in [self.pending_dir, self.active_dir, self.completed_dir, self.failed_dir]:
+        for dir_path in [
+            self.pending_dir,
+            self.active_dir,
+            self.completed_dir,
+            self.failed_dir,
+            self.monitor_dir,
+        ]:
             dir_path.mkdir(parents=True, exist_ok=True)
         
         # File watcher
