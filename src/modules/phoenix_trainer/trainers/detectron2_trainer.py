@@ -199,7 +199,7 @@ class Detectron2Trainer(BaseTrainer):
         cfg.MODEL.DEVICE = 'cuda' if device == 'cuda' and torch.cuda.is_available() else 'cpu'
         
         # Mixed precision
-        if self.config.get('mixed_precision', True) and cfg.MODEL.DEVICE == 'cuda':
+        if str(self.config.get("precision", "fp32")).lower() == "fp16" and cfg.MODEL.DEVICE == 'cuda':
             cfg.SOLVER.AMP.ENABLED = True
         
         self.cfg = cfg
@@ -224,6 +224,11 @@ class Detectron2Trainer(BaseTrainer):
             raise NotImplementedError(
                 "Detectron2 checkpoint resume is not yet supported by Phoenix; "
                 "do not use the conventional PyTorch resume format."
+            )
+        precision = str(self.config.get("precision", "fp32")).lower()
+        if precision not in {"fp32", "fp16"}:
+            raise NotImplementedError(
+                f"Detectron2 native trainer does not support precision={precision!r}"
             )
         if self.config.get("early_stopping"):
             raise NotImplementedError(
@@ -250,13 +255,15 @@ class Detectron2Trainer(BaseTrainer):
                 "INFO",
             )
             self.trainer.train()
+            if self.trainer.iter < self.cfg.SOLVER.MAX_ITER - 1:
+                raise RuntimeError(
+                    f"Detectron2 stopped at iteration {self.trainer.iter} "
+                    f"before target {self.cfg.SOLVER.MAX_ITER}"
+                )
             # Never invent metrics when Detectron2 did not report them.
             metrics = self.validate()
             metrics["training_seconds"] = time.monotonic() - started
             self.update_metrics(metrics)
-            if self.callbacks.get("on_metrics_update"):
-                # update_metrics() owns metric notifications.
-                pass
             total_epochs = int(self.config["epochs"])
             self.current_epoch = total_epochs - 1
             self.update_progress(total_epochs, total_epochs, 1.0)
