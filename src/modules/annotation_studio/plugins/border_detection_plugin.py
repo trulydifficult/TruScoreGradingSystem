@@ -2516,9 +2516,12 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             # Connect settings changes
             self.settings_widget.settings_changed.connect(self.on_settings_changed)
 
-            # Apply current settings
+            # The widget already owns its settings dictionary. The previous
+            # call to apply_settings() referenced a method that does not exist
+            # and caused the panel to be silently replaced with an empty QWidget
+            # as soon as a real detector populated the plugin settings.
             if self.settings:
-                self.settings_widget.apply_settings(self.settings)
+                self.settings_widget.settings.update(self.settings)
 
             # Update UI to show main plugin's model status with filename
             if hasattr(self, 'model_loaded') and self.model_loaded:
@@ -2538,8 +2541,10 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             return self.settings_widget
 
         except Exception as e:
-            self.logger.error(f"Failed to create settings panel: {e}")
-            return QWidget(parent)  # Return empty widget as fallback
+            self.logger.exception("Failed to create Border Detection settings panel")
+            # A blank widget is NOT a working plugin. The Studio must report
+            # activation failure instead of announcing successful loading.
+            raise
 
     def process_image(self, image_array, settings: Dict[str, Any]) -> AnnotationResult:
         """Process an image and return border annotations"""
