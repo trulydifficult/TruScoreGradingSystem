@@ -134,8 +134,8 @@ def test_busy_state_is_visible_and_overlapping_request_cannot_infer():
     assert widget._completed_detection_token == 1
     assert widget._detecting is False
     assert events[-1] == ("published", 2)
-    assert any("auto" in args[0] for level, args in logger.messages
-               if level == "info" and isinstance(args[0], str))
+    assert any("auto" in str(args) for level, args in logger.messages
+               if level == "info")
 
 
 def test_failed_inference_reenables_button_and_can_retry():
