@@ -34,6 +34,12 @@ import logging
 import time
 import pickle
 from pathlib import Path
+
+def _default_border_model_path() -> Path:
+    """Bundled two-class YOLO model, independent of installation path or CWD."""
+    return Path(__file__).resolve().parents[3] / "models" / "revolutionary_border_detector.pt"
+
+
 from typing import Optional, List, Dict, Any, Tuple, Union
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
@@ -479,7 +485,7 @@ class BorderDetectionSettingsWidget(QWidget):
 
         # Enterprise settings with defaults from border_calibration.py
         self.settings = {
-            'model_path': '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt',
+            'model_path': str(_default_border_model_path()),
             'confidence_threshold': 0.25,
             'detection_mode': 'dual_class',  # dual_class, outside_only, graphic_only
             'export_format': 'yolo',
@@ -1331,7 +1337,7 @@ class BorderDetectionSettingsWidget(QWidget):
     def load_model(self):
         """Load AI model for detection"""
         try:
-            model_path = self.settings.get('model_path', '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt')
+            model_path = self.settings.get('model_path', str(_default_border_model_path()))
             self.logger.info(f"Attempting to load model from: {model_path}")
 
             if not model_path:
@@ -1393,7 +1399,7 @@ class BorderDetectionSettingsWidget(QWidget):
             browser = ModernFileBrowser(
                 parent=self,
                 title="Select Border Detection Model",
-                initial_dir="/home/dewster/Projects/Vanguard/src/models",
+                initial_dir=str(_default_border_model_path().parent),
                 file_type="models"  # Custom type for model files
             )
 
@@ -1423,7 +1429,7 @@ class BorderDetectionSettingsWidget(QWidget):
                 file_path, _ = QFileDialog.getOpenFileName(
                     self,
                     "Select Border Detection Model",
-                    "/home/dewster/Projects/Vanguard/src/models",
+                    str(_default_border_model_path().parent),
                     "Model Files (*.pt *.pth *.onnx);;All Files (*.*)"
                 )
 
@@ -2429,7 +2435,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             author="TruScore Technologies",
             category="border",
             requires_model=True,
-            default_model_path="models/border_detection.pt",
+            default_model_path=str(_default_border_model_path()),
             supported_formats=["jpg", "jpeg", "png", "bmp", "tiff"],
             export_types=["yolo", "coco", "pascal_voc", "truscore"],
             keyboard_shortcuts={
@@ -2638,7 +2644,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
                 self.logger.debug("Model already loaded, skipping duplicate load")
                 return True
 
-            model_path = '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt'
+            model_path = self.settings.get('model_path') or str(_default_border_model_path())
             model_file = Path(model_path)
 
             if not model_file.exists():
