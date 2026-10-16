@@ -1297,14 +1297,19 @@ class ModularAnnotationStudio(QMainWindow):
             self.logger.error(f"Previous image failed: {e}")
     
     def next_image_placeholder(self):
-        """Navigate to next image - FIXED USING WORKING BORDER_CALIBRATION.PY PATTERNS"""
+        """Normal Next action keeps the existing auto-save-before-navigation behavior."""
+        self._advance_to_next_image(save_current=True)
+
+    def _advance_to_next_image(self, *, save_current: bool):
+        """Advance once; Space already saved its current card before rotation reset."""
         if not self.image_files or self.current_index >= len(self.image_files) - 1:
             self.logger.debug("Reached end of dataset")
             return
 
         try:
             # Auto-save current annotations
-            self.auto_save_current_annotations()
+            if save_current:
+                self.auto_save_current_annotations()
 
             # Move to next image
             self.current_index += 1
@@ -1411,7 +1416,9 @@ class ModularAnnotationStudio(QMainWindow):
             self.reset_rotation()
             
             # 4. Move to next image
-            self.next_image_placeholder()
+            # Do not re-export after reset_rotation(): that would overwrite
+            # the correctly rotated image in all three export folders.
+            self._advance_to_next_image(save_current=False)
             
             self.logger.info("✅ Saved (image + labels), reset rotation, and moved to next")
             
