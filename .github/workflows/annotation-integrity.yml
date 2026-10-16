@@ -1,0 +1,46 @@
+name: Annotation Integrity
+
+on:
+  push:
+    branches:
+      - "refactor/phoenix-foundation"
+    paths:
+      - "src/modules/annotation_studio/**"
+      - "tests/annotation/**"
+      - ".github/workflows/annotation-integrity.yml"
+  pull_request:
+    paths:
+      - "src/modules/annotation_studio/**"
+      - "tests/annotation/**"
+      - ".github/workflows/annotation-integrity.yml"
+
+jobs:
+  annotation-contract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out current Annotation Studio and contract tests
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            src/modules/annotation_studio/modular_annotation_studio.py
+            src/modules/annotation_studio/plugins/border_detection_plugin.py
+            tests/annotation
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: python -m pip install pytest
+
+      - name: Compile active Annotation Studio
+        run: |
+          python -m py_compile \
+            src/modules/annotation_studio/modular_annotation_studio.py \
+            src/modules/annotation_studio/plugins/border_detection_plugin.py
+
+      - name: Test actual Space and triple-export method bodies
+        run: pytest -q tests/annotation/test_spacebar_export_contract.py
