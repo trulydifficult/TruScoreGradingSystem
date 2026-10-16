@@ -803,3 +803,35 @@ Inspected both Dataset Studio export implementations, the common YOLO-to-MaskRCN
 The ZIP's COCO file_name values omit images/ because Detectron2 uses the images/ image root; the first fixture regression test incorrectly asserted against ZIP root. Corrected this. CI now tests original YOLO→COCO per-image class/box correspondence, real image dimensions, and known negative fixture semantics (missing 40/40 segmentation records and at least one metadata dimension mismatch). The 20-image fixture is explicitly NOT approved for precision or Mask R-CNN segmentation training. GitHub Actions runs 38822223789 and 38822219622 PASSED: 51 tests and both GUI smoke launches. Numeric original YOLO association passed, but visual pairing and ground-truth geometry were not established.
 
 Audit recorded in `project_brain/ANNOTATION_INTEGRITY_AUDIT.md`. Next: inspect historical polygon/rotation export implementations and dataset validator contracts, fix source annotation format to preserve rotated quadrilaterals, then correct Dataset Studio image dimensions, category mapping, and validation. Re-export a new positive fixture and overlay-check all 20 images before resuming Phoenix Detectron2 training.
+
+
+## Annotation Studio Space-bar / Triple Export — 2026-10-16
+
+User confirmed `src/modules/annotation_studio/modular_annotation_studio.py`
+and `plugins/border_detection_plugin.py` are current working code.
+The single two-class border detector and existing edit/rotation/Space
+workflow must be preserved. Space outputs 3 image+label pairs under
+`src/shared/annotations/`: combined dual class (outer 0, inner 1),
+outer-only single class 0, graphic-only single class 0.
+
+Committed guarded fixes: active plugin's real settings-widget export now
+derives `src/shared/annotations` from the plugin file instead of the
+obsolete absolute path and remaps graphic-only output to class 0. Active
+studio Space save now navigates without a second auto-save after rotation
+reset (ordinary Next still autosaves). See
+`project_brain/ANNOTATION_INTEGRITY_AUDIT.md`.
+
+New `.github/workflows/annotation-integrity.yml` run
+38976427040 PASSED all 4 source-body behavior regression tests and
+py_compile of both active modules. Runtime application acceptance remains
+PENDING. No independent claim that any user's rotation geometry is now
+correct or that two-class inference was executed. Do not train the
+existing 20-image COCO export until its known invalid dimensions,
+semantic names, and absent masks are resolved.
+
+Next: have user pull branch, exercise full GUI launched via
+`run_truscore.py` on a copied test image at nonzero rotation; inspect
+combined/outer/graphic output image pixels and matching class labels,
+then verify single detector prefill on next card. Investigate
+Annotation Studio image/annotation coordinate transforms and export
+failure propagation before broader geometry or dataset refactor.
