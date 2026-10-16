@@ -2069,9 +2069,13 @@ class BorderDetectionSettingsWidget(QWidget):
                     yolo_model = self.main_plugin.model
                     self.logger.debug("Using model from main plugin")
 
-            if not yolo_model:
-                self.logger.warning("No YOLO model loaded for detection")
-                return
+            if not yolo_model or not hasattr(yolo_model, 'predict'):
+                # The user may click Run Detection before the initialization
+                # timer has loaded the real checkpoint. Never use a dummy model.
+                if not self.load_model():
+                    self.logger.error("Cannot detect borders: no real YOLO model loaded")
+                    return False
+                yolo_model = self.model
             
             if self.current_image is None:
                 self.logger.warning("No current image for detection")
@@ -2080,7 +2084,7 @@ class BorderDetectionSettingsWidget(QWidget):
             print("⚡ Running YOLO detection at 640×480 (model's preferred resolution)...")
 
             # Use confidence value or default
-            confidence_value = getattr(self, 'confidence_value', 0.5)
+            confidence_value = self.settings.get('confidence_threshold', 0.25)
 
             # Run YOLO model inference using main plugin's model
             results = yolo_model(self.current_image, conf=confidence_value)
@@ -2132,8 +2136,9 @@ class BorderDetectionSettingsWidget(QWidget):
             self.logger.info(f"YOLO detected {len(self.annotations)} borders")
 
         except Exception as e:
-            self.logger.error(f"YOLO detection failed: {e}")
+            self.logger.error(f"YOLO detection failed: {e}", exc_info=True)
             print(f"❌ Detection failed: {e}")
+            return False
 
     def batch_process_dataset(self):
         """Batch process multiple images"""
