@@ -2074,12 +2074,16 @@ class BorderDetectionSettingsWidget(QWidget):
                 # timer has loaded the real checkpoint. Never use a dummy model.
                 if not self.load_model():
                     self.logger.error("Cannot detect borders: no real YOLO model loaded")
+                    if hasattr(self, 'status_label'):
+                        self.status_label.setText("Detection unavailable: model failed to load")
                     return False
                 yolo_model = self.model
             
             if self.current_image is None:
                 self.logger.warning("No current image for detection")
-                return
+                if hasattr(self, 'status_label'):
+                    self.status_label.setText("Detection unavailable: no card loaded")
+                return False
 
             print("⚡ Running YOLO detection at 640×480 (model's preferred resolution)...")
 
@@ -2089,6 +2093,8 @@ class BorderDetectionSettingsWidget(QWidget):
             # Run YOLO model inference using main plugin's model
             results = yolo_model(self.current_image, conf=confidence_value)
 
+            self.logger.info("YOLO inference returned %d result batches for %s",
+                             len(results), self.current_image_path)
             # Clear previous annotations
             self.annotations = []
             self.selected_annotation = None
@@ -2119,6 +2125,15 @@ class BorderDetectionSettingsWidget(QWidget):
 
                         print(f"Detection: {class_names.get(cls)} at ({x1:.0f},{y1:.0f})-({x2:.0f},{y2:.0f}) conf={conf:.3f}")
 
+            outer_count = sum(ann.class_id == 0 for ann in self.annotations)
+            graphic_count = sum(ann.class_id == 1 for ann in self.annotations)
+            if hasattr(self, 'status_label'):
+                self.status_label.setText(
+                    f"Detection: {outer_count} outer / {graphic_count} graphic"
+                    if self.annotations else "Detection: 0 boxes — check model/confidence"
+                )
+            self.logger.info("Two-class YOLO prediction count: outer=%d, graphic=%d; image=%s",
+                             outer_count, graphic_count, self.current_image_path)
             print(f"✅ Detection found {len(self.annotations)} borders")
 
             # AUTO-SELECT OUTER BORDER (class 0) by default like original
@@ -2132,11 +2147,18 @@ class BorderDetectionSettingsWidget(QWidget):
             # Update display with real YOLO results
             self.update_visualization()
             self.update_statistics()
+            # The editable boxes live in this settings widget. Publish to
+            # the Studio canvas explicitly; do not depend on parent walking
+            # or an opportunistic cached redraw.
+            self.detection_completed.emit(self.annotations)
 
             self.logger.info(f"YOLO detected {len(self.annotations)} borders")
+            return True
 
         except Exception as e:
             self.logger.error(f"YOLO detection failed: {e}", exc_info=True)
+            if hasattr(self, 'status_label'):
+                self.status_label.setText(f"Detection error: {type(e).__name__} (see log)")
             print(f"❌ Detection failed: {e}")
             return False
 
