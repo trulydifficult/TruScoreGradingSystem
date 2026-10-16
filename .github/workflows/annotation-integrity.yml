@@ -43,4 +43,4 @@ jobs:
             src/modules/annotation_studio/plugins/border_detection_plugin.py
 
       - name: Test actual Space and triple-export method bodies
-        run: pytest -q tests/annotation/test_spacebar_export_contract.py
+        run: pytest -q tests/annotation
