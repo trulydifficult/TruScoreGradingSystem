@@ -319,3 +319,47 @@ read live Annotation Studio logs, model load exceptions, true YOLO
 confidence/results and plugin selection messages. Do NOT claim model
 weights or GPU inference are verified until those tests pass. Keep
 Datasets/COCO training gate blocked pending annotation geometry audit.
+
+## Lost plugin controls after model-path fix — 2026-10-16
+
+User observed a real GUI regression: Border Detection Plugin selected and
+reported "Loaded Successfully!", but the left plugin controls region was
+empty (screenshot 2026-10-16_17-56.jpg, card counter 0/0). This was a
+separate problem from missing bounding boxes; there was not yet an image
+loaded in that screenshot.
+
+**Verified active-code cause:**
+`BorderDetectionPlugin.create_settings_panel()` (last of two duplicate
+definitions within that class) conditionally called
+`self.settings_widget.apply_settings(self.settings)` when main-plugin
+settings were populated. The existing `BorderDetectionSettingsWidget`
+has NO `apply_settings` method. After the real model path repair,
+`_load_default_model()` sets `self.settings['model_path']`, turning on
+this otherwise dormant AttributeError. Its catch block returned an EMPTY
+`QWidget(parent)` instead of the original full controls widget; the
+caller considered this success. This explains why fixing checkpoint
+loading exposed a blank settings panel.
+
+**Bounded repair:** The active settings widget already owns a `settings`
+dictionary, so the panel creation merges the main plugin's config into it
+rather than calling the nonexistent method. Panel constructor errors now
+log and re-raise, so the Studio reports failed plugin loading rather than
+claiming success with a blank widget. No rotation, exports, drawing,
+model family, or inference algorithm was changed in this slice.
+
+**Tests:** `tests/annotation/test_border_plugin_panel.py` compiles the
+actual effective (last-definition) `create_settings_panel` method
+against minimal GUI doubles and asserts the real-model-loaded case
+preserves controls, propagates constructor failure, and retains all
+existing UI sections. Annotation Integrity GitHub Actions run
+`38979071929` passed **15 tests**. This is source-level regression
+verification only, not full Qt GUI acceptance.
+
+**NEXT:** Pull latest branch and launch from `run_truscore.py`.
+Select Border Detection Plugin; first confirm visible model controls,
+Run Detection, outer/graphic selection, confidence, export, and status.
+Then load a card and inspect the genuine detection count and rendered boxes.
+If still empty, get the actual log traceback rather than adding another
+unverified fallback. Current Studio contains duplicate method definitions
+in the border plugin; consolidate only after working runtime behavior is
+recorded and verified.
