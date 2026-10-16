@@ -2193,6 +2193,24 @@ class ModularAnnotationStudio(QMainWindow):
                         child.widget().deleteLater()
 
                 self.plugin_settings_layout.addWidget(settings_widget)
+
+                # A card may already be open when the user selects the border
+                # plugin. In that startup order load_current_image() could not
+                # notify the plugin, so forward the existing image exactly once.
+                # Detection remains owned by on_image_changed() and its delayed
+                # real-model inference; do not introduce another detector.
+                if plugin_filename == "border_detection_plugin":
+                    loaded_image = getattr(self, "original_image", None)
+                    loaded_path = getattr(self, "current_image_path", None)
+                    if loaded_image is not None and loaded_path is not None:
+                        if hasattr(settings_widget, "set_current_image"):
+                            settings_widget.set_current_image(loaded_image)
+                        self.logger.info(
+                            "Border plugin activated with existing card: %s; scheduling first detection",
+                            loaded_path,
+                        )
+                        self.current_plugin.on_image_changed(str(loaded_path), loaded_image)
+
                 self.logger.info(f"✅ Plugin {plugin_filename} loaded and settings panel created")
                 self.logger.info(f"✅ current_plugin set to: {self.current_plugin}")
                 self.logger.info(f"✅ current_plugin_widget set to: {self.current_plugin_widget}")
