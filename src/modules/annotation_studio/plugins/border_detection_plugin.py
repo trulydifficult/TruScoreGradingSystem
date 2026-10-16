@@ -2447,26 +2447,10 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         )
 
     def load_model(self, model_path: Optional[str] = None) -> bool:
-        """Load the border detection model"""
-        try:
-            if model_path is None:
-                model_path = self.metadata.default_model_path
-
-            if not model_path or not os.path.exists(model_path):
-                self.logger.warning(f"Model file not found: {model_path}")
-                return False
-
-            # TODO: Implement actual model loading based on file extension
-            # For now, simulate successful loading
-            self.model = {"path": model_path, "loaded": True}
-            self.settings['model_path'] = model_path
-
-            self.logger.info(f"Border detection model loaded: {model_path}")
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Failed to load border detection model: {e}")
-            return False
+        """Load the real two-class YOLO detector; never fabricate loaded state."""
+        if model_path is not None:
+            self.settings['model_path'] = str(model_path)
+        return self._load_default_model()
 
     def create_settings_panel(self, parent: QWidget) -> QWidget:
         """Create the settings panel for the plugin"""
@@ -2637,47 +2621,41 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             self.logger.error(f"Display update after drag failed: {e}")
 
     def _load_default_model(self):
-        """Load the default border detection model for main plugin"""
+        """Load or reuse a genuine Ultralytics two-class detector."""
+        model_file = Path(self.settings.get('model_path') or
+                          _default_border_model_path()).expanduser().resolve()
+        if (self.model_loaded and getattr(self, 'model', None) is not None
+                and getattr(self, '_loaded_model_path', None) == str(model_file)):
+            return True
+        widget = self.settings_widget
+        if (widget is not None and getattr(widget, 'model_loaded', False)
+                and getattr(widget, '_loaded_model_path', None) == str(model_file)):
+            self.model = widget.model
+            self.model_loaded = True
+            self._loaded_model_path = str(model_file)
+            return True
         try:
-            # Prevent duplicate loading
-            if hasattr(self, 'model_loaded') and self.model_loaded:
-                self.logger.debug("Model already loaded, skipping duplicate load")
-                return True
-
-            model_path = self.settings.get('model_path') or str(_default_border_model_path())
-            model_file = Path(model_path)
-
-            if not model_file.exists():
-                self.logger.error(f"Model file not found at: {model_path}")
-                return False
-
-            # Load actual YOLO model
-            try:
-                from ultralytics import YOLO
-                self.model = YOLO(model_path)
-                self.model_loaded = True
-                self.logger.info(f"✅ Main plugin model loaded: {model_path}")
-                
-                # Update settings widget's model status if it exists
-                if hasattr(self, 'settings_widget') and self.settings_widget:
-                    if hasattr(self.settings_widget, 'model_status_label'):
-                        model_name = Path(model_path).name
-                        self.settings_widget.model_status_label.setText(f"Model: {model_name}")
-                        self.settings_widget.model_status_label.setStyleSheet(f"color: {TruScoreTheme.QUANTUM_GREEN};")
-                    self.settings_widget.model_loaded = True
-                    self.settings_widget.model = self.model
-                
-                return True
-            except ImportError:
-                self.logger.error("❌ Ultralytics not available - install with: pip install ultralytics")
-                return False
-            except Exception as e:
-                self.logger.error(f"❌ Model loading failed: {e}")
-                return False
-
-        except Exception as e:
-            self.logger.error(f"❌ _load_default_model failed: {e}")
+            if not model_file.is_file():
+                raise FileNotFoundError(f"Two-class YOLO checkpoint not found: {model_file}")
+            from ultralytics import YOLO
+            model = YOLO(str(model_file))
+        except Exception as exc:
+            self.model = None
+            self.model_loaded = False
+            self._loaded_model_path = None
+            self.logger.error(f"Border detector failed to load: {exc}", exc_info=True)
             return False
+        self.model = model
+        self.model_loaded = True
+        self._loaded_model_path = str(model_file)
+        self.settings['model_path'] = str(model_file)
+        if widget is not None:
+            widget.model = model
+            widget.model_loaded = True
+            widget._loaded_model_path = str(model_file)
+            widget.model_status_label.setText(f"Model: {model_file.name}")
+        self.logger.info(f"Loaded real two-class YOLO checkpoint: {model_file}")
+        return True
 
     def auto_create_training_labels(self):
         """
