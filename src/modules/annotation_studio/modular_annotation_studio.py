@@ -1973,6 +1973,13 @@ class ModularAnnotationStudio(QMainWindow):
                     else:
                         self.logger.warning(f"Settings widget has no set_main_plugin method")
                     
+                    # Give the settings widget an explicit Studio/canvas target.
+                    # A plugin-panel-created widget may not have our canvas in
+                    # its parent chain, so inference can succeed without redraw.
+                    if hasattr(settings_widget, 'set_studio_canvas'):
+                        settings_widget.set_studio_canvas(self.image_label)
+                        settings_widget.studio = self
+
                     # Store both the main plugin AND the settings widget
                     self.current_plugin = plugin
                     self.current_plugin_widget = settings_widget
@@ -2015,6 +2022,10 @@ class ModularAnnotationStudio(QMainWindow):
                     if hasattr(self.current_plugin_widget, 'set_current_image'):
                         self.current_plugin_widget.set_current_image(self.current_image)
                         self.logger.debug(f"Forwarded current image to plugin settings widget: {plugin_name}")
+                    if hasattr(self.current_plugin, 'on_image_changed') and self.current_image_path:
+                        self.current_plugin.on_image_changed(
+                            str(self.current_image_path), self.original_image
+                        )
                 
                 # TODO: Update plugin controls in left panel
                 # TODO: Configure plugin-specific settings
@@ -2138,6 +2149,7 @@ class ModularAnnotationStudio(QMainWindow):
                 # CRITICAL: Set studio canvas reference so plugin can draw annotations
                 if hasattr(settings_widget, 'set_studio_canvas'):
                     settings_widget.set_studio_canvas(self.image_label)
+                    settings_widget.studio = self
                     self.logger.info("✅ Studio canvas reference passed to plugin")
 
                 # Clear existing settings and add new one
