@@ -192,3 +192,24 @@ A fresh end-to-end smoke run confirmed:
 - completed run retains Run ID, direct run-log path, and provenance details
 
 Next runtime gate: sequential unattended processing of multiple queued datasets.
+
+## Annotation Studio guarded inference-lifecycle slice — 2026-10-16
+
+Status: ACTIVE IMPLEMENTATION UPDATED; CI VERIFIED; LIVE GUI RETEST PENDING.
+
+Preserved the working one-model two-class YOLO inference, editor redraw
+behavior, rotated image workflow, and three target export folders.
+Added source-tagged automatic/manual request logging, busy indicator,
+disabled Run Detection while in flight, finally cleanup, per-image-load
+automatic timer tokens (stale callback and post-manual suppression),
+and accurate source image size reporting. Overlay redraw frequency
+unchanged; only its per-frame INFO messages were removed in earlier
+slice. Full rationale in ADR 0006 and
+`project_brain/ANNOTATION_INTEGRITY_AUDIT.md`.
+
+Code-level acceptance: Annotation Integrity workflow 38983844204
+PASS (30 tests), including real exported image/label fixture audits
+and isolated effective source-method tests. Workstation confirmation
+of the newly added in-progress indicator and duplicate-request handling
+remains pending. This does NOT unblock Detectron2/Mask R-CNN
+segmentation-ground-truth requirements.
