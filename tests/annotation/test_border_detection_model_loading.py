@@ -165,7 +165,7 @@ def test_manual_run_loads_real_model_and_draws_two_boxes(monkeypatch, tmp_path):
         model=None, model_loaded=False, main_plugin=plugin,
         settings={"model_path": str(path), "confidence_threshold": 0.25},
         model_status_label=TextLabel(), status_label=TextLabel(),
-        logger=Logger(), current_image=object(),
+        logger=Logger(), current_image=SimpleNamespace(shape=(2284, 1632, 3)),
         current_image_path="Card001.jpg", detection_completed=Signal(),
         annotations=[], selected_annotation=None, changes=0, rendered=0,
     )
@@ -258,7 +258,7 @@ def test_existing_plugin_selection_wires_canvas_and_auto_detects_loaded_image():
     plugin = Plugin()
     instance = SimpleNamespace(
         plugin_manager=SimpleNamespace(loaded_plugins={"Border Detection": plugin}),
-        logger=Logger(), image_label=object(), current_image=object(),
+        logger=Logger(), image_label=object(), current_image=SimpleNamespace(shape=(2284, 1632, 3)),
         original_image=object(), current_image_path=Path("/tmp/card001.jpg"),
         _connect_border_detection_results=lambda widget: events.append("linked"),
     )
@@ -323,7 +323,7 @@ def test_zero_detection_is_reported_not_replaced_with_mock_boxes(monkeypatch, tm
     widget = SimpleNamespace(
         model=EmptyYOLO(str(path)), main_plugin=None,
         settings={"confidence_threshold": 0.25},
-        current_image=object(), current_image_path="Card002.jpg",
+        current_image=SimpleNamespace(shape=(2284, 1632, 3)), current_image_path="Card002.jpg",
         annotations=[], selected_annotation=None, status_label=TextLabel(),
         logger=Logger(), detection_completed=Signal(),
         _bump_annotation_version=lambda: None,
