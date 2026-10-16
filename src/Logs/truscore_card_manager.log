@@ -1,0 +1,703 @@
+2026-01-09 17:35:12,456 | INFO     | card_manager - Attempting to import grading engines
+2026-01-09 17:35:12,456 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-09 17:35:12,456 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-09 17:35:12,456 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-09 17:35:12,456 | INFO     | card_manager - All grading engines imported successfully
+2026-01-09 17:35:12,472 | INFO     | card_manager - Card Manager initialized
+2026-01-09 17:35:12,472 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 11:05:41,504 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 11:05:41,504 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 11:05:41,504 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 11:05:41,504 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 11:05:41,504 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 11:05:41,520 | INFO     | card_manager - Card Manager initialized
+2026-01-12 11:05:41,520 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 11:26:33,965 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 11:26:33,965 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 11:26:33,965 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 11:26:33,965 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 11:26:33,965 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 11:26:33,978 | INFO     | card_manager - Card Manager initialized
+2026-01-12 11:26:33,978 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 11:33:21,848 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 11:33:21,848 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 11:33:21,848 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 11:33:21,848 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 11:33:21,848 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 11:33:21,861 | INFO     | card_manager - Card Manager initialized
+2026-01-12 11:33:21,861 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 11:38:23,978 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 11:38:23,978 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 11:38:23,978 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 11:38:23,978 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 11:38:23,978 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 11:38:23,992 | INFO     | card_manager - Card Manager initialized
+2026-01-12 11:38:23,993 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 11:44:18,344 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 11:44:18,344 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 11:44:18,344 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 11:44:18,344 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 11:44:18,344 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 11:44:18,359 | INFO     | card_manager - Card Manager initialized
+2026-01-12 11:44:18,359 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 12:01:40,996 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 12:01:40,996 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 12:01:40,996 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 12:01:40,996 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 12:01:40,996 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 12:01:41,009 | INFO     | card_manager - Card Manager initialized
+2026-01-12 12:01:41,009 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 12:54:37,344 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 12:54:37,344 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 12:54:37,344 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 12:54:37,344 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 12:54:37,345 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 12:54:37,359 | INFO     | card_manager - Card Manager initialized
+2026-01-12 12:54:37,359 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 15:27:45,937 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 15:27:45,937 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 15:27:45,937 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 15:27:45,937 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 15:27:45,937 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 15:27:45,949 | INFO     | card_manager - Card Manager initialized
+2026-01-12 15:27:45,949 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 15:30:54,847 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 15:30:54,847 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 15:30:54,847 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 15:30:54,847 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 15:30:54,847 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 15:30:54,859 | INFO     | card_manager - Card Manager initialized
+2026-01-12 15:30:54,859 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 15:36:38,134 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 15:36:38,134 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 15:36:38,134 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 15:36:38,134 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 15:36:38,134 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 15:36:38,146 | INFO     | card_manager - Card Manager initialized
+2026-01-12 15:36:38,146 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 15:44:27,233 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 15:44:27,233 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 15:44:27,233 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 15:44:27,233 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 15:44:27,233 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 15:44:27,245 | INFO     | card_manager - Card Manager initialized
+2026-01-12 15:44:27,245 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 15:50:50,255 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 15:50:50,255 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 15:50:50,255 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 15:50:50,255 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 15:50:50,255 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 15:50:50,266 | INFO     | card_manager - Card Manager initialized
+2026-01-12 15:50:50,266 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 15:53:45,455 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 15:53:45,455 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 15:53:45,456 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 15:53:45,456 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 15:53:45,456 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 15:53:45,472 | INFO     | card_manager - Card Manager initialized
+2026-01-12 15:53:45,472 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 15:56:40,672 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 15:56:40,672 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 15:56:40,672 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 15:56:40,672 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 15:56:40,672 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 15:56:40,683 | INFO     | card_manager - Card Manager initialized
+2026-01-12 15:56:40,683 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 16:06:54,028 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 16:06:54,028 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 16:06:54,028 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 16:06:54,028 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 16:06:54,028 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 16:06:54,040 | INFO     | card_manager - Card Manager initialized
+2026-01-12 16:06:54,040 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 16:12:54,175 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 16:12:54,175 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 16:12:54,175 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 16:12:54,175 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 16:12:54,175 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 16:12:54,190 | INFO     | card_manager - Card Manager initialized
+2026-01-12 16:12:54,190 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 16:21:44,837 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 16:21:44,837 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 16:21:44,837 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 16:21:44,837 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 16:21:44,837 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 16:21:44,849 | INFO     | card_manager - Card Manager initialized
+2026-01-12 16:21:44,850 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 16:42:16,787 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 16:42:16,787 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 16:42:16,787 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 16:42:16,787 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 16:42:16,787 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 16:42:16,799 | INFO     | card_manager - Card Manager initialized
+2026-01-12 16:42:16,799 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 16:57:00,029 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 16:57:00,029 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 16:57:00,029 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 16:57:00,029 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 16:57:00,029 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 16:57:00,041 | INFO     | card_manager - Card Manager initialized
+2026-01-12 16:57:00,041 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 16:59:51,097 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 16:59:51,097 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 16:59:51,097 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 16:59:51,097 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 16:59:51,097 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 16:59:51,108 | INFO     | card_manager - Card Manager initialized
+2026-01-12 16:59:51,108 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 17:15:10,703 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 17:15:10,703 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 17:15:10,703 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 17:15:10,703 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 17:15:10,703 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 17:15:10,715 | INFO     | card_manager - Card Manager initialized
+2026-01-12 17:15:10,715 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 17:20:52,716 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 17:20:52,716 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 17:20:52,716 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 17:20:52,716 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 17:20:52,716 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 17:20:52,728 | INFO     | card_manager - Card Manager initialized
+2026-01-12 17:20:52,728 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-12 17:27:10,847 | INFO     | card_manager - Attempting to import grading engines
+2026-01-12 17:27:10,847 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-12 17:27:10,847 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-12 17:27:10,847 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-12 17:27:10,847 | INFO     | card_manager - All grading engines imported successfully
+2026-01-12 17:27:10,858 | INFO     | card_manager - Card Manager initialized
+2026-01-12 17:27:10,858 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 18:44:27,640 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 18:44:27,640 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 18:44:27,640 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-17 18:44:27,640 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-17 18:44:27,640 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 18:44:27,655 | INFO     | card_manager - Card Manager initialized
+2026-01-17 18:44:27,655 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 18:44:38,577 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 18:44:49,644 | INFO     | card_manager - Card loaded: card020F
+2026-01-17 18:44:57,920 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 18:44:58,178 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 18:44:58,178 | INFO     | card_manager - Launching 8-tab master visualization
+2026-01-17 18:44:58,388 | INFO     | card_manager - Visualization data keys: ['success', 'photometric_analysis', 'corner_analysis', 'border_analysis', 'centering_analysis', 'smart_defects', 'insights', 'processing_time', 'image_path', 'timestamp']
+2026-01-17 18:44:58,388 | INFO     | card_manager - Image path: /home/dewster/Pictures/Sports Cards/7-1-25done/Front/card020F.jpg
+2026-01-17 18:45:18,275 | INFO     | card_manager - PhotometricResultsViewer displayed successfully
+2026-01-17 18:45:18,276 | INFO     | card_manager - 8-tab master visualization displayed successfully
+2026-01-17 18:45:18,276 | INFO     | card_manager -  Master Pipeline Complete - Grade: 4.5/10.0
+2026-01-17 19:15:13,326 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 19:15:13,326 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 19:15:13,326 | INFO     | card_manager - TruScorePhotometricStereo import handled by enhanced_revo_card_manager.py
+2026-01-17 19:15:13,326 | INFO     | card_manager - TruScoreGradingEngine import handled by enhanced_revo_card_manager.py
+2026-01-17 19:15:13,326 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 19:15:13,338 | INFO     | card_manager - Card Manager initialized
+2026-01-17 19:15:13,338 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 19:15:18,589 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 19:15:23,873 | INFO     | card_manager - Card loaded: card087F
+2026-01-17 19:15:29,455 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 19:15:29,637 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 19:15:29,638 | INFO     | card_manager - Launching 8-tab master visualization
+2026-01-17 19:15:29,841 | INFO     | card_manager - Visualization data keys: ['success', 'photometric_analysis', 'corner_analysis', 'border_analysis', 'centering_analysis', 'smart_defects', 'insights', 'processing_time', 'image_path', 'timestamp']
+2026-01-17 19:15:29,841 | INFO     | card_manager - Image path: /home/dewster/Pictures/Sports Cards/7-1-25done/Front2/card087F.jpg
+2026-01-17 19:15:39,593 | INFO     | card_manager - PhotometricResultsViewer displayed successfully
+2026-01-17 19:15:39,594 | INFO     | card_manager - 8-tab master visualization displayed successfully
+2026-01-17 19:15:39,594 | INFO     | card_manager -  Master Pipeline Complete - Grade: 4.5/10.0
+2026-01-17 20:36:35,403 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 20:36:35,403 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 20:36:35,403 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 20:36:35,416 | INFO     | card_manager - Card Manager initialized
+2026-01-17 20:36:35,416 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 20:36:43,212 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 20:36:52,375 | INFO     | card_manager - Card loaded: card013F
+2026-01-17 20:36:57,037 | INFO     | card_manager - Photometric Studio started - showcasing the technology
+2026-01-17 20:36:57,451 | INFO     | card_manager - Photometric Studio showcase completed successfully
+2026-01-17 20:41:24,822 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 20:41:24,822 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 20:41:24,822 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 20:41:24,834 | INFO     | card_manager - Card Manager initialized
+2026-01-17 20:41:24,834 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 20:41:28,678 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 20:41:37,715 | INFO     | card_manager - Card loaded: image102F
+2026-01-17 20:41:42,760 | INFO     | card_manager - Photometric Studio started - showcasing the technology
+2026-01-17 20:41:43,089 | INFO     | card_manager - Photometric Studio showcase completed successfully
+2026-01-17 20:45:57,597 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 20:45:57,597 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 20:45:57,597 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 20:45:57,613 | INFO     | card_manager - Card Manager initialized
+2026-01-17 20:45:57,613 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 20:46:00,447 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 20:46:06,201 | INFO     | card_manager - Card loaded: card304F
+2026-01-17 20:46:12,374 | INFO     | card_manager - Photometric Studio started - showcasing the technology
+2026-01-17 20:46:16,397 | INFO     | card_manager - Triggering photometric showcase with allowed_tabs: ['Surface Normals', 'Depth Map', 'Confidence', 'Albedo Map']
+2026-01-17 20:46:24,762 | INFO     | card_manager - Photometric Studio showcase completed successfully
+2026-01-17 20:46:35,776 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 20:46:38,728 | INFO     | card_manager - Master pipeline success: False
+2026-01-17 20:46:38,728 | ERROR    | card_manager - Master pipeline failed
+2026-01-17 20:50:04,410 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 20:50:04,410 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 20:50:04,410 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 20:50:04,422 | INFO     | card_manager - Card Manager initialized
+2026-01-17 20:50:04,422 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 20:50:10,878 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 20:50:18,249 | INFO     | card_manager - Card loaded: card089F
+2026-01-17 20:50:25,899 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 20:50:32,481 | INFO     | card_manager - Master pipeline success: True
+2026-01-17 20:50:32,489 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 20:56:44,333 | INFO     | card_manager -  Master Pipeline Complete - Grade: NEAR MINT-MINT 8
+2026-01-17 20:58:09,411 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 20:58:09,411 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 20:58:09,411 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 20:58:09,423 | INFO     | card_manager - Card Manager initialized
+2026-01-17 20:58:09,423 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 20:58:19,467 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 20:58:25,145 | INFO     | card_manager - Card loaded: card114F
+2026-01-17 20:58:30,785 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 20:58:36,407 | INFO     | card_manager - Master pipeline success: True
+2026-01-17 20:58:36,414 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 20:59:39,835 | INFO     | card_manager -  Master Pipeline Complete - Grade: NEAR MINT 7
+2026-01-17 21:18:12,943 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 21:18:12,943 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 21:18:12,943 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 21:18:12,955 | INFO     | card_manager - Card Manager initialized
+2026-01-17 21:18:12,955 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 21:18:16,872 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 21:18:22,682 | INFO     | card_manager - Card loaded: card089F
+2026-01-17 21:18:25,291 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 21:18:32,412 | INFO     | card_manager - Card loaded: 007_front
+2026-01-17 21:19:20,678 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 21:19:26,316 | INFO     | card_manager - Card loaded: card083F
+2026-01-17 21:20:08,928 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 21:20:08,928 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 21:20:08,928 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 21:20:08,940 | INFO     | card_manager - Card Manager initialized
+2026-01-17 21:20:08,940 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 22:20:57,136 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 22:20:57,136 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 22:20:57,136 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 22:20:57,152 | INFO     | card_manager - Card Manager initialized
+2026-01-17 22:20:57,152 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 22:29:44,137 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 22:29:49,630 | INFO     | card_manager - Card loaded: card139F
+2026-01-17 22:29:55,796 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 22:30:01,305 | INFO     | card_manager - Master pipeline success: True
+2026-01-17 22:30:01,312 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 22:35:03,582 | INFO     | card_manager -  Master Pipeline Complete - Grade: NEAR MINT 7
+2026-01-17 22:39:33,259 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 22:39:33,259 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 22:39:33,259 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 22:39:33,271 | INFO     | card_manager - Card Manager initialized
+2026-01-17 22:39:33,271 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 22:39:39,710 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 22:39:45,495 | INFO     | card_manager - Card loaded: card306F
+2026-01-17 22:39:51,683 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 22:39:57,185 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 22:40:36,643 | INFO     | card_manager -  Master Pipeline Complete - Grade: NEAR MINT 7
+2026-01-17 23:38:45,148 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 23:38:45,148 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 23:38:45,148 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 23:38:45,160 | INFO     | card_manager - Card Manager initialized
+2026-01-17 23:38:45,160 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 23:38:48,194 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 23:38:53,788 | INFO     | card_manager - Card loaded: card307F
+2026-01-17 23:38:56,991 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 23:39:04,158 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 23:39:27,367 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.5
+2026-01-17 23:41:04,588 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 23:41:04,588 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 23:41:04,588 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 23:41:04,601 | INFO     | card_manager - Card Manager initialized
+2026-01-17 23:41:04,601 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 23:41:07,097 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 23:41:12,909 | INFO     | card_manager - Card loaded: card069F
+2026-01-17 23:41:15,527 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 23:41:23,925 | ERROR    | card_manager - Master pipeline failed
+2026-01-17 23:50:10,879 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 23:50:10,879 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 23:50:10,879 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 23:50:10,892 | INFO     | card_manager - Card Manager initialized
+2026-01-17 23:50:10,892 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 23:50:13,544 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 23:50:20,601 | INFO     | card_manager - Card loaded: card153F
+2026-01-17 23:50:23,120 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 23:50:28,697 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 23:51:04,037 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.5
+2026-01-17 23:51:07,507 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 23:51:14,726 | INFO     | card_manager - Card loaded: card030F
+2026-01-17 23:53:15,197 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 23:53:15,197 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 23:53:15,197 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 23:53:15,209 | INFO     | card_manager - Card Manager initialized
+2026-01-17 23:53:15,209 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 23:53:18,580 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-17 23:53:24,306 | INFO     | card_manager - Card loaded: card032F
+2026-01-17 23:53:27,933 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-17 23:53:34,462 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-17 23:53:54,935 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.5
+2026-01-17 23:59:56,431 | INFO     | card_manager - Attempting to import grading engines
+2026-01-17 23:59:56,431 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-17 23:59:56,431 | INFO     | card_manager - All grading engines imported successfully
+2026-01-17 23:59:56,450 | INFO     | card_manager - Card Manager initialized
+2026-01-17 23:59:56,450 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-17 23:59:59,124 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 00:00:05,600 | INFO     | card_manager - Card loaded: card052F
+2026-01-18 00:00:08,151 | INFO     | card_manager - TruScore Photometric Integration system loaded successfully
+2026-01-18 00:00:13,179 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 00:00:13,368 | INFO     | card_manager - ✅ Rotated image by -0.30° for alignment
+2026-01-18 00:00:18,291 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 00:00:18,480 | INFO     | card_manager - ✅ Rotated image by -0.20° for alignment
+2026-01-18 00:11:20,553 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 00:11:20,553 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 00:11:20,553 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 00:11:20,565 | INFO     | card_manager - Card Manager initialized
+2026-01-18 00:11:20,565 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 00:11:31,673 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 00:11:39,962 | INFO     | card_manager - Card loaded: card148F
+2026-01-18 00:11:42,985 | INFO     | card_manager - TruScore Photometric Integration system loaded successfully
+2026-01-18 00:11:48,264 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 00:11:48,474 | INFO     | card_manager - ✅ Rotated image by -44.35° for alignment
+2026-01-18 00:11:49,530 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 00:11:49,734 | INFO     | card_manager - ✅ Rotated image by 40.08° for alignment
+2026-01-18 00:11:50,519 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 00:11:50,707 | INFO     | card_manager - ✅ Rotated image by 4.40° for alignment
+2026-01-18 00:11:51,472 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 00:11:51,668 | INFO     | card_manager - ✅ Rotated image by -27.07° for alignment
+2026-01-18 00:11:53,039 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 00:11:53,236 | INFO     | card_manager - ✅ Rotated image by 27.26° for alignment
+2026-01-18 00:11:53,994 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 00:11:54,216 | INFO     | card_manager - ✅ Rotated image by 44.87° for alignment
+2026-01-18 00:13:13,743 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 00:13:13,743 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 00:13:13,743 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 00:13:13,755 | INFO     | card_manager - Card Manager initialized
+2026-01-18 00:13:13,756 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 00:13:18,483 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 00:13:25,301 | INFO     | card_manager - Card loaded: card046F
+2026-01-18 00:16:35,145 | INFO     | card_manager - Alignment guides enabled
+2026-01-18 00:16:37,361 | INFO     | card_manager - Alignment guides disabled
+2026-01-18 14:09:54,971 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:09:54,971 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:09:54,971 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:09:54,984 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:09:54,984 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:13:14,607 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:13:14,607 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:13:14,607 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:13:14,619 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:13:14,619 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:14:01,637 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:14:01,637 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:14:01,637 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:14:01,654 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:14:01,654 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:14:27,881 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:14:27,881 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:14:27,881 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:14:27,897 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:14:27,897 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:17:50,742 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:17:50,742 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:17:50,742 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:17:50,755 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:17:50,755 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:18:20,773 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:18:20,773 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:18:20,773 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:18:20,786 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:18:20,786 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:19:11,701 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:19:11,701 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:19:11,701 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:19:11,718 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:19:11,718 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:19:30,492 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:19:30,493 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:19:30,493 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:19:30,505 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:19:30,505 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:20:35,933 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 14:20:35,933 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 14:20:35,933 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 14:20:35,946 | INFO     | card_manager - Card Manager initialized
+2026-01-18 14:20:35,946 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 14:20:54,366 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 14:21:00,567 | INFO     | card_manager - Card loaded: card052F
+2026-01-18 14:21:06,456 | INFO     | card_manager - Alignment guides enabled
+2026-01-18 14:21:18,871 | INFO     | card_manager - Alignment guides disabled
+2026-01-18 14:21:19,676 | INFO     | card_manager - Alignment guides enabled
+2026-01-18 14:21:22,103 | INFO     | card_manager - Alignment guides disabled
+2026-01-18 14:21:28,019 | INFO     | card_manager - Fine-tune rotating card 0.001° CCW
+2026-01-18 14:21:29,334 | INFO     | card_manager - Fine-tune rotating card 0.001° CCW
+2026-01-18 14:21:31,105 | INFO     | card_manager - Fine-tune rotating card 0.001° CCW
+2026-01-18 14:21:31,465 | INFO     | card_manager - Fine-tune rotating card 0.001° CCW
+2026-01-18 14:21:31,706 | INFO     | card_manager - Fine-tune rotating card 0.001° CCW
+2026-01-18 14:21:31,949 | INFO     | card_manager - Fine-tune rotating card 0.001° CCW
+2026-01-18 14:22:24,572 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-18 14:22:33,094 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-18 14:23:03,032 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.5
+2026-01-18 14:23:04,895 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 14:23:09,185 | INFO     | card_manager - Card loaded: card002F
+2026-01-18 14:23:23,449 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 14:23:28,891 | INFO     | card_manager - Card loaded: card003F
+2026-01-18 14:23:37,759 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:23:37,792 | INFO     | card_manager - TruScore Photometric Integration system loaded successfully
+2026-01-18 14:23:38,041 | INFO     | card_manager - ✅ Rotated image by 0.23° for alignment
+2026-01-18 14:23:40,426 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:23:40,657 | INFO     | card_manager - ✅ Rotated image by -45.00° for alignment
+2026-01-18 14:23:41,627 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:23:41,833 | INFO     | card_manager - ✅ Rotated image by 34.93° for alignment
+2026-01-18 14:23:42,973 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:23:43,173 | INFO     | card_manager - ✅ Rotated image by -26.57° for alignment
+2026-01-18 14:23:43,965 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:23:44,182 | INFO     | card_manager - ✅ Rotated image by 36.56° for alignment
+2026-01-18 14:23:46,565 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 14:23:51,194 | INFO     | card_manager - Card loaded: card005F
+2026-01-18 14:23:54,067 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:23:54,291 | INFO     | card_manager - ✅ Rotated image by 0.28° for alignment
+2026-01-18 14:23:58,718 | INFO     | card_manager - Alignment guides enabled
+2026-01-18 14:24:00,082 | INFO     | card_manager - Alignment guides disabled
+2026-01-18 14:24:02,412 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:24:02,644 | INFO     | card_manager - ✅ Rotated image by -18.21° for alignment
+2026-01-18 14:24:03,776 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:24:04,041 | INFO     | card_manager - ✅ Rotated image by 18.24° for alignment
+2026-01-18 14:24:05,941 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 14:24:11,835 | INFO     | card_manager - Card loaded: card009F
+2026-01-18 14:24:14,810 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:24:15,049 | INFO     | card_manager - ✅ Rotated image by 27.08° for alignment
+2026-01-18 14:24:16,439 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:24:16,666 | INFO     | card_manager - ✅ Rotated image by 20.02° for alignment
+2026-01-18 14:24:18,014 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 14:24:25,281 | INFO     | card_manager - Card loaded: image101F
+2026-01-18 14:24:31,996 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-18 14:24:32,669 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-18 14:25:05,383 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.5
+2026-01-18 14:25:24,697 | INFO     | card_manager - Opening modern file browser for card selection
+2026-01-18 14:25:29,112 | INFO     | card_manager - Card loaded: card081F
+2026-01-18 14:25:32,514 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-01-18 14:25:32,700 | INFO     | card_manager - ✅ Rotated image by 0.19° for alignment
+2026-01-18 14:25:35,158 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-01-18 14:25:37,975 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-01-18 14:26:00,719 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.5
+2026-01-18 19:06:03,378 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 19:06:03,378 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 19:06:03,378 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 19:06:03,390 | INFO     | card_manager - Card Manager initialized
+2026-01-18 19:06:03,390 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 19:11:13,744 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 19:11:13,744 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 19:11:13,744 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 19:11:13,760 | INFO     | card_manager - Card Manager initialized
+2026-01-18 19:11:13,760 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 19:16:27,511 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 19:16:27,511 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 19:16:27,511 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 19:16:27,523 | INFO     | card_manager - Card Manager initialized
+2026-01-18 19:16:27,523 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 19:21:58,560 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 19:21:58,560 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 19:21:58,560 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 19:21:58,573 | INFO     | card_manager - Card Manager initialized
+2026-01-18 19:21:58,573 | INFO     | card_manager - Ready to be the heart of the system
+2026-01-18 23:01:59,215 | INFO     | card_manager - Attempting to import grading engines
+2026-01-18 23:01:59,215 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-01-18 23:01:59,215 | INFO     | card_manager - All grading engines imported successfully
+2026-01-18 23:01:59,228 | INFO     | card_manager - Card Manager initialized
+2026-01-18 23:01:59,228 | INFO     | card_manager - Ready to be the heart of the system
+2026-02-04 03:24:52,720 | INFO     | card_manager - Attempting to import grading engines
+2026-02-04 03:24:52,721 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-02-04 03:24:52,721 | INFO     | card_manager - All grading engines imported successfully
+2026-02-04 03:24:52,739 | INFO     | card_manager - Card Manager initialized
+2026-02-04 03:24:52,739 | INFO     | card_manager - Ready to be the heart of the system
+2026-02-04 03:27:15,886 | INFO     | card_manager - Opening modern file browser for card selection
+2026-02-04 03:27:21,154 | INFO     | card_manager - Card loaded: card006F
+2026-02-04 03:27:25,723 | INFO     | card_manager - Photometric Studio started - showcasing the technology
+2026-02-04 03:27:29,972 | INFO     | card_manager - Triggering photometric showcase with allowed_tabs: ['Surface Normals', 'Depth Map', 'Confidence', 'Albedo Map']
+2026-02-04 03:27:38,386 | INFO     | card_manager - Photometric Studio showcase completed successfully
+2026-02-04 03:27:39,612 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-02-04 03:27:43,741 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-02-04 03:28:06,745 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.0
+2026-02-07 15:12:34,090 | INFO     | card_manager - Attempting to import grading engines
+2026-02-07 15:12:34,090 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-02-07 15:12:34,090 | INFO     | card_manager - All grading engines imported successfully
+2026-02-07 15:12:34,105 | INFO     | card_manager - Card Manager initialized
+2026-02-07 15:12:34,105 | INFO     | card_manager - Ready to be the heart of the system
+2026-02-16 13:53:04,855 | INFO     | card_manager - Attempting to import grading engines
+2026-02-16 13:53:04,855 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-02-16 13:53:04,855 | INFO     | card_manager - All grading engines imported successfully
+2026-02-16 13:53:04,871 | INFO     | card_manager - Card Manager initialized
+2026-02-16 13:53:04,871 | INFO     | card_manager - Ready to be the heart of the system
+2026-02-16 13:53:38,051 | INFO     | card_manager - Opening modern file browser for card selection
+2026-02-16 13:53:46,586 | INFO     | card_manager - Card loaded: card008F
+2026-02-16 13:53:57,452 | INFO     | card_manager - Photometric Studio started - showcasing the technology
+2026-02-16 13:54:02,498 | INFO     | card_manager - Triggering photometric showcase with allowed_tabs: ['Surface Normals', 'Depth Map', 'Confidence', 'Albedo Map']
+2026-02-16 13:54:18,497 | INFO     | card_manager - Photometric Studio showcase completed successfully
+2026-02-23 18:19:46,682 | INFO     | card_manager - Attempting to import grading engines
+2026-02-23 18:19:46,682 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-02-23 18:19:46,682 | INFO     | card_manager - All grading engines imported successfully
+2026-02-23 18:19:46,697 | INFO     | card_manager - Card Manager initialized
+2026-02-23 18:19:46,698 | INFO     | card_manager - Ready to be the heart of the system
+2026-02-23 18:21:50,675 | INFO     | card_manager - Opening modern file browser for card selection
+2026-02-23 18:21:58,206 | INFO     | card_manager - Card loaded: image328F
+2026-02-23 18:22:01,947 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-02-23 18:22:10,828 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-02-23 18:23:22,385 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 7.5
+2026-04-19 12:13:33,206 | INFO     | card_manager - Attempting to import grading engines
+2026-04-19 12:13:33,206 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-04-19 12:13:33,206 | INFO     | card_manager - All grading engines imported successfully
+2026-04-19 12:13:33,221 | INFO     | card_manager - Card Manager initialized
+2026-04-19 12:13:33,222 | INFO     | card_manager - Ready to be the heart of the system
+2026-04-19 12:14:49,790 | INFO     | card_manager - Opening modern file browser for card selection
+2026-04-19 12:15:06,676 | INFO     | card_manager - Card loaded: image328F
+2026-04-19 12:15:13,411 | INFO     | card_manager - Photometric Studio started - showcasing the technology
+2026-04-19 12:15:19,165 | INFO     | card_manager - Triggering photometric showcase with allowed_tabs: ['Surface Normals', 'Depth Map', 'Confidence', 'Albedo Map']
+2026-04-19 12:15:29,608 | INFO     | card_manager - Photometric Studio showcase completed successfully
+2026-04-19 12:15:31,029 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-04-19 12:15:34,317 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-04-19 12:16:21,802 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 7.5
+2026-04-19 12:16:26,575 | INFO     | card_manager - Opening modern file browser for card selection
+2026-04-19 12:16:31,868 | INFO     | card_manager - Card loaded: card081F
+2026-04-19 12:16:36,229 | INFO     | card_manager - 🚀 Starting high-precision auto-straightening...
+2026-04-19 12:16:36,261 | INFO     | card_manager - TruScore Photometric Integration system loaded successfully
+2026-04-19 12:16:36,564 | INFO     | card_manager - ✅ Rotated image by 0.19° for alignment
+2026-04-19 12:16:40,556 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:16:43,519 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:16:46,612 | INFO     | card_manager - Fine-tune rotating card 0.001° CCW
+2026-04-19 12:16:57,501 | INFO     | card_manager - Fine-tune rotating card 0.001° CCW
+2026-04-19 12:16:58,188 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:16:59,003 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:16:59,335 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:16:59,653 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:17:00,115 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:17:00,436 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:17:00,770 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:17:01,091 | INFO     | card_manager - Fine-tune rotating card 0.001° CW
+2026-04-19 12:17:21,567 | INFO     | card_manager - Alignment guides enabled
+2026-04-19 12:17:31,326 | INFO     | card_manager - Alignment guides disabled
+2026-04-25 17:53:12,477 | INFO     | card_manager - Attempting to import grading engines
+2026-04-25 17:53:12,478 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-04-25 17:53:12,478 | INFO     | card_manager - All grading engines imported successfully
+2026-04-25 17:53:12,493 | INFO     | card_manager - Card Manager initialized
+2026-04-25 17:53:12,493 | INFO     | card_manager - Ready to be the heart of the system
+2026-04-25 18:04:17,476 | INFO     | card_manager - Attempting to import grading engines
+2026-04-25 18:04:17,476 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-04-25 18:04:17,476 | INFO     | card_manager - All grading engines imported successfully
+2026-04-25 18:04:17,491 | INFO     | card_manager - Card Manager initialized
+2026-04-25 18:04:17,491 | INFO     | card_manager - Ready to be the heart of the system
+2026-06-19 22:02:59,949 | INFO     | card_manager - Attempting to import grading engines
+2026-06-19 22:02:59,950 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-06-19 22:02:59,950 | INFO     | card_manager - All grading engines imported successfully
+2026-06-19 22:02:59,965 | INFO     | card_manager - Card Manager initialized
+2026-06-19 22:02:59,965 | INFO     | card_manager - Ready to be the heart of the system
+2026-06-19 22:03:34,876 | INFO     | card_manager - Opening modern file browser for card selection
+2026-06-19 22:04:19,327 | INFO     | card_manager - Card loaded: image109F
+2026-06-19 22:04:36,146 | INFO     | card_manager - Photometric Studio started - showcasing the technology
+2026-06-19 22:04:41,383 | INFO     | card_manager - Triggering photometric showcase with allowed_tabs: ['Surface Normals', 'Depth Map', 'Confidence', 'Albedo Map']
+2026-06-19 22:05:06,983 | INFO     | card_manager - Photometric Studio showcase completed successfully
+2026-06-19 22:05:08,175 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-06-19 22:05:09,202 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-06-19 22:05:36,041 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.5
+2026-09-11 11:17:12,196 | INFO     | card_manager - Attempting to import grading engines
+2026-09-11 11:17:12,196 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-09-11 11:17:12,197 | INFO     | card_manager - All grading engines imported successfully
+2026-09-11 11:17:12,209 | INFO     | card_manager - Card Manager initialized
+2026-09-11 11:17:12,209 | INFO     | card_manager - Ready to be the heart of the system
+2026-09-11 11:18:05,716 | INFO     | card_manager - Opening modern file browser for card selection
+2026-09-11 11:18:13,132 | INFO     | card_manager - Card loaded: image011F
+2026-09-11 11:18:23,357 | INFO     | card_manager - Photometric Studio started - showcasing the technology
+2026-09-11 11:18:27,858 | INFO     | card_manager - Triggering photometric showcase with allowed_tabs: ['Surface Normals', 'Depth Map', 'Confidence', 'Albedo Map']
+2026-09-11 11:18:45,300 | INFO     | card_manager - Photometric Studio showcase completed successfully
+2026-09-11 11:18:46,813 | INFO     | card_manager -  Master Pipeline Analysis Started
+2026-09-11 11:18:49,949 | INFO     | card_manager - Attempting to show 8-tab visualization...
+2026-09-11 11:20:20,387 | INFO     | card_manager -  Master Pipeline Complete - Grade: Grade 8.5
+2026-10-14 00:27:12,325 | INFO     | card_manager - Attempting to import grading engines
+2026-10-14 00:27:12,325 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-14 00:27:12,325 | INFO     | card_manager - All grading engines imported successfully
+2026-10-14 00:27:12,338 | INFO     | card_manager - Card Manager initialized
+2026-10-14 00:27:12,338 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-14 00:58:27,394 | INFO     | card_manager - Attempting to import grading engines
+2026-10-14 00:58:27,394 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-14 00:58:27,394 | INFO     | card_manager - All grading engines imported successfully
+2026-10-14 00:58:27,407 | INFO     | card_manager - Card Manager initialized
+2026-10-14 00:58:27,407 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-14 15:46:29,095 | INFO     | card_manager - Attempting to import grading engines
+2026-10-14 15:46:29,095 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-14 15:46:29,095 | INFO     | card_manager - All grading engines imported successfully
+2026-10-14 15:46:29,112 | INFO     | card_manager - Card Manager initialized
+2026-10-14 15:46:29,112 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-14 15:53:34,593 | INFO     | card_manager - Attempting to import grading engines
+2026-10-14 15:53:34,593 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-14 15:53:34,593 | INFO     | card_manager - All grading engines imported successfully
+2026-10-14 15:53:34,606 | INFO     | card_manager - Card Manager initialized
+2026-10-14 15:53:34,606 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 13:41:54,429 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 13:41:54,430 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 13:41:54,430 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 13:41:54,443 | INFO     | card_manager - Card Manager initialized
+2026-10-15 13:41:54,443 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 14:00:43,460 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 14:00:43,460 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 14:00:43,461 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 14:00:43,475 | INFO     | card_manager - Card Manager initialized
+2026-10-15 14:00:43,475 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 14:19:31,839 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 14:19:31,839 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 14:19:31,839 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 14:19:31,852 | INFO     | card_manager - Card Manager initialized
+2026-10-15 14:19:31,852 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 14:51:50,404 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 14:51:50,404 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 14:51:50,404 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 14:51:50,417 | INFO     | card_manager - Card Manager initialized
+2026-10-15 14:51:50,417 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 15:26:08,161 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 15:26:08,161 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 15:26:08,161 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 15:26:08,175 | INFO     | card_manager - Card Manager initialized
+2026-10-15 15:26:08,175 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 17:08:13,545 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 17:08:13,546 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 17:08:13,546 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 17:08:13,559 | INFO     | card_manager - Card Manager initialized
+2026-10-15 17:08:13,559 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 17:12:11,811 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 17:12:11,812 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 17:12:11,812 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 17:12:11,827 | INFO     | card_manager - Card Manager initialized
+2026-10-15 17:12:11,827 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 17:18:04,218 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 17:18:04,219 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 17:18:04,219 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 17:18:04,232 | INFO     | card_manager - Card Manager initialized
+2026-10-15 17:18:04,232 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 17:34:43,535 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 17:34:43,535 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 17:34:43,535 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 17:34:43,551 | INFO     | card_manager - Card Manager initialized
+2026-10-15 17:34:43,551 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-15 17:46:09,456 | INFO     | card_manager - Attempting to import grading engines
+2026-10-15 17:46:09,456 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-15 17:46:09,456 | INFO     | card_manager - All grading engines imported successfully
+2026-10-15 17:46:09,469 | INFO     | card_manager - Card Manager initialized
+2026-10-15 17:46:09,469 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-16 17:36:24,719 | INFO     | card_manager - Attempting to import grading engines
+2026-10-16 17:36:24,720 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-16 17:36:24,720 | INFO     | card_manager - All grading engines imported successfully
+2026-10-16 17:36:24,732 | INFO     | card_manager - Card Manager initialized
+2026-10-16 17:36:24,732 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-16 17:50:22,455 | INFO     | card_manager - Attempting to import grading engines
+2026-10-16 17:50:22,455 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-16 17:50:22,455 | INFO     | card_manager - All grading engines imported successfully
+2026-10-16 17:50:22,468 | INFO     | card_manager - Card Manager initialized
+2026-10-16 17:50:22,468 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-16 17:54:43,881 | INFO     | card_manager - Attempting to import grading engines
+2026-10-16 17:54:43,881 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-16 17:54:43,881 | INFO     | card_manager - All grading engines imported successfully
+2026-10-16 17:54:43,904 | INFO     | card_manager - Card Manager initialized
+2026-10-16 17:54:43,905 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-16 18:08:39,737 | INFO     | card_manager - Attempting to import grading engines
+2026-10-16 18:08:39,737 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-16 18:08:39,737 | INFO     | card_manager - All grading engines imported successfully
+2026-10-16 18:08:39,750 | INFO     | card_manager - Card Manager initialized
+2026-10-16 18:08:39,750 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-16 18:18:16,582 | INFO     | card_manager - Attempting to import grading engines
+2026-10-16 18:18:16,582 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-16 18:18:16,582 | INFO     | card_manager - All grading engines imported successfully
+2026-10-16 18:18:16,595 | INFO     | card_manager - Card Manager initialized
+2026-10-16 18:18:16,596 | INFO     | card_manager - Ready to be the heart of the system
