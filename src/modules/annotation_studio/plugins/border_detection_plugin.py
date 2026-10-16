@@ -2157,6 +2157,13 @@ class BorderDetectionSettingsWidget(QWidget):
 
         except Exception as e:
             self.logger.error(f"YOLO detection failed: {e}", exc_info=True)
+            # The Studio is launched as a subprocess with stderr piped.
+            # The widget's differently named logger does not necessarily
+            # reach AnnotationStudio's log file. Persist the full traceback
+            # through the existing file-backed application logger as well.
+            logging.getLogger("AnnotationStudio").exception(
+                "Border YOLO detection failed for %s", self.current_image_path
+            )
             if hasattr(self, 'status_label'):
                 self.status_label.setText(f"Detection error: {type(e).__name__} (see log)")
             print(f"❌ Detection failed: {e}")
