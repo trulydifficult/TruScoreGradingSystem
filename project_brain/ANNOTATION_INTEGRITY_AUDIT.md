@@ -260,3 +260,62 @@ manual rotation/box overlay checks, a representative two-class detection
 on next card, failure propagation/atomic image+label writes, reliable
 historical recovery of polygon geometry, and a corrected Dataset Studio
 COCO export.
+
+## Two-class detector activation repair — 2026-10-16
+
+User acceptance from the real Annotation Studio reported: loading 3 card
+images yielded NO bounding boxes on the first card, and the manual
+"Run Detection" button also yielded none. This is a production blocking
+failure; previous CI for Space-bar export did not cover model activation.
+
+Root code defects verified in active `src/modules/annotation_studio/`:
+
+- Settings widget and main border plugin hard-coded an obsolete
+  `/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt`
+  path. The tracked real checkpoint is at
+  `src/models/revolutionary_border_detector.pt` (52 MB); use a path
+  derived from `__file__` to be independent of the checkout location.
+- `BorderDetectionPlugin.load_model()` previously set
+  `self.model = {"path": ..., "loaded": True}` without loading YOLO;
+  replaced with delegation to genuine `_load_default_model()`.
+  Errors must report real failures, not simulated model availability.
+- Settings widget and main plugin each could load the detector
+  independently; synchronize and reuse an actually loaded Ultralytics
+  model when both target the same checkpoint.
+- Previous automatic detection required the main plugin model-loaded
+  flag before it would schedule, even though settings-widget startup
+  could load later. Now schedule against each new image; the UI
+  detection method lazily loads the genuine checkpoint as needed.
+  Reject delayed callbacks for a previous image.
+- Manual Run Detection also attempts genuine lazy model loading if
+  no callable/predictive model is available; use the user-controlled
+  confidence threshold (default 0.25), not an unrelated hard-coded 0.5.
+  Missing checkpoint or dependencies fail visibly/log explicitly.
+- Plugin-panel activation failed to guarantee the settings widget's
+  Studio/canvas reference, which could prevent completed detections
+  from redrawing. Both plugin activation routes now connect the
+  widget to the Studio canvas, and plugin selection with an existing
+  image forwards that image through on_image_changed.
+
+The plugin retains ONE two-class YOLO model (outer 0, inner 1), manual
+border correction, image-rotation behavior, and Space → triple export.
+All modifications were confined to the current active `src/` tree.
+
+Regression tests: `tests/annotation/test_border_detection_model_loading.py`
+exercises actual method AST with synthetic Ultralytics detector and
+synthetic Qt timer; it checks bundled model resolution, real loader
+reuse, missing checkpoint failure, manual two-box production, stale
+timer rejection, and plugin selection overlay wiring. The annotation
+workflow CI run 38977937318 PASSED after repairs; Phoenix foundation
+run 38977896821 PASSED the previous repair set. These are controlled
+code-level tests, not an actual RX 7900 XTX/YOLO image inference run.
+
+NEXT USER ACCEPTANCE: pull branch; launch from `run_truscore.py`;
+load test cards with Border Detection selected; confirm model status
+shows `revolutionary_border_detector.pt`, automatic prediction of
+editable outer+inner boxes on each card, button manual prediction, and
+correct Space save+next behavior. If predictions are still missing,
+read live Annotation Studio logs, model load exceptions, true YOLO
+confidence/results and plugin selection messages. Do NOT claim model
+weights or GPU inference are verified until those tests pass. Keep
+Datasets/COCO training gate blocked pending annotation geometry audit.
