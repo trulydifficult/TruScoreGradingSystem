@@ -196,3 +196,46 @@ def test_auto_image_load_queues_one_real_detection_and_rejects_stale_card(monkey
     assert not calls, "Stale first-card timer must not detect on the next card"
     timers[1][1]()
     assert calls == ["detected"]
+
+
+def test_existing_plugin_selection_wires_canvas_and_auto_detects_loaded_image():
+    studio_src = ROOT / "src/modules/annotation_studio/modular_annotation_studio.py"
+    tree = ast.parse(studio_src.read_text(encoding="utf-8"))
+    owner = next(x for x in tree.body if isinstance(x, ast.ClassDef)
+                 and x.name == "ModularAnnotationStudio")
+    node = next(x for x in owner.body if isinstance(x, ast.FunctionDef)
+                and x.name == "on_plugin_selected")
+    isolated = ast.Module(body=[node], type_ignores=[])
+    ast.fix_missing_locations(isolated)
+    ns = {}
+    exec(compile(isolated, str(studio_src), "exec"), ns)
+    events = []
+
+    class Widget:
+        def set_main_plugin(self, plugin):
+            events.append("main_plugin")
+
+        def set_studio_canvas(self, canvas):
+            events.append(("canvas", canvas))
+
+        def set_current_image(self, image):
+            events.append(("image", image))
+
+    class Plugin:
+        def __init__(self):
+            self.settings_widget = Widget()
+
+        def on_image_changed(self, path, image):
+            events.append(("detect", path, image))
+
+    plugin = Plugin()
+    instance = SimpleNamespace(
+        plugin_manager=SimpleNamespace(loaded_plugins={"Border Detection": plugin}),
+        logger=Logger(), image_label=object(), current_image=object(),
+        original_image=object(), current_image_path=Path("/tmp/card001.jpg"),
+    )
+    ns["on_plugin_selected"](instance, "Border Detection")
+    assert instance.current_plugin_widget is plugin.settings_widget
+    assert plugin.settings_widget.studio is instance
+    assert ("canvas", instance.image_label) in events
+    assert ("detect", "/tmp/card001.jpg", instance.original_image) in events
