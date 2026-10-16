@@ -2054,9 +2054,26 @@ class BorderDetectionSettingsWidget(QWidget):
 
 
 
-    def run_detection(self):
-        """Run YOLO detection on current image - REAL DETECTION FROM BORDER_CALIBRATION.PY"""
+    def run_detection(self, source="manual"):
+        """Run real YOLO once; expose request origin and busy state."""
+        if source not in ("manual", "auto"):
+            source = "manual"
+        if getattr(self, "_detecting", False):
+            self.logger.info("Skipped overlapping %s detection: %s",
+                             source, getattr(self, "current_image_path", None))
+            return False
+        self._detecting = True
+        started_at = time.monotonic()
+        request_path = getattr(self, "current_image_path", None)
+        request_token = getattr(self, "_auto_request_token", None)
+        if hasattr(self, "status_label"):
+            self.status_label.setText(f"Detecting... ({source})")
+        if hasattr(self, "run_detection_btn"):
+            self.run_detection_btn.setEnabled(False)
+        self.logger.info("YOLO %s detection starting: %s", source, request_path)
         try:
+            if QApplication.instance() is not None:
+                QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
             # Get YOLO model - check settings widget first, then main plugin
             yolo_model = None
             
@@ -2153,7 +2170,9 @@ class BorderDetectionSettingsWidget(QWidget):
             # or an opportunistic cached redraw.
             self.detection_completed.emit(self.annotations)
 
-            self.logger.info(f"YOLO detected {len(self.annotations)} borders")
+            self._completed_detection_token = request_token
+            self.logger.info("YOLO %s detection returned %d boxes: %s",
+                             source, len(self.annotations), request_path)
             return True
 
         except Exception as e:
@@ -2169,6 +2188,12 @@ class BorderDetectionSettingsWidget(QWidget):
                 self.status_label.setText(f"Detection error: {type(e).__name__} (see log)")
             print(f"❌ Detection failed: {e}")
             return False
+        finally:
+            self._detecting = False
+            if hasattr(self, "run_detection_btn"):
+                self.run_detection_btn.setEnabled(True)
+            self.logger.info("YOLO %s request duration %.3fs: %s",
+                             source, time.monotonic() - started_at, request_path)
 
     def batch_process_dataset(self):
         """Batch process multiple images"""
