@@ -166,4 +166,5 @@ def test_model_detection_dispatch_and_space_shortcut_unmodified():
     plugin = PLUGIN.read_text(encoding="utf-8")
     assert 'QShortcut(QKeySequence("Space"), self, activated=self.save_and_next_image)' in studio
     assert 'self.current_plugin.on_image_changed(str(image_path), self.original_image)' in studio
-    assert 'QTimer.singleShot(500, self.settings_widget.run_detection)' in plugin
+    assert 'target.run_detection()' in plugin
+    assert 'target.current_image_path == expected' in plugin
