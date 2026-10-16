@@ -913,3 +913,37 @@ User supplied full traceback from the REAL workstation (`/home/dewster/Vanguard/
 Before changing code or adding CPU fallbacks, diagnose the exact torch installation in `/home/dewster/Vanguard/vanguard`: inspect `torch.__version__`, `torch.version.hip`, `torch.version.cuda`, `torch.__file__`, presence of `torch/lib/libcaffe2_nvrtc.so`, the shared-object dependencies if present, and `torch.cuda.get_device_properties(0)` under a clean process with LD_PRELOAD and LD_LIBRARY_PATH unset. Do NOT blindly symlink an unrelated CUDA/ROCm library, reuse a library from a different PyTorch build or silently route inference to CPU. Repair packaging / loader after evidence.
 
 Separate Studio initialization issue from user log: pre-load canvas events raised `'ModularAnnotationStudio' object has no attribute 'original_image'`. Source fix explicitly initializes `original_image=None`, ignores unloaded-canvas coordinate events, and persists full detection exceptions to the existing Annotation Studio logfile. Commits 9a19f0a and 5054616; regression tests fa767ba. Annotation Integrity and Phoenix CI passed for that slice, but the ACTUAL GPU inference still fails until workstation runtime is fixed.
+
+
+## Annotation Studio REAL GPU inference succeeds; startup-order repair — 2026-10-16
+
+Critical production milestone: through `run_truscore.py`, launched with
+`env -u LD_LIBRARY_PATH -u LD_PRELOAD ./vanguard/bin/python run_truscore.py`,
+the Radeon RX 7900 XTX/ROCm runtime successfully performed
+`revolutionary_border_detector.pt` inference. User screenshot shows
+both true prediction overlays, class 0 outer (~0.97) and class 1 inner
+(~0.95); the UI reports 1 outer / 1 graphic. Model, plugin widget and
+Studio canvas communication is VERIFIED in that observed interaction.
+No CPU fallback or replacement model was used.
+
+The user annotated and saved four cards; actual three-folder image/YOLO
+outputs are NOT yet in GitHub for audit and cannot be considered verified.
+The first card required a manual Run Detection. Source audit found
+`ModularAnnotationStudio.load_plugin_from_file()` lacked notification
+of an already-loaded card when a plugin was selected after loading
+images; alternate `on_plugin_selected()` already handled this. A
+bounded fix forwards a preexisting card once to the existing plugin
+on_image_changed() after widget/canvas wiring. It changes no model,
+rotation, export, or save behavior. GitHub Annotation Integrity CI run
+38981656677 PASSED 20 tests, including both orderings of plugin
+selection and first image load. Workstation retest of first-card auto
+inference is PENDING; do not assert this is definitely the user's
+original ordering.
+
+Next ask user to (1) pull branch, restart clean-env and load a card
+both ways to check automatic first-card boxes, and (2) inspect
+`git status --short -- src/shared/annotations/` so the four intended
+images and their 12 image/label pairs (up to 24 files) can be staged
+and pushed selectively. Do not bulk commit runtime data/venv.
+After sync, inspect the 4 real exports across combined/outer/graphic
+folders for class remapping, rotation and image-label fidelity.
