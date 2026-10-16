@@ -164,13 +164,13 @@ def test_manual_detection_consumes_auto_timer_and_revisiting_same_path_is_safe(m
     changed = method("BorderDetectionPlugin", "on_image_changed", {
         "np": SimpleNamespace(ndarray=object)
     })
-    changed(plugin, "A.jpg", object())
+    changed(plugin, "A.jpg", SimpleNamespace(shape=(2284, 1632, 3)))
     assert widget.run_detection(source="manual") is True
     timers.pop(0)[1]()
     assert len(model.calls) == 1, "Automatic timer must not repeat completed manual inference"
 
-    changed(plugin, "A.jpg", object())
-    changed(plugin, "A.jpg", object())
+    changed(plugin, "A.jpg", SimpleNamespace(shape=(2284, 1632, 3)))
+    changed(plugin, "A.jpg", SimpleNamespace(shape=(2284, 1632, 3)))
     old, current = [fn for _, fn in timers]
     old()
     assert len(model.calls) == 1, "Previous same-path timer must not run"
