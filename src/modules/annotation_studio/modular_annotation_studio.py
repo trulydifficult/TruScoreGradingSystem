@@ -833,6 +833,34 @@ class ModularAnnotationStudio(QMainWindow):
             self.logger.error(f"Plugin image update traceback: {traceback.format_exc()}")
     
     
+    def _connect_border_detection_results(self, settings_widget):
+        """Connect the active plugin's existing completion signal to Studio."""
+        signal = getattr(settings_widget, 'detection_completed', None)
+        if signal is None:
+            return
+        if getattr(settings_widget, '_studio_detection_receiver', None) is self:
+            return
+        signal.connect(
+            lambda annotations, owner=settings_widget:
+                self._receive_border_detection_results(owner, annotations)
+        )
+        settings_widget._studio_detection_receiver = self
+        self.logger.info("Connected border detection results to Studio canvas")
+
+    def _receive_border_detection_results(self, settings_widget, annotations):
+        """Only the displayed plugin may publish overlay annotations."""
+        if settings_widget is not self.current_plugin_widget:
+            self.logger.warning("Ignored results from an inactive annotation widget")
+            return
+        if self.original_image is None:
+            self.logger.warning("Ignored detections because no card is displayed")
+            return
+        self.logger.info(
+            "Received %d border predictions for %s",
+            len(annotations), getattr(self.current_image_path, 'name', 'unknown'),
+        )
+        self.update_image_with_annotations(annotations)
+
     def update_image_with_annotations(self, annotations):
         """
         Update display with plugin annotations - CALLED BY PLUGIN
@@ -1983,6 +2011,7 @@ class ModularAnnotationStudio(QMainWindow):
                     # Store both the main plugin AND the settings widget
                     self.current_plugin = plugin
                     self.current_plugin_widget = settings_widget
+                    self._connect_border_detection_results(settings_widget)
                     self.plugin_widget = settings_widget  
                     self.plugin_settings_widget = settings_widget
                     
@@ -2145,6 +2174,7 @@ class ModularAnnotationStudio(QMainWindow):
 
                 # CRITICAL: Store reference to current plugin widget for image notifications
                 self.current_plugin_widget = settings_widget
+                self._connect_border_detection_results(settings_widget)
 
                 # CRITICAL: Set studio canvas reference so plugin can draw annotations
                 if hasattr(settings_widget, 'set_studio_canvas'):
