@@ -835,3 +835,28 @@ combined/outer/graphic output image pixels and matching class labels,
 then verify single detector prefill on next card. Investigate
 Annotation Studio image/annotation coordinate transforms and export
 failure propagation before broader geometry or dataset refactor.
+
+## Annotation Studio missing YOLO boxes — 2026-10-16
+
+User reported the first of three cards showed no predicted boxes and
+manual Run Detection also did nothing. Traced active plugin:
+obsolete /home/dewster/Projects/Vanguard checkpoint path,
+a simulated model-loaded dictionary in main plugin, independent
+main/settings model ownership, an initial-card timing gap, and missing
+explicit canvas wiring for the plugin-panel activation path.
+
+Implemented repo-derived real checkpoint resolution (tracked under
+src/models/revolutionary_border_detector.pt), removed fake model loader,
+synchronized real model instance/loaded state across UI and plugin,
+made manual run load genuine YOLO if necessary (configured confidence
+0.25), scheduled automatic detection with stale-card protection,
+and ensured both plugin selection paths attach the Studio canvas and
+forward an already-loaded image for detection.
+
+Annotation Integrity CI 38977937318 PASSED all source-body tests
+including synthetic two-box predictions and plugin selection. End-to-end
+runtime detection from run_truscore.py and actual model inference
+on production workstation are NOT yet verified. User needs to pull
+refactor/phoenix-foundation and test GUI: model status, auto detect
+on first and subsequent cards, Run Detection button, Space triple exports.
+No masks/rotation coordinate-fidelity claim made.
