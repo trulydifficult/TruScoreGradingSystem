@@ -2103,7 +2103,11 @@ class BorderDetectionSettingsWidget(QWidget):
                     self.status_label.setText("Detection unavailable: no card loaded")
                 return False
 
-            print("⚡ Running YOLO detection at 640×480 (model's preferred resolution)...")
+            image_h, image_w = self.current_image.shape[:2]
+            self.logger.info(
+                "YOLO %s source image size %dx%d; model controls its own preprocessing",
+                source, image_w, image_h
+            )
 
             # Use confidence value or default
             confidence_value = self.settings.get('confidence_threshold', 0.25)
