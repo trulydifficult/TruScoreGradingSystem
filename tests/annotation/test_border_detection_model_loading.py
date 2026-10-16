@@ -42,6 +42,20 @@ class TextLabel:
         pass
 
 
+class Signal:
+    def __init__(self):
+        self.listeners = []
+        self.published = []
+
+    def connect(self, callback):
+        self.listeners.append(callback)
+
+    def emit(self, annotations):
+        self.published.append(list(annotations))
+        for listener in self.listeners:
+            listener(annotations)
+
+
 class FakeYOLO:
     constructed = []
 
@@ -144,7 +158,9 @@ def test_manual_run_loads_real_model_and_draws_two_boxes(monkeypatch, tmp_path):
     widget = SimpleNamespace(
         model=None, model_loaded=False, main_plugin=plugin,
         settings={"model_path": str(path), "confidence_threshold": 0.25},
-        model_status_label=TextLabel(), logger=Logger(), current_image=object(),
+        model_status_label=TextLabel(), status_label=TextLabel(),
+        logger=Logger(), current_image=object(),
+        current_image_path="Card001.jpg", detection_completed=Signal(),
         annotations=[], selected_annotation=None, changes=0, rendered=0,
     )
     widget.load_model = MethodType(
@@ -166,7 +182,10 @@ def test_manual_run_loads_real_model_and_draws_two_boxes(monkeypatch, tmp_path):
     widget.run_detection = MethodType(
         _method("run_detection", cls="BorderDetectionSettingsWidget",
                 ns={"BorderAnnotation": Annotation}), widget)
-    widget.run_detection()
+    assert widget.run_detection() is True
+    assert len(widget.detection_completed.published) == 1
+    assert len(widget.detection_completed.published[0]) == 2
+    assert widget.status_label.value == "Detection: 1 outer / 1 graphic"
     assert [(ann.class_id, ann.label) for ann in widget.annotations] == [
         (0, "outer_border"), (1, "inner_border")]
     assert widget.selected_annotation.class_id == 0
@@ -233,9 +252,82 @@ def test_existing_plugin_selection_wires_canvas_and_auto_detects_loaded_image():
         plugin_manager=SimpleNamespace(loaded_plugins={"Border Detection": plugin}),
         logger=Logger(), image_label=object(), current_image=object(),
         original_image=object(), current_image_path=Path("/tmp/card001.jpg"),
+        _connect_border_detection_results=lambda widget: events.append("linked"),
     )
     ns["on_plugin_selected"](instance, "Border Detection")
     assert instance.current_plugin_widget is plugin.settings_widget
     assert plugin.settings_widget.studio is instance
     assert ("canvas", instance.image_label) in events
     assert ("detect", "/tmp/card001.jpg", instance.original_image) in events
+    assert "linked" in events
+
+
+def test_plugin_completed_signal_updates_only_active_studio_canvas():
+    """Run the active Qt signal contract into the actual Studio receiver method."""
+    studio_path = ROOT / "src/modules/annotation_studio/modular_annotation_studio.py"
+    def studio_method(name):
+        tree = ast.parse(studio_path.read_text(encoding="utf-8"))
+        cls = next(x for x in tree.body if isinstance(x, ast.ClassDef)
+                   and x.name == "ModularAnnotationStudio")
+        node = next(x for x in cls.body if isinstance(x, ast.FunctionDef) and x.name == name)
+        mod = ast.Module(body=[node], type_ignores=[])
+        ast.fix_missing_locations(mod)
+        ns = {}
+        exec(compile(mod, str(studio_path), "exec"), ns)
+        return ns[name]
+
+    events = []
+    signal = Signal()
+    widget = SimpleNamespace(detection_completed=signal, annotations=[])
+    studio = SimpleNamespace(current_plugin_widget=widget,
+                             current_image_path=Path("Card001.jpg"),
+                             original_image=object(), logger=Logger(),
+                             display_current_image=lambda: events.append("redraw"))
+
+    for method in ("_connect_border_detection_results",
+                   "_receive_border_detection_results",
+                   "update_image_with_annotations"):
+        setattr(studio, method, MethodType(studio_method(method), studio))
+
+    studio._connect_border_detection_results(widget)
+    studio._connect_border_detection_results(widget)
+    assert len(signal.listeners) == 1, "Do not register duplicate Studio receivers"
+
+    predictions = [SimpleNamespace(class_id=0), SimpleNamespace(class_id=1)]
+    signal.emit(predictions)
+    assert studio.current_plugin_widget.annotations is predictions
+    assert events == ["redraw"]
+
+    studio.current_plugin_widget = SimpleNamespace(annotations=[])
+    signal.emit([SimpleNamespace(class_id=0)])
+    assert events == ["redraw"], "Old/inactive widgets must not repaint the current card"
+
+
+def test_zero_detection_is_reported_not_replaced_with_mock_boxes(monkeypatch, tmp_path):
+    _setup_yolo(monkeypatch)
+    path = tmp_path / "actual.pt"
+    path.write_bytes(b"mock checkpoint")
+    model = FakeYOLO(str(path))
+    model.__call__ = lambda *args, **kwargs: []  # class-level __call__ is resolved first
+    class EmptyYOLO(FakeYOLO):
+        def __call__(self, image, conf):
+            return []
+    widget = SimpleNamespace(
+        model=EmptyYOLO(str(path)), main_plugin=None,
+        settings={"confidence_threshold": 0.25},
+        current_image=object(), current_image_path="Card002.jpg",
+        annotations=[], selected_annotation=None, status_label=TextLabel(),
+        logger=Logger(), detection_completed=Signal(),
+        _bump_annotation_version=lambda: None,
+        update_visualization=lambda: None,
+        update_statistics=lambda: None,
+    )
+    widget.run_detection = MethodType(
+        _method("run_detection", cls="BorderDetectionSettingsWidget",
+                ns={"BorderAnnotation": lambda **kwargs: SimpleNamespace(**kwargs)}),
+        widget,
+    )
+    assert widget.run_detection() is True
+    assert widget.annotations == []
+    assert widget.status_label.value.startswith("Detection: 0 boxes")
+    assert widget.detection_completed.published == [[]]
