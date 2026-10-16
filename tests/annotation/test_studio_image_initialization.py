@@ -5,6 +5,7 @@ These tests do not establish real-model inference compatibility.
 """
 import ast
 import logging
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -89,6 +90,8 @@ def test_inference_runtimeerror_is_written_through_file_backed_studio_logger():
             self.calls.append((args, kwargs))
         def debug(self, *args, **kwargs):
             pass
+        def info(self, *args, **kwargs):
+            pass
 
     class AppLogger:
         def __init__(self):
@@ -100,8 +103,14 @@ def test_inference_runtimeerror_is_written_through_file_backed_studio_logger():
     logging_proxy = SimpleNamespace(getLogger=lambda name: (
         application_log if name == "AnnotationStudio" else None
     ))
-    run = _method(PLUGIN, "BorderDetectionSettingsWidget", "run_detection",
-                  logging=logging_proxy)
+    run = _method(
+        PLUGIN, "BorderDetectionSettingsWidget", "run_detection",
+        logging=logging_proxy, time=time,
+        QApplication=SimpleNamespace(instance=lambda: None),
+        QEventLoop=SimpleNamespace(
+            ProcessEventsFlag=SimpleNamespace(ExcludeUserInputEvents=1)
+        ),
+    )
     widget = SimpleNamespace(model=FakeYOLO(), current_image=object(),
                              current_image_path="Card001.jpg",
                              settings={"confidence_threshold": 0.25},
