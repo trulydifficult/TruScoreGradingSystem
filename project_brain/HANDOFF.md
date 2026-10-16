@@ -1025,3 +1025,40 @@ NEXT (if user requests responsiveness improvement): expose busy
 status before first GPU inference, trace auto vs manual source,
 and prevent duplicate queuing without blocking intentional manual
 re-detection. Avoid invasive GPU threading changes without a plan.
+
+## Next slice: Annotation Studio inference lifecycle and busy feedback — 2026-10-16
+
+From the fully inspected real Oct 16 production log, confirmed
+4 image-load requests and 6 YOLO model calls (3 for first card),
+versus 671 overlay redraws, which are REQUIRED for precise editing.
+First automatic GPU detection DID start at 500ms but first model call
+took ~7.4 seconds. Do not misdiagnose this as a failed timer.
+
+New active plugin source patch:
+- status reports `Detection queued (automatic)` and then
+  `Detecting... (auto/manual)`, painted via guarded Qt events before
+  synchronous GPU inference;
+- real Run Detection is disabled while busy; in-flight duplicate
+  requests are rejected; finally resets state even on error;
+- per-image-load token rejects stale 500 ms timers, including repeated
+  same filename; successful manual detection consumes pending auto
+  request; explicit later manual redetection still allowed;
+- automatic and manual model calls logged with origin, actual image
+  size, duration, and prediction counts;
+- single real `revolutionary_border_detector.pt`, editing, rotation,
+  render/update cadence, Space and triple export unchanged.
+
+Decision `project_brain/decisions/0006-annotation-inference-request-lifecycle.md`.
+New regression `tests/annotation/test_detection_request_lifecycle.py`
+covers busy, overlap, error cleanup/retry and same-path delayed callback.
+CI 38983844204 PASSED 30 tests. Real GUI/ROCm acceptance of the busy
+indicator not yet obtained.
+
+Operator: pull `refactor/phoenix-foundation`, close any existing TruScore,
+and launch with `env -u LD_LIBRARY_PATH -u LD_PRELOAD
+./vanguard/bin/python run_truscore.py`. On a spare test card,
+verify pre-inference Detecting indicator and automatic outer/inner boxes,
+then deliberate manual Run Detection and Space→next behavior.
+Inspect new log source tags if unexpected duplicates persist.
+Historical code outside src is reference only. Mask R-CNN dataset
+geometry remains separate blocked gate.
