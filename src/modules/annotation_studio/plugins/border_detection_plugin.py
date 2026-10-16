@@ -2336,7 +2336,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         return False
     
     def on_image_changed(self, image_path: str, image_data: np.ndarray):
-        """Schedule real dual-class inference on newly loaded images."""
+        """Queue automatic inference once per card load, never over manual work."""
         self.logger.info(f"on_image_changed called with image: {image_path}")
         self.current_image = image_data
         widget = self.settings_widget
@@ -2346,14 +2346,21 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
 
         widget.current_image = image_data
         widget.current_image_path = image_path
+        widget._auto_request_token = getattr(widget, "_auto_request_token", 0) + 1
+        request_token = widget._auto_request_token
+        if hasattr(widget, "status_label"):
+            widget.status_label.setText("Detection queued (automatic)")
         from PyQt6.QtCore import QTimer
-        # The widget can load the real model lazily. Reject stale callbacks
-        # when the user changes cards before the delay has expired.
+        # A token distinguishes two loads of the SAME path and prevents
+        # an older timer from replacing newer edits or manual detection.
         QTimer.singleShot(
             500,
-            lambda expected=image_path, target=widget: (
-                target.run_detection()
-                if target.current_image_path == expected else None
+            lambda expected=image_path, token=request_token, target=widget: (
+                target.run_detection(source="auto")
+                if (target.current_image_path == expected
+                    and target._auto_request_token == token
+                    and getattr(target, "_completed_detection_token", None) != token)
+                else None
             ),
         )
 
