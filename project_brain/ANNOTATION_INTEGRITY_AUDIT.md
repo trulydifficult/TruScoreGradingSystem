@@ -411,3 +411,71 @@ actual exports visually and verify classes, stems, image dimensions and
 rotation. Do not commit the entire virtualenv, archived scripts, or
 every older runtime artifact. Keep Mask R-CNN / COCO precision training
 blocked pending export validation.
+
+
+## Four committed real exports + application logs audited — 2026-10-16
+
+User pushed commit `c582a4401e0434ee1b002ddf1b167671260db314`
+containing all 24 new export files under
+`src/shared/annotations/{combined_dual_class,outer_border_model,graphic_border_model}`
+and 28 captured application log files under `src/Logs/`.
+Four sample stems are `image001F` through `image004F`.
+
+**Source-backed positive results:**
+
+- 12 valid 1632 x 2284 JPEG files; within each card, all three JPEGs
+  are byte-identical by Git blob hash. No class-dependent rotation,
+  image encoding, or accidental file substitution across export targets.
+- Combined class IDs are [0 outer, 1 graphic]; outer-only class 0
+  exactly matches combined class 0 geometry; graphic-only class 0
+  exactly matches combined class 1 geometry. Every card has one outer
+  and one inner annotation in combined form.
+- All normalized coordinates fall in 0..1; outer boxes contain inner
+  boxes. All four rendered contact-sheet overlays appear approximately
+  aligned with the intended card/graphics boundaries at preview scale.
+  NOT a corner- or subpixel-precision validation.
+- `src/Logs/annotation_studio.log` records Space save operations at
+  18:20:44, 18:21:28, 18:22:13, and 18:22:49 on 2026-10-16,
+  with each next-card transition. It records an explicit
+  `image003F.jpg (-0.150°)` rotation save before annotation export.
+  Image and class mapping are verified, but this does NOT prove exact
+  rotation/annotation coordinate frame alignment against reference
+  corner measurements.
+
+**First-card behavior, correcting prior hypothesis:**
+
+The actual successful runtime session selected Border Detection
+around 18:18:24, THEN loaded the first card at 18:18:36.
+The first card received *three* two-box detection completion events
+at 18:18:44 (approximately 8 seconds after card load);
+the later cards each received a two-box event about 0.52 seconds
+after their respective loads. The previously implemented fix for
+activating a plugin AFTER card load is valid and covered by tests,
+but it CANNOT explain the delayed first-card detection observed
+in this session, since plugin selection came first.
+Potential first YOLO/GPU warmup and duplicate queued inference requests
+are hypotheses; the log does not identify which of the first three
+requests was automatic vs manual.
+
+**Repeatable tests / verification:**
+
+`tests/annotation/test_real_four_card_exports.py` validates real
+files (not synthetic annotation doubles): Pillow JPEG integrity,
+dimensions, cross-folder image hashes, exact class mapping, unique
+labels, normalized geometry, and outer/inner containment. It also
+produces a diagnostic JPEG contact sheet with the saved boxes
+overlaid for inspection. Annotation Integrity CI run
+`38982467645` PASSED 24 tests, and follow-up run
+`38982472140` passed; Phoenix Foundation run
+`38982472153` passed. Code/CI acceptance for these constraints
+is VERIFIED. Real model inference and Studio overlay were observed
+in the user's screenshot from earlier; first-card unattended auto
+detection specifically remains UNVERIFIED.
+
+**Next gate:** Run a clean-env app session, select Border Detection,
+load a new first card, wait at least ~10-15 seconds without manually
+clicking Run Detection, record whether boxes appear and corresponding
+log timestamps. If first-card detection remains absent, inspect
+timer scheduling, model warmup, and request deduplication based on
+actual timing. Continue to block Detectron2/24-point ground-truth
+claims until polygon/rotation coordinate fidelity is accepted.
