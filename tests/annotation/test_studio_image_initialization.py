@@ -111,7 +111,7 @@ def test_inference_runtimeerror_is_written_through_file_backed_studio_logger():
             ProcessEventsFlag=SimpleNamespace(ExcludeUserInputEvents=1)
         ),
     )
-    widget = SimpleNamespace(model=FakeYOLO(), current_image=object(),
+    widget = SimpleNamespace(model=FakeYOLO(), current_image=SimpleNamespace(shape=(2284, 1632, 3)),
                              current_image_path="Card001.jpg",
                              settings={"confidence_threshold": 0.25},
                              logger=DiagnosticLogger(), status_label=UIStatus())
