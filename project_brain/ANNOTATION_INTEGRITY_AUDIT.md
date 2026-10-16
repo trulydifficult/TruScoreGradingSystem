@@ -191,3 +191,36 @@ The present precision objective is not to *automatically* replace the
 workflow with rotating boxes. It is to preserve working image-rotation
 normalization and add an explicit, verified coordinate-frame contract for
 export and future polygon-based 24-point measurement.
+
+## User-confirmed three-target Space-bar export contract (2026-10-16)
+
+The normal Space-bar save must create/refresh **three image/label pairs**
+under the ACTUAL current workstation checkout path:
+`/home/dewster/Vanguard/src/shared/annotations/`
+
+- `combined_dual_class/images/<stem>.<ext>` and
+  `combined_dual_class/labels/<stem>.txt`: both annotations, source
+  YOLO class 0=outer physical border, class 1=inner graphic border.
+- `graphic_border_model/images/<stem>.<ext>` and
+  `graphic_border_model/labels/<stem>.txt`: inner graphic only,
+  reindexed to **class 0** for a single-class target.
+- `outer_border_model/images/<stem>.<ext>` and
+  `outer_border_model/labels/<stem>.txt`: outer physical only,
+  class 0 for the single-class target.
+
+All three image files must carry the SAME finalized rotation; their YOLO
+boxes must match those exact pixels in the same coordinate frame.
+Maintain matching image/label basenames and separate `images/` and
+`labels/` subfolders; the triple-export requirement is independent
+of the single two-class detection model used for the next card.
+
+Current source `BorderDetectionSettingsWidget.auto_create_training_labels`
+already implements the three export targets and per-class filtering, but
+still hardcodes the **wrong old path**
+`/home/dewster/Projects/Vanguard/src/shared/annotations`.
+Fix to a repo-derived path as part of the guarded implementation,
+rather than a new workstation-specific hardcoded path. Its saved image
+and annotation coordinates still require a rotated-card acceptance test.
+The per-format class-ID remapping in the single-class graphic export also
+must be verified against `to_yolo_format()`: filtering an annotation of
+class 1 does NOT by itself reassign it to single-class 0.
