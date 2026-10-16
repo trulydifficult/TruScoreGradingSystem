@@ -536,3 +536,41 @@ startup blocking merits the added threading complexity. The existing
 guard. Preserve manual re-detection capability and all editing/saving.
 No need to repeat a 15-second waiting test solely to prove that the
 first auto timer fired; the committed logs prove it already did.
+
+## Guarded ROCm inference feedback and duplicate-request protection — 2026-10-16
+
+Following audit of the full 1.27 MB production modular_annotation.log,
+the first card was confirmed to have scheduled its automatic YOLO pass
+500 ms after image load; the first actual ROCm inference took about 7.4
+seconds. Six model calls total were made for four cards, whereas 671
+normal drag/paint redraw events generated a disproportionate number
+of INFO records. Per-frame INFO logging was removed earlier without
+altering the redraw algorithm.
+
+Current incremental changes to the actual working plugin:
+`BorderDetectionSettingsWidget.run_detection(source="manual"|"auto")`
+now has a shared in-flight guard, busy-state status and disabled manual
+button, and logs the request source, actual image dimensions, and
+observed request duration. It uses
+`QApplication.processEvents(ExcludeUserInputEvents)` to render the busy
+message before synchronous YOLO GPU initialization. A finally block
+re-enables the button on errors as well as success. The model and
+actual inference/prediction parsing are unchanged.
+
+`BorderDetectionPlugin.on_image_changed()` increments a per-load token
+and queues its original 500 ms automatic request, now explicitly tagged
+`source="auto"`. Stale previous-load callbacks, including a previous
+load with exactly the same image path, do not execute. A manual run
+that already completed for the same token suppresses a pending auto
+callback; explicit future manual detection remains permitted.
+
+The old `run_actual_detection` method is historical/unused in this
+Studio path and has different tracking; its fallback simulated
+detections MUST NOT be reactivated as part of this change.
+
+Regression: `tests/annotation/test_detection_request_lifecycle.py`
+and updated existing source-body tests. Annotation Integrity CI
+38983844204 passed 30 tests after repair of test harness image-shape
+stubs; full PyQt GUI + real GPU startup must be retested. Decision:
+`project_brain/decisions/0006-annotation-inference-request-lifecycle.md`.
+Do not equate code-level pass with hardware GUI acceptance.
