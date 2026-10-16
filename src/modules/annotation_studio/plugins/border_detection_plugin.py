@@ -2276,27 +2276,27 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         return False
     
     def on_image_changed(self, image_path: str, image_data: np.ndarray):
-        """Notification that Studio loaded new image - Interface contract method"""
+        """Schedule real dual-class inference on newly loaded images."""
         self.logger.info(f"on_image_changed called with image: {image_path}")
-        
-        # Store image data in plugin
         self.current_image = image_data
-        
-        # Pass image to settings widget (it has the detection logic)
-        if self.settings_widget:
-            self.settings_widget.current_image = image_data
-            self.settings_widget.current_image_path = image_path
-            
-            # CORRECT auto-detection - 500ms delay
-            if hasattr(self, 'model') and self.model_loaded:
-                self.logger.info("Auto-running detection on new image (500ms delay)")
-                from PyQt6.QtCore import QTimer
-                QTimer.singleShot(500, self.settings_widget.run_detection)
-            else:
-                self.logger.info("No model loaded - skipping auto-detection")
-        else:
-            self.logger.warning("Settings widget not available for auto-detection")
-    
+        widget = self.settings_widget
+        if widget is None:
+            self.logger.error("No border settings widget available for auto-detection")
+            return
+
+        widget.current_image = image_data
+        widget.current_image_path = image_path
+        from PyQt6.QtCore import QTimer
+        # The widget can load the real model lazily. Reject stale callbacks
+        # when the user changes cards before the delay has expired.
+        QTimer.singleShot(
+            500,
+            lambda expected=image_path, target=widget: (
+                target.run_detection()
+                if target.current_image_path == expected else None
+            ),
+        )
+
     def on_image_rotated(self, rotation_angle: float):
         """Notification that Studio rotated image - Interface contract method"""
         # Rotation is handled by Studio, annotations are in original coordinates
