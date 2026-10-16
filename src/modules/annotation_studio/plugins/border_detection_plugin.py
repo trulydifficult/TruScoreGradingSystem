@@ -1819,7 +1819,7 @@ class BorderDetectionSettingsWidget(QWidget):
                 rotated_image = self.current_image.copy()
 
             # Base export directory - annotations subdirectory
-            base_dir = Path("/home/dewster/Projects/Vanguard/src/shared/annotations")
+            base_dir = Path(__file__).resolve().parents[3] / "shared" / "annotations"
             
             # Image dimensions (from rotated image)
             h, w = rotated_image.shape[:2]
@@ -1869,6 +1869,10 @@ class BorderDetectionSettingsWidget(QWidget):
                     for ann in export['annotations']:
                         # to_yolo_format returns tuple (class_id, x_center, y_center, width, height)
                         class_id, x_center, y_center, width, height = ann.to_yolo_format(w, h)
+                        # Each single-target dataset has its own class-0 label;
+                        # combined_dual_class retains 0=outer, 1=graphic.
+                        if export['name'] != 'combined_dual_class':
+                            class_id = 0
                         yolo_line = f"{class_id} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f}"
                         f.write(f"{yolo_line}\n")
                 
