@@ -664,11 +664,10 @@ class BorderDetectionSettingsWidget(QWidget):
         From calibration.py lines 2148-2235 draw_border_annotations()
         """
         try:
-            self.logger.info(f"🎨 draw_overlay CALLED with {len(self.annotations) if hasattr(self, 'annotations') else 0} annotations")
-            if self.annotations:
-                for i, ann in enumerate(self.annotations):
-                    self.logger.info(f"   Annotation {i}: class_id={ann.class_id}, label={ann.label}")
-            
+            # Draws can occur hundreds of times during handle dragging.
+            # Per-frame INFO output obscures real YOLO requests/completions
+            # and makes the persistent diagnostic log grow unnecessarily.
+            # Real inference results/errors are logged by run_detection().
             if not self.annotations:
                 return image
             
