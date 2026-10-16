@@ -60,7 +60,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import (
     Qt, QTimer, pyqtSignal, QObject, QPoint, QRect, QSize,
-    QThread, QMutex, QMutexLocker, QPropertyAnimation, QEasingCurve
+    QThread, QMutex, QMutexLocker, QPropertyAnimation, QEasingCurve, QEventLoop
 )
 from PyQt6.QtGui import (
     QFont, QPixmap, QImage, QKeyEvent, QMouseEvent, QPainter, QPen,
@@ -508,6 +508,8 @@ class BorderDetectionSettingsWidget(QWidget):
 
         # Detection state to prevent duplicates
         self._detecting = False
+        self._auto_request_token = 0
+        self._completed_detection_token = None
 
         # Session management
         self.session_file = None
@@ -1198,7 +1200,7 @@ class BorderDetectionSettingsWidget(QWidget):
         detect_layout = QHBoxLayout()
 
         self.run_detection_btn = TruScoreButton("Run Detection", width=120, height=30)
-        self.run_detection_btn.clicked.connect(self.run_detection)
+        self.run_detection_btn.clicked.connect(lambda: self.run_detection(source="manual"))
         detect_layout.addWidget(self.run_detection_btn)
 
         self.clear_btn = TruScoreButton("Clear", width=70, height=30, style_type="secondary")
