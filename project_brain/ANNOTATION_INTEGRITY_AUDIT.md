@@ -479,3 +479,60 @@ log timestamps. If first-card detection remains absent, inspect
 timer scheduling, model warmup, and request deduplication based on
 actual timing. Continue to block Detectron2/24-point ground-truth
 claims until polygon/rotation coordinate fidelity is accepted.
+
+## Definitive runtime log classification / CPU vs ROCm first inference — 2026-10-16
+
+User reported that first-card CPU inference used to appear immediately,
+unlike ROCm GPU first-card inference, and that `modular_annotation.log`
+seemed to contain a very large number of detections. The actual GitHub
+blob `src/Logs/modular_annotation.log` (SHA 1c857b922ebf...) was
+successfully read in full (11,312 lines) instead of relying on the
+GitHub text file endpoint, which returned empty for this >1 MB log.
+
+**Verified counts in the successful 18:18–18:22 four-card session:**
+
+- 4 `on_image_changed` notifications (one for each newly loaded card).
+- 6 actual YOLO inference calls (3 for image001F, 1 each for image002F–
+  image004F).
+- 671 overlay `draw_overlay CALLED` messages, plus 1,348 corresponding
+  per-annotation detail lines (2,019 draw-only INFO records).
+- 4 Space-triggered triple-export completions (12 target writes).
+
+Most perceived repeated "detections" were actually **GUI redraw logs**,
+not extra model inference. The redraws themselves are required for
+responsive dragging/magnifier and should NOT be suppressed. We removed
+only redundant INFO diagnostics from the active
+`BorderDetectionSettingsWidget.draw_overlay` method and retained true
+`run_detection` inference counts, errors and prediction logs. New
+`tests/annotation/test_overlay_log_noise.py` verifies that the active
+overlay method still draws outer cyan/inner magenta boxes and selection
+handles, without per-frame INFO logging. CI verification is separate.
+
+**First card was AUTO-TRIGGERED**:
+18:18:36.457 `on_image_changed` was called,
+18:18:36.958 YOLO inference began (exactly ~501ms after load),
+18:18:44.393 first inference returned (~7.435 sec).
+The other two first-card inferences started at 18:18:44.456 and
+18:18:44.516 and completed in roughly 12ms and 11ms respectively.
+The log does not identify their origin; queued manual clicks are
+plausible but NOT confirmed. Cards 2–4 each had one automatic
+inference with ~12–16ms logged inference time after the 500ms timer.
+One detector checkpoint was reused by the settings widget; no evidence
+of repeated weight loading in this session.
+
+Thus previous "first card failed to schedule automatically" hypothesis
+is **disproven for this user session**. CPU's faster initial perception
+and GPU's first call cost can coexist; code/logs support a first GPU
+inference delay, not the precise library/system portion responsible.
+No automatic model fallback should be introduced.
+
+Later possible UI optimization (not implemented here): distinguish
+auto/manual inference requests in logs; display a "Detecting…" status
+before GPU work starts, avoid duplicate user requests during an active
+inference, and consider asynchronous worker execution if measured
+startup blocking merits the added threading complexity. The existing
+`run_actual_detection` method has a guard, but the real
+`run_detection` is a different implementation and does not use that
+guard. Preserve manual re-detection capability and all editing/saving.
+No need to repeat a 15-second waiting test solely to prove that the
+first auto timer fired; the committed logs prove it already did.
