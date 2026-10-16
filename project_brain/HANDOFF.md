@@ -904,3 +904,12 @@ If still empty, get the actual log traceback rather than adding another
 unverified fallback. Current Studio contains duplicate method definitions
 in the border plugin; consolidate only after working runtime behavior is
 recorded and verified.
+
+
+## Real Annotation Studio inference RuntimeError — 2026-10-16
+
+User supplied full traceback from the REAL workstation (`/home/dewster/Vanguard/vanguard` virtual environment, Python 3.11). The checkpoint `revolutionary_border_detector.pt` loads and displays green. Manual and auto detection fail before producing annotations, during Ultralytics `model.predict()` device setup: `torch.cuda.get_device_properties(0)` -> `torch._C._cuda_init()` -> `RuntimeError: Error in dlopen: libcaffe2_nvrtc.so: cannot open shared object file: No such file or directory`. This is a PyTorch/ROCm shared-library installation or runtime loader issue, NOT evidence of a missing Studio overlay callback or zero predicted boxes. ROCm uses torch.cuda APIs, so that call is expected.
+
+Before changing code or adding CPU fallbacks, diagnose the exact torch installation in `/home/dewster/Vanguard/vanguard`: inspect `torch.__version__`, `torch.version.hip`, `torch.version.cuda`, `torch.__file__`, presence of `torch/lib/libcaffe2_nvrtc.so`, the shared-object dependencies if present, and `torch.cuda.get_device_properties(0)` under a clean process with LD_PRELOAD and LD_LIBRARY_PATH unset. Do NOT blindly symlink an unrelated CUDA/ROCm library, reuse a library from a different PyTorch build or silently route inference to CPU. Repair packaging / loader after evidence.
+
+Separate Studio initialization issue from user log: pre-load canvas events raised `'ModularAnnotationStudio' object has no attribute 'original_image'`. Source fix explicitly initializes `original_image=None`, ignores unloaded-canvas coordinate events, and persists full detection exceptions to the existing Annotation Studio logfile. Commits 9a19f0a and 5054616; regression tests fa767ba. Annotation Integrity and Phoenix CI passed for that slice, but the ACTUAL GPU inference still fails until workstation runtime is fixed.
