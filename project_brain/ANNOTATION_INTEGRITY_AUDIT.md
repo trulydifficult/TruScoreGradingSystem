@@ -363,3 +363,51 @@ If still empty, get the actual log traceback rather than adding another
 unverified fallback. Current Studio contains duplicate method definitions
 in the border plugin; consolidate only after working runtime behavior is
 recorded and verified.
+
+
+## Real ROCm/YOLO image-to-overlay acceptance and first-card lifecycle gap — 2026-10-16
+
+The user verified through the normal `run_truscore.py` UI, launched with
+`env -u LD_LIBRARY_PATH -u LD_PRELOAD ./vanguard/bin/python run_truscore.py`,
+that the actual `revolutionary_border_detector.pt` predicts an outer
+card boundary (YOLO class 0, screenshot confidence ~0.97) and inner
+graphics boundary (class 1, screenshot confidence ~0.95), with both
+rectangles and adjustment handles clearly displayed. UI reported
+`Detection: 1 outer / 1 graphic`. This confirms actual ROCm inference
+plus working plugin->Studio overlay rendering for the observed card,
+not a simulated test. The inference library-loader failure was caused
+by one or both of the original library environment variables; root
+variable/collision is not yet isolated.
+
+The user manually corrected and used Save/Next on four cards, reporting
+all three exports appear correctly saved. Exported source images and YOLO
+pairs have NOT been inspected remotely: no claim of rotation, annotation
+pairing, or three-target file-content acceptance yet.
+
+Remaining issue: user had to press `Run Detection` for the first card,
+while later workflow operated. Actual active
+`ModularAnnotationStudio.load_plugin_from_file()` did not notify a newly
+selected plugin if an image had been loaded *before* plugin selection,
+unlike alternate `on_plugin_selected()` route. The bounded fix
+for `border_detection_plugin` only now detects already-loaded
+`original_image`/path after inserting and wiring settings widget;
+it calls the existing widget `set_current_image()` and the plugin's
+`on_image_changed()` ONCE. The plugin's existing delayed detection,
+stale-image guard and single real checkpoint remain authoritative.
+When plugin is selected before card loading, normal
+`load_current_image()` remains responsible for notification.
+
+Regression tests `tests/annotation/test_first_card_activation.py`
+exercise the effective source methods for BOTH startup orders. CI run
+38981656677 PASS: 20 Annotation Integrity tests. The real-world
+first-card startup behavior has NOT been retested since this fix.
+If this persists when the plugin was already selected before card
+loading, inspect the exact application log and scheduling messages
+rather than blaming the untested activation-order hypothesis.
+
+Next steps: selective sync of only four annotated card images and
+matching label files in each of the three output folders; inspect
+actual exports visually and verify classes, stems, image dimensions and
+rotation. Do not commit the entire virtualenv, archived scripts, or
+every older runtime artifact. Keep Mask R-CNN / COCO precision training
+blocked pending export validation.
