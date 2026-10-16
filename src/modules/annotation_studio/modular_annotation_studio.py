@@ -156,6 +156,9 @@ class ModularAnnotationStudio(QMainWindow):
 
 
         # Core data
+        # The canvas receives mouse events before a card is loaded. Keep an
+        # explicit empty original-image state so coordinate transforms are safe.
+        self.original_image = None
         self.current_image = None
         self.current_image_path = None
         self.image_files = []
@@ -1061,7 +1064,8 @@ class ModularAnnotationStudio(QMainWindow):
                                Returns (-1, -1) if outside image bounds
         """
         if not hasattr(self, 'image_label') or self.original_image is None:
-            return canvas_x, canvas_y
+            # No pixels loaded: a canvas event is not an annotation event.
+            return -1, -1
 
         try:
             # Get the actual displayed pixmap
