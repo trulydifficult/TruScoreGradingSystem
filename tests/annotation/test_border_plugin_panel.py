@@ -26,7 +26,7 @@ def _active_panel_factory(widget_cls):
     assert len(definitions) == 2, "Review the active panel entrypoint if ownership changes"
     module = ast.Module(body=[definitions[-1]], type_ignores=[])
     ast.fix_missing_locations(module)
-    ns = {"BorderDetectionSettingsWidget": widget_cls, "Path": Path}
+    ns = {"BorderDetectionSettingsWidget": widget_cls, "Path": Path, "QWidget": object}
     exec(compile(module, str(PLUGIN), "exec"), ns)
     return ns["create_settings_panel"]
 
