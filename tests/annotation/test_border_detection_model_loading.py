@@ -187,7 +187,8 @@ def test_auto_image_load_queues_one_real_detection_and_rejects_stale_card(monkey
     widget = SimpleNamespace(current_image_path=None, current_image=None,
                              run_detection=lambda: calls.append("detected"))
     plugin = SimpleNamespace(settings_widget=widget, logger=Logger(), current_image=None)
-    on_change = _method("on_image_changed", cls="BorderDetectionPlugin")
+    on_change = _method("on_image_changed", cls="BorderDetectionPlugin",
+                        ns={"np": SimpleNamespace(ndarray=object)})
     on_change(plugin, "first.jpg", object())
     on_change(plugin, "second.jpg", object())
     assert len(timers) == 2
