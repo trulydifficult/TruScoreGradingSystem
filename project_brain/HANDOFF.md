@@ -947,3 +947,49 @@ images and their 12 image/label pairs (up to 24 files) can be staged
 and pushed selectively. Do not bulk commit runtime data/venv.
 After sync, inspect the 4 real exports across combined/outer/graphic
 folders for class remapping, rotation and image-label fidelity.
+
+
+## Four real Annotation Studio card outputs accepted at export-contract level — 2026-10-16
+
+Commit `c582a44` contains real image001F..image004F exports and
+28 source application logs. All 24 image/label file outputs were
+audited: each card's three JPG blobs are identical across
+combined/outer/graphic targets, all are valid 1632x2284 JPEG,
+the combined labels contain outer class 0 and graphic class 1,
+outer-only 0 exactly matches outer combined coordinates, and
+graphic-only 0 exactly matches inner combined coordinates.
+All normalized boxes are in bounds and inner bbox is contained
+by outer bbox. A CI-generated two-column visual contact sheet
+showed plausible border alignments at reduced resolution. Real
+manual annotation/subpixel accuracy NOT proven. Log records
+`image003F` saved at -0.150 degrees.
+
+Verified runtime log sequence on Oct 16: plugin selected
+18:18:24 BEFORE images loaded 18:18:36. First-card completion
+messages occurred THREE times at 18:18:44 (~8 sec lag),
+subsequent cards displayed two predicted boxes at ~0.52s
+after loading. The earlier card-before-plugin activation-order
+fix is not an explanation of the user's observed first-card
+startup problem. First-time Ultralytics/ROCm initialization or
+repeated auto/manual requests could explain, not yet established.
+Four Space save operations 18:20:44, 18:21:28, 18:22:13, 18:22:49,
+consistent with user's 4-card workflow.
+
+Added real dataset regression and contact-sheet diagnostic:
+`tests/annotation/test_real_four_card_exports.py`; expanded
+`.github/workflows/annotation-integrity.yml` sparse checkout and
+Pillow install. GitHub Actions 38982467645 PASS 24 tests,
+38982472140 PASS, Phoenix Foundation 38982472153 PASS.
+This validates source-level exported content, not exact fine-rotation
+pixel fidelity or unattended first-image inference behavior.
+See `project_brain/ANNOTATION_INTEGRITY_AUDIT.md`.
+
+Next: user should pull latest branch, start with
+`env -u LD_LIBRARY_PATH -u LD_PRELOAD ./vanguard/bin/python run_truscore.py`,
+load a fresh first card with plugin already active, WAIT ~10-15 sec
+without clicking Run Detection, observe the initial result.
+Compare timestamps to known delayed first-frame model warmup,
+and only then decide whether to add a busy indicator / deduplicate
+queued inference requests. Continue monitoring source image export
+and coordinate frame validation; Detectron2 segmentation ground truth
+is still blocked pending an appropriate geometry contract.
