@@ -1,0 +1,284 @@
+2026-01-09 17:35:12,456 | WARNING  | guru_integration_helper - ⚠️ Guru not available: setup_truscore_logging() missing 1 required positional argument: 'log_file_name'
+2026-01-09 17:35:12,456 | INFO     | guru_integration_helper - Events will be logged but not absorbed by Guru
+2026-01-12 11:05:41,503 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 11:26:33,965 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 11:33:21,848 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 11:38:23,978 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 11:44:18,344 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 12:01:40,996 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 12:54:37,344 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 15:27:45,937 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 15:30:54,847 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 15:36:38,134 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 15:44:27,233 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 15:50:50,255 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 15:53:45,455 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 15:56:40,672 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 16:06:54,028 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 16:12:54,175 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 16:21:44,837 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 16:42:16,787 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 16:57:00,029 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 16:59:51,097 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 17:15:10,703 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 17:20:52,716 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-12 17:27:10,847 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 18:44:27,640 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 18:44:49,655 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 18:45:18,276 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 19:15:13,326 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 19:15:23,884 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 19:15:39,595 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:36:35,403 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 20:36:52,387 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:41:24,822 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 20:41:37,723 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:45:57,597 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 20:46:06,213 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:46:24,762 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:46:35,810 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grading_started: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:46:38,241 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.surface_assessed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:46:38,486 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.corners_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:50:04,409 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 20:50:18,260 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:50:29,331 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grading_started: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:50:32,114 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.surface_assessed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:50:32,282 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.corners_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:50:32,449 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.border_detected: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:50:32,481 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.centering_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:50:32,481 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grade_assigned: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:58:09,411 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 20:58:25,155 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:58:33,300 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grading_started: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:58:36,035 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.surface_assessed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:58:36,177 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.corners_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:58:36,375 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.border_detected: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:58:36,407 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.centering_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 20:58:36,407 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grade_assigned: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 21:18:12,943 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 21:18:22,692 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 21:18:32,417 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 21:19:26,321 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 21:20:08,928 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 22:20:57,136 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 22:29:49,636 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:29:58,233 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grading_started: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:30:00,842 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.surface_assessed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:30:01,000 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.corners_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:30:01,305 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.centering_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:30:01,305 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grade_assigned: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:39:33,259 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 22:39:45,505 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:39:54,152 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grading_started: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:39:56,808 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.surface_assessed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:39:56,959 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.corners_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:39:57,177 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.centering_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 22:39:57,178 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grade_assigned: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:38:45,148 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 23:38:53,799 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:39:01,012 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grading_started: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:39:03,787 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.surface_assessed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:39:03,956 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.corners_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:39:04,150 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.centering_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:39:04,150 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grade_assigned: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:41:04,588 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 23:41:12,920 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:41:19,084 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grading_started: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:50:10,879 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 23:50:20,614 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:50:25,622 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grading_started: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:50:28,302 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.surface_assessed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:50:28,504 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.corners_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:50:28,689 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.centering_analyzed: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:50:28,689 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.grade_assigned: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:51:14,742 | ERROR    | guru_integration_helper - ❌ Failed to send event annotation.annotation_created: GuruEventDispatcher.absorb_annotation_event() takes 2 positional arguments but 4 were given
+2026-01-17 23:52:48,578 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 23:52:48,588 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-01-17 23:52:48,593 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-01-17 23:53:15,197 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-17 23:53:24,317 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-17 23:53:30,568 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-01-17 23:53:34,036 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-01-17 23:53:34,210 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-01-17 23:53:34,449 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-01-17 23:53:34,455 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-01-17 23:59:56,431 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 00:00:08,449 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 00:11:20,553 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 00:11:43,324 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 00:13:13,743 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 00:13:25,312 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 14:09:54,971 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:13:14,607 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:14:01,637 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:14:27,881 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:17:50,742 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:18:20,773 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:19:11,701 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:19:30,492 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:20:35,933 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 14:21:00,580 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 14:22:28,729 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-01-18 14:22:32,600 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-01-18 14:22:32,767 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-01-18 14:22:33,081 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-01-18 14:22:33,086 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-01-18 14:23:09,203 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 14:23:28,909 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 14:23:51,212 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 14:24:11,852 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 14:24:25,292 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 14:24:32,038 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-01-18 14:24:32,367 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-01-18 14:24:32,510 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-01-18 14:24:32,664 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-01-18 14:24:32,669 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-01-18 14:25:29,128 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-01-18 14:25:35,262 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-01-18 14:25:37,636 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-01-18 14:25:37,779 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-01-18 14:25:37,969 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-01-18 14:25:37,974 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-01-18 19:06:03,378 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 19:11:13,744 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 19:16:27,511 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 19:21:58,560 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-01-18 23:01:59,215 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-02-04 03:24:52,720 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-02-04 03:27:21,168 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-02-04 03:27:38,386 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-02-04 03:27:39,663 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-02-04 03:27:43,318 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-02-04 03:27:43,474 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-02-04 03:27:43,730 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-02-04 03:27:43,734 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-02-04 03:35:42,362 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-02-04 03:35:44,871 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-02-04 03:35:47,232 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-02-04 03:35:47,412 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-02-04 03:35:47,697 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-02-04 03:35:47,701 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-02-04 03:35:47,707 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-02-04 03:35:50,784 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-02-04 03:35:50,937 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-02-04 03:35:51,126 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-02-04 03:35:51,130 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-02-07 15:12:34,089 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-02-16 13:53:04,855 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-02-16 13:53:46,604 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-02-16 13:54:18,497 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-02-23 18:19:46,682 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-02-23 18:21:58,224 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-02-23 18:22:07,110 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-02-23 18:22:10,201 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-02-23 18:22:10,602 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-02-23 18:22:10,816 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-02-23 18:22:10,822 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-04-19 12:13:33,206 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-04-19 12:15:06,694 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-04-19 12:15:29,608 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-04-19 12:15:31,129 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-04-19 12:15:33,699 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-04-19 12:15:34,080 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-04-19 12:15:34,305 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-04-19 12:15:34,311 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-04-19 12:16:31,884 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-04-19 12:20:37,004 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-04-19 12:20:39,285 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-04-19 12:20:41,687 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-04-19 12:20:41,830 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-04-19 12:20:42,028 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-04-19 12:20:42,033 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-04-19 12:20:42,040 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-04-19 12:20:44,646 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-04-19 12:20:44,789 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-04-19 12:20:44,932 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-04-19 12:20:44,938 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-04-25 17:53:12,477 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-04-25 18:04:17,476 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-06-19 22:02:59,949 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-06-19 22:04:19,343 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-06-19 22:05:06,983 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-06-19 22:05:08,275 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-06-19 22:05:08,579 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-06-19 22:05:08,941 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-06-19 22:05:09,190 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-06-19 22:05:09,195 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-09-11 11:17:12,196 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-09-11 11:18:13,137 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-09-11 11:18:45,300 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.annotation_created
+2026-09-11 11:18:46,880 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grading_started
+2026-09-11 11:18:49,495 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.surface_assessed
+2026-09-11 11:18:49,684 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.corners_analyzed
+2026-09-11 11:18:49,938 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.centering_analyzed
+2026-09-11 11:18:49,942 | DEBUG    | guru_integration_helper - ✅ Event sent: annotation.grade_assigned
+2026-10-14 00:27:12,324 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-14 00:58:27,394 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-14 15:46:29,095 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-14 15:53:34,593 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-14 15:55:09,568 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-14 15:55:10,626 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-14 15:55:14,307 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-14 15:55:14,479 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-14 15:55:14,479 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 13:41:54,429 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 13:43:08,585 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 13:43:09,669 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 13:43:13,467 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 13:43:13,552 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-15 13:43:13,621 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 14:00:43,460 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 14:01:20,684 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 14:01:21,728 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 14:01:22,647 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 14:01:22,729 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-15 14:01:22,802 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 14:19:31,839 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 14:20:25,961 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 14:20:26,073 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 14:20:26,862 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 14:20:26,966 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-15 14:20:27,040 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 14:51:50,404 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 14:53:28,735 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 14:53:28,909 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 14:53:29,601 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 14:53:29,679 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-15 14:53:29,748 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 15:26:08,161 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 15:27:36,015 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 15:27:36,125 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 15:27:38,131 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 15:27:38,209 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-15 15:27:38,294 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 17:08:13,545 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:08:59,918 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:09:00,008 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 17:09:00,793 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 17:09:00,872 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-15 17:09:00,946 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 17:09:05,586 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:09:05,873 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 17:09:06,487 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 17:09:06,563 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-15 17:09:06,637 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 17:09:10,727 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:09:10,833 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 17:09:11,622 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 17:09:11,721 | DEBUG    | guru_integration_helper - ✅ Event sent: training.checkpoint_saved
+2026-10-15 17:09:11,811 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 17:12:11,811 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:12:58,843 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:12:59,131 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_failed
+2026-10-15 17:18:04,218 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:18:20,018 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:18:20,255 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_started
+2026-10-15 17:18:21,132 | DEBUG    | guru_integration_helper - ✅ Event sent: training.epoch_completed
+2026-10-15 17:18:21,211 | DEBUG    | guru_integration_helper - ✅ Event sent: training.training_completed
+2026-10-15 17:34:43,535 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-15 17:46:09,456 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-16 17:36:24,719 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-16 17:50:22,455 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-16 17:54:43,881 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-16 18:08:39,737 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully
+2026-10-16 18:18:16,582 | INFO     | guru_integration_helper - ✅ Guru integration initialized successfully

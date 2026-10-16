@@ -1,0 +1,7 @@
+2026-01-17 23:47:06,550 | INFO     | <string> - Stage 1 - Image loading complete
+2026-01-17 23:47:06,550 | INFO     | <string> - Stage 2 - Surface analysis complete - Score: 800/1000
+2026-01-17 23:47:06,550 | ERROR    | <string> - Stage 3 - Incomplete - Something went wrong
+2026-01-17 23:47:06,550 | INFO     | <string> - Performance Stats - Success: 100%
+2026-01-17 23:47:06,550 | INFO     | <string> - Photometric Results Viewer displayed successfully
+2026-01-17 23:47:06,550 | INFO     | <string> - Some random debug info
+2026-01-17 23:47:06,550 | DEBUG    | <string> - Secret stage progress

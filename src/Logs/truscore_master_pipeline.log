@@ -1,0 +1,1578 @@
+2026-01-12 11:07:10,183 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 11:07:10,184 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 11:07:10,184 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 11:07:10,184 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 11:07:10,269 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 11:07:10,586 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 11:07:10,586 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 11:07:10,586 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 11:07:10,586 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 11:07:10,586 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 11:07:10,586 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 11:07:10,605 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:07:10,605 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:07:10,773 | INFO     | truscore_master_pipeline - Corner TL: 94.9%
+2026-01-12 11:07:10,882 | INFO     | truscore_master_pipeline - Corner TR: 82.9%
+2026-01-12 11:07:11,000 | INFO     | truscore_master_pipeline - Corner BL: 94.5%
+2026-01-12 11:07:11,118 | INFO     | truscore_master_pipeline - Corner BR: 41.0%
+2026-01-12 11:07:11,118 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.9% TR=82.9% BL=94.5% BR=41.0%
+2026-01-12 11:07:11,118 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 783.3/1000
+2026-01-12 11:07:12,612 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=73.8% Defects=4705 Roughness=0.472
+2026-01-12 11:07:12,612 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 738.1/1000
+2026-01-12 11:07:12,862 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:07:12,862 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (96.91, 3.09), 'left_right': (0.83, 99.17)}
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [24.868, 24.868, 24.868, 24.868, 24.868], 'avg': 24.868}, 'bottom': {'values': [0.794, 0.794, 0.794, 0.794, 0.794], 'avg': 0.794}, 'left': {'values': [0.265, 0.265, 0.265, 0.265, 0.265, 0.265, 0.265], 'avg': 0.265}, 'right': {'values': [31.746, 31.746, 31.746, 31.746, 31.746, 31.746, 31.746], 'avg': 31.746}}
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (96.91, 3.09)
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Left/Right ratio: (0.83, 99.17)
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=3.9% Top/Bottom=96.9%/3.1% Left/Right=0.8%/99.2% Points_Measured=24
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 39.2/1000
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Final Scores: Corners=783.3 Centering=39.2 Surface=738.1 Edges=850.0 Total=2410.7/4000 Grade=5.5/10.0
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 5.5/10.0
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 5.5/10.0
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Master pipeline complete in 2.34s - Grade: 5.5/10.0
+2026-01-12 11:07:12,925 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 11:07:12,931 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:07:12,931 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:07:12,966 | INFO     | truscore_master_pipeline - Corner TL: 64.8%
+2026-01-12 11:07:13,002 | INFO     | truscore_master_pipeline - Corner TR: 86.9%
+2026-01-12 11:07:13,037 | INFO     | truscore_master_pipeline - Corner BL: 94.2%
+2026-01-12 11:07:13,074 | INFO     | truscore_master_pipeline - Corner BR: 94.7%
+2026-01-12 11:07:13,074 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=64.8% TR=86.9% BL=94.2% BR=94.7%
+2026-01-12 11:07:13,074 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 851.6/1000
+2026-01-12 11:07:14,228 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=67.8% Defects=5041 Roughness=0.472
+2026-01-12 11:07:14,228 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 678.0/1000
+2026-01-12 11:07:14,384 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:07:14,384 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:07:14,408 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (20.83, 79.17), 'left_right': (78.87, 21.13)}
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [1.323, 1.323, 1.323, 1.323, 1.323], 'avg': 1.323}, 'bottom': {'values': [5.026, 5.026, 5.026, 5.026, 5.026], 'avg': 5.026}, 'left': {'values': [14.815, 14.815, 14.815, 14.815, 14.815, 14.815, 14.815], 'avg': 14.815}, 'right': {'values': [3.968, 3.968, 3.968, 3.968, 3.968, 3.968, 3.968], 'avg': 3.968}}
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (20.83, 79.17)
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Left/Right ratio: (78.87, 21.13)
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=42.0% Top/Bottom=20.8%/79.2% Left/Right=78.9%/21.1% Points_Measured=24
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 419.6/1000
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Final Scores: Corners=851.6 Centering=419.6 Surface=678.0 Edges=850.0 Total=2799.2/4000 Grade=6.0/10.0
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.0/10.0
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-01-12 11:07:14,409 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.48s - Grade: 6.0/10.0
+2026-01-12 11:13:23,490 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 11:13:23,499 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:13:23,499 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:13:23,536 | INFO     | truscore_master_pipeline - Corner TL: 94.9%
+2026-01-12 11:13:23,569 | INFO     | truscore_master_pipeline - Corner TR: 94.8%
+2026-01-12 11:13:23,605 | INFO     | truscore_master_pipeline - Corner BL: 94.6%
+2026-01-12 11:13:23,639 | INFO     | truscore_master_pipeline - Corner BR: 36.0%
+2026-01-12 11:13:23,639 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.9% TR=94.8% BL=94.6% BR=36.0%
+2026-01-12 11:13:23,639 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 801.0/1000
+2026-01-12 11:13:25,234 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=73.0% Defects=4152 Roughness=0.472
+2026-01-12 11:13:25,234 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 729.7/1000
+2026-01-12 11:13:25,395 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:13:25,395 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [62.963, 62.963, 62.963, 62.963, 62.963], 'avg': 62.963}, 'bottom': {'values': [62.963, 62.963, 62.963, 62.963, 62.963], 'avg': 62.963}, 'left': {'values': [57.937, 57.937, 57.937, 57.937, 57.937, 57.937, 57.937], 'avg': 57.937}, 'right': {'values': [57.937, 57.937, 57.937, 57.937, 57.937, 57.937, 57.937], 'avg': 57.937}}
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Final Scores: Corners=801.0 Centering=1000.0 Surface=729.7 Edges=850.0 Total=3380.7/4000 Grade=8.0/10.0
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.93s - Grade: 8.0/10.0
+2026-01-12 11:13:25,420 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 11:13:25,426 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:13:25,426 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:13:25,462 | INFO     | truscore_master_pipeline - Corner TL: 80.5%
+2026-01-12 11:13:25,498 | INFO     | truscore_master_pipeline - Corner TR: 94.7%
+2026-01-12 11:13:25,533 | INFO     | truscore_master_pipeline - Corner BL: 94.0%
+2026-01-12 11:13:25,570 | INFO     | truscore_master_pipeline - Corner BR: 94.4%
+2026-01-12 11:13:25,570 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=80.5% TR=94.7% BL=94.0% BR=94.4%
+2026-01-12 11:13:25,570 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 909.3/1000
+2026-01-12 11:13:26,718 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=66.0% Defects=4813 Roughness=0.472
+2026-01-12 11:13:26,718 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 660.1/1000
+2026-01-12 11:13:26,878 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:13:26,878 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [64.55, 64.55, 64.55, 64.55, 64.55], 'avg': 64.55}, 'bottom': {'values': [64.55, 64.55, 64.55, 64.55, 64.55], 'avg': 64.55}, 'left': {'values': [60.582, 60.582, 60.582, 60.582, 60.582, 60.582, 60.582], 'avg': 60.582}, 'right': {'values': [60.582, 60.582, 60.582, 60.582, 60.582, 60.582, 60.582], 'avg': 60.582}}
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Final Scores: Corners=909.3 Centering=1000.0 Surface=660.1 Edges=850.0 Total=3419.4/4000 Grade=8.0/10.0
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 11:13:26,907 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.49s - Grade: 8.0/10.0
+2026-01-12 11:27:50,211 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 11:27:50,212 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 11:27:50,212 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 11:27:50,212 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 11:27:50,281 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 11:27:50,519 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 11:27:50,523 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 11:27:50,523 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 11:27:50,523 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 11:27:50,523 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 11:27:50,523 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 11:27:50,533 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:27:50,533 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:27:50,583 | INFO     | truscore_master_pipeline - Corner TL: 91.2%
+2026-01-12 11:27:50,621 | INFO     | truscore_master_pipeline - Corner TR: 83.2%
+2026-01-12 11:27:50,662 | INFO     | truscore_master_pipeline - Corner BL: 94.4%
+2026-01-12 11:27:50,696 | INFO     | truscore_master_pipeline - Corner BR: 93.4%
+2026-01-12 11:27:50,696 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=91.2% TR=83.2% BL=94.4% BR=93.4%
+2026-01-12 11:27:50,696 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 905.5/1000
+2026-01-12 11:27:51,879 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=76.0% Defects=3822 Roughness=0.473
+2026-01-12 11:27:51,879 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 760.4/1000
+2026-01-12 11:27:52,171 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:27:52,171 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (33.33, 66.67), 'left_right': (82.61, 17.39)}
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.794, 0.794, 0.794, 0.794, 0.794], 'avg': 0.794}, 'bottom': {'values': [1.587, 1.587, 1.587, 1.587, 1.587], 'avg': 1.587}, 'left': {'values': [20.106, 20.106, 20.106, 20.106, 20.106, 20.106, 20.106], 'avg': 20.106}, 'right': {'values': [4.233, 4.233, 4.233, 4.233, 4.233, 4.233, 4.233], 'avg': 4.233}}
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (33.33, 66.67)
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Left/Right ratio: (82.61, 17.39)
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=50.7% Top/Bottom=33.3%/66.7% Left/Right=82.6%/17.4% Points_Measured=24
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 507.2/1000
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Final Scores: Corners=905.5 Centering=507.2 Surface=760.4 Edges=850.0 Total=3023.1/4000 Grade=7.0/10.0
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.70s - Grade: 7.0/10.0
+2026-01-12 11:27:52,226 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 11:27:52,232 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:27:52,232 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:27:52,267 | INFO     | truscore_master_pipeline - Corner TL: 80.2%
+2026-01-12 11:27:52,300 | INFO     | truscore_master_pipeline - Corner TR: 94.9%
+2026-01-12 11:27:52,337 | INFO     | truscore_master_pipeline - Corner BL: 90.7%
+2026-01-12 11:27:52,371 | INFO     | truscore_master_pipeline - Corner BR: 94.7%
+2026-01-12 11:27:52,371 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=80.2% TR=94.9% BL=90.7% BR=94.7%
+2026-01-12 11:27:52,372 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 901.0/1000
+2026-01-12 11:27:53,388 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=70.6% Defects=4658 Roughness=0.473
+2026-01-12 11:27:53,389 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 706.3/1000
+2026-01-12 11:27:53,605 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:27:53,605 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:27:53,630 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (69.86, 30.14), 'left_right': (55.36, 44.64)}
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [13.492, 13.492, 13.492, 13.492, 13.492], 'avg': 13.492}, 'bottom': {'values': [5.82, 5.82, 5.82, 5.82, 5.82], 'avg': 5.82}, 'left': {'values': [34.127, 34.127, 34.127, 34.127, 34.127, 34.127, 34.127], 'avg': 34.127}, 'right': {'values': [27.513, 27.513, 27.513, 27.513, 27.513, 27.513, 27.513], 'avg': 27.513}}
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (69.86, 30.14)
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Left/Right ratio: (55.36, 44.64)
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=74.8% Top/Bottom=69.9%/30.1% Left/Right=55.4%/44.6% Points_Measured=24
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 747.8/1000
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Final Scores: Corners=901.0 Centering=747.8 Surface=706.3 Edges=850.0 Total=3205.1/4000 Grade=7.5/10.0
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.5/10.0
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.5/10.0
+2026-01-12 11:27:53,631 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.40s - Grade: 7.5/10.0
+2026-01-12 11:34:46,569 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 11:34:46,569 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 11:34:46,569 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 11:34:46,570 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 11:34:46,626 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 11:34:46,873 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 11:34:46,874 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 11:34:46,874 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 11:34:46,874 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 11:34:46,874 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 11:34:46,874 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 11:34:46,882 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:34:46,882 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:34:46,943 | INFO     | truscore_master_pipeline - Corner TL: 84.9%
+2026-01-12 11:34:46,983 | INFO     | truscore_master_pipeline - Corner TR: 89.5%
+2026-01-12 11:34:47,024 | INFO     | truscore_master_pipeline - Corner BL: 93.6%
+2026-01-12 11:34:47,065 | INFO     | truscore_master_pipeline - Corner BR: 94.7%
+2026-01-12 11:34:47,065 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=84.9% TR=89.5% BL=93.6% BR=94.7%
+2026-01-12 11:34:47,065 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 906.8/1000
+2026-01-12 11:34:48,263 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=77.7% Defects=3571 Roughness=0.472
+2026-01-12 11:34:48,263 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 776.8/1000
+2026-01-12 11:34:48,498 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:34:48,498 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [26.72, 26.72, 26.72, 26.72, 26.72], 'avg': 26.72}, 'bottom': {'values': [26.72, 26.72, 26.72, 26.72, 26.72], 'avg': 26.72}, 'left': {'values': [20.106, 20.106, 20.106, 20.106, 20.106, 20.106, 20.106], 'avg': 20.106}, 'right': {'values': [20.106, 20.106, 20.106, 20.106, 20.106, 20.106, 20.106], 'avg': 20.106}}
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - Final Scores: Corners=906.8 Centering=1000.0 Surface=776.8 Edges=850.0 Total=3533.5/4000 Grade=8.5/10.0
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.5/10.0
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:34:48,553 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:34:48,554 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-12 11:34:48,554 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.68s - Grade: 8.5/10.0
+2026-01-12 11:34:48,554 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 11:34:48,560 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:34:48,560 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:34:48,595 | INFO     | truscore_master_pipeline - Corner TL: 76.8%
+2026-01-12 11:34:48,629 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 11:34:48,664 | INFO     | truscore_master_pipeline - Corner BL: 85.4%
+2026-01-12 11:34:48,696 | INFO     | truscore_master_pipeline - Corner BR: 94.9%
+2026-01-12 11:34:48,696 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=76.8% TR=95.0% BL=85.4% BR=94.9%
+2026-01-12 11:34:48,696 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 880.2/1000
+2026-01-12 11:34:49,689 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=70.0% Defects=4367 Roughness=0.473
+2026-01-12 11:34:49,689 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 700.0/1000
+2026-01-12 11:34:49,852 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:34:49,852 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [26.72, 26.72, 26.72, 26.72, 26.72], 'avg': 26.72}, 'bottom': {'values': [26.72, 26.72, 26.72, 26.72, 26.72], 'avg': 26.72}, 'left': {'values': [20.106, 20.106, 20.106, 20.106, 20.106, 20.106, 20.106], 'avg': 20.106}, 'right': {'values': [20.106, 20.106, 20.106, 20.106, 20.106, 20.106, 20.106], 'avg': 20.106}}
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Final Scores: Corners=880.2 Centering=1000.0 Surface=700.0 Edges=850.0 Total=3430.2/4000 Grade=8.0/10.0
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 11:34:49,877 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.32s - Grade: 8.0/10.0
+2026-01-12 11:40:11,550 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 11:40:11,551 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 11:40:11,551 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 11:40:11,551 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 11:40:11,621 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 11:40:11,859 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 11:40:11,860 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 11:40:11,860 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 11:40:11,860 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 11:40:11,860 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 11:40:11,860 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 11:40:11,870 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:40:11,870 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:40:11,922 | INFO     | truscore_master_pipeline - Corner TL: 94.4%
+2026-01-12 11:40:11,959 | INFO     | truscore_master_pipeline - Corner TR: 75.4%
+2026-01-12 11:40:11,994 | INFO     | truscore_master_pipeline - Corner BL: 86.3%
+2026-01-12 11:40:12,029 | INFO     | truscore_master_pipeline - Corner BR: 75.0%
+2026-01-12 11:40:12,029 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.4% TR=75.4% BL=86.3% BR=75.0%
+2026-01-12 11:40:12,029 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 827.7/1000
+2026-01-12 11:40:13,248 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=95.4% Defects=2302 Roughness=0.476
+2026-01-12 11:40:13,248 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 953.9/1000
+2026-01-12 11:40:13,425 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:40:13,425 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [64.55, 64.55, 64.55, 64.55, 64.55], 'avg': 64.55}, 'bottom': {'values': [64.55, 64.55, 64.55, 64.55, 64.55], 'avg': 64.55}, 'left': {'values': [60.582, 60.582, 60.582, 60.582, 60.582, 60.582, 60.582], 'avg': 60.582}, 'right': {'values': [60.582, 60.582, 60.582, 60.582, 60.582, 60.582, 60.582], 'avg': 60.582}}
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Final Scores: Corners=827.7 Centering=1000.0 Surface=953.9 Edges=850.0 Total=3631.6/4000 Grade=8.5/10.0
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.5/10.0
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.64s - Grade: 8.5/10.0
+2026-01-12 11:40:13,495 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 11:40:13,502 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:40:13,502 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:40:13,537 | INFO     | truscore_master_pipeline - Corner TL: 94.6%
+2026-01-12 11:40:13,565 | INFO     | truscore_master_pipeline - Corner TR: 75.8%
+2026-01-12 11:40:13,593 | INFO     | truscore_master_pipeline - Corner BL: 70.1%
+2026-01-12 11:40:13,623 | INFO     | truscore_master_pipeline - Corner BR: 76.1%
+2026-01-12 11:40:13,623 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.6% TR=75.8% BL=70.1% BR=76.1%
+2026-01-12 11:40:13,623 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 791.5/1000
+2026-01-12 11:40:14,590 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=80.5% Defects=5161 Roughness=0.475
+2026-01-12 11:40:14,590 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 804.6/1000
+2026-01-12 11:40:14,752 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:40:14,752 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (79.59, 20.41), 'left_right': (99.17, 0.83)}
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [20.635, 20.635, 20.635, 20.635, 20.635], 'avg': 20.635}, 'bottom': {'values': [5.291, 5.291, 5.291, 5.291, 5.291], 'avg': 5.291}, 'left': {'values': [31.746, 31.746, 31.746, 31.746, 31.746, 31.746, 31.746], 'avg': 31.746}, 'right': {'values': [0.265, 0.265, 0.265, 0.265, 0.265, 0.265, 0.265], 'avg': 0.265}}
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (79.59, 20.41)
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Left/Right ratio: (99.17, 0.83)
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=21.2% Top/Bottom=79.6%/20.4% Left/Right=99.2%/0.8% Points_Measured=24
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 212.4/1000
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Final Scores: Corners=791.5 Centering=212.4 Surface=804.6 Edges=850.0 Total=2658.4/4000 Grade=6.0/10.0
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.0/10.0
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-01-12 11:40:14,780 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.29s - Grade: 6.0/10.0
+2026-01-12 11:45:38,685 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 11:45:38,686 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 11:45:38,686 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 11:45:38,686 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 11:45:38,738 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 11:45:38,977 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 11:45:38,977 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 11:45:38,977 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 11:45:38,977 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 11:45:38,977 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 11:45:38,977 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 11:45:38,987 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:45:38,987 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:45:39,037 | INFO     | truscore_master_pipeline - Corner TL: 89.2%
+2026-01-12 11:45:39,073 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 11:45:39,106 | INFO     | truscore_master_pipeline - Corner BL: 85.3%
+2026-01-12 11:45:39,140 | INFO     | truscore_master_pipeline - Corner BR: 58.2%
+2026-01-12 11:45:39,140 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=89.2% TR=95.0% BL=85.3% BR=58.2%
+2026-01-12 11:45:39,140 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 819.2/1000
+2026-01-12 11:45:40,274 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=75.1% Defects=3517 Roughness=0.473
+2026-01-12 11:45:40,274 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 750.8/1000
+2026-01-12 11:45:40,505 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:45:40,505 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (78.21, 21.79), 'left_right': (58.9, 41.1)}
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [32.275, 32.275, 32.275, 32.275, 32.275], 'avg': 32.275}, 'bottom': {'values': [8.995, 8.995, 8.995, 8.995, 8.995], 'avg': 8.995}, 'left': {'values': [34.127, 34.127, 34.127, 34.127, 34.127, 34.127, 34.127], 'avg': 34.127}, 'right': {'values': [23.81, 23.81, 23.81, 23.81, 23.81, 23.81, 23.81], 'avg': 23.81}}
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (78.21, 21.79)
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Left/Right ratio: (58.9, 41.1)
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=62.9% Top/Bottom=78.2%/21.8% Left/Right=58.9%/41.1% Points_Measured=24
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 628.9/1000
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Final Scores: Corners=819.2 Centering=628.9 Surface=750.8 Edges=850.0 Total=3049.0/4000 Grade=7.0/10.0
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.58s - Grade: 7.0/10.0
+2026-01-12 11:45:40,557 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 11:45:40,563 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 11:45:40,563 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 11:45:40,606 | INFO     | truscore_master_pipeline - Corner TL: 94.8%
+2026-01-12 11:45:40,640 | INFO     | truscore_master_pipeline - Corner TR: 89.7%
+2026-01-12 11:45:40,675 | INFO     | truscore_master_pipeline - Corner BL: 42.0%
+2026-01-12 11:45:40,708 | INFO     | truscore_master_pipeline - Corner BR: 94.5%
+2026-01-12 11:45:40,708 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.8% TR=89.7% BL=42.0% BR=94.5%
+2026-01-12 11:45:40,708 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 802.6/1000
+2026-01-12 11:45:41,698 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=82.2% Defects=4367 Roughness=0.475
+2026-01-12 11:45:41,698 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 822.3/1000
+2026-01-12 11:45:41,858 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 11:45:41,858 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [12.434, 12.434, 12.434, 12.434, 12.434], 'avg': 12.434}, 'bottom': {'values': [12.434, 12.434, 12.434, 12.434, 12.434], 'avg': 12.434}, 'left': {'values': [11.111, 11.111, 11.111, 11.111, 11.111, 11.111, 11.111], 'avg': 11.111}, 'right': {'values': [11.111, 11.111, 11.111, 11.111, 11.111, 11.111, 11.111], 'avg': 11.111}}
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Final Scores: Corners=802.6 Centering=1000.0 Surface=822.3 Edges=850.0 Total=3474.9/4000 Grade=8.0/10.0
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 11:45:41,885 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.33s - Grade: 8.0/10.0
+2026-01-12 12:04:06,162 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 12:04:06,166 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 12:04:06,166 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 12:04:06,166 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 12:04:06,225 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 12:04:06,475 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 12:04:06,479 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 12:04:06,479 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 12:04:06,479 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 12:04:06,479 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 12:04:06,479 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 12:04:06,488 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 12:04:06,488 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 12:04:06,535 | INFO     | truscore_master_pipeline - Corner TL: 90.4%
+2026-01-12 12:04:06,568 | INFO     | truscore_master_pipeline - Corner TR: 94.7%
+2026-01-12 12:04:06,596 | INFO     | truscore_master_pipeline - Corner BL: 95.0%
+2026-01-12 12:04:06,625 | INFO     | truscore_master_pipeline - Corner BR: 94.9%
+2026-01-12 12:04:06,625 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=90.4% TR=94.7% BL=95.0% BR=94.9%
+2026-01-12 12:04:06,625 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 937.3/1000
+2026-01-12 12:04:07,785 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=76.8% Defects=3623 Roughness=0.474
+2026-01-12 12:04:07,785 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 767.7/1000
+2026-01-12 12:04:08,022 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 12:04:08,022 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (84.5, 15.5), 'left_right': (43.88, 56.12)}
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [28.836, 28.836, 28.836, 28.836, 28.836], 'avg': 28.836}, 'bottom': {'values': [5.291, 5.291, 5.291, 5.291, 5.291], 'avg': 5.291}, 'left': {'values': [16.138, 16.138, 16.138, 16.138, 16.138, 16.138, 16.138], 'avg': 16.138}, 'right': {'values': [20.635, 20.635, 20.635, 20.635, 20.635, 20.635, 20.635], 'avg': 20.635}}
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (84.5, 15.5)
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Left/Right ratio: (43.88, 56.12)
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=59.4% Top/Bottom=84.5%/15.5% Left/Right=43.9%/56.1% Points_Measured=24
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 593.8/1000
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Final Scores: Corners=937.3 Centering=593.8 Surface=767.7 Edges=850.0 Total=3148.8/4000 Grade=7.0/10.0
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.60s - Grade: 7.0/10.0
+2026-01-12 12:04:08,076 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 12:04:08,082 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 12:04:08,082 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 12:04:08,118 | INFO     | truscore_master_pipeline - Corner TL: 94.7%
+2026-01-12 12:04:08,152 | INFO     | truscore_master_pipeline - Corner TR: 94.8%
+2026-01-12 12:04:08,183 | INFO     | truscore_master_pipeline - Corner BL: 91.5%
+2026-01-12 12:04:08,218 | INFO     | truscore_master_pipeline - Corner BR: 95.0%
+2026-01-12 12:04:08,219 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.7% TR=94.8% BL=91.5% BR=95.0%
+2026-01-12 12:04:08,219 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 940.1/1000
+2026-01-12 12:04:09,207 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=75.3% Defects=5259 Roughness=0.475
+2026-01-12 12:04:09,207 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 753.5/1000
+2026-01-12 12:04:09,368 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 12:04:09,368 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (47.06, 52.94), 'left_right': (89.26, 10.74)}
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [21.164, 21.164, 21.164, 21.164, 21.164], 'avg': 21.164}, 'bottom': {'values': [23.81, 23.81, 23.81, 23.81, 23.81], 'avg': 23.81}, 'left': {'values': [35.185, 35.185, 35.185, 35.185, 35.185, 35.185, 35.185], 'avg': 35.185}, 'right': {'values': [4.233, 4.233, 4.233, 4.233, 4.233, 4.233, 4.233], 'avg': 4.233}}
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (47.06, 52.94)
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Left/Right ratio: (89.26, 10.74)
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=57.8% Top/Bottom=47.1%/52.9% Left/Right=89.3%/10.7% Points_Measured=24
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 578.0/1000
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Final Scores: Corners=940.1 Centering=578.0 Surface=753.5 Edges=850.0 Total=3121.6/4000 Grade=7.0/10.0
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 12:04:09,393 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.32s - Grade: 7.0/10.0
+2026-01-12 12:55:34,336 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 12:55:34,337 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 12:55:34,337 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 12:55:34,337 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 12:55:34,388 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 12:55:34,618 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 12:55:34,618 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 12:55:34,618 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 12:55:34,618 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 12:55:34,618 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 12:55:34,618 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 12:55:34,627 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 12:55:34,627 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 12:55:34,672 | INFO     | truscore_master_pipeline - Corner TL: 86.6%
+2026-01-12 12:55:34,699 | INFO     | truscore_master_pipeline - Corner TR: 94.7%
+2026-01-12 12:55:34,722 | INFO     | truscore_master_pipeline - Corner BL: 68.1%
+2026-01-12 12:55:34,747 | INFO     | truscore_master_pipeline - Corner BR: 90.8%
+2026-01-12 12:55:34,747 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=86.6% TR=94.7% BL=68.1% BR=90.8%
+2026-01-12 12:55:34,747 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 850.7/1000
+2026-01-12 12:55:35,828 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=77.4% Defects=3370 Roughness=0.474
+2026-01-12 12:55:35,828 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 773.8/1000
+2026-01-12 12:55:35,828 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 12:55:35,829 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 12:55:35,880 | INFO     | truscore_master_pipeline - Final Scores: Corners=850.7 Centering=1000.0 Surface=773.8 Edges=850.0 Total=3474.6/4000 Grade=8.0/10.0
+2026-01-12 12:55:35,881 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 12:55:35,881 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 12:55:35,881 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 12:55:35,881 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 12:55:35,881 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.26s - Grade: 8.0/10.0
+2026-01-12 12:55:35,881 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 12:55:35,887 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 12:55:35,887 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 12:55:35,915 | INFO     | truscore_master_pipeline - Corner TL: 94.9%
+2026-01-12 12:55:35,940 | INFO     | truscore_master_pipeline - Corner TR: 90.9%
+2026-01-12 12:55:35,965 | INFO     | truscore_master_pipeline - Corner BL: 92.5%
+2026-01-12 12:55:35,991 | INFO     | truscore_master_pipeline - Corner BR: 93.6%
+2026-01-12 12:55:35,991 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.9% TR=90.9% BL=92.5% BR=93.6%
+2026-01-12 12:55:35,991 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 929.7/1000
+2026-01-12 12:55:36,889 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=80.9% Defects=4400 Roughness=0.475
+2026-01-12 12:55:36,889 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 809.3/1000
+2026-01-12 12:55:36,889 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 12:55:36,889 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 12:55:36,913 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Final Scores: Corners=929.7 Centering=1000.0 Surface=809.3 Edges=850.0 Total=3589.0/4000 Grade=8.5/10.0
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.5/10.0
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-12 12:55:36,914 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.03s - Grade: 8.5/10.0
+2026-01-12 15:29:27,819 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 15:29:27,820 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 15:29:27,820 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 15:29:27,820 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 15:29:27,870 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 15:29:28,102 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 15:29:28,102 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 15:29:28,102 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 15:29:28,102 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 15:29:28,102 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 15:29:28,102 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 15:29:28,111 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:29:28,111 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:29:28,156 | INFO     | truscore_master_pipeline - Corner TL: 93.0%
+2026-01-12 15:29:28,188 | INFO     | truscore_master_pipeline - Corner TR: 93.8%
+2026-01-12 15:29:28,212 | INFO     | truscore_master_pipeline - Corner BL: 93.3%
+2026-01-12 15:29:28,238 | INFO     | truscore_master_pipeline - Corner BR: 52.5%
+2026-01-12 15:29:28,238 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=93.0% TR=93.8% BL=93.3% BR=52.5%
+2026-01-12 15:29:28,238 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 831.4/1000
+2026-01-12 15:29:29,305 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=82.3% Defects=3721 Roughness=0.474
+2026-01-12 15:29:29,305 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 822.9/1000
+2026-01-12 15:29:29,305 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:29:29,305 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Final Scores: Corners=831.4 Centering=1000.0 Surface=822.9 Edges=850.0 Total=3504.3/4000 Grade=8.0/10.0
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.25s - Grade: 8.0/10.0
+2026-01-12 15:29:29,357 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 15:29:29,363 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:29:29,364 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:29:29,390 | INFO     | truscore_master_pipeline - Corner TL: 94.9%
+2026-01-12 15:29:29,413 | INFO     | truscore_master_pipeline - Corner TR: 92.0%
+2026-01-12 15:29:29,439 | INFO     | truscore_master_pipeline - Corner BL: 94.9%
+2026-01-12 15:29:29,463 | INFO     | truscore_master_pipeline - Corner BR: 92.9%
+2026-01-12 15:29:29,463 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.9% TR=92.0% BL=94.9% BR=92.9%
+2026-01-12 15:29:29,463 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 937.0/1000
+2026-01-12 15:29:30,301 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=80.9% Defects=4956 Roughness=0.475
+2026-01-12 15:29:30,301 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 809.1/1000
+2026-01-12 15:29:30,302 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:29:30,302 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Final Scores: Corners=937.0 Centering=1000.0 Surface=809.1 Edges=850.0 Total=3596.1/4000 Grade=8.5/10.0
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.5/10.0
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-12 15:29:30,326 | INFO     | truscore_master_pipeline - Master pipeline complete in 0.97s - Grade: 8.5/10.0
+2026-01-12 15:31:52,948 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 15:31:52,949 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 15:31:52,949 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 15:31:52,949 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 15:31:52,999 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 15:31:53,227 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 15:31:53,227 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 15:31:53,227 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 15:31:53,227 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 15:31:53,227 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 15:31:53,227 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 15:31:53,235 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:31:53,235 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:31:53,280 | INFO     | truscore_master_pipeline - Corner TL: 92.8%
+2026-01-12 15:31:53,312 | INFO     | truscore_master_pipeline - Corner TR: 93.4%
+2026-01-12 15:31:53,345 | INFO     | truscore_master_pipeline - Corner BL: 87.3%
+2026-01-12 15:31:53,378 | INFO     | truscore_master_pipeline - Corner BR: 89.2%
+2026-01-12 15:31:53,378 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=92.8% TR=93.4% BL=87.3% BR=89.2%
+2026-01-12 15:31:53,378 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 906.8/1000
+2026-01-12 15:31:54,490 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=77.9% Defects=3591 Roughness=0.474
+2026-01-12 15:31:54,491 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 778.8/1000
+2026-01-12 15:31:54,666 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:31:54,666 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (95.24, 4.76), 'left_right': (57.72, 42.28)}
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [31.746, 31.746, 31.746, 31.746, 31.746], 'avg': 31.746}, 'bottom': {'values': [1.587, 1.587, 1.587, 1.587, 1.587], 'avg': 1.587}, 'left': {'values': [22.751, 22.751, 22.751, 22.751, 22.751, 22.751, 22.751], 'avg': 22.751}, 'right': {'values': [16.667, 16.667, 16.667, 16.667, 16.667, 16.667, 16.667], 'avg': 16.667}}
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (95.24, 4.76)
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - Left/Right ratio: (57.72, 42.28)
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=47.0% Top/Bottom=95.2%/4.8% Left/Right=57.7%/42.3% Points_Measured=24
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 470.4/1000
+2026-01-12 15:31:54,716 | INFO     | truscore_master_pipeline - Final Scores: Corners=906.8 Centering=470.4 Surface=778.8 Edges=850.0 Total=3006.0/4000 Grade=7.0/10.0
+2026-01-12 15:31:54,717 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 15:31:54,717 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:31:54,717 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:31:54,717 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 15:31:54,717 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.49s - Grade: 7.0/10.0
+2026-01-12 15:31:54,717 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 15:31:54,723 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:31:54,723 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:31:54,749 | INFO     | truscore_master_pipeline - Corner TL: 94.9%
+2026-01-12 15:31:54,772 | INFO     | truscore_master_pipeline - Corner TR: 94.6%
+2026-01-12 15:31:54,795 | INFO     | truscore_master_pipeline - Corner BL: 60.4%
+2026-01-12 15:31:54,822 | INFO     | truscore_master_pipeline - Corner BR: 94.4%
+2026-01-12 15:31:54,822 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.9% TR=94.6% BL=60.4% BR=94.4%
+2026-01-12 15:31:54,822 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 860.9/1000
+2026-01-12 15:31:55,633 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=79.9% Defects=4757 Roughness=0.474
+2026-01-12 15:31:55,633 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 798.6/1000
+2026-01-12 15:31:55,733 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:31:55,733 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:31:55,758 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:31:55,758 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:31:55,758 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (93.04, 6.96), 'left_right': (96.12, 3.88)}
+2026-01-12 15:31:55,758 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [38.889, 38.889, 38.889, 38.889, 38.889], 'avg': 38.889}, 'bottom': {'values': [2.91, 2.91, 2.91, 2.91, 2.91], 'avg': 2.91}, 'left': {'values': [26.19, 26.19, 26.19, 26.19, 26.19, 26.19, 26.19], 'avg': 26.19}, 'right': {'values': [1.058, 1.058, 1.058, 1.058, 1.058, 1.058, 1.058], 'avg': 1.058}}
+2026-01-12 15:31:55,758 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (93.04, 6.96)
+2026-01-12 15:31:55,758 | INFO     | truscore_master_pipeline - Left/Right ratio: (96.12, 3.88)
+2026-01-12 15:31:55,758 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=10.8% Top/Bottom=93.0%/7.0% Left/Right=96.1%/3.9% Points_Measured=24
+2026-01-12 15:31:55,759 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 108.4/1000
+2026-01-12 15:31:55,759 | INFO     | truscore_master_pipeline - Final Scores: Corners=860.9 Centering=108.4 Surface=798.6 Edges=850.0 Total=2617.9/4000 Grade=6.0/10.0
+2026-01-12 15:31:55,759 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.0/10.0
+2026-01-12 15:31:55,759 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:31:55,759 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:31:55,759 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-01-12 15:31:55,759 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.04s - Grade: 6.0/10.0
+2026-01-12 15:37:29,477 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 15:37:29,478 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 15:37:29,478 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 15:37:29,478 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 15:37:29,528 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 15:37:29,755 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 15:37:29,756 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 15:37:29,756 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 15:37:29,756 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 15:37:29,756 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 15:37:29,756 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 15:37:29,764 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:37:29,764 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:37:29,807 | INFO     | truscore_master_pipeline - Corner TL: 94.3%
+2026-01-12 15:37:29,832 | INFO     | truscore_master_pipeline - Corner TR: 89.3%
+2026-01-12 15:37:29,855 | INFO     | truscore_master_pipeline - Corner BL: 69.6%
+2026-01-12 15:37:29,877 | INFO     | truscore_master_pipeline - Corner BR: 85.4%
+2026-01-12 15:37:29,877 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.3% TR=89.3% BL=69.6% BR=85.4%
+2026-01-12 15:37:29,877 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 846.4/1000
+2026-01-12 15:37:30,902 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=77.5% Defects=3417 Roughness=0.473
+2026-01-12 15:37:30,902 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 775.1/1000
+2026-01-12 15:37:31,105 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:37:31,105 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:37:31,156 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (94.38, 5.63), 'left_right': (88.3, 11.7)}
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [39.947, 39.947, 39.947, 39.947, 39.947], 'avg': 39.947}, 'bottom': {'values': [2.381, 2.381, 2.381, 2.381, 2.381], 'avg': 2.381}, 'left': {'values': [21.958, 21.958, 21.958, 21.958, 21.958, 21.958, 21.958], 'avg': 21.958}, 'right': {'values': [2.91, 2.91, 2.91, 2.91, 2.91, 2.91, 2.91], 'avg': 2.91}}
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (94.38, 5.63)
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Left/Right ratio: (88.3, 11.7)
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=17.3% Top/Bottom=94.4%/5.6% Left/Right=88.3%/11.7% Points_Measured=24
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 173.2/1000
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Final Scores: Corners=846.4 Centering=173.2 Surface=775.1 Edges=850.0 Total=2644.7/4000 Grade=6.0/10.0
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.0/10.0
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.40s - Grade: 6.0/10.0
+2026-01-12 15:37:31,157 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 15:37:31,163 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:37:31,163 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:37:31,188 | INFO     | truscore_master_pipeline - Corner TL: 94.7%
+2026-01-12 15:37:31,211 | INFO     | truscore_master_pipeline - Corner TR: 76.7%
+2026-01-12 15:37:31,234 | INFO     | truscore_master_pipeline - Corner BL: 74.1%
+2026-01-12 15:37:31,257 | INFO     | truscore_master_pipeline - Corner BR: 94.4%
+2026-01-12 15:37:31,257 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.7% TR=76.7% BL=74.1% BR=94.4%
+2026-01-12 15:37:31,257 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 849.8/1000
+2026-01-12 15:37:32,044 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=80.8% Defects=4363 Roughness=0.474
+2026-01-12 15:37:32,044 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 808.5/1000
+2026-01-12 15:37:32,154 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:37:32,154 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (95.59, 4.41), 'left_right': (36.62, 63.38)}
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [34.392, 34.392, 34.392, 34.392, 34.392], 'avg': 34.392}, 'bottom': {'values': [1.587, 1.587, 1.587, 1.587, 1.587], 'avg': 1.587}, 'left': {'values': [20.635, 20.635, 20.635, 20.635, 20.635, 20.635, 20.635], 'avg': 20.635}, 'right': {'values': [35.714, 35.714, 35.714, 35.714, 35.714, 35.714, 35.714], 'avg': 35.714}}
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (95.59, 4.41)
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Left/Right ratio: (36.62, 63.38)
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=41.0% Top/Bottom=95.6%/4.4% Left/Right=36.6%/63.4% Points_Measured=24
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 410.3/1000
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Final Scores: Corners=849.8 Centering=410.3 Surface=808.5 Edges=850.0 Total=2918.6/4000 Grade=6.5/10.0
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.5/10.0
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.5/10.0
+2026-01-12 15:37:32,179 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.02s - Grade: 6.5/10.0
+2026-01-12 15:45:19,143 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 15:45:19,144 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 15:45:19,144 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 15:45:19,144 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 15:45:19,193 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 15:45:19,420 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 15:45:19,420 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 15:45:19,420 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 15:45:19,420 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 15:45:19,420 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 15:45:19,420 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 15:45:19,429 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:45:19,429 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:45:19,471 | INFO     | truscore_master_pipeline - Corner TL: 91.0%
+2026-01-12 15:45:19,502 | INFO     | truscore_master_pipeline - Corner TR: 94.5%
+2026-01-12 15:45:19,526 | INFO     | truscore_master_pipeline - Corner BL: 94.6%
+2026-01-12 15:45:19,549 | INFO     | truscore_master_pipeline - Corner BR: 35.1%
+2026-01-12 15:45:19,549 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=91.0% TR=94.5% BL=94.6% BR=35.1%
+2026-01-12 15:45:19,549 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 788.1/1000
+2026-01-12 15:45:20,544 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=82.1% Defects=3589 Roughness=0.473
+2026-01-12 15:45:20,544 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 820.5/1000
+2026-01-12 15:45:20,544 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:45:20,544 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:45:20,595 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:45:20,595 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:45:20,595 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Final Scores: Corners=788.1 Centering=1000.0 Surface=820.5 Edges=850.0 Total=3458.6/4000 Grade=8.0/10.0
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.18s - Grade: 8.0/10.0
+2026-01-12 15:45:20,596 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 15:45:20,602 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:45:20,602 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:45:20,627 | INFO     | truscore_master_pipeline - Corner TL: 94.8%
+2026-01-12 15:45:20,650 | INFO     | truscore_master_pipeline - Corner TR: 93.9%
+2026-01-12 15:45:20,673 | INFO     | truscore_master_pipeline - Corner BL: 64.8%
+2026-01-12 15:45:20,696 | INFO     | truscore_master_pipeline - Corner BR: 94.5%
+2026-01-12 15:45:20,696 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.8% TR=93.9% BL=64.8% BR=94.5%
+2026-01-12 15:45:20,696 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 870.4/1000
+2026-01-12 15:45:21,480 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=78.4% Defects=4634 Roughness=0.474
+2026-01-12 15:45:21,480 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 784.2/1000
+2026-01-12 15:45:21,481 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:45:21,481 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Final Scores: Corners=870.4 Centering=1000.0 Surface=784.2 Edges=850.0 Total=3504.5/4000 Grade=8.0/10.0
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 15:45:21,505 | INFO     | truscore_master_pipeline - Master pipeline complete in 0.91s - Grade: 8.0/10.0
+2026-01-12 15:52:15,483 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 15:52:15,484 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 15:52:15,484 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 15:52:15,484 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 15:52:15,541 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 15:52:15,782 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 15:52:15,782 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 15:52:15,782 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 15:52:15,782 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 15:52:15,782 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 15:52:15,782 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 15:52:15,791 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:52:15,791 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:52:15,835 | INFO     | truscore_master_pipeline - Corner TL: 79.9%
+2026-01-12 15:52:15,871 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 15:52:15,907 | INFO     | truscore_master_pipeline - Corner BL: 94.7%
+2026-01-12 15:52:15,940 | INFO     | truscore_master_pipeline - Corner BR: 93.3%
+2026-01-12 15:52:15,940 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=79.9% TR=95.0% BL=94.7% BR=93.3%
+2026-01-12 15:52:15,941 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 907.3/1000
+2026-01-12 15:52:17,007 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=73.7% Defects=3548 Roughness=0.474
+2026-01-12 15:52:17,007 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 737.5/1000
+2026-01-12 15:52:17,007 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:52:17,007 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Final Scores: Corners=907.3 Centering=1000.0 Surface=737.5 Edges=850.0 Total=3494.8/4000 Grade=8.0/10.0
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.28s - Grade: 8.0/10.0
+2026-01-12 15:52:17,058 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 15:52:17,064 | INFO     | truscore_master_pipeline - Image loaded successfully: 1500x2000
+2026-01-12 15:52:17,064 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:52:17,098 | INFO     | truscore_master_pipeline - Corner TL: 94.7%
+2026-01-12 15:52:17,128 | INFO     | truscore_master_pipeline - Corner TR: 75.5%
+2026-01-12 15:52:17,154 | INFO     | truscore_master_pipeline - Corner BL: 94.9%
+2026-01-12 15:52:17,179 | INFO     | truscore_master_pipeline - Corner BR: 94.8%
+2026-01-12 15:52:17,180 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.7% TR=75.5% BL=94.9% BR=94.8%
+2026-01-12 15:52:17,180 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 899.7/1000
+2026-01-12 15:52:17,941 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=83.2% Defects=4671 Roughness=0.475
+2026-01-12 15:52:17,941 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 831.5/1000
+2026-01-12 15:52:17,941 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:52:17,941 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [57.143, 57.143, 57.143, 57.143, 57.143], 'avg': 57.143}, 'bottom': {'values': [57.143, 57.143, 57.143, 57.143, 57.143], 'avg': 57.143}, 'left': {'values': [50.794, 50.794, 50.794, 50.794, 50.794, 50.794, 50.794], 'avg': 50.794}, 'right': {'values': [50.794, 50.794, 50.794, 50.794, 50.794, 50.794, 50.794], 'avg': 50.794}}
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Final Scores: Corners=899.7 Centering=1000.0 Surface=831.5 Edges=850.0 Total=3581.2/4000 Grade=8.5/10.0
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.5/10.0
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-12 15:52:17,966 | INFO     | truscore_master_pipeline - Master pipeline complete in 0.91s - Grade: 8.5/10.0
+2026-01-12 15:54:37,861 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 15:54:37,862 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 15:54:37,862 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 15:54:37,862 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 15:54:37,919 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 15:54:38,147 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 15:54:38,147 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 15:54:38,147 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 15:54:38,147 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 15:54:38,147 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 15:54:38,148 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 15:54:38,156 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:54:38,156 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:54:38,198 | INFO     | truscore_master_pipeline - Corner TL: 93.4%
+2026-01-12 15:54:38,232 | INFO     | truscore_master_pipeline - Corner TR: 94.8%
+2026-01-12 15:54:38,263 | INFO     | truscore_master_pipeline - Corner BL: 95.0%
+2026-01-12 15:54:38,296 | INFO     | truscore_master_pipeline - Corner BR: 85.7%
+2026-01-12 15:54:38,296 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=93.4% TR=94.8% BL=95.0% BR=85.7%
+2026-01-12 15:54:38,296 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 922.4/1000
+2026-01-12 15:54:39,327 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=75.3% Defects=3411 Roughness=0.474
+2026-01-12 15:54:39,327 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 753.4/1000
+2026-01-12 15:54:39,327 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:54:39,327 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Final Scores: Corners=922.4 Centering=1000.0 Surface=753.4 Edges=850.0 Total=3525.8/4000 Grade=8.5/10.0
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.5/10.0
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.23s - Grade: 8.5/10.0
+2026-01-12 15:54:39,378 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 15:54:39,384 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:54:39,384 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:54:39,417 | INFO     | truscore_master_pipeline - Corner TL: 94.8%
+2026-01-12 15:54:39,450 | INFO     | truscore_master_pipeline - Corner TR: 76.8%
+2026-01-12 15:54:39,480 | INFO     | truscore_master_pipeline - Corner BL: 78.9%
+2026-01-12 15:54:39,503 | INFO     | truscore_master_pipeline - Corner BR: 94.8%
+2026-01-12 15:54:39,503 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.8% TR=76.8% BL=78.9% BR=94.8%
+2026-01-12 15:54:39,503 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 863.2/1000
+2026-01-12 15:54:40,311 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=80.3% Defects=5570 Roughness=0.475
+2026-01-12 15:54:40,311 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 803.2/1000
+2026-01-12 15:54:40,311 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:54:40,311 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'bottom': {'values': [58.201, 58.201, 58.201, 58.201, 58.201], 'avg': 58.201}, 'left': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}, 'right': {'values': [51.852, 51.852, 51.852, 51.852, 51.852, 51.852, 51.852], 'avg': 51.852}}
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Final Scores: Corners=863.2 Centering=1000.0 Surface=803.2 Edges=850.0 Total=3516.4/4000 Grade=8.0/10.0
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.0/10.0
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-01-12 15:54:40,336 | INFO     | truscore_master_pipeline - Master pipeline complete in 0.96s - Grade: 8.0/10.0
+2026-01-12 15:57:29,307 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 15:57:29,308 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 15:57:29,308 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 15:57:29,308 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 15:57:29,357 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 15:57:29,581 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 15:57:29,581 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 15:57:29,581 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 15:57:29,581 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 15:57:29,581 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 15:57:29,581 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 15:57:29,590 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:57:29,590 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:57:29,631 | INFO     | truscore_master_pipeline - Corner TL: 88.4%
+2026-01-12 15:57:29,659 | INFO     | truscore_master_pipeline - Corner TR: 92.0%
+2026-01-12 15:57:29,682 | INFO     | truscore_master_pipeline - Corner BL: 90.1%
+2026-01-12 15:57:29,705 | INFO     | truscore_master_pipeline - Corner BR: 94.7%
+2026-01-12 15:57:29,705 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=88.4% TR=92.0% BL=90.1% BR=94.7%
+2026-01-12 15:57:29,705 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 912.7/1000
+2026-01-12 15:57:30,723 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=75.4% Defects=3298 Roughness=0.473
+2026-01-12 15:57:30,724 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 754.3/1000
+2026-01-12 15:57:30,910 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:57:30,910 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (96.61, 3.39), 'left_right': (67.6, 32.4)}
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [30.159, 30.159, 30.159, 30.159, 30.159], 'avg': 30.159}, 'bottom': {'values': [1.058, 1.058, 1.058, 1.058, 1.058], 'avg': 1.058}, 'left': {'values': [44.709, 44.709, 44.709, 44.709, 44.709, 44.709, 44.709], 'avg': 44.709}, 'right': {'values': [21.429, 21.429, 21.429, 21.429, 21.429, 21.429, 21.429], 'avg': 21.429}}
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (96.61, 3.39)
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Left/Right ratio: (67.6, 32.4)
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=35.8% Top/Bottom=96.6%/3.4% Left/Right=67.6%/32.4% Points_Measured=24
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 357.9/1000
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Final Scores: Corners=912.7 Centering=357.9 Surface=754.3 Edges=850.0 Total=2874.9/4000 Grade=6.5/10.0
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.5/10.0
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.5/10.0
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.38s - Grade: 6.5/10.0
+2026-01-12 15:57:30,962 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 15:57:30,968 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 15:57:30,968 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 15:57:30,993 | INFO     | truscore_master_pipeline - Corner TL: 94.7%
+2026-01-12 15:57:31,015 | INFO     | truscore_master_pipeline - Corner TR: 75.1%
+2026-01-12 15:57:31,037 | INFO     | truscore_master_pipeline - Corner BL: 78.6%
+2026-01-12 15:57:31,059 | INFO     | truscore_master_pipeline - Corner BR: 95.0%
+2026-01-12 15:57:31,059 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.7% TR=75.1% BL=78.6% BR=95.0%
+2026-01-12 15:57:31,059 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 858.4/1000
+2026-01-12 15:57:31,887 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=74.8% Defects=5228 Roughness=0.474
+2026-01-12 15:57:31,887 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 747.8/1000
+2026-01-12 15:57:31,984 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 15:57:31,984 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (89.43, 10.57), 'left_right': (96.37, 3.63)}
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [29.101, 29.101, 29.101, 29.101, 29.101], 'avg': 29.101}, 'bottom': {'values': [3.439, 3.439, 3.439, 3.439, 3.439], 'avg': 3.439}, 'left': {'values': [49.206, 49.206, 49.206, 49.206, 49.206, 49.206, 49.206], 'avg': 49.206}, 'right': {'values': [1.852, 1.852, 1.852, 1.852, 1.852, 1.852, 1.852], 'avg': 1.852}}
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (89.43, 10.57)
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Left/Right ratio: (96.37, 3.63)
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=14.2% Top/Bottom=89.4%/10.6% Left/Right=96.4%/3.6% Points_Measured=24
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 142.0/1000
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Final Scores: Corners=858.4 Centering=142.0 Surface=747.8 Edges=850.0 Total=2598.2/4000 Grade=5.5/10.0
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 5.5/10.0
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 5.5/10.0
+2026-01-12 15:57:32,007 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.04s - Grade: 5.5/10.0
+2026-01-12 16:07:58,923 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 16:07:58,924 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 16:07:58,924 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 16:07:58,924 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 16:07:58,974 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 16:07:59,198 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 16:07:59,198 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 16:07:59,198 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 16:07:59,198 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 16:07:59,198 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 16:07:59,199 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 16:07:59,207 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:07:59,207 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:07:59,250 | INFO     | truscore_master_pipeline - Corner TL: 94.7%
+2026-01-12 16:07:59,281 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 16:07:59,305 | INFO     | truscore_master_pipeline - Corner BL: 93.6%
+2026-01-12 16:07:59,328 | INFO     | truscore_master_pipeline - Corner BR: 94.6%
+2026-01-12 16:07:59,328 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.7% TR=95.0% BL=93.6% BR=94.6%
+2026-01-12 16:07:59,328 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 944.7/1000
+2026-01-12 16:08:00,322 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=76.5% Defects=3666 Roughness=0.473
+2026-01-12 16:08:00,322 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 764.6/1000
+2026-01-12 16:08:00,486 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:08:00,486 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:08:00,537 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:08:00,537 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:08:00,537 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (0.0, 100.0), 'left_right': (50.0, 50.0)}
+2026-01-12 16:08:00,537 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'bottom': {'values': [0.529, 0.529, 0.529, 0.529, 0.529], 'avg': 0.529}, 'left': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'right': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}}
+2026-01-12 16:08:00,537 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (0.0, 100.0)
+2026-01-12 16:08:00,537 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 16:08:00,537 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=50.0% Top/Bottom=0.0%/100.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 16:08:00,538 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 500.0/1000
+2026-01-12 16:08:00,538 | INFO     | truscore_master_pipeline - Final Scores: Corners=944.7 Centering=500.0 Surface=764.6 Edges=850.0 Total=3059.3/4000 Grade=7.0/10.0
+2026-01-12 16:08:00,538 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 16:08:00,538 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:08:00,538 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:08:00,538 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 16:08:00,538 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.34s - Grade: 7.0/10.0
+2026-01-12 16:08:00,538 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 16:08:00,544 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:08:00,544 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:08:00,568 | INFO     | truscore_master_pipeline - Corner TL: 95.0%
+2026-01-12 16:08:00,591 | INFO     | truscore_master_pipeline - Corner TR: 88.8%
+2026-01-12 16:08:00,614 | INFO     | truscore_master_pipeline - Corner BL: 94.2%
+2026-01-12 16:08:00,638 | INFO     | truscore_master_pipeline - Corner BR: 95.0%
+2026-01-12 16:08:00,638 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=95.0% TR=88.8% BL=94.2% BR=95.0%
+2026-01-12 16:08:00,638 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 932.2/1000
+2026-01-12 16:08:01,505 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=79.4% Defects=5083 Roughness=0.474
+2026-01-12 16:08:01,505 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 793.9/1000
+2026-01-12 16:08:01,601 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:08:01,601 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:08:01,625 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (0.0, 100.0), 'left_right': (100.0, 0.0)}
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'bottom': {'values': [49.206, 49.206, 49.206, 49.206, 0.0], 'avg': 39.365}, 'left': {'values': [66.138, 66.138, 66.138, 66.138, 66.138, 66.138, 66.138], 'avg': 66.138}, 'right': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}}
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (0.0, 100.0)
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Left/Right ratio: (100.0, 0.0)
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=0.0% Top/Bottom=0.0%/100.0% Left/Right=100.0%/0.0% Points_Measured=24
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 0.0/1000
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Final Scores: Corners=932.2 Centering=0.0 Surface=793.9 Edges=850.0 Total=2576.1/4000 Grade=5.5/10.0
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 5.5/10.0
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 5.5/10.0
+2026-01-12 16:08:01,626 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.09s - Grade: 5.5/10.0
+2026-01-12 16:14:06,358 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 16:14:06,359 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 16:14:06,359 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 16:14:06,359 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 16:14:06,431 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 16:14:06,659 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 16:14:06,659 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 16:14:06,659 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 16:14:06,659 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 16:14:06,659 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 16:14:06,659 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 16:14:06,667 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:14:06,667 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:14:06,710 | INFO     | truscore_master_pipeline - Corner TL: 94.2%
+2026-01-12 16:14:06,740 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 16:14:06,764 | INFO     | truscore_master_pipeline - Corner BL: 94.9%
+2026-01-12 16:14:06,787 | INFO     | truscore_master_pipeline - Corner BR: 71.1%
+2026-01-12 16:14:06,787 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.2% TR=95.0% BL=94.9% BR=71.1%
+2026-01-12 16:14:06,787 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 888.1/1000
+2026-01-12 16:14:07,790 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=74.2% Defects=2996 Roughness=0.473
+2026-01-12 16:14:07,790 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 742.3/1000
+2026-01-12 16:14:07,953 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:14:07,953 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:14:08,001 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:14:08,001 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:14:08,001 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (0.0, 100.0), 'left_right': (50.0, 50.0)}
+2026-01-12 16:14:08,001 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'bottom': {'values': [47.354, 47.354, 47.354, 47.354, 47.354], 'avg': 47.354}, 'left': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'right': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}}
+2026-01-12 16:14:08,001 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (0.0, 100.0)
+2026-01-12 16:14:08,001 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 16:14:08,001 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=50.0% Top/Bottom=0.0%/100.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 16:14:08,001 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 500.0/1000
+2026-01-12 16:14:08,002 | INFO     | truscore_master_pipeline - Final Scores: Corners=888.1 Centering=500.0 Surface=742.3 Edges=850.0 Total=2980.4/4000 Grade=6.5/10.0
+2026-01-12 16:14:08,002 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.5/10.0
+2026-01-12 16:14:08,002 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:14:08,002 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:14:08,002 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.5/10.0
+2026-01-12 16:14:08,002 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.34s - Grade: 6.5/10.0
+2026-01-12 16:14:08,002 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 16:14:08,008 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:14:08,008 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:14:08,033 | INFO     | truscore_master_pipeline - Corner TL: 94.9%
+2026-01-12 16:14:08,056 | INFO     | truscore_master_pipeline - Corner TR: 94.0%
+2026-01-12 16:14:08,079 | INFO     | truscore_master_pipeline - Corner BL: 94.7%
+2026-01-12 16:14:08,103 | INFO     | truscore_master_pipeline - Corner BR: 94.3%
+2026-01-12 16:14:08,103 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.9% TR=94.0% BL=94.7% BR=94.3%
+2026-01-12 16:14:08,103 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 944.7/1000
+2026-01-12 16:14:08,941 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=76.7% Defects=3985 Roughness=0.474
+2026-01-12 16:14:08,941 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 766.6/1000
+2026-01-12 16:14:09,037 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:14:09,037 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (50.0, 50.0), 'left_right': (50.0, 50.0)}
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [64.55, 64.55, 64.55, 64.55, 64.55], 'avg': 64.55}, 'bottom': {'values': [64.55, 64.55, 64.55, 64.55, 64.55], 'avg': 64.55}, 'left': {'values': [60.582, 60.582, 60.582, 60.582, 60.582, 60.582, 60.582], 'avg': 60.582}, 'right': {'values': [60.582, 60.582, 60.582, 60.582, 60.582, 60.582, 60.582], 'avg': 60.582}}
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (50.0, 50.0)
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=100.0% Top/Bottom=50.0%/50.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 1000.0/1000
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Final Scores: Corners=944.7 Centering=1000.0 Surface=766.6 Edges=850.0 Total=3561.4/4000 Grade=8.5/10.0
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 8.5/10.0
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-12 16:14:09,063 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.06s - Grade: 8.5/10.0
+2026-01-12 16:22:39,815 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 16:22:39,819 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 16:22:39,819 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 16:22:39,819 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 16:22:39,870 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 16:22:40,094 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 16:22:40,095 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 16:22:40,095 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 16:22:40,095 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 16:22:40,095 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 16:22:40,095 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 16:22:40,103 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:22:40,103 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:22:40,144 | INFO     | truscore_master_pipeline - Corner TL: 91.6%
+2026-01-12 16:22:40,181 | INFO     | truscore_master_pipeline - Corner TR: 94.7%
+2026-01-12 16:22:40,213 | INFO     | truscore_master_pipeline - Corner BL: 94.3%
+2026-01-12 16:22:40,239 | INFO     | truscore_master_pipeline - Corner BR: 81.7%
+2026-01-12 16:22:40,239 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=91.6% TR=94.7% BL=94.3% BR=81.7%
+2026-01-12 16:22:40,239 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 906.0/1000
+2026-01-12 16:22:41,299 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=79.2% Defects=3351 Roughness=0.473
+2026-01-12 16:22:41,299 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 792.5/1000
+2026-01-12 16:22:41,464 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:22:41,464 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (0.0, 100.0), 'left_right': (50.0, 50.0)}
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'bottom': {'values': [7.407, 7.407, 7.407, 7.407, 7.407], 'avg': 7.407}, 'left': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'right': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}}
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (0.0, 100.0)
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=50.0% Top/Bottom=0.0%/100.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 500.0/1000
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - Final Scores: Corners=906.0 Centering=500.0 Surface=792.5 Edges=850.0 Total=3048.4/4000 Grade=7.0/10.0
+2026-01-12 16:22:41,513 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 16:22:41,514 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:22:41,514 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:22:41,514 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 16:22:41,514 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.42s - Grade: 7.0/10.0
+2026-01-12 16:22:41,514 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 16:22:41,519 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:22:41,519 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:22:41,543 | INFO     | truscore_master_pipeline - Corner TL: 94.7%
+2026-01-12 16:22:41,566 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 16:22:41,590 | INFO     | truscore_master_pipeline - Corner BL: 94.9%
+2026-01-12 16:22:41,614 | INFO     | truscore_master_pipeline - Corner BR: 94.9%
+2026-01-12 16:22:41,614 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.7% TR=95.0% BL=94.9% BR=94.9%
+2026-01-12 16:22:41,614 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 948.7/1000
+2026-01-12 16:22:42,463 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=71.8% Defects=4588 Roughness=0.474
+2026-01-12 16:22:42,463 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 717.7/1000
+2026-01-12 16:22:42,558 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:22:42,558 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:22:42,582 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:22:42,582 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:22:42,582 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (0.0, 100.0), 'left_right': (50.0, 50.0)}
+2026-01-12 16:22:42,582 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'bottom': {'values': [135.714, 135.714, 135.714, 135.714, 135.714], 'avg': 135.714}, 'left': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'right': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}}
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (0.0, 100.0)
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=50.0% Top/Bottom=0.0%/100.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 500.0/1000
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Final Scores: Corners=948.7 Centering=500.0 Surface=717.7 Edges=850.0 Total=3016.5/4000 Grade=7.0/10.0
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 16:22:42,583 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.07s - Grade: 7.0/10.0
+2026-01-12 16:43:25,580 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 16:43:25,581 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 16:43:25,581 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 16:43:25,581 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 16:43:25,633 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 16:43:25,862 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 16:43:25,862 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 16:43:25,862 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 16:43:25,862 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 16:43:25,862 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 16:43:25,862 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 16:43:25,871 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:43:25,871 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:43:25,915 | INFO     | truscore_master_pipeline - Corner TL: 93.4%
+2026-01-12 16:43:25,947 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 16:43:25,981 | INFO     | truscore_master_pipeline - Corner BL: 87.9%
+2026-01-12 16:43:26,012 | INFO     | truscore_master_pipeline - Corner BR: 88.9%
+2026-01-12 16:43:26,013 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=93.4% TR=95.0% BL=87.9% BR=88.9%
+2026-01-12 16:43:26,013 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 912.9/1000
+2026-01-12 16:43:27,047 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=77.9% Defects=3740 Roughness=0.473
+2026-01-12 16:43:27,047 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 778.6/1000
+2026-01-12 16:43:27,201 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:43:27,201 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (0.0, 100.0), 'left_right': (50.0, 50.0)}
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'bottom': {'values': [2.116, 2.116, 2.116, 2.116, 2.116], 'avg': 2.116}, 'left': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'right': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}}
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (0.0, 100.0)
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=50.0% Top/Bottom=0.0%/100.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 500.0/1000
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - Final Scores: Corners=912.9 Centering=500.0 Surface=778.6 Edges=850.0 Total=3041.5/4000 Grade=7.0/10.0
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:43:27,251 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 16:43:27,252 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.39s - Grade: 7.0/10.0
+2026-01-12 16:43:27,252 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 16:43:27,257 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:43:27,257 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:43:27,285 | INFO     | truscore_master_pipeline - Corner TL: 94.1%
+2026-01-12 16:43:27,310 | INFO     | truscore_master_pipeline - Corner TR: 94.9%
+2026-01-12 16:43:27,335 | INFO     | truscore_master_pipeline - Corner BL: 94.3%
+2026-01-12 16:43:27,359 | INFO     | truscore_master_pipeline - Corner BR: 94.9%
+2026-01-12 16:43:27,359 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.1% TR=94.9% BL=94.3% BR=94.9%
+2026-01-12 16:43:27,359 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 945.7/1000
+2026-01-12 16:43:28,183 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=73.4% Defects=4721 Roughness=0.474
+2026-01-12 16:43:28,183 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 733.8/1000
+2026-01-12 16:43:28,283 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:43:28,283 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (0.0, 100.0), 'left_right': (50.0, 50.0)}
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'bottom': {'values': [32.804, 32.804, 32.804, 32.804, 32.804], 'avg': 32.804}, 'left': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'right': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}}
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (0.0, 100.0)
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Left/Right ratio: (50.0, 50.0)
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=50.0% Top/Bottom=0.0%/100.0% Left/Right=50.0%/50.0% Points_Measured=24
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 500.0/1000
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Final Scores: Corners=945.7 Centering=500.0 Surface=733.8 Edges=850.0 Total=3029.6/4000 Grade=7.0/10.0
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 16:43:28,307 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.06s - Grade: 7.0/10.0
+2026-01-12 16:57:48,978 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 16:57:48,979 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 16:57:48,979 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 16:57:48,979 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 16:57:49,029 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 16:57:49,262 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 16:57:49,262 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 16:57:49,262 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 16:57:49,262 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 16:57:49,262 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 16:57:49,262 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 16:57:49,270 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:57:49,270 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:57:49,313 | INFO     | truscore_master_pipeline - Corner TL: 92.6%
+2026-01-12 16:57:49,341 | INFO     | truscore_master_pipeline - Corner TR: 94.0%
+2026-01-12 16:57:49,364 | INFO     | truscore_master_pipeline - Corner BL: 78.5%
+2026-01-12 16:57:49,399 | INFO     | truscore_master_pipeline - Corner BR: 64.6%
+2026-01-12 16:57:49,400 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=92.6% TR=94.0% BL=78.5% BR=64.6%
+2026-01-12 16:57:49,400 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 824.1/1000
+2026-01-12 16:57:50,434 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=77.0% Defects=4041 Roughness=0.473
+2026-01-12 16:57:50,434 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 770.2/1000
+2026-01-12 16:57:50,603 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:57:50,603 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:57:50,652 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:57:50,652 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (87.5, 12.5), 'left_right': (33.33, 66.67)}
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [9.259, 9.259, 9.259, 9.259, 9.259], 'avg': 9.259}, 'bottom': {'values': [1.323, 1.323, 1.323, 1.323, 1.323], 'avg': 1.323}, 'left': {'values': [1.323, 1.323, 1.323, 1.323, 1.323, 1.323, 1.323], 'avg': 1.323}, 'right': {'values': [2.646, 2.646, 2.646, 2.646, 2.646, 2.646, 2.646], 'avg': 2.646}}
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (87.5, 12.5)
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Left/Right ratio: (33.33, 66.67)
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=45.8% Top/Bottom=87.5%/12.5% Left/Right=33.3%/66.7% Points_Measured=24
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 458.3/1000
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Final Scores: Corners=824.1 Centering=458.3 Surface=770.2 Edges=850.0 Total=2902.7/4000 Grade=6.5/10.0
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.5/10.0
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.5/10.0
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.39s - Grade: 6.5/10.0
+2026-01-12 16:57:50,653 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 16:57:50,659 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 16:57:50,659 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 16:57:50,684 | INFO     | truscore_master_pipeline - Corner TL: 92.7%
+2026-01-12 16:57:50,707 | INFO     | truscore_master_pipeline - Corner TR: 94.7%
+2026-01-12 16:57:50,731 | INFO     | truscore_master_pipeline - Corner BL: 94.7%
+2026-01-12 16:57:50,754 | INFO     | truscore_master_pipeline - Corner BR: 94.9%
+2026-01-12 16:57:50,754 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=92.7% TR=94.7% BL=94.7% BR=94.9%
+2026-01-12 16:57:50,754 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 942.6/1000
+2026-01-12 16:57:51,549 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=68.2% Defects=4878 Roughness=0.474
+2026-01-12 16:57:51,549 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 682.5/1000
+2026-01-12 16:57:51,646 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 16:57:51,646 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (17.95, 82.05), 'left_right': (86.36, 13.64)}
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [5.556, 5.556, 5.556, 5.556, 5.556], 'avg': 5.556}, 'bottom': {'values': [25.397, 25.397, 25.397, 25.397, 25.397], 'avg': 25.397}, 'left': {'values': [15.079, 15.079, 15.079, 15.079, 15.079, 15.079, 15.079], 'avg': 15.079}, 'right': {'values': [2.381, 2.381, 2.381, 2.381, 2.381, 2.381, 2.381], 'avg': 2.381}}
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (17.95, 82.05)
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Left/Right ratio: (86.36, 13.64)
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=31.6% Top/Bottom=17.9%/82.0% Left/Right=86.4%/13.6% Points_Measured=24
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 315.9/1000
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Final Scores: Corners=942.6 Centering=315.9 Surface=682.5 Edges=850.0 Total=2791.0/4000 Grade=6.0/10.0
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.0/10.0
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-01-12 16:57:51,671 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.02s - Grade: 6.0/10.0
+2026-01-12 17:00:45,197 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 17:00:45,198 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 17:00:45,198 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 17:00:45,198 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 17:00:45,248 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 17:00:45,475 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 17:00:45,475 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 17:00:45,475 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 17:00:45,475 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 17:00:45,475 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 17:00:45,475 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 17:00:45,484 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 17:00:45,484 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 17:00:45,528 | INFO     | truscore_master_pipeline - Corner TL: 94.3%
+2026-01-12 17:00:45,562 | INFO     | truscore_master_pipeline - Corner TR: 89.8%
+2026-01-12 17:00:45,603 | INFO     | truscore_master_pipeline - Corner BL: 93.5%
+2026-01-12 17:00:45,642 | INFO     | truscore_master_pipeline - Corner BR: 94.9%
+2026-01-12 17:00:45,642 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.3% TR=89.8% BL=93.5% BR=94.9%
+2026-01-12 17:00:45,642 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 931.1/1000
+2026-01-12 17:00:46,708 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=80.9% Defects=3802 Roughness=0.473
+2026-01-12 17:00:46,708 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 808.7/1000
+2026-01-12 17:00:46,908 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 17:00:46,908 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 17:00:46,960 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 17:00:46,960 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 17:00:46,960 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (10.0, 90.0), 'left_right': (0.0, 100.0)}
+2026-01-12 17:00:46,960 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.529, 0.529, 0.529, 0.529, 0.529], 'avg': 0.529}, 'bottom': {'values': [4.762, 4.762, 4.762, 4.762, 4.762], 'avg': 4.762}, 'left': {'values': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'avg': 0.0}, 'right': {'values': [3.704, 3.704, 3.704, 3.704, 3.704, 3.704, 3.704], 'avg': 3.704}}
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (10.0, 90.0)
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Left/Right ratio: (0.0, 100.0)
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=10.0% Top/Bottom=10.0%/90.0% Left/Right=0.0%/100.0% Points_Measured=24
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 100.0/1000
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Final Scores: Corners=931.1 Centering=100.0 Surface=808.7 Edges=850.0 Total=2689.8/4000 Grade=6.0/10.0
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.0/10.0
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.49s - Grade: 6.0/10.0
+2026-01-12 17:00:46,961 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 17:00:46,966 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 17:00:46,966 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 17:00:46,992 | INFO     | truscore_master_pipeline - Corner TL: 80.4%
+2026-01-12 17:00:47,015 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 17:00:47,038 | INFO     | truscore_master_pipeline - Corner BL: 94.4%
+2026-01-12 17:00:47,062 | INFO     | truscore_master_pipeline - Corner BR: 94.9%
+2026-01-12 17:00:47,062 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=80.4% TR=95.0% BL=94.4% BR=94.9%
+2026-01-12 17:00:47,062 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 911.8/1000
+2026-01-12 17:00:47,868 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=66.6% Defects=4623 Roughness=0.473
+2026-01-12 17:00:47,868 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 666.4/1000
+2026-01-12 17:00:47,966 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 17:00:47,966 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (4.17, 95.83), 'left_right': (52.49, 47.51)}
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [0.265, 0.265, 0.265, 0.265, 0.265], 'avg': 0.265}, 'bottom': {'values': [6.085, 6.085, 6.085, 6.085, 6.085], 'avg': 6.085}, 'left': {'values': [30.688, 30.688, 30.688, 30.688, 30.688, 30.688, 30.688], 'avg': 30.688}, 'right': {'values': [27.778, 27.778, 27.778, 27.778, 27.778, 27.778, 27.778], 'avg': 27.778}}
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (4.17, 95.83)
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Left/Right ratio: (52.49, 47.51)
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=51.7% Top/Bottom=4.2%/95.8% Left/Right=52.5%/47.5% Points_Measured=24
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 516.8/1000
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Final Scores: Corners=911.8 Centering=516.8 Surface=666.4 Edges=850.0 Total=2944.9/4000 Grade=6.5/10.0
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.5/10.0
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.5/10.0
+2026-01-12 17:00:47,989 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.03s - Grade: 6.5/10.0
+2026-01-12 17:16:12,431 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 17:16:12,431 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 17:16:12,432 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 17:16:12,432 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 17:16:12,483 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 17:16:12,710 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 17:16:12,711 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 17:16:12,711 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 17:16:12,711 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 17:16:12,711 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 17:16:12,711 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 17:16:12,719 | INFO     | truscore_master_pipeline - Image loaded successfully: 1530x2040
+2026-01-12 17:16:12,719 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 17:16:12,761 | INFO     | truscore_master_pipeline - Corner TL: 94.9%
+2026-01-12 17:16:12,786 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 17:16:12,812 | INFO     | truscore_master_pipeline - Corner BL: 94.6%
+2026-01-12 17:16:12,835 | INFO     | truscore_master_pipeline - Corner BR: 50.5%
+2026-01-12 17:16:12,835 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.9% TR=95.0% BL=94.6% BR=50.5%
+2026-01-12 17:16:12,835 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 837.4/1000
+2026-01-12 17:16:13,881 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=73.2% Defects=4233 Roughness=0.473
+2026-01-12 17:16:13,881 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 731.8/1000
+2026-01-12 17:16:14,058 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 17:16:14,058 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (94.55, 5.45), 'left_right': (4.41, 95.59)}
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [13.757, 13.757, 13.757, 13.757, 13.757], 'avg': 13.757}, 'bottom': {'values': [0.794, 0.794, 0.794, 0.794, 0.794], 'avg': 0.794}, 'left': {'values': [0.794, 0.794, 0.794, 0.794, 0.794, 0.794, 0.794], 'avg': 0.794}, 'right': {'values': [17.196, 17.196, 17.196, 17.196, 17.196, 17.196, 17.196], 'avg': 17.196}}
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (94.55, 5.45)
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Left/Right ratio: (4.41, 95.59)
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=9.9% Top/Bottom=94.5%/5.5% Left/Right=4.4%/95.6% Points_Measured=24
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 98.6/1000
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Final Scores: Corners=837.4 Centering=98.6 Surface=731.8 Edges=850.0 Total=2517.8/4000 Grade=5.5/10.0
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 5.5/10.0
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 5.5/10.0
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.40s - Grade: 5.5/10.0
+2026-01-12 17:16:14,110 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 17:16:14,115 | INFO     | truscore_master_pipeline - Image loaded successfully: 1500x2000
+2026-01-12 17:16:14,115 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 17:16:14,149 | INFO     | truscore_master_pipeline - Corner TL: 90.9%
+2026-01-12 17:16:14,179 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 17:16:14,210 | INFO     | truscore_master_pipeline - Corner BL: 82.4%
+2026-01-12 17:16:14,240 | INFO     | truscore_master_pipeline - Corner BR: 95.0%
+2026-01-12 17:16:14,240 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=90.9% TR=95.0% BL=82.4% BR=95.0%
+2026-01-12 17:16:14,240 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 908.1/1000
+2026-01-12 17:16:15,042 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=70.3% Defects=4600 Roughness=0.474
+2026-01-12 17:16:15,042 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 702.9/1000
+2026-01-12 17:16:15,143 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 17:16:15,143 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 17:16:15,165 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 17:16:15,165 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 17:16:15,165 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (26.09, 73.91), 'left_right': (4.88, 95.12)}
+2026-01-12 17:16:15,165 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [3.175, 3.175, 3.175, 3.175, 3.175], 'avg': 3.175}, 'bottom': {'values': [8.995, 8.995, 8.995, 8.995, 8.995], 'avg': 8.995}, 'left': {'values': [0.529, 0.529, 0.529, 0.529, 0.529, 0.529, 0.529], 'avg': 0.529}, 'right': {'values': [10.317, 10.317, 10.317, 10.317, 10.317, 10.317, 10.317], 'avg': 10.317}}
+2026-01-12 17:16:15,165 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (26.09, 73.91)
+2026-01-12 17:16:15,165 | INFO     | truscore_master_pipeline - Left/Right ratio: (4.88, 95.12)
+2026-01-12 17:16:15,165 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=31.0% Top/Bottom=26.1%/73.9% Left/Right=4.9%/95.1% Points_Measured=24
+2026-01-12 17:16:15,166 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 309.7/1000
+2026-01-12 17:16:15,166 | INFO     | truscore_master_pipeline - Final Scores: Corners=908.1 Centering=309.7 Surface=702.9 Edges=850.0 Total=2770.8/4000 Grade=6.0/10.0
+2026-01-12 17:16:15,166 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.0/10.0
+2026-01-12 17:16:15,166 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 17:16:15,166 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 17:16:15,166 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-01-12 17:16:15,166 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.06s - Grade: 6.0/10.0
+2026-01-12 17:21:38,190 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 17:21:38,191 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 17:21:38,191 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 17:21:38,191 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 17:21:38,241 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 17:21:38,467 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 17:21:38,467 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 17:21:38,467 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 17:21:38,467 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 17:21:38,467 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 17:21:38,468 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 17:21:38,475 | INFO     | truscore_master_pipeline - Image loaded successfully: 1500x2000
+2026-01-12 17:21:38,475 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 17:21:38,517 | INFO     | truscore_master_pipeline - Corner TL: 94.2%
+2026-01-12 17:21:38,545 | INFO     | truscore_master_pipeline - Corner TR: 94.9%
+2026-01-12 17:21:38,567 | INFO     | truscore_master_pipeline - Corner BL: 92.8%
+2026-01-12 17:21:38,590 | INFO     | truscore_master_pipeline - Corner BR: 94.3%
+2026-01-12 17:21:38,590 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.2% TR=94.9% BL=92.8% BR=94.3%
+2026-01-12 17:21:38,590 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 940.4/1000
+2026-01-12 17:21:39,569 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=79.8% Defects=3460 Roughness=0.473
+2026-01-12 17:21:39,569 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 797.7/1000
+2026-01-12 17:21:39,745 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 17:21:39,745 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 17:21:39,794 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 17:21:39,794 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 17:21:39,794 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (72.83, 27.17), 'left_right': (36.96, 63.04)}
+2026-01-12 17:21:39,794 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [17.725, 17.725, 17.725, 17.725, 17.725], 'avg': 17.725}, 'bottom': {'values': [6.614, 6.614, 6.614, 6.614, 6.614], 'avg': 6.614}, 'left': {'values': [13.492, 13.492, 13.492, 13.492, 13.492, 13.492, 13.492], 'avg': 13.492}, 'right': {'values': [23.016, 23.016, 23.016, 23.016, 23.016, 23.016, 23.016], 'avg': 23.016}}
+2026-01-12 17:21:39,794 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (72.83, 27.17)
+2026-01-12 17:21:39,794 | INFO     | truscore_master_pipeline - Left/Right ratio: (36.96, 63.04)
+2026-01-12 17:21:39,794 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=64.1% Top/Bottom=72.8%/27.2% Left/Right=37.0%/63.0% Points_Measured=24
+2026-01-12 17:21:39,795 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 641.3/1000
+2026-01-12 17:21:39,795 | INFO     | truscore_master_pipeline - Final Scores: Corners=940.4 Centering=641.3 Surface=797.7 Edges=850.0 Total=3229.4/4000 Grade=7.5/10.0
+2026-01-12 17:21:39,795 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.5/10.0
+2026-01-12 17:21:39,795 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 17:21:39,795 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 17:21:39,795 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.5/10.0
+2026-01-12 17:21:39,795 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.33s - Grade: 7.5/10.0
+2026-01-12 17:21:39,795 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 17:21:39,800 | INFO     | truscore_master_pipeline - Image loaded successfully: 1500x2000
+2026-01-12 17:21:39,800 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 17:21:39,825 | INFO     | truscore_master_pipeline - Corner TL: 94.0%
+2026-01-12 17:21:39,848 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 17:21:39,871 | INFO     | truscore_master_pipeline - Corner BL: 94.5%
+2026-01-12 17:21:39,894 | INFO     | truscore_master_pipeline - Corner BR: 95.0%
+2026-01-12 17:21:39,894 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.0% TR=95.0% BL=94.5% BR=95.0%
+2026-01-12 17:21:39,894 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 946.1/1000
+2026-01-12 17:21:40,609 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=75.0% Defects=4581 Roughness=0.474
+2026-01-12 17:21:40,610 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 750.1/1000
+2026-01-12 17:21:40,706 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 17:21:40,706 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (11.51, 88.49), 'left_right': (94.68, 5.32)}
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [4.233, 4.233, 4.233, 4.233, 4.233], 'avg': 4.233}, 'bottom': {'values': [32.54, 32.54, 32.54, 32.54, 32.54], 'avg': 32.54}, 'left': {'values': [23.545, 23.545, 23.545, 23.545, 23.545, 23.545, 23.545], 'avg': 23.545}, 'right': {'values': [1.323, 1.323, 1.323, 1.323, 1.323, 1.323, 1.323], 'avg': 1.323}}
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (11.51, 88.49)
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - Left/Right ratio: (94.68, 5.32)
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=16.8% Top/Bottom=11.5%/88.5% Left/Right=94.7%/5.3% Points_Measured=24
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 168.3/1000
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - Final Scores: Corners=946.1 Centering=168.3 Surface=750.1 Edges=850.0 Total=2714.5/4000 Grade=6.0/10.0
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.0/10.0
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 17:21:40,728 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 17:21:40,729 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-01-12 17:21:40,729 | INFO     | truscore_master_pipeline - Master pipeline complete in 0.93s - Grade: 6.0/10.0
+2026-01-12 17:27:45,585 | INFO     | truscore_master_pipeline -  All TruScore analysis engines imported successfully
+2026-01-12 17:27:45,585 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-12 17:27:45,585 | INFO     | truscore_master_pipeline - Loading analysis engines...
+2026-01-12 17:27:45,585 | INFO     | truscore_master_pipeline -  Photometric stereo engine loaded
+2026-01-12 17:27:45,636 | INFO     | truscore_master_pipeline -  Border detection engine loaded
+2026-01-12 17:27:45,862 | INFO     | truscore_master_pipeline -  Corner analysis engine loaded (4/4 models)
+2026-01-12 17:27:45,862 | INFO     | truscore_master_pipeline -  Defect analysis engine loaded
+2026-01-12 17:27:45,862 | INFO     | truscore_master_pipeline -  All engines initialized successfully!
+2026-01-12 17:27:45,862 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-12 17:27:45,862 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-12 17:27:45,862 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: front.jpeg
+2026-01-12 17:27:45,870 | INFO     | truscore_master_pipeline - Image loaded successfully: 1500x2000
+2026-01-12 17:27:45,870 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 17:27:45,911 | INFO     | truscore_master_pipeline - Corner TL: 94.2%
+2026-01-12 17:27:45,941 | INFO     | truscore_master_pipeline - Corner TR: 95.0%
+2026-01-12 17:27:45,963 | INFO     | truscore_master_pipeline - Corner BL: 94.0%
+2026-01-12 17:27:45,985 | INFO     | truscore_master_pipeline - Corner BR: 73.7%
+2026-01-12 17:27:45,985 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=94.2% TR=95.0% BL=94.0% BR=73.7%
+2026-01-12 17:27:45,985 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 892.1/1000
+2026-01-12 17:27:46,939 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=79.1% Defects=3302 Roughness=0.473
+2026-01-12 17:27:46,939 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 791.1/1000
+2026-01-12 17:27:47,104 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 17:27:47,104 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (92.54, 7.46), 'left_right': (25.97, 74.03)}
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [16.402, 16.402, 16.402, 16.402, 16.402], 'avg': 16.402}, 'bottom': {'values': [1.323, 1.323, 1.323, 1.323, 1.323], 'avg': 1.323}, 'left': {'values': [5.291, 5.291, 5.291, 5.291, 5.291, 5.291, 5.291], 'avg': 5.291}, 'right': {'values': [15.079, 15.079, 15.079, 15.079, 15.079, 15.079, 15.079], 'avg': 15.079}}
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (92.54, 7.46)
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - Left/Right ratio: (25.97, 74.03)
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=33.4% Top/Bottom=92.5%/7.5% Left/Right=26.0%/74.0% Points_Measured=24
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 334.3/1000
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - Final Scores: Corners=892.1 Centering=334.3 Surface=791.1 Edges=850.0 Total=2867.5/4000 Grade=6.5/10.0
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 6.5/10.0
+2026-01-12 17:27:47,153 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 17:27:47,154 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 17:27:47,154 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 6.5/10.0
+2026-01-12 17:27:47,154 | INFO     | truscore_master_pipeline - Master pipeline complete in 1.29s - Grade: 6.5/10.0
+2026-01-12 17:27:47,154 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: back.jpeg
+2026-01-12 17:27:47,159 | INFO     | truscore_master_pipeline - Image loaded successfully: 1500x2000
+2026-01-12 17:27:47,159 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-12 17:27:47,185 | INFO     | truscore_master_pipeline - Corner TL: 65.8%
+2026-01-12 17:27:47,209 | INFO     | truscore_master_pipeline - Corner TR: 94.9%
+2026-01-12 17:27:47,233 | INFO     | truscore_master_pipeline - Corner BL: 88.6%
+2026-01-12 17:27:47,258 | INFO     | truscore_master_pipeline - Corner BR: 95.0%
+2026-01-12 17:27:47,258 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=65.8% TR=94.9% BL=88.6% BR=95.0%
+2026-01-12 17:27:47,258 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 860.8/1000
+2026-01-12 17:27:47,985 | INFO     | truscore_master_pipeline - Surface Analysis Results: Integrity=72.5% Defects=4767 Roughness=0.474
+2026-01-12 17:27:47,985 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 725.2/1000
+2026-01-12 17:27:48,082 | INFO     | truscore_master_pipeline - Border Analysis Results: Edge_Quality=85.0% Outer_Border=Detected Inner_Border=Detected
+2026-01-12 17:27:48,082 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 850.0/1000
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - CenteringAnalyzer results type: <class 'shared.truscore_system.twentyfour_centering.AnalysisResults'>
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - CenteringAnalyzer measurements_mm count: 24
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - CenteringAnalyzer ratios: {'top_bottom': (38.52, 61.48), 'left_right': (62.84, 37.16)}
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - CenteringAnalyzer groups: {'top': {'values': [12.434, 12.434, 12.434, 12.434, 12.434], 'avg': 12.434}, 'bottom': {'values': [19.841, 19.841, 19.841, 19.841, 19.841], 'avg': 19.841}, 'left': {'values': [36.243, 36.243, 36.243, 36.243, 36.243, 36.243, 36.243], 'avg': 36.243}, 'right': {'values': [21.429, 21.429, 21.429, 21.429, 21.429, 21.429, 21.429], 'avg': 21.429}}
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Top/Bottom ratio: (38.52, 61.48)
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Left/Right ratio: (62.84, 37.16)
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - 24-Point Centering Results: Overall=75.7% Top/Bottom=38.5%/61.5% Left/Right=62.8%/37.2% Points_Measured=24
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 756.8/1000
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Final Scores: Corners=860.8 Centering=756.8 Surface=725.2 Edges=850.0 Total=3192.8/4000 Grade=7.0/10.0
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 7.0/10.0
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 7.0/10.0
+2026-01-12 17:27:48,105 | INFO     | truscore_master_pipeline - Master pipeline complete in 0.95s - Grade: 7.0/10.0
+2026-01-17 18:44:58,159 | ERROR    | truscore_master_pipeline - ❌ Engine import failed: expected an indented block after function definition on line 235 (truscore_border_detection.py, line 236)
+2026-01-17 18:44:58,159 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-17 18:44:58,159 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-17 18:44:58,159 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-17 18:44:58,160 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: card020F.jpg
+2026-01-17 18:44:58,170 | INFO     | truscore_master_pipeline - Image loaded successfully: 1650x2310
+2026-01-17 18:44:58,170 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-17 18:44:58,171 | ERROR    | truscore_master_pipeline - Corner TL analysis failed: 'TruScoreMasterPipeline' object has no attribute 'corner_analyzer'
+2026-01-17 18:44:58,171 | ERROR    | truscore_master_pipeline - Corner TR analysis failed: 'TruScoreMasterPipeline' object has no attribute 'corner_analyzer'
+2026-01-17 18:44:58,171 | ERROR    | truscore_master_pipeline - Corner BL analysis failed: 'TruScoreMasterPipeline' object has no attribute 'corner_analyzer'
+2026-01-17 18:44:58,171 | ERROR    | truscore_master_pipeline - Corner BR analysis failed: 'TruScoreMasterPipeline' object has no attribute 'corner_analyzer'
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=50.0% TR=50.0% BL=50.0% BR=50.0%
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 500.0/1000
+2026-01-17 18:44:58,171 | ERROR    | truscore_master_pipeline - Surface analysis failed: 'TruScoreMasterPipeline' object has no attribute 'photometric_engine'
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 500.0/1000
+2026-01-17 18:44:58,171 | ERROR    | truscore_master_pipeline - Border analysis failed: 'TruScoreMasterPipeline' object has no attribute 'border_detector'
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 400.0/1000
+2026-01-17 18:44:58,171 | WARNING  | truscore_master_pipeline - No border data for centering analysis - using image edges
+2026-01-17 18:44:58,171 | ERROR    | truscore_master_pipeline - 24-point centering analysis failed: name 'yolo_box_to_polygon' is not defined
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 750.0/1000
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Final Scores: Corners=500.0 Centering=750.0 Surface=500.0 Edges=400.0 Total=2150.0/4000 Grade=4.5/10.0
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 4.5/10.0
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 4.5/10.0
+2026-01-17 18:44:58,171 | INFO     | truscore_master_pipeline - Master pipeline complete in 0.01s - Grade: 4.5/10.0
+2026-01-17 19:15:29,617 | ERROR    | truscore_master_pipeline - ❌ Engine import failed: expected an indented block after function definition on line 235 (truscore_border_detection.py, line 236)
+2026-01-17 19:15:29,618 | INFO     | truscore_master_pipeline -  Initializing TruScore Master Pipeline v2.0
+2026-01-17 19:15:29,618 | INFO     | truscore_master_pipeline - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-17 19:15:29,618 | INFO     | truscore_master_pipeline -  TruScore Master Pipeline ready to make history!
+2026-01-17 19:15:29,618 | INFO     | truscore_master_pipeline - Starting TruScore Master Analysis: card087F.jpg
+2026-01-17 19:15:29,629 | INFO     | truscore_master_pipeline - Image loaded successfully: 1500x2100
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Stage 1: Image loaded and validated
+2026-01-17 19:15:29,630 | ERROR    | truscore_master_pipeline - Corner TL analysis failed: 'TruScoreMasterPipeline' object has no attribute 'corner_analyzer'
+2026-01-17 19:15:29,630 | ERROR    | truscore_master_pipeline - Corner TR analysis failed: 'TruScoreMasterPipeline' object has no attribute 'corner_analyzer'
+2026-01-17 19:15:29,630 | ERROR    | truscore_master_pipeline - Corner BL analysis failed: 'TruScoreMasterPipeline' object has no attribute 'corner_analyzer'
+2026-01-17 19:15:29,630 | ERROR    | truscore_master_pipeline - Corner BR analysis failed: 'TruScoreMasterPipeline' object has no attribute 'corner_analyzer'
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Corner Analysis Results: TL=50.0% TR=50.0% BL=50.0% BR=50.0%
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Stage 2: Corner analysis complete - Score: 500.0/1000
+2026-01-17 19:15:29,630 | ERROR    | truscore_master_pipeline - Surface analysis failed: 'TruScoreMasterPipeline' object has no attribute 'photometric_engine'
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Stage 3: Surface analysis complete - Score: 500.0/1000
+2026-01-17 19:15:29,630 | ERROR    | truscore_master_pipeline - Border analysis failed: 'TruScoreMasterPipeline' object has no attribute 'border_detector'
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Stage 4: Border analysis complete - Score: 400.0/1000
+2026-01-17 19:15:29,630 | WARNING  | truscore_master_pipeline - No border data for centering analysis - using image edges
+2026-01-17 19:15:29,630 | ERROR    | truscore_master_pipeline - 24-point centering analysis failed: name 'yolo_box_to_polygon' is not defined
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Stage 5: 24-point centering complete - Score: 750.0/1000
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Final Scores: Corners=500.0 Centering=750.0 Surface=500.0 Edges=400.0 Total=2150.0/4000 Grade=4.5/10.0
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Stage 6: Final grade calculated - 4.5/10.0
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Quality statements generated for all categories
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Stage 7: Quality statements generated
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Master results compiled successfully - Final Grade: 4.5/10.0
+2026-01-17 19:15:29,630 | INFO     | truscore_master_pipeline - Master pipeline complete in 0.01s - Grade: 4.5/10.0
