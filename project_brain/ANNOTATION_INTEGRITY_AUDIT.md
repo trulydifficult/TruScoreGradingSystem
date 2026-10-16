@@ -224,3 +224,39 @@ and annotation coordinates still require a rotated-card acceptance test.
 The per-format class-ID remapping in the single-class graphic export also
 must be verified against `to_yolo_format()`: filtering an annotation of
 class 1 does NOT by itself reassign it to single-class 0.
+
+## Guarded source repair — 2026-10-16
+
+Implemented in active `src/` on `refactor/phoenix-foundation`:
+
+- `BorderDetectionSettingsWidget.auto_create_training_labels` computes the
+  three-export directory from `Path(__file__).resolve().parents[3] /
+  "shared" / "annotations"`. The current checkout location no longer matters;
+  old `/home/dewster/Projects/Vanguard` is not used by this export.
+- The two single-target training outputs encode class 0, including the
+  inner graphic-only target; the combined output still preserves class 0
+  (outer) and 1 (inner) without mutating source annotation class IDs.
+- `ModularAnnotationStudio.save_and_next_image` now advances with
+  `_advance_to_next_image(save_current=False)`, avoiding the second
+  annotation/image export after reset_rotation. The original
+  `next_image_placeholder()` continues delegating with
+  `save_current=True` for ordinary navigation. The Space shortcut and
+  model-on-image-change path were not changed.
+- Regression file `tests/annotation/test_spacebar_export_contract.py`
+  compiles **the active method AST**, executes triple-export behavior
+  with synthetic image/annotation stubs, and checks three target paths,
+  matching rotated pixel bytes, class remapping, absence of source class
+  mutation, Space save exactly once, ordinary Next save, and shortcut/
+  detection wiring invariants.
+- `.github/workflows/annotation-integrity.yml` isolates these contract
+  tests from Phoenix GUI/test dependencies. GitHub Actions run
+  `38976427040`: **4 tests passed**, and both active modules compiled.
+  This is code-level regression verification only. It does NOT prove
+  actual GUI rotation alignment, image provenance, loaded model behavior,
+  or annotation-to-pixel geometry under mouse editing.
+
+Still pending: end-to-end run via `run_truscore.py` on workstation,
+manual rotation/box overlay checks, a representative two-class detection
+on next card, failure propagation/atomic image+label writes, reliable
+historical recovery of polygon geometry, and a corrected Dataset Studio
+COCO export.
