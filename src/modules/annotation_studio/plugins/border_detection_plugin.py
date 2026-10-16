@@ -530,6 +530,10 @@ class BorderDetectionSettingsWidget(QWidget):
     def set_main_plugin(self, main_plugin):
         """Set reference to main plugin instance - required by studio"""
         self.main_plugin = main_plugin
+        if main_plugin.model_loaded and getattr(main_plugin, 'model', None) is not None:
+            self.model = main_plugin.model
+            self.model_loaded = True
+            self._loaded_model_path = getattr(main_plugin, '_loaded_model_path', None)
         self.logger.debug(f"Main plugin reference set: {type(main_plugin)}")
 
     def set_studio_canvas(self, studio_canvas):
@@ -1359,8 +1363,20 @@ class BorderDetectionSettingsWidget(QWidget):
             try:
                 from ultralytics import YOLO
                 self.logger.info(f"Loading YOLO model: {model_path}")
-                self.model = YOLO(model_path)
-                self.logger.info("Ultralytics YOLO model loaded successfully")
+                main_plugin = getattr(self, 'main_plugin', None)
+                model_file = Path(model_path).expanduser().resolve()
+                if (main_plugin is not None
+                        and getattr(main_plugin, 'model_loaded', False)
+                        and getattr(main_plugin, '_loaded_model_path', None) == str(model_file)):
+                    self.model = main_plugin.model
+                    self.logger.info("Reusing the already-loaded two-class detector")
+                elif (self.model_loaded and self.model is not None
+                      and getattr(self, '_loaded_model_path', None) == str(model_file)):
+                    self.logger.info("Detector already loaded in settings widget")
+                else:
+                    self.model = YOLO(str(model_file))
+                    self.logger.info("Ultralytics YOLO model loaded successfully")
+                self._loaded_model_path = str(model_file)
             except ImportError:
                 self.logger.error("Ultralytics not available - cannot load model")
                 self.model_status_label.setText("Model: YOLO Missing")
@@ -1373,6 +1389,11 @@ class BorderDetectionSettingsWidget(QWidget):
                 return False
 
             self.model_loaded = True
+            if main_plugin is not None:
+                main_plugin.model = self.model
+                main_plugin.model_loaded = True
+                main_plugin._loaded_model_path = str(model_file)
+                main_plugin.settings['model_path'] = str(model_file)
             # Show model filename, not just "Loaded"
             model_name = Path(model_path).name
             self.model_status_label.setText(f"Model: {model_name}")
@@ -2456,6 +2477,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         """Create the settings panel for the plugin"""
         try:
             self.settings_widget = BorderDetectionSettingsWidget(parent)
+            self.settings_widget.set_main_plugin(self)
 
             # CRITICAL FIX: Pass studio canvas reference for coordinate conversion - FROM MEMORY 113
             if hasattr(parent, 'image_label'):
