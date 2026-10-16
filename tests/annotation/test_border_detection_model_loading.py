@@ -6,6 +6,7 @@ production implementation.
 """
 import ast
 import sys
+import time
 from pathlib import Path
 from types import MethodType, ModuleType, SimpleNamespace
 
@@ -21,7 +22,12 @@ def _method(name, cls=None, ns=None):
     node = next(x for x in nodes if isinstance(x, ast.FunctionDef) and x.name == name)
     module = ast.Module(body=[node], type_ignores=[])
     ast.fix_missing_locations(module)
-    globals_ = dict(ns or {})
+    globals_ = {
+        "time": time,
+        "QApplication": SimpleNamespace(instance=lambda: None),
+        "QEventLoop": SimpleNamespace(ProcessEventsFlag=SimpleNamespace(ExcludeUserInputEvents=1)),
+    }
+    globals_.update(ns or {})
     exec(compile(module, str(PLUGIN), "exec"), globals_)
     return globals_[name]
 
@@ -190,6 +196,8 @@ def test_manual_run_loads_real_model_and_draws_two_boxes(monkeypatch, tmp_path):
         (0, "outer_border"), (1, "inner_border")]
     assert widget.selected_annotation.class_id == 0
     assert widget.rendered == 1
+    assert widget._detecting is False
+    assert widget._completed_detection_token is None
     assert widget.model.calls[0][1] == 0.25
     assert plugin.model is widget.model
     assert FakeYOLO.constructed == [str(path)]
@@ -204,7 +212,7 @@ def test_auto_image_load_queues_one_real_detection_and_rejects_stale_card(monkey
     monkeypatch.setitem(sys.modules, "PyQt6.QtCore", qtcore)
     calls = []
     widget = SimpleNamespace(current_image_path=None, current_image=None,
-                             run_detection=lambda: calls.append("detected"))
+                             run_detection=lambda source="manual": calls.append(source))
     plugin = SimpleNamespace(settings_widget=widget, logger=Logger(), current_image=None)
     on_change = _method("on_image_changed", cls="BorderDetectionPlugin",
                         ns={"np": SimpleNamespace(ndarray=object)})
@@ -214,7 +222,7 @@ def test_auto_image_load_queues_one_real_detection_and_rejects_stale_card(monkey
     timers[0][1]()
     assert not calls, "Stale first-card timer must not detect on the next card"
     timers[1][1]()
-    assert calls == ["detected"]
+    assert calls == ["auto"]
 
 
 def test_existing_plugin_selection_wires_canvas_and_auto_detects_loaded_image():
