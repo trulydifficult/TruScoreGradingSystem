@@ -95,7 +95,7 @@ def build_widget(*, process_events=None, model=None):
             self.__dict__.update(kwargs)
     widget = SimpleNamespace(
         logger=logger, run_detection_btn=button,
-        status_label=status, current_image=object(), current_image_path="A.jpg",
+        status_label=status, current_image=SimpleNamespace(shape=(2284, 1632, 3)), current_image_path="A.jpg",
         model=model, settings={"confidence_threshold": 0.25},
         annotations=[], selected_annotation=None, _auto_request_token=1,
         redraws=0, detection_completed=SimpleNamespace(
