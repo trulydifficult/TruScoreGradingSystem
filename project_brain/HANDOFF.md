@@ -993,3 +993,35 @@ and only then decide whether to add a busy indicator / deduplicate
 queued inference requests. Continue monitoring source image export
 and coordinate frame validation; Detectron2 segmentation ground truth
 is still blocked pending an appropriate geometry contract.
+
+## Annotation Studio repeated detection log clarified — 2026-10-16
+
+Full 1.27 MB `src/Logs/modular_annotation.log` Git blob analyzed.
+Successful four-card session shows 6 true YOLO calls, 4 card-load
+notifications and **671** overlay redraw events plus **1,348** detail
+logs. Thus log growth was primarily normal per-frame canvas redraw
+logging, NOT hundreds of real inference runs. First card:
+on_image_changed at 18:18:36.457, **automatic first inference**
+at 18:18:36.958, completion at 18:18:44.393 (~7.435 sec).
+Two more first-card requests returned at 18:18:44.468 / 44.527;
+origin uncertain, possibly user clicks queued while the first call
+blocked UI. Cards 2–4: 1 YOLO call each, returned promptly after
+the existing half-second timer. CPU first-card behavior historically
+felt immediate per user, but the GPU first-inference delay is
+OBSERVED without specifying its low-level cause.
+
+The existing activation-order repair is still useful for loading
+cards before selecting the plugin, but does not address this session,
+which already fired auto-detect correctly. Do not ask user to wait
+15 seconds merely to verify auto scheduling: logs show it.
+
+Minimal safe source change: remove 2,019-per-session noisy per-frame
+INFO messages from the active widget's draw_overlay, without changing
+drawing, inference, or Space workflow. Regression test in
+`tests/annotation/test_overlay_log_noise.py` checks two class colors,
+labels, handles and zero per-frame INFO logging.
+
+NEXT (if user requests responsiveness improvement): expose busy
+status before first GPU inference, trace auto vs manual source,
+and prevent duplicate queuing without blocking intentional manual
+re-detection. Avoid invasive GPU threading changes without a plan.
