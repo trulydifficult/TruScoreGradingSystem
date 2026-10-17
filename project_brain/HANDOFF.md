@@ -1258,3 +1258,49 @@ simulated filesystem failure). No new model training has occurred; next
 gate remains workstation preview/COCO export acceptance, followed by
 real corner/polygon masks and actual GPU training. Code checkpoint
 \`63e1254e\` (docs are later commits).
+
+## Active 2026-10-16 handoff — Export/Analysis GUI counts and preflight
+
+**Latest user GUI evidence:** seven project images had 7/7 visual label
+matches in Verification, but Export/Analysis displayed 216 "labels", zero
+labeled images until manual Refresh; after Refresh, 230 "labels" and 7/7
+labeled images. The Pre-Export Verification panel displayed unreadable dark
+bars rather than usable text. Operator requested automatic on-tab refresh,
+accurate project-only counts and a practical pre-export report.
+
+**Implemented (ADR 0009):**
+- Added shared.dataset_tools.dataset_analysis.analyze_project_dataset() to
+  count only selected images and exact-stem-matched imported YOLO labels or
+  current COCO annotations. Prefer source YOLO when both exist, no duplicate
+  accounting. Expose actual bounding-box annotation instance totals,
+  matched label-file totals, invalid/missing pairs, class counts and coverage.
+- Export/Analysis calls update_analysis_dashboard() every time tab opens.
+  Manual Refresh remains. Quality count only counts cards in the active
+  image list, and the selected high-quality filter constrains readiness.
+- Replaced nested unreadable status-frame labels with one contrasting
+  read-only QPlainTextEdit containing image/label pairs, annotations,
+  classes, selection/filter, problematic files and explicit detection
+  versus Mask R-CNN segmentation readiness. The former incorrect
+  >=10 image claim was not retained as a hard export gate.
+- Existing Annotation Studio three-target exports and COCO writer paths
+  are unchanged in this slice. Pre-export report is not proof that
+  physical card edges or masks are correctly labeled.
+
+**Next acceptance:**
+1. Pull the latest refactor/phoenix-foundation branch and run TruScore
+   through the established run_truscore.py entrypoint.
+2. Open a seven-image project, go Verification → Export/Analysis.
+   Expect immediate recalculation without Refresh: 7 images, actual
+   annotation rows (for seven 2-class YOLO files, 14), 7 labeled
+   images, 100% coverage, and no global annotation count.
+3. Confirm the Pre-Export Verification text is legible and details
+   class distribution, quality-filter selection, and truthful Mask R-CNN
+   mask limitation. Return to Images or Labels, change source data,
+   re-enter Export/Analysis and confirm automatic refresh. Manual
+   Refresh is preserved for operator troubleshooting.
+4. Next, perform one actual manual COCO export to an isolated temp
+   destination; inspect JSON dimensions, IDs, image files and mapped
+   bbox coordinates. Do not feed box-only COCO to Mask R-CNN.
+
+GUI screenshots verify the observed defect only; workstation acceptance
+of the replacement rendering remains pending.
