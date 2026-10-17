@@ -31,6 +31,7 @@ jobs:
             src/shared/annotations/graphic_border_model
             src/shared/annotations/outer_border_model
             src/Logs/modular_annotation.log
+            src/Logs/annotation_studio.log
           sparse-checkout-cone-mode: false
 
       - name: Set up Python
@@ -52,3 +53,6 @@ jobs:
 
       - name: Emit four-card diagnostic contact sheet and first-card log excerpt
         run: python tests/annotation/test_real_four_card_exports.py
+
+      - name: Emit six-card border overlay contact sheet
+        run: python tests/annotation/test_real_six_card_exports.py
