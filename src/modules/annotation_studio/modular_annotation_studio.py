@@ -1312,8 +1312,9 @@ class ModularAnnotationStudio(QMainWindow):
             return
 
         try:
-            # Auto-save current annotations
-            self.auto_save_current_annotations()
+            # Preserve existing Previous navigation; track genuine successes.
+            if self.auto_save_current_annotations() is True:
+                self._successfully_saved_indices.add(self.current_index)
 
             # Move to previous image
             self.current_index -= 1
@@ -1344,8 +1345,8 @@ class ModularAnnotationStudio(QMainWindow):
 
         try:
             # Auto-save current annotations
-            if save_current:
-                self.auto_save_current_annotations()
+            if save_current and self.auto_save_current_annotations() is True:
+                self._successfully_saved_indices.add(self.current_index)
 
             # Move to next image
             self.current_index += 1
