@@ -29,6 +29,7 @@ jobs:
             src/shared/dataset_tools/yolo_to_maskrcnn_converter.py
             src/shared/dataset_tools/annotation_formats.py
             src/shared/dataset_tools/dataset_validator.py
+            src/shared/dataset_tools/dataset_analysis.py
             src/modules/phoenix_trainer/trainers/detectron2_trainer.py
             tests/dataset
             src/shared/annotations/combined_dual_class/images/image092F.jpg
@@ -56,6 +57,7 @@ jobs:
             src/shared/dataset_tools/yolo_to_maskrcnn_converter.py \
             src/shared/dataset_tools/annotation_formats.py \
             src/shared/dataset_tools/dataset_validator.py \
+            src/shared/dataset_tools/dataset_analysis.py \
             src/modules/phoenix_trainer/trainers/detectron2_trainer.py
       - name: Verify actual method contracts against six real cards
         run: python -m pytest -q tests/dataset
