@@ -2154,6 +2154,7 @@ class TruScoreDatasetFrame(QFrame):
                 if new_paths:
                     self.images.extend(new_paths)
                     self.coco_annotations = {}  # Invalidate old conversion on dataset change
+                    self.labels_data = {}  # Invalidate cached label mapping
                     
                     # 🚨 CRITICAL: Set data_path for project loading
                     # Use parent directory of first image as data_path
@@ -2500,6 +2501,7 @@ class TruScoreDatasetFrame(QFrame):
             # Conversion metadata is no longer current when source labels change.
             if processed_count > 0:
                 self.coco_annotations = {}
+                self.labels_data = {}
                 self.save_project_progress()
                 self.logger.info("Project progress auto-saved after label import")
             
