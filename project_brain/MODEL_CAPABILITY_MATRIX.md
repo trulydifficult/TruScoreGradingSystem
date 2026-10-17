@@ -118,3 +118,8 @@ establish scientific accuracy or generalization.
 
 When new Annotation Studio plugins are added, update this inventory
 and the central capability registry in the same reviewed change.
+
+
+## 2026-10-17 clarification — dual-border precision geometry
+
+The operator's primary task is not COCO/YOLO axis-aligned box detection. It is two independent true contours (physical card perimeter and printed graphic boundary) suitable for a 24-station centering/skew measurement, with 5 top, 5 bottom, 7 left, 7 right full-side measurements. ADR 0012 overrides the assumption in ADR 0011 that YOLO11s detection fulfills this task. Preserve YOLO11s only as optional coarse localization; it is NOT a precision contour trainer. Plain YOLO-to-COCO bounding boxes are not segmentation ground truth. The high-precision trainer/annotation output remains NOT IMPLEMENTED until genuine polygon/edge labels, measurement tests and held-out contour accuracy benchmarks are accepted. The actual source geometry and model candidates are recorded in DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md.
