@@ -99,9 +99,7 @@ Before substantial development work:
 1. Read this file, `PROJECT_MEMORY_INDEX.md`, and `SESSION_START.md`.
 2. Read `CURRENT_STATE.md`.
 3. Read `REFACTOR_STATUS.md`.
-4. Consult `HANDOFF.md` as dated history; `SESSION_START.md` owns the latest active objective. If it contains a **NEW SESSION START HERE** block,
-   treat the newest such block as the authoritative continuation point; older
-   status paragraphs may be historical snapshots that were later superseded.
+4. Consult `HANDOFF.md` as dated history; `SESSION_START.md` owns the current active objective. The latest `NEW SESSION START HERE` marker in `HANDOFF.md` points back to that snapshot. Earlier dated instructions are historical.
 5. Read the relevant existing architecture files:
    - `TruScore_Project_Brain_v1.md`
    - `TruScore_Modules_v1.md`
