@@ -67,6 +67,9 @@ the conflict instead of merging claims silently.
 - [MODEL_CAPABILITY_MATRIX.md](MODEL_CAPABILITY_MATRIX.md):
   exhaustive status inventory of the 24 dataset types, 15 named pipelines,
   source annotation requirements, and supported/unsupported handoffs.
+- [DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md](DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md):
+  root-image 24-point geometric requirements, current measurement defects,
+  real contour/segmentation ground truth and benchmark candidates.
 - [DATASET_SEVEN_CARD_EXPORT_AUDIT.md](DATASET_SEVEN_CARD_EXPORT_AUDIT.md):
   actual saved seven-image dataset and source-equivalence proof; detection
   fidelity only, not physical pixel-edge precision.
@@ -95,6 +98,10 @@ the conflict instead of merging claims silently.
   this authority map, bounded active snapshot, acceptance categories.
 - [0011 — Dataset-to-Phoenix capabilities](decisions/0011-trainable-dataset-capabilities-and-phoenix-handoff.md):
   exact model+dataset registry, atomic publication, truthful YOLO detection pilot, future plugin gates.
+
+- [0012 — Dual-border precision contours](decisions/0012-dual-border-precision-contour-contract.md):
+  supersedes YOLO11s-as-primary implication; 24-point true contour
+  measurements require separately reviewed geometric ground truth.
 
 ## Other repository documentation: classify before using
 
