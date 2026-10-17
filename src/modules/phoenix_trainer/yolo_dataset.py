@@ -9,7 +9,7 @@ import shutil
 from pathlib import Path
 
 from shared.dataset_tools.phoenix_contract import (
-    HandoffCapability, validate_coco_detection_export,
+    validate_coco_detection_export,
 )
 
 
@@ -17,12 +17,10 @@ def prepare_yolo_detection_data(dataset_root, run_dir, *, seed=42,
                                 validation_fraction=0.25):
     dataset_root, run_dir = Path(dataset_root), Path(run_dir)
     config = json.loads((dataset_root / "dataset_config.json").read_text(encoding="utf-8"))
-    capability = HandoffCapability(
-        config["dataset_type"], config["pipeline"], "yolo11s",
-        "axis_aligned_bbox", ("outer_border", "graphic_border")
-        if config["dataset_type"] == "border_detection_2class"
-        else ("outer_border",),
-    )
+    from shared.dataset_tools.phoenix_contract import resolve_handoff
+    capability = resolve_handoff(config)
+    if capability.trainer != "yolo11s":
+        raise ValueError("Only explicit YOLO11s detection datasets are supported")
     data = validate_coco_detection_export(dataset_root, capability)
     images = sorted(data["images"], key=lambda item: item["file_name"])
     if not 0 < validation_fraction < 0.5:
