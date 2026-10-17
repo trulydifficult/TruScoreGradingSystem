@@ -232,3 +232,34 @@ succeed (including checking cv2.imwrite). See ADR 0007 and
 Annotation Integrity CI 38985208841 PASS 38 tests with new completion
 and failure regression cases. End-to-end real GUI and new batch
 image/label fidelity acceptance NOT yet verified.
+
+## Annotation Studio 6-card actual export audit — 2026-10-16
+
+Status: **THREE-TARGET EXPORT CONTENT VERIFIED ON 6 MORE REAL CARDS;
+FINAL-CARD GUI ACCEPTED; PRECISION/ROTATION-FRAME GROUND TRUTH PENDING.**
+
+User committed `fe3f248` (36 new image/label files + 9 updated
+application logs). Audited all 6 stems across combined/outer/graphic
+folders; identical JPEG SHA per stem in all targets, valid JPEG
+dimensions and normalized nested 2-class boxes, exact single-class
+remapping, and a visually inspected 6-card pixel/box overlay contact
+sheet. The new 3-card session log confirms three one-time Space
+saves, final `card096` +0.110° source rotation saved before triple
+export, then a `3/3 saved` completion event. The earlier 3-card
+session last image `image094F` was saved twice at +0.350° then
++0.320°, consistent with prior final-card-reset behavior.
+Image/box alignment appears plausible visually; no original
+pre-rotation pixel reference is available to verify exact angular
+correction or subpixel 24-point centering. Five-field YOLO labels
+do not constitute COCO segmentation masks.
+
+Added `tests/annotation/test_real_six_card_exports.py`, expanded
+Annotation Integrity workflow to render real overlays. CI pass:
+38986602246 (44 regression tests) and 38986602218 Phoenix
+Foundation pass. Runtime log history is reported diagnostically
+rather than used as a brittle permanent assertion. Production app
+logic unchanged in this audit slice. Detailed evidence and next
+step in `project_brain/ANNOTATION_INTEGRITY_AUDIT.md` and `HANDOFF.md`.
+NEXT architecture gate is Dataset Studio's COCO export geometry,
+correct actual image dimensions, class semantics, and segmentation
+provenance (do not train the known-invalid older 20-image fixture).
