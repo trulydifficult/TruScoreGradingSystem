@@ -1195,7 +1195,7 @@ did not prove original pre-rotation corner coordinates or segmentation masks.
 - Reference archaeology: Checkplz/claude_fix/data_management.py COCO
   export is TODO stub, not superior executable code.
 - New CI workflow .github/workflows/dataset-integrity.yml and tests in
-  tests/dataset. Dataset Integrity run 38998188997: **14 PASSED**.
+  tests/dataset. Dataset Integrity run 38998658381: **19 PASSED**.
   Annotation Integrity + Phoenix Foundation also passed on commit
   31b5d317. CI compiled active source. These are source-method, not
   complete Qt GUI tests.
@@ -1226,9 +1226,9 @@ did not prove original pre-rotation corner coordinates or segmentation masks.
   Dataset Studio paths opt in to bbox_only=True.
 - Current app's COCO conversion popup is not a complete training-ready
   manifest; images are not automatically bundled by background worker.
-- Some Dataset Studio export side-effect/event sequencing (Guru event
-  occurs before final confirmed export) and optional photometric export
-  remain to audit for falsely reported success.
+- Guru event publication is now after reported successful file writes;
+  cancellation/error cases are covered by source-method tests. Optional
+  photometric export behavior still needs a runtime and historical audit.
 - Qt GUI user workflow, image-reference/human edit accuracy, precise
   rotation geometry and Detectron2 GPU runtime remain unverified.
 - Do not merge into main or label the full subsystem VERIFIED yet.
@@ -1236,3 +1236,25 @@ did not prove original pre-rotation corner coordinates or segmentation masks.
 **Proceed in small verified slices.** See ADR 0008 and updated
 ANNOTATION_INTEGRITY_AUDIT.md, REFACTOR_STATUS.md, CURRENT_STATE.md,
 CODE_ARCHAEOLOGY.md. Do not silently substitute any model or mask.
+
+
+### 2026-10-16 incremental continuation — readiness validation and truthful events
+
+After the first 14 passing tests, current \`dataset_validator.py\` was
+also found to claim automatic YOLO→Mask R-CNN conversion for boxes lacking
+masks, and to pair Test1 with Test10 via substring matching. Both were
+corrected (Mask R-CNN rejects YOLO bbox-only source; labels require exact
+file stems). COCO/dual-border class naming is outer_border/graphic_border.
+
+The manual \`export_dataset()\` was posting a Guru "dataset_exported"
+event before confirmation or any writing. That event now publishes only
+after writers report nonzero output, with actual export destination and
+file count. Cancelled/failed paths do not publish; zero-output requested
+photometric generation also fails explicitly rather than claiming success.
+
+Dataset Integrity **run 38998658381 PASSED all 19 tests**, including
+three actual-source entrypoint cases (cancel, real successful export, and
+simulated filesystem failure). No new model training has occurred; next
+gate remains workstation preview/COCO export acceptance, followed by
+real corner/polygon masks and actual GPU training. Code checkpoint
+\`63e1254e\` (docs are later commits).
