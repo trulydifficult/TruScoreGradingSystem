@@ -10,6 +10,7 @@ on:
       - "src/modules/phoenix_trainer/yolo_dataset.py"
       - "src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py"
       - "src/modules/phoenix_trainer/trainer_registry.py"
+      - "src/modules/phoenix_trainer/phoenix_training_queue_standalone.py"
       - "src/modules/dataset_studio/dataset_studio.py"
       - "src/modules/dataset_studio/project_management/project_creation_dialog.py"
       - "tests/phoenix/test_yolo11_dataset_handoff.py"
@@ -21,6 +22,7 @@ on:
       - "src/modules/phoenix_trainer/yolo_dataset.py"
       - "src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py"
       - "src/modules/phoenix_trainer/trainer_registry.py"
+      - "src/modules/phoenix_trainer/phoenix_training_queue_standalone.py"
       - "src/modules/dataset_studio/dataset_studio.py"
       - "src/modules/dataset_studio/project_management/project_creation_dialog.py"
       - "tests/phoenix/test_yolo11_dataset_handoff.py"
@@ -38,6 +40,7 @@ jobs:
             src/modules/phoenix_trainer/yolo_dataset.py
             src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py
             src/modules/phoenix_trainer/trainer_registry.py
+            src/modules/phoenix_trainer/phoenix_training_queue_standalone.py
             src/modules/dataset_studio/dataset_studio.py
             src/modules/dataset_studio/project_management/project_creation_dialog.py
             tests/phoenix/test_yolo11_dataset_handoff.py
@@ -56,6 +59,7 @@ jobs:
             src/modules/phoenix_trainer/yolo_dataset.py \
             src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py \
             src/modules/phoenix_trainer/trainer_registry.py \
+            src/modules/phoenix_trainer/phoenix_training_queue_standalone.py \
             src/modules/dataset_studio/dataset_studio.py \
             src/modules/dataset_studio/project_management/project_creation_dialog.py
       - name: Validate real seven-image detection pipeline and handoff
