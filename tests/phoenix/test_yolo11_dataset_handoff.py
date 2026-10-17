@@ -331,3 +331,62 @@ def test_all_picker_options_are_accounted_for_and_never_implicitly_trainable():
             else:
                 with pytest.raises(UnsupportedDatasetHandoff):
                     resolve_handoff(config)
+
+
+
+@pytest.mark.parametrize("queue", [True, False])
+def test_actual_export_button_success_wiring_uses_single_publisher(
+    queue, tmp_path, monkeypatch
+):
+    """Exercise active Dataset Studio method: correct destination/launcher."""
+    reports = []
+    class Boxes:
+        @staticmethod
+        def critical(*args):
+            reports.append(("critical", args[-1]))
+        @staticmethod
+        def information(*args):
+            reports.append(("info", args[-1]))
+
+    class Log:
+        def __getattr__(self, name):
+            return lambda *args, **kwargs: None
+
+    callback = isolated_gui_method("_export_to_phoenix")
+    project = tmp_path / "project"
+    fake_file = project / "src/modules/dataset_studio/dataset_studio.py"
+    fake_file.parent.mkdir(parents=True)
+    fake_file.touch()
+    callback.__globals__.update({"__file__": str(fake_file), "QMessageBox": Boxes})
+    launcher = project / "src/modules/phoenix_trainer/phoenix_trainer_dpg.py"
+    launcher.parent.mkdir(parents=True)
+    launcher.write_text("# Native trainer entrypoint sentinel for wiring test")
+
+    launches = []
+    def fake_popen(argv, **kwargs):
+        launches.append((argv, kwargs))
+        return types.SimpleNamespace(pid=1234)
+    import subprocess
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+
+    obj = types.SimpleNamespace(
+        images=selected_images(), current_config=GOOD, logger=Log(),
+        guru=None, _export_coco_format=write_real_fixture
+    )
+    target = callback(obj, queue=queue)
+    assert target is not None, reports
+    assert (target / "dataset_config.json").exists()
+    assert validate_coco_detection_export(target, resolve_handoff(GOOD))
+    assert not any(level == "critical" for level, msg in reports)
+    assert any(level == "info" for level, msg in reports)
+    if queue:
+        assert target.parent == project / "exports/training_queue/pending"
+        assert not launches, "Queue already has its own Main Window launcher"
+    else:
+        assert target.parent == project / "exports/training_direct"
+        assert len(launches) == 1
+        argv, opts = launches[0]
+        assert argv[1] == str(launcher)
+        assert argv[2:] == ["--dataset", str(target)]
+        assert "--auto-start" not in argv
+        assert opts["cwd"] == str(launcher.parent)
