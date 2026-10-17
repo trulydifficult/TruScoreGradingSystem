@@ -1162,3 +1162,77 @@ Resume Dataset Studio pipeline audit: original YOLO 5-field axis-aligned
 boxes, rotation-frame provenance, accurate image metadata and COCO
 segmentation contract. Existing Detectron2 dataset fixture has known
 wrong dimensions/missing segmentation; do not train from it.
+
+
+## Active handoff — Dataset Studio geometry, preview, and export integrity (2026-10-16)
+
+**Priority:** Build usable, accurate model-training datasets for Phoenix,
+without breaking the verified Annotation Studio three-folder image/YOLO
+export. Whole-app enterprise refactor is the larger objective; reliable
+training data and genuine hardware training are the near-term bottlenecks.
+
+**Previous handoff accepted:** Six real cards from fe3f248 passed matching
+three-format JPEG hashes, two-class labels and plausible border overlay
+inspection. Final-card GUI completion was observed as 3/3. These tests
+did not prove original pre-rotation corner coordinates or segmentation masks.
+
+**New work (ADR 0008, active refactor/phoenix-foundation):**
+- Inspected the two real Dataset Studio COCO paths. Fixed manual
+  hardcoded 640x480 and wrong border/surface categories; its conversion
+  now uses real image dimensions and common bbox-only converter.
+- Fixed ConversionWorker writing conversion wrapper instead of true
+  top-level COCO; it now reports correct counts/classes and refuses
+  incomplete conversion. Five-field YOLO annotations remain accurate
+  **axis-aligned boxes**, never fabricated instance masks.
+- Strict Mask R-CNN/Detectron2 safety: conversion/trainer fail explicitly
+  on absent masks or known synthetic YOLO-derived approximation polygons.
+  No fallback model substitution.
+- Preview no longer claims unimported same-stem global annotations as
+  current labels. New imports invalidate COCO/label caches; current source
+  imported labels take precedence over older conversion. Preview flags
+  mismatched COCO image dimensions, reports filename-matched rather than
+  geometrically verified. Unsupported export options/inert split flag fail.
+- Reference archaeology: Checkplz/claude_fix/data_management.py COCO
+  export is TODO stub, not superior executable code.
+- New CI workflow .github/workflows/dataset-integrity.yml and tests in
+  tests/dataset. Dataset Integrity run 38998188997: **14 PASSED**.
+  Annotation Integrity + Phoenix Foundation also passed on commit
+  31b5d317. CI compiled active source. These are source-method, not
+  complete Qt GUI tests.
+
+**User-facing next acceptance:**
+1. From working workstation refactor branch, launch TruScore with known
+   clean ROCm environment; open Dataset Studio on a *copy* of two to six
+   saved images from combined_dual_class/images and matching
+   combined_dual_class/labels.
+2. Verify overlay source YOLO coordinates per card before conversion.
+   Convert and confirm new JSON has \`images\`, \`annotations\`,
+   \`categories\` top-level; source dimensions and IDs 1=outer_border,
+   2=graphic_border; no segmentation field for bbox-only.
+3. Verify same boxes after conversion, compare image pairing and
+   warn/error paths. The user's originally incorrect borders and UI
+   verification alignment are not established accurate by CI alone.
+4. Investigate actual 24-point borders/corners and image-rotation
+   provenance, then implement real polygon/mask labeling (or target a
+   detection model explicitly) before native Detectron2 Mask R-CNN
+   training. Existing 20-image fixture remains NOT ACCEPTABLE for
+   segmentation training.
+5. Resume Phoenix real GPU checkpoint and sequential multi-job Queue
+   acceptance with a newly validated dataset; never simulate metrics.
+
+**Known remaining implementation risks:**
+- Legacy shared converter defaults still contain approximate polygon
+  paths; all alternate call sites require a later audit. The corrected
+  Dataset Studio paths opt in to bbox_only=True.
+- Current app's COCO conversion popup is not a complete training-ready
+  manifest; images are not automatically bundled by background worker.
+- Some Dataset Studio export side-effect/event sequencing (Guru event
+  occurs before final confirmed export) and optional photometric export
+  remain to audit for falsely reported success.
+- Qt GUI user workflow, image-reference/human edit accuracy, precise
+  rotation geometry and Detectron2 GPU runtime remain unverified.
+- Do not merge into main or label the full subsystem VERIFIED yet.
+
+**Proceed in small verified slices.** See ADR 0008 and updated
+ANNOTATION_INTEGRITY_AUDIT.md, REFACTOR_STATUS.md, CURRENT_STATE.md,
+CODE_ARCHAEOLOGY.md. Do not silently substitute any model or mask.
