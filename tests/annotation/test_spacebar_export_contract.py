@@ -102,6 +102,49 @@ def test_three_spacebar_targets_have_correct_image_and_yolo_class_ids(tmp_path):
     assert inner.class_id == 1, "Single-class export must not mutate the source annotation"
 
 
+def test_triple_export_rejects_missing_graphic_border(tmp_path):
+    fake_cv2 = _FakeCv2()
+    fake_file = tmp_path / "src/modules/annotation_studio/plugins/border_detection_plugin.py"
+    export = _method(
+        PLUGIN, "BorderDetectionSettingsWidget", "auto_create_training_labels",
+        {"Path": Path, "__file__": str(fake_file), "cv2": fake_cv2},
+    )
+    studio = SimpleNamespace(
+        current_image_path=Path("/incoming/Card001.jpg"),
+        current_image=_Image("rotated-pixels"),
+    )
+    widget = SimpleNamespace(
+        annotations=[_Annotation(0, (0.5, 0.5, 0.9, 0.9))],
+        current_image=_Image("unrotated-pixels"), studio=studio, logger=_Logger(),
+    )
+    assert export(widget) is False
+    assert fake_cv2.writes == []
+
+
+def test_triple_export_rejects_image_write_failure(tmp_path):
+    class FailingCv2(_FakeCv2):
+        def imwrite(self, path, image):
+            return False
+
+    fake_file = tmp_path / "src/modules/annotation_studio/plugins/border_detection_plugin.py"
+    export = _method(
+        PLUGIN, "BorderDetectionSettingsWidget", "auto_create_training_labels",
+        {"Path": Path, "__file__": str(fake_file), "cv2": FailingCv2()},
+    )
+    studio = SimpleNamespace(
+        current_image_path=Path("/incoming/Card002.jpg"),
+        current_image=_Image("rotated-pixels"),
+    )
+    widget = SimpleNamespace(
+        annotations=[
+            _Annotation(0, (0.5, 0.5, 0.9, 0.9)),
+            _Annotation(1, (0.5, 0.5, 0.8, 0.8)),
+        ],
+        current_image=_Image("unrotated-pixels"), studio=studio, logger=_Logger(),
+    )
+    assert export(widget) is False
+
+
 def _studio_instance():
     events = []
     class Harness:
