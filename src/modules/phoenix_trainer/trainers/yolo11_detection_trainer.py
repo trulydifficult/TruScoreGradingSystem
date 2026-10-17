@@ -83,6 +83,10 @@ class YOLO11DetectionTrainer(BaseTrainer):
             for k, v in (getattr(engine, "metrics", None) or {}).items():
                 if isinstance(v, (int, float)) and not isinstance(v, bool):
                     metrics[str(k)] = float(v)
+            # Alias only the actual Ultralytics mAP50-95 measurement.
+            # No derived/heuristic accuracy estimates may be emitted.
+            if "metrics/mAP50-95(B)" in metrics:
+                metrics["mAP"] = metrics["metrics/mAP50-95(B)"]
             if metrics:
                 self.update_metrics(metrics)
             self.update_progress(self.current_epoch + 1, epochs,
