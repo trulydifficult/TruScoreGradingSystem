@@ -1,3 +1,13 @@
+# TruScoreGradingSystem — Handoff Chronology
+
+> **CURRENT NEW-SESSION START:** Read
+> [SESSION_START.md](SESSION_START.md) (bounded active snapshot),
+> [PROJECT_MEMORY_INDEX.md](PROJECT_MEMORY_INDEX.md), and
+> [PROJECT_BOOTSTRAP.md](PROJECT_BOOTSTRAP.md) before old dated entries.
+> This file preserves dated evidence and superseded next steps.
+> The active continuation is Dataset Studio → Phoenix's truthful
+> Trainer/Queue handoff, not the older 2026-10-15 queue task.
+
 # TruScoreGradingSystem — Current Handoff
 
 Last updated: 2026-10-13
@@ -1370,3 +1380,26 @@ choice. Current Mask R-CNN needs real segmentation; don't queue these
 bbox-only labels as Mask R-CNN training or silently invent masks.
 Main Window Phoenix Queue and ViT ROCm smoke workflow remain the
 previously verified reusable training foundation.
+
+
+# NEW SESSION START HERE — 2026-10-16 23:30 CDT (memory audit)
+
+Latest active session handoff lives in [SESSION_START.md](SESSION_START.md).
+The older October 15 marker above is historical, not a competing
+instruction. The complete memory map is
+[PROJECT_MEMORY_INDEX.md](PROJECT_MEMORY_INDEX.md).
+
+Continuity audit: reviewed 22 existing project_brain docs (including
+nine ADRs), nine attached baseline snapshots, AGENTS and README;
+inventoried historical research and alternate generated IDE context.
+Gaps fixed: stale entrypoint, inaccurate current-state heading,
+partially verified status distinctions, and misleading README metrics.
+See ADR 0010. No app-runtime, training, or annotation logic was changed.
+
+The seven actual exported JPEGs and 14 real-source-equivalent COCO
+bboxes remain accepted for file fidelity (43 CI tests); precise
+physical card-edge ground truth/instance segmentation is not proven.
+Export to Trainer is disconnected and Export to Queue is not a valid
+Mask R-CNN route. Next engineering work must reuse the existing
+Queue worker architecture after explicitly resolving model/label
+geometry. Do not train until the contract is chosen and validated.
