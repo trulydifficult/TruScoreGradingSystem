@@ -1813,7 +1813,11 @@ class BorderDetectionSettingsWidget(QWidget):
             self.logger.info(f"🚀 auto_create_training_labels() called - {len(self.annotations) if hasattr(self, 'annotations') else 0} annotations")
             
             if not self.annotations:
-                self.logger.warning("❌ No annotations to export")
+                self.logger.warning("No annotations to export")
+                return False
+            classes = {ann.class_id for ann in self.annotations}
+            if not {0, 1}.issubset(classes):
+                self.logger.error("Both outer class 0 and graphic class 1 are required for triple export")
                 return False
 
             if self.current_image is None:
@@ -1889,7 +1893,9 @@ class BorderDetectionSettingsWidget(QWidget):
                 
                 # Save rotated image
                 img_save_path = images_dir / f"{img_name}{img_ext}"
-                cv2.imwrite(str(img_save_path), rotated_image)
+                if not cv2.imwrite(str(img_save_path), rotated_image):
+                    self.logger.error("Failed to write export image: %s", img_save_path)
+                    return False
                 
                 # Create YOLO label file
                 label_save_path = labels_dir / f"{img_name}.txt"
@@ -1907,12 +1913,12 @@ class BorderDetectionSettingsWidget(QWidget):
                 exported_count += 1
                 self.logger.info(f"✅ Exported {export['description']}: {img_save_path.name}")
             
-            if exported_count > 0:
-                self.logger.info(f"🎉 Successfully exported {exported_count} formats to {base_dir}")
+            if exported_count == len(exports):
+                self.logger.info("Exported all %d image/label datasets to %s",
+                                 exported_count, base_dir)
                 return True
-            else:
-                self.logger.warning("No formats were exported")
-                return False
+            self.logger.error("Incomplete triple export: %d/%d", exported_count, len(exports))
+            return False
 
         except Exception as e:
             self.logger.error(f"Export failed: {e}")
