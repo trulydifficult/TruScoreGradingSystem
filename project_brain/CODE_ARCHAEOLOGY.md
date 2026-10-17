@@ -198,3 +198,28 @@ Current owner:
 - `src/modules/phoenix_trainer/queue_monitor.py` — durable operational event history
 - `src/modules/phoenix_trainer/phoenix_training_queue_standalone.py` — Queue monitor UI/control plane
 - immutable model/run provenance remains owned by `run_artifacts.py`
+
+
+## Dataset Studio COCO/export archaeology — 2026-10-16
+
+Examined current \`src/modules/dataset_studio/dataset_studio.py\` manual
+export and ConversionWorker, \`src/shared/dataset_tools/\` converters and
+validators, existing fixture/audit material, and historical
+\`Checkplz/claude_fix/data_management.py\` (492 lines).
+
+Historical \`DataManagementSuite\` contains architectural aspirations
+for images, analytics and export, but the YOLO, COCO and Pascal VOC
+export method bodies are TODO placeholders. **Classification: REFERENCE,
+not SALVAGE as an implemented converter.** Do not replace the corrected
+working converter with these stubs.
+
+Current shared \`yolo_to_maskrcnn_converter.py\` contains valuable source
+polygon parsing/resampling as well as legacy synthetic bbox-derived
+polygon generation. The latter is NOT genuine segmentation ground truth;
+new Dataset Studio bbox-only routes do not use it. Remaining old callers
+and non-COCO conversion routes still require a full current/historical
+audit before consolidated ownership is declared.
+
+ADR 0008 implements a narrow truthful COCO detection slice. Historical
+Dataset Studio behavior must not be assumed fully audited or superseded
+solely because its current UI now passes source-method CI.
