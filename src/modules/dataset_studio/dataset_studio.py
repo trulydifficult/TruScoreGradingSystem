@@ -3572,9 +3572,6 @@ Path: {label_info['path']}
                 lines.append("Check the quality filter or missing annotations.")
 
             self.pre_export_report.setPlainText("\n".join(lines))
-            self.pre_export_report.moveCursor(
-                self.pre_export_report.textCursor().MoveOperation.Start
-            )
         except Exception as exc:
             self.logger.exception(f"Pre-export verification failed: {exc}")
             self.pre_export_report.setPlainText(f"Pre-export verification failed: {exc}")
