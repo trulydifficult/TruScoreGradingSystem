@@ -294,3 +294,87 @@ def test_validator_never_pairs_test1_with_test10():
         not result.passed and "insufficient" in result.message
         for result in target.validation_results
     )
+
+
+
+@pytest.mark.parametrize("case", ["cancelled", "success", "failed"])
+def test_export_event_fires_only_after_confirmed_file_writes(tmp_path, case):
+    from datetime import datetime
+
+    events, notifications = [], []
+
+    class MessageBox:
+        class StandardButton:
+            Yes = 1
+            No = 2
+
+        @staticmethod
+        def question(*args):
+            return 2 if case == "cancelled" else 1
+
+        @staticmethod
+        def warning(*args):
+            notifications.append(("warning", args))
+
+        @staticmethod
+        def critical(*args):
+            notifications.append(("critical", args))
+
+        @staticmethod
+        def information(*args):
+            notifications.append(("success", args))
+
+    class Check:
+        def __init__(self, checked):
+            self.checked = checked
+
+        def isChecked(self):
+            return self.checked
+
+    images = [tmp_path / "card.jpg"]
+    label = tmp_path / "card.txt"
+    Image.new("RGB", (900, 1400)).save(images[0])
+    label.write_text("0 0.5 0.5 0.9 0.9\n1 0.5 0.5 0.7 0.7\n")
+
+    export_real = isolated_method(
+        "src/modules/dataset_studio/dataset_studio.py",
+        "TruScoreDatasetFrame", "_export_coco_format", {"Path": Path}
+    )
+    entrypoint = isolated_method(
+        "src/modules/dataset_studio/dataset_studio.py",
+        "TruScoreDatasetFrame", "export_dataset",
+        {"QMessageBox": MessageBox, "Path": Path, "datetime": datetime}
+    )
+    obj = types.SimpleNamespace(
+        images=images, imported_labels=[{"path": str(label)}],
+        format_checkboxes={"coco": Check(True)}, guru=None,
+        include_images_cb=Check(True), quality_filter_cb=Check(False),
+        split_dataset_cb=Check(False), photometric_stereo_cb=Check(False),
+        export_path_label=types.SimpleNamespace(text=lambda: str(tmp_path / "export")),
+        current_config={"type": "detection"}, project_name="dataset",
+        update_status=lambda text: None, logger=Logger()
+    )
+
+    class Guru:
+        def absorb_dataset_event(self, kind, payload):
+            assert kind == "dataset_exported"
+            output = Path(payload["metadata"]["export_destination"])
+            assert (output / "annotations.json").is_file(), "event fired before writing"
+            events.append(payload)
+
+    obj.guru = Guru()
+
+    if case == "failed":
+        obj._export_coco_format = lambda *args: (_ for _ in ()).throw(OSError("disk full"))
+    else:
+        obj._export_coco_format = lambda *args: export_real(obj, *args)
+
+    entrypoint(obj)
+    if case == "success":
+        assert len(events) == 1
+        assert any(level == "success" for level, args in notifications)
+    else:
+        assert not events
+        assert not any(level == "success" for level, args in notifications)
+        if case == "failed":
+            assert any(level == "critical" for level, args in notifications)
