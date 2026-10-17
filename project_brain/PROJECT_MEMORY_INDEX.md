@@ -64,6 +64,9 @@ the conflict instead of merging claims silently.
 - [DATASET_TO_PHOENIX_HANDOFF_AUDIT.md](DATASET_TO_PHOENIX_HANDOFF_AUDIT.md):
   currently broken Trainer button, partially connected Queue button,
   remaining model-format incompatibility.
+- [MODEL_CAPABILITY_MATRIX.md](MODEL_CAPABILITY_MATRIX.md):
+  exhaustive status inventory of the 24 dataset types, 15 named pipelines,
+  source annotation requirements, and supported/unsupported handoffs.
 - [DATASET_SEVEN_CARD_EXPORT_AUDIT.md](DATASET_SEVEN_CARD_EXPORT_AUDIT.md):
   actual saved seven-image dataset and source-equivalence proof; detection
   fidelity only, not physical pixel-edge precision.
@@ -90,6 +93,8 @@ the conflict instead of merging claims silently.
   accurate dashboard, visible preflight, on-tab refresh.
 - [0010 — Memory and recovery](decisions/0010-authoritative-memory-and-session-recovery.md):
   this authority map, bounded active snapshot, acceptance categories.
+- [0011 — Dataset-to-Phoenix capabilities](decisions/0011-trainable-dataset-capabilities-and-phoenix-handoff.md):
+  exact model+dataset registry, atomic publication, truthful YOLO detection pilot, future plugin gates.
 
 ## Other repository documentation: classify before using
 
