@@ -163,6 +163,8 @@ class ModularAnnotationStudio(QMainWindow):
         self.current_image_path = None
         self.image_files = []
         self.current_index = 0
+        self._successfully_saved_indices = set()
+        self._annotation_complete = False
         self.rotation_angle = 0.0  # For our beautiful rotation controls
         
         # Magnifier settings - DEFAULT TO 2X
@@ -721,6 +723,8 @@ class ModularAnnotationStudio(QMainWindow):
                     # CRITICAL: Store files exactly like working border_calibration.py
                     self.image_files = file_paths
                     self.current_index = 0
+                    self._successfully_saved_indices = set()
+                    self._annotation_complete = False
                     
                     self.logger.info(f"Loaded {len(file_paths)} cards successfully")
                     
@@ -1389,7 +1393,7 @@ class ModularAnnotationStudio(QMainWindow):
     
     def update_navigation_buttons(self):
         """Update navigation button states"""
-        has_images = bool(self.image_files)
+        has_images = bool(self.image_files) and not getattr(self, "_annotation_complete", False)
         can_go_prev = has_images and self.current_index > 0
         can_go_next = has_images and self.current_index < len(self.image_files) - 1
         
@@ -1397,66 +1401,104 @@ class ModularAnnotationStudio(QMainWindow):
         self.next_btn.setEnabled(can_go_next)
     
     def auto_save_current_annotations(self):
-        """Auto-save current annotations"""
+        """Export the active plugin's annotations and report its actual outcome."""
         try:
-            # Try border plugin's 3-format export
-            if hasattr(self, 'current_plugin') and self.current_plugin:
-                if hasattr(self.current_plugin, 'auto_create_training_labels'):
-                    self.current_plugin.auto_create_training_labels()
-                    self.logger.info("Auto-saved with 3 training label formats")
-                    return
-                
-                # Try corner plugin's single annotation save
-                if hasattr(self.current_plugin, 'auto_save_current_annotation'):
-                    self.current_plugin.auto_save_current_annotation()
-                    self.logger.info("Auto-saved corner annotation")
-                    return
-            
-            # Fallback to old method
-            if hasattr(self, 'current_plugin_widget') and self.current_plugin_widget:
-                if hasattr(self.current_plugin_widget, 'auto_save_current_annotations'):
-                    self.current_plugin_widget.auto_save_current_annotations()
-                    self.logger.debug("Auto-saved annotations")
-                    
-        except Exception as e:
-            self.logger.error(f"Auto-save failed: {e}")
-    
+            if self.current_plugin:
+                if hasattr(self.current_plugin, "auto_create_training_labels"):
+                    success = self.current_plugin.auto_create_training_labels()
+                    if success is True:
+                        self.logger.info("Saved all border training formats")
+                        return True
+                    self.logger.error("Border training-data export did not succeed")
+                    return False
+                if hasattr(self.current_plugin, "auto_save_current_annotation"):
+                    return self.current_plugin.auto_save_current_annotation() is True
+            widget = getattr(self, "current_plugin_widget", None)
+            if widget is not None and hasattr(widget, "auto_save_current_annotations"):
+                return widget.auto_save_current_annotations() is True
+            self.logger.error("No annotation export method is available")
+            return False
+        except Exception as exc:
+            self.logger.error(f"Auto-save failed: {exc}", exc_info=True)
+            return False
+
     def save_rotated_image(self):
-        """Save the rotated image back to disk - OVERWRITES ORIGINAL"""
+        """Save the finalized rotated image to its existing source path."""
         try:
             import cv2
-            if self.current_image_path and self.current_image is not None:
-                # Save rotated image (overwrite original)
-                cv2.imwrite(str(self.current_image_path), self.current_image)
-                self.logger.info(f"💾 Saved rotated image: {self.current_image_path.name} ({self.rotation_angle:.3f}°)")
-        except Exception as e:
-            self.logger.error(f"❌ Failed to save rotated image: {e}")
-    
+            if self.current_image_path is None or self.current_image is None:
+                self.logger.error("Cannot save rotated image without a loaded card")
+                return False
+            if not cv2.imwrite(str(self.current_image_path), self.current_image):
+                self.logger.error("Rotated image write returned failure: %s", self.current_image_path)
+                return False
+            self.logger.info(
+                "Saved rotated source image: %s (%.3f degrees)",
+                self.current_image_path.name, self.rotation_angle,
+            )
+            return True
+        except Exception as exc:
+            self.logger.error(f"Failed to save rotated image: {exc}", exc_info=True)
+            return False
+
+    def _show_annotation_complete(self):
+        """Replace the last edited card with an explicit session summary."""
+        completed = len(self._successfully_saved_indices)
+        total = len(self.image_files)
+        self._annotation_complete = True
+
+        # No card remains active; this prevents a second Space-bar save and
+        # invalidates any delayed detector callback bound to the last image.
+        self.original_image = None
+        self.current_image = None
+        self.current_image_path = None
+        widget = getattr(self, "current_plugin_widget", None)
+        if widget is not None:
+            widget.current_image = None
+            widget.current_image_path = None
+
+        self.image_label.clear()
+        if completed == total:
+            message = f"Annotation complete!\\n{completed}/{total} successfully annotated"
+        else:
+            message = f"Annotation session finished\\n{completed}/{total} successfully saved"
+        self.image_label.setText(message)
+        self.card_counter.setText(f"{completed}/{total} saved")
+        if hasattr(self, "magnifier_display"):
+            self.magnifier_display.clear()
+        self.update_navigation_buttons()
+        self.logger.info("Annotation session finished: %d/%d saved", completed, total)
+
     def save_and_next_image(self):
-        """SPACE BAR - Save annotations, rotated image, reset rotation, and move to next"""
+        """Space: save once, then navigate or show completion on the final card."""
+        if not self.image_files or getattr(self, "_annotation_complete", False):
+            return False
+        if self.current_image_path is None:
+            self.logger.warning("Space ignored: no active card")
+            return False
+
         try:
-            self.logger.info("🔥 SPACE BAR PRESSED - save_and_next_image() called")
-            
-            # 1. Save rotated image if rotation was applied
-            if hasattr(self, 'rotation_angle') and abs(self.rotation_angle) > 0.001:
-                self.save_rotated_image()
-            
-            # 2. Save current image annotations (creates 3 training label formats)
-            self.auto_save_current_annotations()
-            
-            # 3. Reset rotation slider to 0° for next image
-            self.reset_rotation()
-            
-            # 4. Move to next image
-            # Do not re-export after reset_rotation(): that would overwrite
-            # the correctly rotated image in all three export folders.
-            self._advance_to_next_image(save_current=False)
-            
-            self.logger.info("✅ Saved (image + labels), reset rotation, and moved to next")
-            
-        except Exception as e:
-            self.logger.error(f"❌ Save and next failed: {e}")
-    
+            self.logger.info("Space: saving card %d/%d",
+                             self.current_index + 1, len(self.image_files))
+            # Preserve the deliberately rotated image and matching labels.
+            # Never reset rotation before the final export is confirmed.
+            if abs(self.rotation_angle) > 0.001 and not self.save_rotated_image():
+                return False
+            if not self.auto_save_current_annotations():
+                self.logger.error("Card export failed; keeping editor open for retry")
+                return False
+
+            self._successfully_saved_indices.add(self.current_index)
+            if self.current_index == len(self.image_files) - 1:
+                self._show_annotation_complete()
+            else:
+                self.reset_rotation()
+                self._advance_to_next_image(save_current=False)
+            return True
+        except Exception as exc:
+            self.logger.error(f"Save and next failed: {exc}", exc_info=True)
+            return False
+
     def zoom_out_placeholder(self):
         """Zoom out with professional scaling - EXACT from border calibration"""
         try:
