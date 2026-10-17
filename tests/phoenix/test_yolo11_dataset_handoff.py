@@ -298,3 +298,36 @@ def test_no_training_when_gpu_requested_but_unavailable(monkeypatch, tmp_path):
     )
     with pytest.raises(RuntimeError, match="unavailable"):
         namespace["Trainer"].train(obj)
+
+
+
+def test_all_picker_options_are_accounted_for_and_never_implicitly_trainable():
+    """Prevent picker growth from bypassing explicit capability registration."""
+    path = (ROOT / "src/modules/dataset_studio/project_management"
+            / "project_creation_dialog.py")
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef)
+               and n.name == "ProfessionalDatasetCreationDialog")
+    types = None
+    pipelines = None
+    for node in ast.walk(cls):
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Attribute) and target.attr == "dataset_types":
+                types = set(ast.literal_eval(node.value))
+            if isinstance(target, ast.Attribute) and target.attr == "training_pipelines":
+                pipelines = set(ast.literal_eval(node.value))
+    assert types is not None and pipelines is not None
+    assert len(types) == 24
+    assert len(pipelines) == 15
+    supported = {(c.dataset_type, c.pipeline) for c in supported_handoffs()}
+    assert supported <= {(kind, pipeline) for kind in types for pipeline in pipelines}
+    for kind in types:
+        for pipeline in pipelines:
+            config = {"dataset_type": kind, "pipeline": pipeline}
+            if (kind, pipeline) in supported:
+                assert resolve_handoff(config).pipeline == pipeline
+            else:
+                with pytest.raises(UnsupportedDatasetHandoff):
+                    resolve_handoff(config)
