@@ -1,6 +1,38 @@
 # TruScoreGradingSystem — Current State
 
-Last baseline review: 2026-10-15
+Last base implementation review: 2026-10-15
+Latest continuity audit / dataset acceptance: 2026-10-16 CDT / 2026-10-17 UTC
+
+> For the current engineering objective, read
+> [SESSION_START.md](SESSION_START.md). Older dated continuation paragraphs
+> further down are retained only as historical snapshots.
+
+## Current accepted integration checkpoint
+
+- User accepted the seven-image Dataset Studio verification and improved
+  Export/Analysis presentation in the real application, then committed
+  a manual COCO detection export under
+  src/modules/dataset_studio/exports/Dataset_20261016_230734/.
+- GitHub commit 8eee8ff contains 7 exported JPEGs + annotations.json.
+  JPEGs exactly match the Annotation Studio originals by content hash;
+  7 COCO images and 14 detection bboxes exactly match the original
+  five-field YOLO labels. Dataset Integrity CI run 39002287868 PASSED
+  43 tests. This is **export geometry/file fidelity**, not evidence of
+  pixel-precise card edge accuracy or trained model quality.
+- The Dataset Studio Export to Trainer button is disconnected from
+  the current worker. Export to Queue reaches the real pending
+  directory but its legacy launcher and fixed Detectron2 training
+  configuration are unsuitable for the current bbox-only labels.
+  Current Phoenix Mask R-CNN correctly rejects missing masks.
+- Current priority is the explicit supported model/annotation contract
+  and a safe, validated handoff to the **existing** separate-process
+  Phoenix Queue/Trainer, not another queue or improvised mask generator.
+  See DATASET_SEVEN_CARD_EXPORT_AUDIT.md,
+  DATASET_TO_PHOENIX_HANDOFF_AUDIT.md and ADR 0010.
+- Several model training implementation slices passed prior CI/GPU
+  smoke tests; full Dataset Studio integration, multi-job unattended
+  Queue acceptance, and independently measured model accuracy remain
+  separate pending gates.
 
 ## Current Implementation
 
