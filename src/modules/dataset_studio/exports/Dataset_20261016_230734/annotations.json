@@ -1,0 +1,356 @@
+{
+  "info": {
+    "description": "Card Grading Dataset - YOLO to Mask R-CNN Conversion",
+    "version": "1.0",
+    "year": 2026,
+    "contributor": "TruScore Card Grader",
+    "date_created": "2026-10-16T23:07:34.641436",
+    "annotation_geometry": "axis_aligned_bbox",
+    "segmentation_ground_truth": false
+  },
+  "licenses": [
+    {
+      "id": 1,
+      "name": "Custom License",
+      "url": ""
+    }
+  ],
+  "images": [
+    {
+      "id": 1,
+      "width": 1632,
+      "height": 2284,
+      "file_name": "image001F.jpg",
+      "license": 1,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": "2026-10-16T23:07:34.642009"
+    },
+    {
+      "id": 2,
+      "width": 1632,
+      "height": 2284,
+      "file_name": "image002F.jpg",
+      "license": 1,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": "2026-10-16T23:07:34.642269"
+    },
+    {
+      "id": 3,
+      "width": 1632,
+      "height": 2284,
+      "file_name": "image003F.jpg",
+      "license": 1,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": "2026-10-16T23:07:34.642416"
+    },
+    {
+      "id": 4,
+      "width": 1632,
+      "height": 2284,
+      "file_name": "image004F.jpg",
+      "license": 1,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": "2026-10-16T23:07:34.642553"
+    },
+    {
+      "id": 5,
+      "width": 1640,
+      "height": 2291,
+      "file_name": "image092F.jpg",
+      "license": 1,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": "2026-10-16T23:07:34.642690"
+    },
+    {
+      "id": 6,
+      "width": 1640,
+      "height": 2291,
+      "file_name": "image093F.jpg",
+      "license": 1,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": "2026-10-16T23:07:34.642823"
+    },
+    {
+      "id": 7,
+      "width": 1640,
+      "height": 2291,
+      "file_name": "image094F.jpg",
+      "license": 1,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": "2026-10-16T23:07:34.642949"
+    }
+  ],
+  "annotations": [
+    {
+      "id": 1,
+      "image_id": 1,
+      "category_id": 1,
+      "bbox": [
+        51.072624000000005,
+        39.465235999999976,
+        1508.961888,
+        2098.616856
+      ],
+      "area": 3166732.8532183846,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 2,
+      "image_id": 1,
+      "category_id": 2,
+      "bbox": [
+        139.288752,
+        108.31755799999996,
+        1351.101792,
+        1955.476292
+      ],
+      "area": 2642047.5223347154,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 3,
+      "image_id": 2,
+      "category_id": 1,
+      "bbox": [
+        62.68104000000007,
+        51.072523999999916,
+        1501.996512,
+        2098.616856
+      ],
+      "area": 3152115.1977364062,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 4,
+      "image_id": 2,
+      "category_id": 2,
+      "bbox": [
+        132.32500799999997,
+        109.11010600000004,
+        1353.422496,
+        1975.58006
+      ],
+      "area": 2673794.4958530297,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 5,
+      "image_id": 3,
+      "category_id": 1,
+      "bbox": [
+        74.28700799999996,
+        53.39420999999999,
+        1504.3188480000001,
+        2100.939684
+      ],
+      "area": 3160483.1651523644,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 6,
+      "image_id": 3,
+      "category_id": 2,
+      "bbox": [
+        162.50395199999997,
+        132.32468199999994,
+        1325.564256,
+        1898.9701320000001
+      ],
+      "area": 2517206.9301908016,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 7,
+      "image_id": 4,
+      "category_id": 1,
+      "bbox": [
+        53.39496000000002,
+        85.894388,
+        1501.996512,
+        2098.616856
+      ],
+      "area": 3152115.1977364062,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 8,
+      "image_id": 4,
+      "category_id": 2,
+      "bbox": [
+        130.00348799999998,
+        143.9319699999999,
+        1369.67232,
+        1954.686028
+      ],
+      "area": 2677279.346842345,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 9,
+      "image_id": 5,
+      "category_id": 1,
+      "bbox": [
+        90.72316000000001,
+        53.50286850000006,
+        1502.75168,
+        2112.226397
+      ],
+      "area": 3174151.766632097,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 10,
+      "image_id": 5,
+      "category_id": 2,
+      "bbox": [
+        179.11997999999994,
+        118.63714400000012,
+        1329.19212,
+        1944.7382599999999
+      ],
+      "area": 2584930.7706545107,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 11,
+      "image_id": 6,
+      "category_id": 1,
+      "bbox": [
+        70.50770000000007,
+        86.07057900000004,
+        1504.35724,
+        2109.9010319999998
+      ],
+      "area": 3174044.8931726716,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 12,
+      "image_id": 6,
+      "category_id": 2,
+      "bbox": [
+        158.18455999999998,
+        169.8146475000001,
+        1312.0,
+        1916.8224249999998
+      ],
+      "area": 2514871.0215999996,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 13,
+      "image_id": 7,
+      "category_id": 1,
+      "bbox": [
+        59.326179999999994,
+        116.31177900000014,
+        1496.92804,
+        2099.513638
+      ],
+      "area": 3142820.835084609,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    },
+    {
+      "id": 14,
+      "image_id": 7,
+      "category_id": 2,
+      "bbox": [
+        145.0621,
+        202.3835035000001,
+        1313.49076,
+        1916.8224249999998
+      ],
+      "area": 2517728.5437982925,
+      "iscrowd": 0,
+      "attributes": {
+        "source": "yolo_bbox",
+        "geometry": "axis_aligned_bbox",
+        "segmentation_ground_truth": false
+      }
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "outer_border",
+      "supercategory": "card_component"
+    },
+    {
+      "id": 2,
+      "name": "graphic_border",
+      "supercategory": "card_component"
+    }
+  ]
+}
