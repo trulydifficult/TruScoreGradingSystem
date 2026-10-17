@@ -3385,9 +3385,14 @@ Path: {label_info['path']}
                 getattr(self, "coco_annotations", None)
             )
 
+            loaded_paths = {str(Path(path).resolve())
+                            for path in getattr(self, "images", [])}
             high_quality = 0
             for card in getattr(self, "image_cards", []):
-                if (getattr(card, "quality_score", None) is not None
+                card_path = getattr(card, "image_path", None)
+                if (card_path is not None
+                        and str(Path(card_path).resolve()) in loaded_paths
+                        and getattr(card, "quality_score", None) is not None
                         and card.quality_score >= 70):
                     high_quality += 1
 
@@ -3397,7 +3402,12 @@ Path: {label_info['path']}
                 if item.widget():
                     item.widget().deleteLater()
 
-            detection_ready = analysis.detection_export_ready
+            filter_enabled = (hasattr(self, "quality_filter_cb")
+                              and self.quality_filter_cb.isChecked())
+            detection_ready = (
+                analysis.detection_export_ready and
+                (not filter_enabled or high_quality > 0)
+            )
             stats = [
                 ("Project Images", analysis.total_images, TruScoreTheme.NEON_CYAN),
                 ("Matched YOLO Label Files", analysis.yolo_label_files, TruScoreTheme.QUANTUM_GREEN),
