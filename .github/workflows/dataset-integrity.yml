@@ -32,6 +32,22 @@ jobs:
             src/shared/dataset_tools/dataset_analysis.py
             src/modules/phoenix_trainer/trainers/detectron2_trainer.py
             tests/dataset
+            src/shared/annotations/combined_dual_class/images/image001F.jpg
+            src/shared/annotations/combined_dual_class/images/image002F.jpg
+            src/shared/annotations/combined_dual_class/images/image003F.jpg
+            src/shared/annotations/combined_dual_class/images/image004F.jpg
+            src/shared/annotations/combined_dual_class/labels/image001F.txt
+            src/shared/annotations/combined_dual_class/labels/image002F.txt
+            src/shared/annotations/combined_dual_class/labels/image003F.txt
+            src/shared/annotations/combined_dual_class/labels/image004F.txt
+            src/modules/dataset_studio/exports/Dataset_20261016_230734/annotations.json
+            src/modules/dataset_studio/exports/Dataset_20261016_230734/images/image001F.jpg
+            src/modules/dataset_studio/exports/Dataset_20261016_230734/images/image002F.jpg
+            src/modules/dataset_studio/exports/Dataset_20261016_230734/images/image003F.jpg
+            src/modules/dataset_studio/exports/Dataset_20261016_230734/images/image004F.jpg
+            src/modules/dataset_studio/exports/Dataset_20261016_230734/images/image092F.jpg
+            src/modules/dataset_studio/exports/Dataset_20261016_230734/images/image093F.jpg
+            src/modules/dataset_studio/exports/Dataset_20261016_230734/images/image094F.jpg
             src/shared/annotations/combined_dual_class/images/image092F.jpg
             src/shared/annotations/combined_dual_class/images/image093F.jpg
             src/shared/annotations/combined_dual_class/images/image094F.jpg
@@ -59,5 +75,5 @@ jobs:
             src/shared/dataset_tools/dataset_validator.py \
             src/shared/dataset_tools/dataset_analysis.py \
             src/modules/phoenix_trainer/trainers/detectron2_trainer.py
-      - name: Verify actual method contracts against six real cards
+      - name: Verify dataset integrity and actual seven-image COCO export
         run: python -m pytest -q tests/dataset
