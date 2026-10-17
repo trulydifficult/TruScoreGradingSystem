@@ -2614,7 +2614,7 @@ class TruScoreDatasetFrame(QFrame):
                 self.logger.debug(f"conversion_result keys: {list(conversion_result.keys())}")
             stats = conversion_result['conversion_stats']
             # Update status label
-            self.coco_status_label.setText(f"✅ COCO Dataset Successfully Converted!")
+            self.coco_status_label.setText("COCO detection boxes converted (not segmentation masks)")
             self.coco_status_label.setStyleSheet(f"color: {TruScoreTheme.QUANTUM_GREEN}; font-weight: bold;")
             
             # Create detailed conversion info widget
@@ -2677,8 +2677,8 @@ class TruScoreDatasetFrame(QFrame):
             file_info = QLabel(f"""
             <b>File Path:</b> {output_path}<br>
             <b>Format:</b> COCO JSON<br>
-            <b>Compatible With:</b> Detectron2, Mask R-CNN, PyTorch<br>
-            <b>Status:</b> ✅ Ready for training
+            <b>Geometry:</b> Axis-aligned detection bounding boxes<br>
+            <b>Mask R-CNN:</b> Requires separately verified instance masks
             """)
             file_info.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; margin-left: 10px;")
             file_layout.addWidget(file_info)
@@ -2707,7 +2707,7 @@ class TruScoreDatasetFrame(QFrame):
             categories = self.coco_annotations.get('categories', [])
             
             # Update status
-            self.coco_status_label.setText(f"✅ COCO Dataset Available!")
+            self.coco_status_label.setText("COCO dataset available; inspect geometry before training")
             self.coco_status_label.setStyleSheet(f"color: {TruScoreTheme.QUANTUM_GREEN}; font-weight: bold;")
             
             # Create details widget
@@ -2780,9 +2780,8 @@ class TruScoreDatasetFrame(QFrame):
             format_info = QLabel(f"""
             <b>Format:</b> COCO JSON<br>
             <b>Categories Defined:</b> {len(categories)}<br>
-            <b>Compatible With:</b> Detectron2, Mask R-CNN, PyTorch, MMDetection<br>
-            <b>Annotation Types:</b> Bounding Boxes, Segmentation Masks<br>
-            <b>Status:</b> ✅ Ready for Training
+            <b>Annotation Type:</b> COCO object detection boxes<br>
+            <b>Mask R-CNN:</b> Check real segmentation ground truth before training
             """)
             format_info.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; margin-left: 10px;")
             format_layout.addWidget(format_info)
@@ -3304,10 +3303,11 @@ Path: {label_info['path']}
                 self, 
                 "Conversion Complete", 
                 f"Successfully converted {labeled_images} labeled images to COCO format.\n"
-                f"Dataset saved to: {output_path.name}"
+                f"Dataset saved to: {output_path.name}\n"
+                f"These are detection boxes, not verified Mask R-CNN instance masks."
             )
             
-            self.update_status("Labels converted to COCO format - dataset ready for training!")
+            self.update_status("COCO detection boxes converted; segmentation not yet verified")
             self.logger.debug("Callback completed successfully!")
             
             # Auto-save project after successful conversion
@@ -3672,6 +3672,15 @@ Path: {label_info['path']}
                 QMessageBox.warning(self, "Export Warning", "Please select at least one export format.")
                 return
             
+            unsupported = set(selected_formats) - {"coco", "yolo"}
+            if unsupported:
+                QMessageBox.warning(
+                    self, "Export Not Implemented",
+                    f"Unsupported export formats: {', '.join(sorted(unsupported))}. "
+                    "Only COCO detection JSON and YOLO TXT are currently implemented."
+                )
+                return
+
             # GURU ABSORPTION: Dataset Export Event
             self.guru.absorb_dataset_event('dataset_exported', {
                 'export_formats': selected_formats,
@@ -3691,6 +3700,13 @@ Path: {label_info['path']}
             include_images = self.include_images_cb.isChecked()
             quality_filter = self.quality_filter_cb.isChecked()
             split_dataset = self.split_dataset_cb.isChecked()
+            if split_dataset:
+                QMessageBox.warning(
+                    self, "Split Not Implemented",
+                    "Dataset train/validation splitting is not implemented in this "
+                    "manual export path. Uncheck Split Dataset or use a verified split tool."
+                )
+                return
             generate_photometric = self.photometric_stereo_cb.isChecked()
             export_path = self.export_path_label.text()
             
