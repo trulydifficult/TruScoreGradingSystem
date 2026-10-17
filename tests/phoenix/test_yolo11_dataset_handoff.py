@@ -216,3 +216,85 @@ def test_ui_queue_button_rejects_unsupported_model_before_adding_files(tmp_path)
         for name, previous in (("PyQt6", old[0]), ("PyQt6.QtWidgets", old[1])):
             if previous is None: sys.modules.pop(name, None)
             else: sys.modules[name] = previous
+
+
+
+def test_native_yolo_trainer_requires_real_checkpoints(tmp_path):
+    """A model.train() return alone cannot be reported as a trained model."""
+    path = ROOT / "src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py"
+    tree = ast.parse(path.read_text())
+    cls = next(x for x in tree.body if isinstance(x, ast.ClassDef)
+               and x.name == "YOLO11DetectionTrainer")
+    method = copy.deepcopy(next(x for x in cls.body if isinstance(x, ast.FunctionDef)
+                                and x.name == "train"))
+    isolated = ast.fix_missing_locations(ast.Module(
+        body=[ast.ClassDef(name="Trainer", bases=[], keywords=[],
+                           body=[method], decorator_list=[])], type_ignores=[]
+    ))
+    namespace = {}
+    exec(compile(isolated, str(path), "exec"), namespace)
+    train = namespace["Trainer"].train
+
+    class FakeYOLO:
+        def __init__(self):
+            self.callbacks = {}
+            self.received = None
+        def add_callback(self, name, callback):
+            self.callbacks[name] = callback
+        def train(self, **kwargs):
+            self.received = kwargs  # no checkpoint is created
+            return None
+
+    model = FakeYOLO()
+    obj = types.SimpleNamespace(
+        dataset_yaml=tmp_path / "dataset.yaml",
+        model=model,
+        output_dir=tmp_path,
+        train_run_dir=None,
+        seed=42,
+        deterministic=True,
+        callbacks={"on_epoch_start": None},
+        config={
+            "device": "cpu", "epochs": 2, "batch_size": 2,
+            "learning_rate": 0.001, "optimizer": "AdamW", "precision": "fp32"
+        },
+        load_dataset=lambda: None,
+        build_model=lambda: model,
+        update_metrics=lambda result: None,
+        update_progress=lambda *args: None,
+        log=lambda *args: None
+    )
+    with pytest.raises(RuntimeError, match="required real best.pt/last.pt"):
+        train(obj)
+    assert model.received["device"] == "cpu"
+    assert model.received["data"] == str(obj.dataset_yaml)
+    assert model.received["amp"] is False
+    assert model.received["epochs"] == 2
+    assert "on_fit_epoch_end" in model.callbacks
+
+
+def test_no_training_when_gpu_requested_but_unavailable(monkeypatch, tmp_path):
+    """Hardware failure must not fall back silently to CPU."""
+    path = ROOT / "src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py"
+    tree = ast.parse(path.read_text())
+    cls = next(x for x in tree.body if isinstance(x, ast.ClassDef)
+               and x.name == "YOLO11DetectionTrainer")
+    method = copy.deepcopy(next(x for x in cls.body if isinstance(x, ast.FunctionDef)
+                                and x.name == "train"))
+    isolated = ast.fix_missing_locations(ast.Module(
+        body=[ast.ClassDef(name="Trainer", bases=[], keywords=[],
+                           body=[method], decorator_list=[])], type_ignores=[]
+    ))
+    namespace = {}
+    exec(compile(isolated, str(path), "exec"), namespace)
+
+    pretend_torch = types.ModuleType("torch")
+    pretend_torch.cuda = types.SimpleNamespace(is_available=lambda: False)
+    monkeypatch.setitem(sys.modules, "torch", pretend_torch)
+    model = types.SimpleNamespace()
+    obj = types.SimpleNamespace(
+        config={"device": "cuda", "epochs": 1, "batch_size": 1},
+        load_dataset=lambda: None, build_model=lambda: model
+    )
+    with pytest.raises(RuntimeError, match="unavailable"):
+        namespace["Trainer"].train(obj)
