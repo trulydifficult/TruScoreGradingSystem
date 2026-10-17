@@ -71,7 +71,7 @@ class ConversionWorker(QThread):
             from shared.dataset_tools.yolo_to_maskrcnn_converter import YOLOToMaskRCNNConverter
             
             # Initialize converter
-            converter = YOLOToMaskRCNNConverter(class_names=['border', 'surface'])
+            converter = YOLOToMaskRCNNConverter(class_names=['outer_border', 'graphic_border'])
             
             self.progress_updated.emit(25)
             
@@ -80,9 +80,15 @@ class ConversionWorker(QThread):
             self.logger.info(f"DEBUG: Converting {len(self.images)} images with {len(self.labels_data)} label entries")
             self.logger.info(f"DEBUG: First image: {self.images[0] if self.images else 'NONE'}")
             self.logger.info(f"DEBUG: labels_data keys: {list(self.labels_data.keys())[:3] if self.labels_data else 'EMPTY'}")
-            conversion_result = converter.convert_imported_data(self.images, self.labels_data, use_refined_polygons=True)
+            conversion_result = converter.convert_imported_data(self.images, self.labels_data, bbox_only=True)
+            coco_data = conversion_result["coco_data"]
+            failures = conversion_result["conversion_stats"]["failed_conversions"]
+            if failures or len(coco_data["images"]) != len(self.images):
+                raise ValueError(f"COCO conversion incomplete: {failures or 'missing images'}")
+            if not coco_data["annotations"]:
+                raise ValueError("COCO conversion produced no annotations")
             self.logger.info("Conversion process completed, starting file save...")
-            self.logger.info(f"DEBUG: Conversion result has {len(conversion_result.get('images', []))} images and {len(conversion_result.get('annotations', []))} annotations")
+            self.logger.info(f"DEBUG: Conversion result has {len(coco_data['images'])} images and {len(coco_data['annotations'])} annotations")
             self.progress_updated.emit(75)
             
             # Save converted dataset to modules/dataset_studio/converted_datasets/
@@ -94,7 +100,7 @@ class ConversionWorker(QThread):
             import json
             self.logger.info("Starting JSON file write...")
             with open(output_path, 'w') as f:
-                json.dump(conversion_result, f, separators=(',', ':'))  # Compact format = much faster
+                json.dump(coco_data, f, separators=(',', ':'))  # Compact format = much faster
             self.logger.info("JSON file write completed!")
             
             self.progress_updated.emit(100)
@@ -104,7 +110,7 @@ class ConversionWorker(QThread):
                 'output_path': output_path,
                 'total_images': len(self.images),
                 'labeled_images': len(self.labels_data),
-                'coco_data': conversion_result,  # CRITICAL: Include COCO data for verification
+                'coco_data': coco_data,  # The actual top-level COCO dataset
                 'conversion_stats': {
                     'total_images': len(self.images),
                     'labeled_images': len(self.labels_data)
@@ -3778,107 +3784,85 @@ Proceed with export?
             QMessageBox.critical(self, "Export Error", f"Failed to export dataset:\n{str(e)}")
 
     def _export_coco_format(self, images_to_export, export_dir, include_images):
-        """Export dataset in COCO format"""
-        try:
-            import json
-            import shutil
-            from datetime import datetime
-            
-            exported_files = 0
-            
-            # Create COCO JSON structure
-            coco_data = {
-                "info": {
-                    "description": "TruScore Dataset Export",
-                    "version": "1.0",
-                    "year": datetime.now().year,
-                    "contributor": "TruScore Dataset Studio",
-                    "date_created": datetime.now().isoformat()
-                },
-                "licenses": [{"id": 1, "name": "Unknown", "url": ""}],
-                "images": [],
-                "annotations": [],
-                "categories": [
-                    {"id": 1, "name": "border", "supercategory": "object"},
-                    {"id": 2, "name": "surface", "supercategory": "object"}
-                ]
-            }
-            
-            annotation_id = 1
-            
-            # Create images subdirectory if including images
-            if include_images:
-                images_dir = export_dir / "images"
-                images_dir.mkdir(exist_ok=True)
-            
-            # Process each image
-            for i, image_path in enumerate(images_to_export):
-                image_path = Path(image_path)
-                
-                # Add image to COCO data
-                coco_data["images"].append({
-                    "id": i + 1,
-                    "file_name": image_path.name,
-                    "width": 640,  # Default, would need actual image dimensions
-                    "height": 480,
-                    "license": 1,
-                    "flickr_url": "",
-                    "coco_url": "",
-                    "date_captured": ""
-                })
-                
-                # Copy image file if requested
-                if include_images:
-                    shutil.copy2(image_path, images_dir / image_path.name)
-                    exported_files += 1
-                
-                # Find and process corresponding label
-                image_base_name = image_path.stem
-                for label_info in self.imported_labels:
-                    label_base_name = Path(label_info['path']).stem
-                    if image_base_name == label_base_name:
-                        # Read YOLO label and convert to COCO annotation
-                        try:
-                            with open(label_info['path'], 'r') as f:
-                                for line in f:
-                                    parts = line.strip().split()
-                                    if len(parts) >= 5:
-                                        class_id = int(parts[0]) + 1  # COCO uses 1-based IDs
-                                        x_center, y_center, width, height = map(float, parts[1:5])
-                                        
-                                        # Convert from YOLO to COCO format (normalized to pixel coordinates)
-                                        img_width, img_height = 640, 480  # Default
-                                        x = (x_center - width/2) * img_width
-                                        y = (y_center - height/2) * img_height
-                                        w = width * img_width
-                                        h = height * img_height
-                                        
-                                        coco_data["annotations"].append({
-                                            "id": annotation_id,
-                                            "image_id": i + 1,
-                                            "category_id": class_id,
-                                            "bbox": [x, y, w, h],
-                                            "area": w * h,
-                                            "iscrowd": 0
-                                        })
-                                        annotation_id += 1
-                        except Exception as e:
-                            self.logger.error(f"Error processing label {label_info['path']}: {e}")
-                        break
-            
-            # Save COCO JSON file
-            coco_file = export_dir / "annotations.json"
-            with open(coco_file, 'w') as f:
-                json.dump(coco_data, f, indent=2)
-            exported_files += 1
-            
-            self.logger.info(f"COCO export completed: {exported_files} files")
-            return exported_files
-            
-        except Exception as e:
-            self.logger.error(f"COCO export failed: {e}")
-            raise e
-    
+        """Export real-dimension COCO detection boxes through the shared converter.
+
+        Five-value YOLO annotations are not segmentation masks. Reject missing or
+        ambiguous pairs and preserve native class identity and pixel geometry.
+        """
+        import json
+        import shutil
+        from shared.dataset_tools.yolo_to_maskrcnn_converter import YOLOToMaskRCNNConverter
+
+        if not images_to_export:
+            raise ValueError("No images selected for COCO export")
+
+        labels_by_stem = {}
+        for label_info in self.imported_labels:
+            label_path = Path(label_info["path"])
+            if label_path.suffix.lower() != ".txt":
+                continue
+            stem = label_path.stem.lower()
+            if stem in labels_by_stem:
+                raise ValueError(f"Ambiguous duplicate labels for {stem}")
+            labels_by_stem[stem] = label_path
+
+        label_data = {}
+        seen_stems = set()
+        for image in images_to_export:
+            image_path = Path(image)
+            stem = image_path.stem.lower()
+            if stem in seen_stems:
+                raise ValueError(f"Ambiguous duplicate image stem: {stem}")
+            seen_stems.add(stem)
+            label_path = labels_by_stem.get(stem)
+            if label_path is None:
+                raise ValueError(f"Missing imported YOLO labels for {image_path.name}")
+            rows = [line.strip() for line in label_path.read_text(encoding="utf-8").splitlines()
+                    if line.strip()]
+            if not rows:
+                raise ValueError(f"Empty YOLO labels for {image_path.name}")
+            label_data[str(image_path)] = rows
+
+        converter = YOLOToMaskRCNNConverter(
+            class_names=["outer_border", "graphic_border"]
+        )
+        result = converter.convert_imported_data(
+            images_to_export, label_data, bbox_only=True
+        )
+        coco_data = result["coco_data"]
+        failures = result["conversion_stats"]["failed_conversions"]
+        if failures or len(coco_data["images"]) != len(images_to_export):
+            raise ValueError(f"COCO export incomplete: {failures or 'missing images'}")
+        if not coco_data["annotations"]:
+            raise ValueError("COCO export contains no annotations")
+
+        export_dir = Path(export_dir)
+        export_dir.mkdir(parents=True, exist_ok=True)
+        exported_files = 0
+        if include_images:
+            images_dir = export_dir / "images"
+            images_dir.mkdir(parents=True, exist_ok=True)
+            for image in images_to_export:
+                source = Path(image)
+                destination = images_dir / source.name
+                if source.resolve() != destination.resolve():
+                    shutil.copy2(source, destination)
+                exported_files += 1
+        else:
+            self.logger.warning(
+                "COCO exported without images: this labels-only package "
+                "cannot be loaded as a self-contained Phoenix dataset"
+            )
+
+        target = export_dir / "annotations.json"
+        target.write_text(json.dumps(coco_data, indent=2), encoding="utf-8")
+        exported_files += 1
+        self.logger.info(
+            f"COCO bbox export completed: {len(coco_data['images'])} images, "
+            f"{len(coco_data['annotations'])} boxes (no segmentation masks)"
+        )
+        return exported_files
+
     def _export_yolo_format(self, images_to_export, export_dir, include_images):
         """Export dataset in YOLO format"""
         try:
