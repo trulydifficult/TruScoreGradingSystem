@@ -1113,3 +1113,52 @@ Other historical archive scripts remain reference only.
 ## Final-card completion — REAL GUI ACCEPTANCE (user confirmed, 2026-10-16)
 
 After pulling the implementation of ADR 0007 and testing through the normal application, the user explicitly confirmed that the interface displayed **"Annotations Complete 3/3 successfully annotated"** after finishing the third/final card. This is user-observed GUI acceptance of the final-card completion message, replacing the previous behavior that left a straightened final card visible. **Do not conflate the completion UI with independent verification of the actual three-card export image bytes, labels, image rotations, or precision alignment.** Next, selectively obtain the new image/label outputs from all three training folders and relevant Annotation Studio logs for an independent export audit. Existing three-format structure and last-card save regression coverage remain as recorded in ADR 0007.
+
+## Six committed real annotation exports + last-card fix validated — 2026-10-16
+
+User pushed commit `fe3f248` with new image092F–image094F and
+card094–card096 samples, each saved in combined/outer/graphic training
+targets (36 files), plus 9 amended logs. The app's visible final
+`3/3 successfully annotated` screen had already been user-confirmed.
+
+Audited all 18 new JPEG paths via Git blobs, all 18 source YOLO label
+files by GitHub connector; for each of 6 cards its three encoded
+JPEG copies are *identical*, combined class 0 outer and class 1
+inner graphic map exactly to respective single-class class 0
+targets. CI checked actual JPEG decode/dimensions, normalized bbox
+containment and pixel-independent correspondence. A 6-up contact
+sheet with true combined JPEG/YOLO overlays was rendered and visually
+reviewed: no obvious swapped files, misplaced label geometry or
+lost fine rotation at preview scale. `card096` printed artwork is
+sideways within a portrait physical card, but annotation borders
+enclose the portrait card normally.
+
+Log rotation provenance: first batch +0.650°, +0.460° and
+image094F final +0.320° (after an earlier +0.350° save on same
+last card); second post-fix batch card094 −0.200°, card095 +0.130°,
+card096 +0.110°. Runtime log confirms last card is exported once
+before `Annotation session finished: 3/3 saved`. Initial YOLO
+auto-predictions returned 1 outer + 1 inner for all 3 card094–096.
+This validates normal saving at export-contract level, not exact
+human labeling accuracy, 24-point corner precision, or independently
+measured rotation transform.
+
+New `tests/annotation/test_real_six_card_exports.py` plus
+`.github/workflows/annotation-integrity.yml` six-card contact sheet.
+Run 38986486752 PASS 45 tests; 38986490725 Phoenix PASS. The
+mutable application-log excerpt in the diagnostic is intentionally
+not a permanent pytest requirement (logs may be rotated).
+
+One non-blocking note from latest application log:
+`Failed to import PluginSettingsPanel: No module named
+'modules.annotation_studio.plugins.plugin_panel'` is still logged
+at launch, yet the actual plugin and its controls subsequently load.
+Audit that optional/legacy import in a future structural cleanup,
+not before finishing current functional integrity checks.
+
+NEXT: user may pull after docs/test updates if continuing; no change
+to active production Annotation Studio code in this six-card audit.
+Resume Dataset Studio pipeline audit: original YOLO 5-field axis-aligned
+boxes, rotation-frame provenance, accurate image metadata and COCO
+segmentation contract. Existing Detectron2 dataset fixture has known
+wrong dimensions/missing segmentation; do not train from it.
