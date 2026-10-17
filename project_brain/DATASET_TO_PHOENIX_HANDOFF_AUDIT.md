@@ -143,3 +143,24 @@ DATASET_SEVEN_CARD_EXPORT_AUDIT.md.
 The two Trainer/Queue buttons remain disconnected/partially wired as
 detailed above; do not confuse acceptance of the manual COCO detection
 export with acceptance of automatic Mask R-CNN training.
+
+## Update — 2026-10-17 source remediation (ADR 0011)
+
+Original audit findings above describe the BEFORE state.
+New code now replaces both legacy button bodies with a shared
+`_export_to_phoenix` entrypoint. Its publisher validates exact
+2-class YOLO11s model choice, writes verified real COCO/JPEG contents
+and training_config to adjacent staging, then atomically publishes
+to the existing Queue pending folder. The other button sends its
+own stable packaged dataset to the real standalone Trainer without
+auto-starting optimization. It does not duplicate the Queue launch
+or mutate the current project data_path.
+
+The old hardcoded Detectron2 defaults/incorrect missing launcher
+are no longer in the active buttons. However real workstation
+Qt, Queue GUI discovery and ROCm Ultralytics training acceptance
+remain PENDING. The new capability matrix intentionally refuses
+all other picker pairings until their annotation plugins and task
+trainers are separately validated. See ADR 0011 and tests under
+tests/phoenix/test_yolo11_dataset_handoff.py. This source audit
+alone does not prove any model has trained successfully.
