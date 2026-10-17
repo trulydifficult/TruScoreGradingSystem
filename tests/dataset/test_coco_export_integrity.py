@@ -245,3 +245,52 @@ def test_preview_marks_geometry_as_unverified():
     assert "self.logger.warning(" in preview
     assert "coco_annotations = []" in preview
     assert "Image-label pair verified" not in preview
+
+
+
+def test_mask_rcnn_readiness_validator_rejects_yolo_boxes():
+    class Result:
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+
+    validate = isolated_method(
+        "src/shared/dataset_tools/dataset_validator.py",
+        "TruScoreDatasetValidator", "_validate_label_format_compatibility",
+        {"Dict": Dict, "Any": Any, "ValidationResult": Result}
+    )
+    target = types.SimpleNamespace(
+        validation_results=[],
+        model_requirements={"detectron2_maskrcnn": {"label_format": "coco"}}
+    )
+    validate(target, {"card.txt": ["0 0.5 0.5 0.9 0.9"]}, "detectron2_maskrcnn")
+    assert any(
+        not item.passed and "genuine instance masks" in item.message
+        for item in target.validation_results
+    )
+    assert not any(
+        item.passed and "Automatic conversion" in item.fix_suggestion
+        for item in target.validation_results
+        if hasattr(item, "fix_suggestion")
+    )
+
+
+def test_validator_never_pairs_test1_with_test10():
+    class Result:
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+
+    validate = isolated_method(
+        "src/shared/dataset_tools/dataset_validator.py",
+        "TruScoreDatasetValidator", "_validate_model_specific_requirements",
+        {"Path": Path, "Dict": Dict, "Any": Any, "List": list, "ValidationResult": Result}
+    )
+    target = types.SimpleNamespace(
+        validation_results=[],
+        model_requirements={"yolo_detection": {"min_annotations_per_image": 1}}
+    )
+    validate(target, ["Test1.jpg"], {"Test10.txt": ["0 0.5 0.5 0.9 0.9"]},
+             "detection", "yolo_detection")
+    assert any(
+        not result.passed and "insufficient" in result.message
+        for result in target.validation_results
+    )
