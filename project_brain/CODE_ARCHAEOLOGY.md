@@ -223,3 +223,20 @@ audit before consolidated ownership is declared.
 ADR 0008 implements a narrow truthful COCO detection slice. Historical
 Dataset Studio behavior must not be assumed fully audited or superseded
 solely because its current UI now passes source-method CI.
+
+### Dataset Export/Analysis preflight comparison — 2026-10-16
+
+Current owner was src/modules/dataset_studio/dataset_studio.py:
+update_analysis_dashboard counted all global label directories and
+update_pre_export_verification used nested QLabel/QFrame rows that the
+workstation rendered unreadably. Historical
+Checkplz/claude_fix/data_management.py lists a verification_center,
+coverage and image quality analysis concepts but implements no working
+pre-export UI or reliable dataset count logic (REFERENCE). Current
+project_dashboard.py contains TODO project export controls; it is not
+an alternative reliable analysis/dashboard implementation.
+
+Classification: retain working active UI and correct its scope;
+do not replace with older aspirational stubs. Shared project count logic
+now lives in src/shared/dataset_tools/dataset_analysis.py (ADR 0009);
+COCO conversion/export remains owned by prior converter/export methods.
