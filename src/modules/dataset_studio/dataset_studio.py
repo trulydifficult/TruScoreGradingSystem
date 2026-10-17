@@ -20,7 +20,7 @@ if str(SRC_PATH) not in sys.path:
 from PyQt6.QtWidgets import (
     QFrame, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QTabWidget, QWidget, QMessageBox, QApplication, 
-    QCheckBox, QSlider, QComboBox, QScrollArea
+    QCheckBox, QSlider, QComboBox, QScrollArea, QPlainTextEdit
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QThread
 from PyQt6.QtGui import QFont, QPixmap, QImage, QPainter, QPen, QColor
@@ -50,6 +50,7 @@ from shared.essentials.button_styles import (
 
 # FlowLayout - the solution to our alignment nightmare!
 from modules.dataset_studio.flowlayout import FlowLayout
+from shared.dataset_tools.dataset_analysis import analyze_project_dataset
 
 class ConversionWorker(QThread):
     """Background thread for YOLO to COCO conversion to keep UI responsive"""
@@ -1707,8 +1708,19 @@ class TruScoreDatasetFrame(QFrame):
             }}
         """)
         verification_layout = QVBoxLayout(self.verification_frame)
-        verification_layout.setSpacing(10)
-        self.verification_frame.setLayout(verification_layout)
+        verification_layout.setContentsMargins(8, 8, 8, 8)
+        verification_layout.setSpacing(0)
+        # A single, legible status report replaces the inherited nested-row
+        # labels that rendered as unreadable dark bars on real workstations.
+        self.pre_export_report = QPlainTextEdit(self.verification_frame)
+        self.pre_export_report.setReadOnly(True)
+        self.pre_export_report.setMinimumHeight(240)
+        self.pre_export_report.setStyleSheet(
+            "QPlainTextEdit { color: #f8fafc; background-color: #0f172a; "
+            "border: 1px solid #06b6d4; border-radius: 5px; padding: 10px; "
+            "font-family: monospace; font-size: 12px; }"
+        )
+        verification_layout.addWidget(self.pre_export_report)
         stats_layout.addWidget(self.verification_frame)
         
         # Refresh button
@@ -3360,105 +3372,76 @@ Path: {label_info['path']}
             print(f"Error in conversion failure handler: {e}")
 
     def update_analysis_dashboard(self):
-        """Update the analysis dashboard with current dataset statistics"""
+        """Refresh analysis from project-owned images and imported labels."""
         try:
-            # Clear existing stats
-            for i in reversed(range(self.stats_grid_layout.count())):
-                child = self.stats_grid_layout.itemAt(i).widget()
-                if child:
-                    child.setParent(None)
-            
-            # Calculate dataset statistics
-            total_images = len(self.images) if hasattr(self, 'images') else 0
-            
-            # 🚨 FIX: Count total annotations (COCO or YOLO)
-            total_labels = 0
-            
-            # Count labels from annotation studio output folders
-            annotations_base = Path(__file__).parent.parent.parent / "shared" / "annotations"
-            for folder in ['outer_border_model', 'graphic_border_model', 'combined_dual_class']:
-                labels_dir = annotations_base / folder / "labels"
-                if labels_dir.exists():
-                    total_labels += len(list(labels_dir.glob("*.txt")))
-            
-            # Also count imported COCO annotations
-            if hasattr(self, 'coco_annotations') and self.coco_annotations:
-                total_labels += len(self.coco_annotations.get('annotations', []))
-            # Also count imported YOLO label files
-            elif hasattr(self, 'imported_labels') and self.imported_labels:
-                total_labels += len(self.imported_labels)
-            
-            labeled_images = 0
-            high_quality_images = 0
-            
-            # 🚨 FIX: Count quality scores directly from image_cards (simpler and more reliable)
-            for card in (self.image_cards if hasattr(self, 'image_cards') else []):
-                # Check if this card has a label
-                if hasattr(card, 'image_path') and self._image_has_label(card.image_path):
-                    labeled_images += 1
-                
-                # Check quality score
-                if hasattr(card, 'quality_score') and card.quality_score:
-                    if card.quality_score >= 70:
-                        high_quality_images += 1
-            
-            self.logger.info(f"Quality analysis: {high_quality_images}/{len(self.image_cards) if hasattr(self, 'image_cards') else 0} high quality images")
-            
-            # Create statistics display
+            if not hasattr(self, "stats_grid_layout"):
+                return
+
+            # No global Annotation Studio directory scan. Never count both
+            # imported YOLO and its derived COCO JSON for the same card.
+            analysis = analyze_project_dataset(
+                getattr(self, "images", []),
+                getattr(self, "imported_labels", []),
+                getattr(self, "coco_annotations", None)
+            )
+
+            high_quality = 0
+            for card in getattr(self, "image_cards", []):
+                if (getattr(card, "quality_score", None) is not None
+                        and card.quality_score >= 70):
+                    high_quality += 1
+
+            layout = self.stats_grid_layout
+            while layout.count():
+                item = layout.takeAt(0)
+                if item.widget():
+                    item.widget().deleteLater()
+
+            detection_ready = analysis.detection_export_ready
             stats = [
-                ("Total Images", total_images, TruScoreTheme.NEON_CYAN),
-                ("Total Labels", total_labels, TruScoreTheme.QUANTUM_GREEN),
-                ("Labeled Images", labeled_images, TruScoreTheme.PLASMA_BLUE),
-                ("High Quality (70%+)", high_quality_images, TruScoreTheme.QUANTUM_GREEN),
-                ("Coverage", f"{(labeled_images/total_images*100):.1f}%" if total_images > 0 else "0%", TruScoreTheme.NEON_CYAN),
-                ("Dataset Ready", "✓ Yes" if labeled_images > 0 else "✗ No", TruScoreTheme.QUANTUM_GREEN if labeled_images > 0 else TruScoreTheme.ERROR_RED)
+                ("Project Images", analysis.total_images, TruScoreTheme.NEON_CYAN),
+                ("Matched YOLO Label Files", analysis.yolo_label_files, TruScoreTheme.QUANTUM_GREEN),
+                ("Actual Annotations", analysis.annotation_count, TruScoreTheme.QUANTUM_GREEN),
+                ("Labeled Images", analysis.labeled_images, TruScoreTheme.PLASMA_BLUE),
+                ("High Quality (70%+)", high_quality, TruScoreTheme.QUANTUM_GREEN),
+                ("Coverage", f"{analysis.coverage:.1f}%", TruScoreTheme.NEON_CYAN),
+                ("COCO Detection Export", "Ready" if detection_ready else "Blocked",
+                 TruScoreTheme.QUANTUM_GREEN if detection_ready else TruScoreTheme.ERROR_RED),
             ]
-            
-            for stat_name, stat_value, color in stats:
-                stat_frame = QFrame()
-                stat_frame.setStyleSheet(f"""
-                    QFrame {{
-                        background-color: {TruScoreTheme.QUANTUM_DARK};
-                        border-radius: 6px;
-                        border: 1px solid {color};
-                        padding: 5px;
-                    }}
-                """)
-                stat_frame.setFixedHeight(40)
-                
-                stat_layout = QHBoxLayout(stat_frame)
-                stat_layout.setContentsMargins(8, 3, 8, 3)
-                stat_layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)  # Center vertically
-                
-                name_label = QLabel(stat_name)
-                name_label.setFont(QFont("Arial", 9))
-                name_label.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; border: none;")
-                name_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
-                stat_layout.addWidget(name_label)
-                
-                stat_layout.addStretch()
-                
-                value_label = QLabel(str(stat_value))
-                value_label.setFont(QFont("Arial", 9, QFont.Weight.Bold))
-                value_label.setStyleSheet(f"color: {color}; border: none;")
-                value_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight)
-                stat_layout.addWidget(value_label)
-                
-                self.stats_grid_layout.addWidget(stat_frame)
-            
-            # Update quality analysis (Images tab)
-            self.update_quality_analysis(high_quality_images, total_images)
-            
-            # Update pre-export verification (Export tab)
-            self.update_pre_export_verification(labeled_images, total_images)
-            
-        except Exception as e:
-            # Fallback if logger doesn't exist
-            if hasattr(self, 'logger'):
-                self.logger.error(f"Error updating analysis dashboard: {e}")
-            else:
-                print(f"Error updating analysis dashboard: {e}")  # Fallback to print
-    
+
+            for name, value, color in stats:
+                frame = QFrame()
+                frame.setStyleSheet(
+                    f"QFrame {{ background-color: {TruScoreTheme.QUANTUM_DARK}; "
+                    f"border: 1px solid {color}; border-radius: 6px; padding: 5px; }}"
+                )
+                frame.setFixedHeight(40)
+                row = QHBoxLayout(frame)
+                row.setContentsMargins(8, 3, 8, 3)
+                caption = QLabel(name)
+                caption.setFont(QFont("Arial", 9))
+                caption.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; border: none;")
+                row.addWidget(caption)
+                row.addStretch()
+                amount = QLabel(str(value))
+                amount.setFont(QFont("Arial", 9, QFont.Weight.Bold))
+                amount.setStyleSheet(f"color: {color}; border: none;")
+                row.addWidget(amount)
+                layout.addWidget(frame)
+
+            self.update_quality_analysis(high_quality, analysis.total_images)
+            self.update_pre_export_verification(analysis, high_quality)
+            self.logger.info(
+                f"Project analysis: {analysis.labeled_images}/{analysis.total_images} "
+                f"labeled, {analysis.annotation_count} annotations, "
+                f"{len(analysis.errors)} problems"
+            )
+        except Exception as exc:
+            self.logger.exception(f"Could not update dataset analysis: {exc}")
+            if hasattr(self, "pre_export_report"):
+                self.pre_export_report.setPlainText(f"Analysis failed: {exc}")
+
+
     def update_quality_analysis(self, high_quality_count, total_count):
         """Update quality analysis section"""
         try:
@@ -3531,132 +3514,72 @@ Path: {label_info['path']}
             if not hasattr(self, 'quality_frame'):
                 self.logger.warning("quality_frame not found, skipping quality analysis update")
     
-    def update_pre_export_verification(self, labeled_images, total_images):
-        """Update pre-export verification section with model, pipeline, and completeness checks"""
+    def update_pre_export_verification(self, analysis, high_quality_count):
+        """Actionable evidence, not a placeholder or training-readiness claim."""
+        if not hasattr(self, "pre_export_report"):
+            return
         try:
-            if not hasattr(self, 'verification_frame') or not self.verification_frame:
-                return  # Verification frame not created yet
+            config = getattr(self, "current_config", None) or {}
+            if not isinstance(config, dict):
+                config = {}
+            dataset_type = str(config.get("dataset_type", "unspecified"))
+            pipeline = str(config.get("pipeline", "not selected"))
+            model = str(config.get("model_architecture", "not selected"))
+            all_images = analysis.total_images
+            unmatched = all_images - analysis.labeled_images
+            source = ", ".join(analysis.sources) or "none"
 
-            layout = self.verification_frame.layout()
-            if layout is None:
-                layout = QVBoxLayout(self.verification_frame)
-                layout.setSpacing(10)
-                layout.setContentsMargins(8, 8, 8, 8)
-                self.verification_frame.setLayout(layout)
+            quality_filter = (
+                hasattr(self, "quality_filter_cb")
+                and self.quality_filter_cb.isChecked()
+            )
+            selected_for_export = high_quality_count if quality_filter else all_images
+            box_ready = analysis.detection_export_ready and selected_for_export > 0
 
-            # Clear existing widgets
-            if layout.count():
-                for i in reversed(range(layout.count())):
-                    child = layout.itemAt(i).widget()
-                    if child:
-                        child.setParent(None)
-            
-            # Get project configuration
-            model_type = self.current_config.get('model_architecture', 'Mask R-CNN') if hasattr(self, 'current_config') and self.current_config else 'Mask R-CNN'
-            pipeline = self.current_config.get('pipeline', 'Phoenix Specialized Model') if hasattr(self, 'current_config') and self.current_config else 'Phoenix Specialized Model'
-            dataset_type = self.current_config.get('dataset_type', 'border_detection') if hasattr(self, 'current_config') and self.current_config else 'border_detection'
-            export_format = self.current_config.get('export_format', 'COCO JSON') if hasattr(self, 'current_config') and self.current_config else 'COCO JSON'
-            
-            # Determine status checks
-            has_images = total_images > 0
-            has_labels = labeled_images > 0
-            sufficient_data = labeled_images >= 10  # Minimum 10 labeled images recommended
-            ready_to_export = has_images and has_labels and sufficient_data
-            
-            # Create verification items
-            verification_items = [
-                ("🎯 Target Model", model_type, TruScoreTheme.NEON_CYAN),
-                ("🔧 Training Pipeline", pipeline, TruScoreTheme.PLASMA_BLUE),
-                ("📦 Dataset Type", dataset_type.replace('_', ' ').title(), TruScoreTheme.QUANTUM_GREEN),
-                ("📄 Export Format", export_format, TruScoreTheme.NEON_CYAN),
+            lines = [
+                f"Project: {dataset_type} | Model: {model}",
+                f"Pipeline: {pipeline}",
+                f"Image/label pairs: {analysis.labeled_images}/{all_images}"
+                f"  ({analysis.coverage:.1f}% coverage)",
+                f"Imported YOLO files matched: {analysis.yolo_label_files}",
+                f"Detection annotations: {analysis.annotation_count} ({source})",
+                "Classes (source YOLO IDs): " +
+                    (", ".join(f"{cid}={count}" for cid, count in analysis.class_counts.items())
+                     or "none"),
+                f"Missing/invalid image-label pairs: {unmatched}",
+                f"High-quality images (70%+): {high_quality_count}/{all_images}",
+                f"Current quality filter: {'ON' if quality_filter else 'OFF'}"
+                f"  | Eligible images: {selected_for_export}",
+                f"COCO bbox export: {'READY' if box_ready else 'BLOCKED'}",
             ]
-            
-            # Render info items
-            for label, value, color in verification_items:
-                item_frame = QFrame()
-                item_frame.setStyleSheet(f"""
-                    QFrame {{
-                        background-color: rgba(30, 41, 59, 0.5);
-                        border-radius: 6px;
-                        border-left: 3px solid {color};
-                        padding: 8px;
-                    }}
-                """)
-                item_layout = QHBoxLayout(item_frame)
-                item_layout.setContentsMargins(10, 5, 10, 5)
-                
-                label_widget = QLabel(label)
-                label_widget.setFont(QFont("Arial", 10))
-                label_widget.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; border: none;")
-                item_layout.addWidget(label_widget)
-                
-                item_layout.addStretch()
-                
-                value_widget = QLabel(value)
-                value_widget.setFont(QFont("Arial", 10, QFont.Weight.Bold))
-                value_widget.setStyleSheet(f"color: {color}; border: none;")
-                item_layout.addWidget(value_widget)
-                
-                layout.addWidget(item_frame)
-            
-            # Add divider
-            divider = QFrame()
-            divider.setFrameShape(QFrame.Shape.HLine)
-            divider.setStyleSheet(f"background-color: {TruScoreTheme.NEON_CYAN}; max-height: 2px;")
-            layout.addWidget(divider)
-            
-            # Add status checks
-            status_items = [
-                ("✓ Images Loaded" if has_images else "✗ Images Loaded", 
-                 f"{total_images} images" if has_images else "No images loaded", 
-                 TruScoreTheme.QUANTUM_GREEN if has_images else TruScoreTheme.ERROR_RED, 
-                 False),
-                ("✓ Labels Present" if has_labels else "✗ Labels Present", 
-                 f"{labeled_images} labeled" if has_labels else "No labels found", 
-                 TruScoreTheme.QUANTUM_GREEN if has_labels else TruScoreTheme.ERROR_RED, 
-                 False),
-                ("✓ Sufficient Data" if sufficient_data else "⚠ Insufficient Data", 
-                 f"{labeled_images} images" if sufficient_data else f"{labeled_images}/10 minimum", 
-                 TruScoreTheme.QUANTUM_GREEN if sufficient_data else TruScoreTheme.PLASMA_ORANGE, 
-                 False),
-                ("✓ READY TO EXPORT" if ready_to_export else "✗ NOT READY", 
-                 "All checks passed" if ready_to_export else "Requirements not met", 
-                 TruScoreTheme.QUANTUM_GREEN if ready_to_export else TruScoreTheme.ERROR_RED, 
-                 True),
-            ]
-            
-            # Render status check items
-            for label, value, color, is_final in status_items:
-                item_frame = QFrame()
-                item_frame.setStyleSheet(f"""
-                    QFrame {{
-                        background-color: {TruScoreTheme.QUANTUM_DARK if is_final else 'rgba(30, 41, 59, 0.5)'};
-                        border-radius: 6px;
-                        border: {'3px' if is_final else '2px'} solid {color};
-                        padding: {'12px' if is_final else '8px'};
-                    }}
-                """)
-                item_layout = QHBoxLayout(item_frame)
-                item_layout.setContentsMargins(10, 5, 10, 5)
-                
-                label_widget = QLabel(label)
-                label_widget.setFont(QFont("Arial", 11 if is_final else 10, QFont.Weight.Bold if is_final else QFont.Weight.Normal))
-                label_widget.setStyleSheet(f"color: {color}; border: none;")
-                item_layout.addWidget(label_widget)
-                
-                item_layout.addStretch()
-                
-                value_widget = QLabel(value)
-                value_widget.setFont(QFont("Arial", 10))
-                value_widget.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; border: none;")
-                item_layout.addWidget(value_widget)
-                
-                layout.addWidget(item_frame)
-            
-        except Exception as e:
-            if hasattr(self, 'logger'):
-                self.logger.error(f"Error updating pre-export verification: {e}")
-    
+
+            # A COCO bounding box is not a physical corner polygon or mask.
+            if "mask" in model.lower() or "detectron" in pipeline.lower():
+                lines.append(
+                    "Phoenix Mask R-CNN: NOT VERIFIED — requires real instance masks"
+                )
+            else:
+                lines.append("Precision border geometry / masks: NOT VERIFIED")
+
+            if analysis.errors:
+                lines.append("Problems to correct:")
+                lines.extend("  - " + problem for problem in analysis.errors[:5])
+                if len(analysis.errors) > 5:
+                    lines.append(f"  ...and {len(analysis.errors) - 5} more")
+            elif not all_images:
+                lines.append("Import images and their labels before exporting.")
+            elif not box_ready:
+                lines.append("Check the quality filter or missing annotations.")
+
+            self.pre_export_report.setPlainText("\n".join(lines))
+            self.pre_export_report.moveCursor(
+                self.pre_export_report.textCursor().MoveOperation.Start
+            )
+        except Exception as exc:
+            self.logger.exception(f"Pre-export verification failed: {exc}")
+            self.pre_export_report.setPlainText(f"Pre-export verification failed: {exc}")
+
+
     def browse_export_destination(self):
         """Browse for export destination directory"""
         from PyQt6.QtWidgets import QFileDialog
@@ -4418,6 +4341,12 @@ Proceed with export?
     def on_tab_changed(self, index):
         """Handle tab changes - populate verification tab when clicked"""
         try:
+            # Reconcile counts every time the export tab becomes visible.
+            # The manual Refresh button remains available for troubleshooting.
+            if index == self.tab_widget.indexOf(self.export_tab):
+                self.update_analysis_dashboard()
+                return
+
             # Check if user clicked on Verification tab (index 3: Images=0, Labels=1, Predictions=2, Verification=3)
             if index == 3:  # Verification tab
                 self.logger.info(f"Verification tab clicked (index {index})")
