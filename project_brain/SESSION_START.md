@@ -39,6 +39,46 @@ support is documented, but no drop-in YOLO/Mask-R-CNN/U-Net acceleration
 was verified. The future LLM/VLM adapter should be isolated from the
 Phoenix ROCm environment; see PHOENIX_TRAINER_AUDIT.md.
 
+## 2026-10-17 Dataset Studio → Phoenix integration progress (SOURCE/CI)
+
+ADR 0011 / MODEL_CAPABILITY_MATRIX.md now inventory all 24 advertised
+dataset types and 15 training pipelines. Only one **explicitly selected**
+pair has a new Dataset Studio handoff implementation:
+`border_detection_2class` + `YOLO11s Optimized`.
+
+Active code since the prior checkpoint:
+- Dataset Studio ProjectCreationDialog offers YOLO11s Optimized for
+  dual-class borders; it is NOT selected automatically.
+- Both Training Export buttons call a single shared publisher;
+  unsupported model/label pairings fail visibly before files are written.
+- The Queue button atomically publishes complete, verified COCO
+  image/annotation/manifest directories to the existing Queue pending
+  folder, without changing the saved project's data_path or launching
+  a duplicate Queue.
+- Direct Trainer button publishes to a stable direct folder and launches
+  the existing phoenix_trainer_dpg.py with that dataset, no auto-start.
+- A concrete YOLO11s trainer and source-faithful deterministic
+  COCO-to-YOLO adapter exist; native Ultralytics outputs/checkpoints
+  must be real and GPU requests cannot fall back to CPU.
+- Initial dedicated Phoenix Dataset Handoff CI passes regression
+  tests on the actual seven-image fixture, negative compatibility
+  checks and publisher failure behavior (see latest workflow run).
+
+**NOT VERIFIED:** real QT direct-button/queue-button behavior on the
+workstation; installed Ultralytics model/dependencies; real YOLO11s
+ROCm optimization, evaluation metrics or checkpoints; task accuracy.
+Do not describe this as completed model training. Seven images are
+a plumbing smoke test, not sufficient precision training evidence.
+
+**Next operator gate:** update refactor branch, explicitly configure
+the 2-class border project with YOLO11s Optimized, verify both UI
+handoffs without silently starting training. Then run a short,
+real-model ROCm smoke job, inspect best.pt/last.pt, logs, and Queue
+completion. Record actual run ID/hardware/metrics; fail transparently
+on missing dependencies. The other annotation plugins/models remain
+deferred per MODEL_CAPABILITY_MATRIX.md. Unsloth is optional deferred
+VLM research, not installed in the active trainer.
+
 ## The user's actual objective
 
 Build TruScore into a professional, maintainable, testable enterprise
