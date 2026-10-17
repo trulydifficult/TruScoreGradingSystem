@@ -658,7 +658,7 @@ class ProjectCreationDialog(QDialog):
         self.dataset_pipeline_compatibility = {
             # Border Detection Types
             'border_detection_single': ['Detectron2 (Mask R-CNN + RPN) - Professional', 'YOLOv10x Precision', 'YOLOv9 Gelan-base'],
-            'border_detection_2class': ['Detectron2 (Mask R-CNN + RPN) - Professional', 'Sub-Pixel Enhanced Detectron2', 'YOLOv9 Gelan-base'],
+            'border_detection_2class': ['Detectron2 (Mask R-CNN + RPN) - Professional', 'Sub-Pixel Enhanced Detectron2', 'YOLOv9 Gelan-base', 'YOLO11s Optimized'],
             'border_ultra_precision': ['Sub-Pixel Enhanced Detectron2', 'YOLOv10x Precision'],
             
             # Corner Analysis Types
