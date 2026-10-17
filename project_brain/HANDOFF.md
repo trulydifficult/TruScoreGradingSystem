@@ -1430,3 +1430,25 @@ smoke verification, while avoiding any claim of real precision
 metrics before training. SESSION_START.md is the current bounded
 snapshot. Other advertised model families remain future annotation
 and trainer integration gates.
+
+
+# NEW SESSION START HERE — 2026-10-17 precision-border requirement correction
+
+**Read SESSION_START.md and ADR 0012 first.** The last handoff's
+"run YOLO11s on the 7-image dataset" is NOT the user's desired
+main 24-point border precision model. Real requirement: two
+independent physical outer / printed graphic contours sampled
+5+5+7+7 across whole edges, preserving skew and border geometry.
+Root 24pointside.jpg and 24pointside (1).jpg document it.
+New audit DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md records model
+research (Detectron2 PointRend / Mask2Former / high-res segmentation,
+SAM-assisted masks, weak box-supervised candidates), source flaws
+in twentyfour_centering.py, and stub segmentation risk.
+
+Seven-card COCO export and optional YOLO11s bbox training still
+have legitimate *coarse ROI* use but are NOT the final precision
+supervision/24-point contour solution. No real precision model
+has been trained. Current Detectron2 Mask R-CNN needs genuine
+segmentation labels; simply serializing boxes as COCO does not
+create them. Do not silently substitute YOLO detection again.
+No application source code was changed in the research audit.
