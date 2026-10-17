@@ -215,3 +215,32 @@ bounded active snapshot with concrete branch, tested code SHA, new
 decisions, evidence type, known blockers and **one clearly named
 next action**. Append details to HANDOFF/owner audit; do not let
 an older dated HANDOFF marker override this snapshot.
+
+## 2026-10-17 latest source acceptance (post queue-watcher integration)
+
+New Queue publisher uses directory rename into pending. The existing
+watchdog DatasetWatcher originally listened only to "created", which
+misses atomic moved-in datasets on Linux. Added on_moved handling,
+preserving the old on_created path and direct main-window Queue
+launcher. Dedicated Phoenix Dataset Handoff CI 39061414150
+**PASSED 19 tests** on code commit f61ab486. Tests use the seven
+real committed JPEGs, actual Dashboard button method AST and Queue
+watcher class, but do not simulate or claim real GPU model training.
+
+Follow up on user's actual workstation:
+1. Pull branch, create/load a dual-class border project, *explicitly*
+   select YOLO11s Optimized (not default Mask R-CNN). Import the seven
+   existing images/labels from combined_dual_class.
+2. Export to Queue: confirm success with new
+   exports/training_queue/pending/<dataset_name>/dataset_config.json,
+   images/, annotations.json; open Phoenix Training System from
+   Main Window and confirm the job is discovered.
+3. Export to Trainer: confirm actual Phoenix Trainer opens separately
+   with the intended model/dataset loaded and does NOT auto-start.
+4. Run a short ROCm YOLO11s job only after checking ultralytics/weights,
+   VRAM and training settings; record actual best.pt/last.pt,
+   run logs/metrics and any errors. No model accuracy claim until
+   real withheld evaluation.
+5. Do not test other picker options as supported trainers: all
+   unsupported pairings fail visibly and stay on the backlog in
+   MODEL_CAPABILITY_MATRIX.md. Unsloth deferred for VLMs.
