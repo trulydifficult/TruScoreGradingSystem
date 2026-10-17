@@ -1,5 +1,14 @@
 # ADR 0011 — Explicit Dataset Capabilities and Phoenix Handoff
 
+> **2026-10-17 requirement clarification:** ADR 0012 supersedes
+> the implication that YOLO11s bounding-box detection is the
+> PRIMARY dual-border/24-point centering model. The YOLO11s
+> implementation is retained only as an optional coarse locator.
+> The actual requested precision model must predict independent
+> outer/graphic contours and be benchmarked on 24-station geometry.
+> This ADR remains valid for atomic Queue publication and exact
+> training capability contracts.
+
 Date: 2026-10-17
 Status: IMPLEMENTATION IN PROGRESS; workstation real-GPU acceptance PENDING
 Target: refactor/phoenix-foundation
