@@ -332,3 +332,18 @@ Headless test coverage added using six committed real card fixtures,
 source AST tab callback/report logic and invalid/mixed label cases.
 **User GUI acceptance of the replacement tab is pending.** Do not mark
 this whole subsystem VERIFIED or claim trained-model accuracy.
+
+## Dataset Studio → Phoenix training integration audit (2026-10-16)
+
+Operator accepted the improved Export/Analysis presentation and
+reported a manual seven-image export; output files are not yet
+independently validated.
+
+Export to Trainer is currently BROKEN/disconnected: it references an
+absent old launcher and passes metadata rather than an actual dataset.
+Export to Queue is PARTIALLY WIRED: the pending directory and COCO writer
+are real, but the launcher is absent and the generated
+Detectron2/Mask R-CNN config is invalid for detection-only boxes. The
+existing Phoenix Queue/Trainer machinery has separate real GPU smoke
+acceptance and should be reused. No code changes in this audit.
+See `DATASET_TO_PHOENIX_HANDOFF_AUDIT.md`.
