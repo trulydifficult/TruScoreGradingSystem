@@ -283,8 +283,8 @@ Active refactor branch: refactor/phoenix-foundation. ADR 0008.
   converted data; conversion caches invalidate after changed imports;
   mismatched metadata dimensions warn; filename pairing isn't shown as
   ground-truth accuracy validation.
-- **CI:** Dataset Integrity run 38998188997 **PASSED 14 tests**. Annotation
-  Integrity and Phoenix Foundation also passed at source commit 31b5d317.
+- **CI:** Dataset Integrity run 38998658381 **PASSED 19 tests**. Annotation
+  Integrity and Phoenix Foundation also passed on previous source checkpoints; latest Dataset Integrity at code commit 63e1254e.
   Six real 2026-10-16 card exports are covered. GitHub CI checks active
   source bodies and fixtures, not complete workstation GUI or ROCm training.
 - **Archaeology:** Checked current shared converter/validator plus older
@@ -296,3 +296,18 @@ Active refactor branch: refactor/phoenix-foundation. ADR 0008.
   fixture is not acceptable Mask R-CNN segmentation ground truth.
 
 Dataset Studio remains IN PROGRESS; do not mark subsystem VERIFIED.
+
+### Follow-up readiness and event integrity — 2026-10-16
+
+\`src/shared/dataset_tools/dataset_validator.py\` now explicitly rejects
+five-field YOLO boxes as Mask R-CNN-ready labels; it no longer advertises
+automatic YOLO-to-mask conversion for that target. Exact stem matching
+replaces substring-based image-label association (Test1 versus Test10).
+The expected class names align with outer_border/graphic_border.
+
+The manual Dataset Studio export now emits its Guru dataset_exported
+event only AFTER successful file writes, never upon cancellation/failure.
+Zero-file and empty requested photometric outputs fail explicitly.
+The 19-case Dataset Integrity suite covers canceled, successful and
+failed export event ordering in addition to conversion geometry.
+Run 38998658381 passed; native GUI/hardware acceptance is still pending.
