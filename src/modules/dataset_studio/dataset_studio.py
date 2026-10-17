@@ -3896,454 +3896,103 @@ Proceed with export?
             self.logger.error(f"YOLO export failed: {e}")
             raise e
 
-    def export_to_trainer(self):
-        """Export dataset directly to Phoenix Training Studio"""
-        if not hasattr(self, 'images') or not self.images:
-            QMessageBox.warning(self, "Export Warning", "No images to export. Please import images first.")
-            return
-            
+    def _export_to_phoenix(self, *, queue):
+        """Publish only explicitly supported validated datasets to Phoenix."""
         try:
-            # Get dataset info
-            dataset_name = getattr(self, 'project_name', 'Dataset')
-            dataset_path = f"{dataset_name} ({len(self.images)} images)"
-            model_type = getattr(self, 'model_architecture', 'Phoenix Specialized Model')
-            
-            self.logger.info(f"Exporting to trainer: {dataset_path} -> {model_type}")
-            
-            # Import required modules
-            import subprocess
-            import sys
-            import tempfile
-            import json
-            from pathlib import Path
-            from datetime import datetime
-            
-            # Path to training studio launcher
-            launcher_path = Path(__file__).parents[2] / "ui" / "training" / "run_phoenix_training_studio.py"
-            
-            if launcher_path.exists():
-                # Create dataset export file for trainer to read
-                export_data = {
-                    'dataset_name': dataset_name,
-                    'dataset_path': dataset_path,
-                    'model_type': model_type,
-                    'image_count': len(self.images),
-                    'export_source': 'Dataset Studio',
-                    'export_time': datetime.now().isoformat()
-                }
-                
-                # Save export data to temporary file for trainer to pick up
-                import tempfile
-                import json
-                export_file = Path(tempfile.gettempdir()) / 'truscore_dataset_export.json'
-                with open(export_file, 'w') as f:
-                    json.dump(export_data, f)
-                
-                # Launch Phoenix Training Studio with dataset flag
-                subprocess.Popen([sys.executable, str(launcher_path), '--dataset-import', str(export_file)])
-                
-                # No popup dialog - clean experience
-                self.logger.info(f"Dataset exported to trainer: {dataset_path}")
-                
-            else:
-                self.logger.error("Phoenix Training Studio launcher not found.")
-            
-        except Exception as e:
-            self.logger.error(f"Failed to export to trainer: {e}")
-            QMessageBox.critical(self, "Export Failed", f"Failed to export to trainer: {e}")
-    
-    def _generate_photometric_data(self, images_to_export, dataset_export_dir):
-        """Generate photometric stereo data (surface normals, depth, albedo) for training"""
-        try:
-            from shared.truscore_system.photometric.photometric_stereo import TruScorePhotometricStereo
-            import cv2
-            
-            # Create photometric directories
-            normals_dir = dataset_export_dir / "normals"
-            depth_dir = dataset_export_dir / "depth"
-            albedo_dir = dataset_export_dir / "albedo"
-            confidence_dir = dataset_export_dir / "confidence"
-            
-            for dir_path in [normals_dir, depth_dir, albedo_dir, confidence_dir]:
-                dir_path.mkdir(parents=True, exist_ok=True)
-            
-            # Initialize photometric stereo engine
-            photometric_engine = TruScorePhotometricStereo()
-            
-            processed_count = 0
-            for img_data in images_to_export:
-                try:
-                    image_path = img_data['path']
-                    image_name = Path(image_path).stem
-                    
-                    # Run photometric stereo analysis
-                    self.logger.info(f"Processing photometric data for: {image_name}")
-                    result = photometric_engine.analyze_card(image_path)
-                    
-                    # Save surface normals (3-channel)
-                    normals_rgb = ((result.surface_normals + 1) / 2 * 255).astype(np.uint8)
-                    cv2.imwrite(str(normals_dir / f"{image_name}.png"), cv2.cvtColor(normals_rgb, cv2.COLOR_RGB2BGR))
-                    
-                    # Save depth map (1-channel)
-                    depth_normalized = (result.depth_map / result.depth_map.max() * 255).astype(np.uint8)
-                    cv2.imwrite(str(depth_dir / f"{image_name}.png"), depth_normalized)
-                    
-                    # Save albedo map (1-channel)
-                    albedo_normalized = (result.albedo_map * 255).astype(np.uint8)
-                    cv2.imwrite(str(albedo_dir / f"{image_name}.png"), albedo_normalized)
-                    
-                    # Save confidence map (1-channel)
-                    confidence_normalized = (result.confidence_map * 255).astype(np.uint8)
-                    cv2.imwrite(str(confidence_dir / f"{image_name}.png"), confidence_normalized)
-                    
-                    processed_count += 1
-                    
-                except Exception as e:
-                    self.logger.error(f"Failed to process photometric data for {image_path}: {e}")
-                    continue
-            
-            # Save metadata about photometric data
-            photometric_metadata = {
-                'generated': True,
-                'processed_count': processed_count,
-                'directories': {
-                    'normals': str(normals_dir),
-                    'depth': str(depth_dir),
-                    'albedo': str(albedo_dir),
-                    'confidence': str(confidence_dir)
-                },
-                'format': 'PNG',
-                'normalization': 'uint8 (0-255)',
-                'channels': {
-                    'normals': 3,
-                    'depth': 1,
-                    'albedo': 1,
-                    'confidence': 1
-                }
-            }
-            
-            import json
-            with open(dataset_export_dir / "photometric_metadata.json", 'w') as f:
-                json.dump(photometric_metadata, f, indent=2)
-            
-            self.logger.info(f"Photometric data generation complete: {processed_count} images")
-            return processed_count
-            
-        except Exception as e:
-            self.logger.error(f"Failed to generate photometric data: {e}")
-            import traceback
-            self.logger.error(traceback.format_exc())
-            return 0
-    
-    def load_existing_project(self):
-        """Load existing project from file browser"""
-        from PyQt6.QtWidgets import QFileDialog
-        import json
-        
-        try:
-            # Open file browser to select project JSON
-            projects_dir = Path(__file__).parent / "projects"
-            project_file, _ = QFileDialog.getOpenFileName(
-                self,
-                "Load Existing Project",
-                str(projects_dir),
-                "Project Files (*.json);;All Files (*)"
-            )
-            
-            if not project_file:
-                return  # User cancelled
-            
-            self.logger.info(f"Loading project from: {project_file}")
-            
-            # Load project JSON
-            with open(project_file, 'r') as f:
-                project_data = json.load(f)
-            
-            # Set project configuration
-            self.current_config = project_data
-            self.current_pipeline = project_data.get('pipeline', 'Phoenix Specialized Model')
-            self.project_name = project_data.get('name', 'Loaded Project')
-            
-            # Update UI
-            if hasattr(self, 'project_info_label'):
-                dataset_type = project_data.get('dataset_type', 'Unknown')
-                self.project_info_label.setText(f"Project: {self.project_name} | Type: {dataset_type}")
-            
-            self.update_status(f"Project loaded: {self.project_name}")
-            
-            # Load images and labels from data_path
-            data_path = project_data.get('data_path')
-            if data_path and Path(data_path).exists():
-                self.logger.info(f"Loading images and labels from: {data_path}")
-                # Use QTimer to ensure UI is ready
-                from PyQt6.QtCore import QTimer
-                QTimer.singleShot(300, lambda: self.load_project_data(data_path))
-            else:
-                self.logger.warning(f"No data_path in project or path doesn't exist: {data_path}")
-                QMessageBox.warning(
-                    self,
-                    "Data Not Found",
-                    f"Project loaded but data path not found:\n{data_path}\n\nPlease import images and labels manually."
-                )
-            
-        except FileNotFoundError:
-            QMessageBox.critical(self, "Project Not Found", f"Project file not found:\n{project_file}")
-        except json.JSONDecodeError as e:
-            QMessageBox.critical(self, "Invalid Project", f"Invalid project file:\n{e}")
-        except Exception as e:
-            self.logger.error(f"Failed to load project: {e}")
-            QMessageBox.critical(self, "Load Error", f"Failed to load project:\n{e}")
-    
-    def load_project_data(self, data_path: str):
-        """Load images and labels from project data directory"""
-        from pathlib import Path
-        import json
-        data_path = Path(data_path)
-        
-        print(f"DEBUG: load_project_data called with: {data_path}")
-        self.logger.info(f"Loading project data from: {data_path}")
-        
-        # Load images
-        images_dir = data_path / "images"
-        print(f"DEBUG: Checking images dir: {images_dir}, exists: {images_dir.exists()}")
-        if images_dir.exists():
-            image_files = list(images_dir.glob("*.jpg")) + list(images_dir.glob("*.png"))
-            print(f"DEBUG: Found {len(image_files)} images")
-            self.logger.info(f"Found {len(image_files)} images in {images_dir}")
-            if image_files:
-                print(f"DEBUG: Loading {len(image_files)} images into flow layout")
-                
-                # 🚨 CRITICAL FIX: Add images to self.images list BEFORE loading into UI
-                self.images.extend(image_files)
-                self.logger.info(f"Added {len(image_files)} images to self.images list")
-                
-                # Import images into flow layout
-                self.load_images_into_flow_layout([str(f) for f in image_files])
-                print(f"DEBUG: Images loaded successfully")
-        else:
-            print(f"DEBUG: Images directory does not exist!")
-        
-        # Load labels - Check for COCO format first, then YOLO format
-        coco_file = data_path / "annotations.json"
-        labels_dir = data_path / "labels"
-        
-        if coco_file.exists():
-            # Load COCO format annotations
-            print(f"DEBUG: Found COCO annotations file: {coco_file}")
-            try:
-                with open(coco_file, 'r') as f:
-                    coco_data = json.load(f)
-                
-                # Store COCO data
-                self.coco_annotations = coco_data
-                num_images = len(coco_data.get('images', []))
-                num_annotations = len(coco_data.get('annotations', []))
-                print(f"DEBUG: Loaded COCO data - {num_images} images, {num_annotations} annotations")
-                self.logger.info(f"Loaded COCO annotations: {num_images} images, {num_annotations} annotations")
-                
-                # 🚨 NEW: Create label card for COCO file to display in Labels tab
-                label_info = {
-                    'format': 'JSON',
-                    'type': 'COCO/annotation format',
-                    'path': coco_file,
-                    'pipeline_compatible': True,  # COCO is compatible with most pipelines
-                    'compatibility_message': f'✅ COCO Format - {num_images} images, {num_annotations} annotations'
-                }
-                
-                # Add to imported_labels list if not already present
-                if not hasattr(self, 'imported_labels'):
-                    self.imported_labels = []
-                
-                if not any(label['path'] == coco_file for label in self.imported_labels):
-                    self.imported_labels.append(label_info)
-                    # Create visual label card
-                    self._create_label_card(label_info)
-                    print(f"DEBUG: Created label card for COCO annotations")
-                
-                # Trigger COCO tab update
-                if hasattr(self, 'update_coco_display'):
-                    self.update_coco_display()
-                
-            except Exception as e:
-                print(f"DEBUG: Error loading COCO annotations: {e}")
-                self.logger.error(f"Error loading COCO annotations: {e}")
-        
-        elif labels_dir.exists():
-            # Load YOLO format labels (.txt files)
-            print(f"DEBUG: Checking labels dir: {labels_dir}, exists: {labels_dir.exists()}")
-            label_files = list(labels_dir.glob("*.txt"))
-            print(f"DEBUG: Found {len(label_files)} YOLO labels")
-            self.logger.info(f"Found {len(label_files)} YOLO labels in {labels_dir}")
-            if label_files:
-                # Initialize imported_labels as list if needed
-                if not hasattr(self, 'imported_labels'):
-                    self.imported_labels = []
-                
-                # Import each YOLO label file
-                for label_file in label_files:
-                    # Analyze the label file
-                    label_info = self._analyze_label_file(label_file)
-                    
-                    # Add pipeline compatibility info
-                    if self.current_pipeline:
-                        label_info['pipeline_compatible'] = False  # YOLO might not be compatible
-                        label_info['compatibility_message'] = '⚠️ YOLO format - may need conversion'
-                    else:
-                        label_info['pipeline_compatible'] = None
-                        label_info['compatibility_message'] = '⚠️ No pipeline selected'
-                    
-                    # Check if already imported
-                    if not any(label['path'] == label_file for label in self.imported_labels):
-                        self.imported_labels.append(label_info)
-                        # Create visual label card
-                        self._create_label_card(label_info)
-                
-                self.logger.info(f"Loaded {len(label_files)} YOLO labels")
-                print(f"DEBUG: YOLO labels loaded and displayed successfully")
-        else:
-            print(f"DEBUG: No annotations found (no COCO file or labels directory)")
-        
-        # 🚨 CRITICAL: Reset verification tab flag so it repopulates when clicked
-        if hasattr(self, '_verification_populated'):
-            delattr(self, '_verification_populated')
-            print("DEBUG: Verification tab reset for repopulation")
-        
-        print("DEBUG: Project data loading complete")
-        self.logger.info("Project data loaded successfully")
-    
-    def export_to_queue(self):
-        """Export dataset to Phoenix Training Queue"""
-        if not hasattr(self, 'images') or not self.images:
-            QMessageBox.warning(self, "Export Warning", "No images to export. Please import images first.")
-            return
-        
-        if not hasattr(self, 'imported_labels') or not self.imported_labels:
-            QMessageBox.warning(self, "Export Warning", "No labels to export. Please import labels first.")
-            return
-            
-        try:
-            # Get dataset info from current project configuration
-            if not hasattr(self, 'current_config') or not self.current_config:
-                QMessageBox.warning(self, "Configuration Missing", 
-                                  "Please create or load a project first before exporting.")
-                return
-            
-            # 🚨 DEBUG: Log current_config contents
-            self.logger.info(f"current_config contents: {self.current_config}")
-            
-            dataset_name = self.current_config.get('name', 'Dataset')
-            dataset_type = self.current_config.get('dataset_type', 'Unknown')
-            pipeline = self.current_config.get('pipeline', 'Unknown')
-            model_architecture = self.current_config.get('model_architecture', 'Unknown')
-            
-            self.logger.info(f"Exporting to queue: {dataset_name} | Type: {dataset_type} | Pipeline: {pipeline} | Model: {model_architecture}")
-            
-            from datetime import datetime
-            from pathlib import Path
-            import json
-            import shutil
-            import subprocess
-            import sys
-            
-            # Create unique dataset folder with timestamp
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            unique_dataset_name = f"{dataset_name.replace(' ', '_')}_{timestamp}"
-            
-            # Queue directory structure
+            from shared.dataset_tools.phoenix_handoff import publish_dataset
+            from shared.dataset_tools.phoenix_contract import resolve_handoff
+
+            if not getattr(self, "images", []):
+                raise ValueError("Import labeled images before exporting to Phoenix")
+            config = getattr(self, "current_config", None)
+            # Fail before writing files; unsupported model choices stay visible
+            # for future annotation plugins, but cannot be launched as training.
+            capability = resolve_handoff(config)
             project_root = Path(__file__).parents[3]
-            queue_pending_dir = project_root / "exports" / "training_queue" / "pending"
-            dataset_export_dir = queue_pending_dir / unique_dataset_name
-            dataset_export_dir.mkdir(parents=True, exist_ok=True)
-            
-            # Use EXISTING export functionality to create proper dataset structure
-            # Export in COCO format (standard for training)
-            images_to_export = self.images  # Export all images
-            exported_count = self._export_coco_format(images_to_export, dataset_export_dir, include_images=True)
-            
-            # Create dataset configuration JSON for trainer
-            dataset_config = {
-                'dataset_name': dataset_name,
-                'unique_name': unique_dataset_name,
-                'model_type': pipeline,  # e.g., "Phoenix Specialized Model"
-                'model_architecture': model_architecture,  # e.g., "Mask R-CNN"
-                'image_count': len(self.images),
-                'label_count': len(self.imported_labels),
-                'export_format': 'COCO',
-                'export_source': 'Dataset Studio',
-                'export_time': datetime.now().isoformat(),
-                'dataset_type': dataset_type,  # e.g., "border_detection_2class"
-                'training_config': {
-                    'epochs': 100,
-                    'batch_size': 4,
-                    'learning_rate': 0.001,
-                    'optimizer': 'Adam',
-                    'framework': 'Detectron2'
-                },
-                'paths': {
-                    'images': str(dataset_export_dir / 'images'),
-                    'annotations': str(dataset_export_dir / 'annotations.json'),
-                    'dataset_root': str(dataset_export_dir)
-                }
-            }
-            
-            # Save configuration
-            config_file = dataset_export_dir / 'dataset_config.json'
-            with open(config_file, 'w') as f:
-                json.dump(dataset_config, f, indent=2)
-            
-            self.logger.info(f"Dataset exported to queue: {dataset_export_dir}")
-            self.logger.info(f"Exported {exported_count} files")
-            
-            # 🚨 CRITICAL: Update current_config with data_path so "Load Existing Project" can find it
-            if hasattr(self, 'current_config') and self.current_config:
-                self.current_config['data_path'] = str(dataset_export_dir)
-                # Save project with updated data_path
-                self.save_project_progress()
-                self.logger.info(f"Project updated with data_path: {dataset_export_dir}")
-            
-            # GURU ABSORPTION: Export to Queue Event
-            self.guru.absorb_dataset_event('dataset_exported_to_queue', {
-                'dataset_name': dataset_name,
-                'model_type': pipeline,  # 🚨 FIX: Use 'pipeline' variable defined earlier
-                'image_count': len(self.images),
-                'export_path': str(dataset_export_dir),
-                'metadata': {
-                    'export_format': 'COCO',
-                    'user_workflow': 'dataset_studio→training_queue'
-                }
-            })
-            
-            # Launch queue application if not already running
-            queue_launcher = project_root / "launch_training_queue.py"
-            
-            if queue_launcher.exists():
-                try:
-                    # Launch queue app (it will detect the new dataset automatically)
-                    subprocess.Popen([sys.executable, str(queue_launcher)], 
-                                   stdout=subprocess.DEVNULL, 
-                                   stderr=subprocess.DEVNULL)
-                    
-                    self.logger.info("Training queue launched")
-                except Exception as e:
-                    self.logger.error(f"Could not launch queue app: {e}")
-            
-            # Show success message
-            QMessageBox.information(
-                self,
-                "Export to Queue Success",
-                f"Dataset exported to training queue:\n\n"
-                f"Dataset: {dataset_name}\n"
-                f"Model: {pipeline}\n"  # 🚨 FIX: Use 'pipeline' variable defined earlier
-                f"Images: {len(self.images)}\n\n"
-                f"The Phoenix Training Queue should open automatically.\n"
-                f"You can now prioritize and train when ready."
+            destination = (project_root / "exports" / "training_queue" / "pending"
+                           if queue else project_root / "exports" / "training_direct")
+
+            output = publish_dataset(
+                self.images,
+                config,
+                self._export_coco_format,
+                destination
             )
-            
-        except Exception as e:
-            self.logger.error(f"Failed to export to queue: {e}")
-            import traceback
-            self.logger.error(traceback.format_exc())
-            QMessageBox.critical(self, "Export Failed", f"Failed to export to queue: {e}")
+            self.logger.info(
+                "Published %s Phoenix detection dataset: %s",
+                capability.trainer, output
+            )
+
+            if queue:
+                # No duplicate Queue process: use Main Window's existing
+                # Phoenix Training System launcher/Operations Monitor.
+                QMessageBox.information(
+                    self, "Dataset Added to Phoenix Queue",
+                    f"Validated dataset: {output.name}\n"
+                    f"Model: {capability.pipeline}\n"
+                    f"Images: {len(self.images)}\n\n"
+                    "Open Phoenix Training System from the main window "
+                    "to inspect and schedule this dataset."
+                )
+            else:
+                # Direct means a separately isolated Trainer GUI with the
+                # published directory loaded; it does not start training.
+                import subprocess
+                import sys
+
+                launcher = (
+                    project_root / "src" / "modules" / "phoenix_trainer"
+                    / "phoenix_trainer_dpg.py"
+                )
+                if not launcher.is_file():
+                    raise FileNotFoundError(f"Phoenix Trainer launcher missing: {launcher}")
+                proc = subprocess.Popen(
+                    [sys.executable, str(launcher), "--dataset", str(output)],
+                    cwd=str(launcher.parent)
+                )
+                self.logger.info(
+                    "Launched Phoenix Trainer %s for dataset %s",
+                    proc.pid, output
+                )
+                QMessageBox.information(
+                    self, "Dataset Loaded in Phoenix Trainer",
+                    f"Validated dataset: {output.name}\n"
+                    f"Model: {capability.pipeline}\n"
+                    "Training has not started. Review the Phoenix settings "
+                    "before starting the run."
+                )
+            if getattr(self, "guru", None) is not None:
+                try:
+                    self.guru.absorb_dataset_event(
+                        "dataset_exported_to_queue" if queue else
+                        "dataset_exported_to_trainer",
+                        {
+                            "dataset_name": config.get("name", "Dataset"),
+                            "model_type": capability.pipeline,
+                            "image_count": len(self.images),
+                            "export_path": str(output),
+                            "metadata": {
+                                "export_format": "COCO",
+                                "user_workflow": ("dataset_studio→training_queue"
+                                                  if queue else "dataset_studio→trainer"),
+                            }
+                        }
+                    )
+                except Exception:
+                    self.logger.exception("Guru event failed after Phoenix publication")
+            return output
+        except Exception as exc:
+            self.logger.exception("Dataset Studio Phoenix handoff failed: %s", exc)
+            QMessageBox.critical(self, "Phoenix Handoff Blocked", str(exc))
+            return None
+
+    def export_to_trainer(self):
+        """Open the validated dataset in the existing standalone Phoenix Trainer."""
+        return self._export_to_phoenix(queue=False)
+
+    def export_to_queue(self):
+        """Publish a validated, immutable dataset to the existing Queue."""
+        return self._export_to_phoenix(queue=True)
 
     def on_tab_changed(self, index):
         """Handle tab changes - populate verification tab when clicked"""
