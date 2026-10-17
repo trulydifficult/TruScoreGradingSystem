@@ -15,6 +15,30 @@ including Checkplz/backups/Git history, then decide what to change.
 Never treat a prior chat summary or src/Docs research as proof of
 current implementation.
 
+## 2026-10-17 active development warning (read before testing)
+
+The first stage of Dataset Studio → Phoenix handoff implementation is
+**IN PROGRESS, not accepted**. Early commits on this branch introduce:
+
+- shared/dataset_tools/phoenix_contract.py (exact model/dataset pairing),
+- shared/dataset_tools/phoenix_handoff.py (staged queue publication),
+- phoenix_trainer/yolo_dataset.py (COCO bbox → YOLO splitting),
+- phoenix_trainer/trainers/yolo11_detection_trainer.py (YOLO11s adapter),
+- trainer_registry.py explicit YOLO11s selection.
+
+**The UI Export-to-Trainer/Queue methods remain unconnected**, and no
+new YOLO11s end-to-end ROCm job or adapter-specific tests have been
+verified. Prior 43-test manual COCO export acceptance is a different
+scope. Do NOT ask the user to train/queue the new YOLO path yet.
+Finish source review, wire and test the handoff, then perform workstation
+GPU acceptance before declaring an option trainable.
+
+Unsloth (https://github.com/unslothai/unsloth) was researched for
+training efficiency. Official AMD RDNA3/RX7000 and LLM/VLM fine-tuning
+support is documented, but no drop-in YOLO/Mask-R-CNN/U-Net acceleration
+was verified. The future LLM/VLM adapter should be isolated from the
+Phoenix ROCm environment; see PHOENIX_TRAINER_AUDIT.md.
+
 ## The user's actual objective
 
 Build TruScore into a professional, maintainable, testable enterprise
