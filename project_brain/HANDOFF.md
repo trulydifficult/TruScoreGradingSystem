@@ -1403,3 +1403,16 @@ Export to Trainer is disconnected and Export to Queue is not a valid
 Mask R-CNN route. Next engineering work must reuse the existing
 Queue worker architecture after explicitly resolving model/label
 geometry. Do not train until the contract is chosen and validated.
+
+## NEW SESSION START HERE — 2026-10-17 (Phoenix YOLO11s source integration)
+
+Read SESSION_START.md, MODEL_CAPABILITY_MATRIX.md, ADR 0011 and
+DATASET_TO_PHOENIX_HANDOFF_AUDIT.md. New code implements an explicitly
+selected 2-class COCO-box→YOLO11s supervised route and repairs both
+Dataset Studio handoff buttons through a single atomic publisher.
+No different algorithm substitutes for a selected Mask R-CNN model.
+The new model is a real Ultralytics adapter, but **no RX 7900 XTX
+training/real model checkpoint has been executed by this session**.
+The native Qt and GPU acceptance gates are NEXT. Remaining picker
+options have no implicit training guarantee; see matrix.
+Do not use last month's project snapshots as current implementation.
