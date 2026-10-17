@@ -77,14 +77,29 @@ Documentation is not proof of implementation.
 
 Any claim that a documented feature currently works must be verified against current source code and/or runtime behavior.
 
+## Canonical project-memory entrypoint
+
+Read [PROJECT_MEMORY_INDEX.md](PROJECT_MEMORY_INDEX.md) for complete file
+roles and [SESSION_START.md](SESSION_START.md) for the current live
+state/next action. These are authoritative navigation and current snapshots
+on the active development branch; HANDOFF.md retains dated history.
+The nine uploaded ChatGPT Project baseline Markdown files are older
+snapshots and never override their corresponding live GitHub versions.
+Read ADR 0010 for the evidence hierarchy and the definition of VERIFIED.
+
+A later feature acceptance can supersede an earlier historical TODO:
+do not treat the October 15 Phoenix queue continuation, or the
+oldest HANDOFF "NEW SESSION START HERE" marker, as the current task
+when newer evidence is recorded in SESSION_START.md.
+
 ## Required Session Startup
 
 Before substantial development work:
 
-1. Read this file.
+1. Read this file, `PROJECT_MEMORY_INDEX.md`, and `SESSION_START.md`.
 2. Read `CURRENT_STATE.md`.
 3. Read `REFACTOR_STATUS.md`.
-4. Read `HANDOFF.md`. If it contains a **NEW SESSION START HERE** block,
+4. Consult `HANDOFF.md` as dated history; `SESSION_START.md` owns the latest active objective. If it contains a **NEW SESSION START HERE** block,
    treat the newest such block as the authoritative continuation point; older
    status paragraphs may be historical snapshots that were later superseded.
 5. Read the relevant existing architecture files:
