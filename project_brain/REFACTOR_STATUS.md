@@ -422,3 +422,27 @@ on_moved handling. Dedicated Phoenix Dataset Handoff CI run
 39061414150 **PASSED 19 tests**. Current state:
 SOURCE/CI INTEGRATION VERIFIED; native Qt and GPU training
 NOT VERIFIED. No general model-accuracy acceptance.
+
+
+### Primary dual-border requirement correction — 2026-10-17
+
+User clarified the final objective: real **outer physical card** and
+**inner printed graphic** contour tracking, measured at 5+5+7+7
+full-side stations for centering and skew. YOLO11s bbox detection
+does not satisfy this objective. ADR 0012 supersedes only ADR 0011's
+implied *primary* detector selection, preserving valid existing
+coarse detection/COCO code as an optional auxiliary model.
+
+24-point source has a severe potential geometric implementation
+issue: after 48-vertex perimeter resampling, the side finder
+picks only a single small edge segment for all 5/7 stations, plus
+failed-ray zero/false center defaults, winding/calibration issues.
+Source inspected, workstation geometry acceptance NOT DONE.
+Prompt Segmentation plugin currently uses fabricated stub masks.
+Existing Mask R-CNN correctly rejects COCO bbox-only ground truth.
+
+Next priority: human-verified two-contour label contract, station
+geometry correctness and boundary-model research/benchmark before
+a precision training claim. See
+DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md and ADR 0012.
+No production code changes in this correction.
