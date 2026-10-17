@@ -164,3 +164,19 @@ all other picker pairings until their annotation plugins and task
 trainers are separately validated. See ADR 0011 and tests under
 tests/phoenix/test_yolo11_dataset_handoff.py. This source audit
 alone does not prove any model has trained successfully.
+
+### Queue moved-event closure and source test evidence — 2026-10-17
+
+Linux atomic publish from adjacent staging uses os.replace into
+pending and can emit a FileMovedEvent, not FileCreatedEvent.
+Existing Queue DatasetWatcher originally listened only on_created.
+Added a dedicated on_moved() path invoking the existing callback
+for whole directories (not files). Queue's existing refresh and
+pending-directory reconciliation behavior remains unchanged.
+
+Phoenix Dataset Handoff CI 39061414150 PASSED **19 tests** including
+source GUI button success/failure paths, real seven-JPEG images,
+native bbox transforms/2-class train/val split, no pre-publication
+pending folder, unknown model failure, missing-checkpoint failure,
+GPU-not-available failure, and watcher moved event.
+This is source-level evidence, NOT user workstation training.
