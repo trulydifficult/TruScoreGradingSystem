@@ -1336,3 +1336,37 @@ Source classification and future acceptance in
 `project_brain/DATASET_TO_PHOENIX_HANDOFF_AUDIT.md`.
 
 No application source files were changed in this audit.
+
+
+## Real seven-card Dataset Studio COCO export — ACCEPTED (2026-10-16 GUI / 2026-10-17 CI)
+
+User pushed commit 8eee8ff with the actual manually exported seven-card
+dataset under src/modules/dataset_studio/exports/Dataset_20261016_230734/.
+This supersedes the earlier handoff note saying output contents were
+unavailable.
+
+Verified against GitHub source originals and new automated real-byte
+tests:
+- seven distinct exported JPEGs; Git blob SHA matches originals for
+  all seven; Pillow decodes all seven JPEGs at correct native pixel size;
+- seven COCO image records, fourteen annotations, 2 classes,
+  1=outer_border and 2=graphic_border, exactly one class of each
+  per image, valid unique references and pixel-space geometry;
+- every pixel-space COCO bbox exactly equals the corresponding
+  combined_dual_class source YOLO bbox transform (max delta 0 px);
+- all 14 boxes fit inside source images, all seven inner/graphic
+  boxes lie inside their associated outer boxes;
+- COCO declares bbox-only and false segmentation_ground_truth.
+- Dataset Integrity GitHub Actions run 39002287868: **43 PASSED**,
+  including real-image byte fidelity/decoding and source YOLO matching.
+
+Full detail: project_brain/DATASET_SEVEN_CARD_EXPORT_AUDIT.md.
+This ACCEPTS the manual COCO DETECTION FILE EXPORT, not pixel-precision
+edge labeling or real instance-segmentation ground truth.
+
+**NEXT:** repair the intentionally untrusted Dataset Studio-to-Phoenix
+Trainer / Queue handoff only after an explicit model/annotation-format
+choice. Current Mask R-CNN needs real segmentation; don't queue these
+bbox-only labels as Mask R-CNN training or silently invent masks.
+Main Window Phoenix Queue and ViT ROCm smoke workflow remain the
+previously verified reusable training foundation.
