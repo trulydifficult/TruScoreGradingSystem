@@ -111,12 +111,16 @@ def _studio_instance():
         current_image_path = Path("Card001.jpg")
         current_image = _Image("rotated-pixels")
         rotation_angle = 1.23
+        _successfully_saved_indices = set()
+        _annotation_complete = False
 
         def save_rotated_image(self):
             events.append(("save_pixels", self.current_image.content))
+            return True
 
         def auto_save_current_annotations(self):
             events.append(("save_labels", self.current_image.content))
+            return True
 
         def reset_rotation(self):
             self.rotation_angle = 0
@@ -150,6 +154,7 @@ def test_space_saves_once_before_rotation_reset_then_advances():
         ("load_next", 1),
     ]
     assert instance.current_index == 1
+    assert instance._successfully_saved_indices == {0}
 
 
 def test_normal_next_still_saves_before_navigation():
