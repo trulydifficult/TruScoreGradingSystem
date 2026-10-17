@@ -279,3 +279,31 @@ SESSION_START.md, PROJECT_BOOTSTRAP.md and ADR 0010. This review
 inventoried 47 assets under src/Docs but did NOT constitute complete
 technical study of every research asset or code archaeology of every
 subsystem. Evaluate relevant material when working on that domain.
+
+## Bbox training heritage re-evaluation — 2026-10-17
+
+Before connecting Dataset Studio→Phoenix, reviewed the active picker,
+both export buttons, queue/worker, central trainer registry, Mask
+R-CNN and ViT contracts, plus legacy
+Checkplz/phoenix_tensorzero_training/trugrade_ai_trainer.py and
+historical Phoenix queue/training studio.
+
+Historical TruGrade YOLO trainer uses real Ultralytics YOLO training,
+but its prepare/copy_and_label path fabricates border boxes from an
+assumed 2.75-inch scan margin and the final result dictionary
+reports placeholder accuracy/loss. Classification: REFERENCE ONLY,
+NEVER SALVAGE those false labeling/metric behaviors. The new YOLO11s
+adapter reuses the proven idea of native training while consuming
+the actual 7-image verified COCO annotations via normalized conversion.
+Checkplz's older Phoenix Training Queue includes
+`_simulate_training` and similarly cannot replace the real current
+isolated process control plane. Classification: HISTORICAL REFERENCE.
+
+The current Mask R-CNN segmentation trainer and source format
+validator refuse bbox-only labels, correctly preserving safety.
+ViT classifier is a real concrete trainer but cannot be used as a
+silent substitute for detector requests. Its prior real ROCm
+smoke test remains a separately verified behavior.
+
+See MODEL_CAPABILITY_MATRIX.md and ADR 0011 for exhaustive menu
+inventory, explicit supported pair and deferred annotation plugins.
