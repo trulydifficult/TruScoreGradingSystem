@@ -215,3 +215,16 @@ Verify:
 After the sequential Queue test, perform a real checkpoint-resume acceptance test.
 Detectron2 lifecycle/split repair remains a later foundation task before broad
 model-family expansion.
+
+
+### Dataset Studio live dashboard continuation (2026-10-16)
+
+User workstation confirmed seven matched labels visually in Verification,
+but Export/Analysis used wrong global annotation totals (216/230) and
+stale initial 0 coverage. Pre-export nested status rows were unreadable.
+
+ADR 0009 introduces one shared project-scoped dataset analyzer, automatic
+analysis on tab activation, correct separation of images / matched YOLO
+files / actual bbox instances, and a readable pre-export report with
+mask-readiness constraints. CI exercises the source and committed cards;
+real Qt workstation acceptance is next.
