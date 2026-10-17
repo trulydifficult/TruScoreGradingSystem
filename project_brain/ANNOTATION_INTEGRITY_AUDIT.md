@@ -683,3 +683,41 @@ conversion audit and preserve card/image coordinate provenance;
 fix the already identified hardcoded image dimensions and missing
 mask/rotation contract *without discarding the working three-export
 Annotation Studio path*.
+
+
+## Dataset Studio conversion and preview integrity implementation — 2026-10-16
+
+Following the six-card analysis, the active Dataset Studio paths were
+inspected directly. Manual \`_export_coco_format\` had hard-coded 640x480
+metadata and wrong border/surface categories; \`ConversionWorker\` wrote
+the converter return *wrapper* (coco_data + statistics) to the COCO JSON
+file, which is not a standard top-level COCO dataset. Worker also gave
+misleading zero image/annotation counts and generated approximate masks
+from YOLO boxes. The preview could count same-named workspace labels as
+imported project labels and could favor stale converted data.
+
+**Fix:** Use existing shared converter in explicit \`bbox_only=True\`
+mode; real pixels and normalized coordinates define the COCO bbox;
+YOLO class 0/1 becomes COCO 1=outer_border and 2=graphic_border.
+The worker now writes actual \`coco_data\`. Both paths refuse incomplete
+conversions. COCO info identifies axis-aligned bbox/no segmentation ground
+truth. Mask R-CNN export/validation and Phoenix Detectron2 refuse missing
+masks and known converter-derived approximate polygons.
+
+Preview and status now distinguish source filename matches from verified
+geometry. Source label imports take precedence over stale converted labels,
+and changing source images/labels invalidates conversion state. Dimension
+mismatches warn. Unsupported manual export formats/split flag now fail
+rather than reporting success.
+
+**Evidence:** Dataset Integrity run 38998188997 passed 14 tests,
+using real six-card fixture images and source annotation coordinates,
+headless execution of actual manual/background exporter method bodies,
+invalid input and fake-mask rejection, and verification source matching.
+Annotation Integrity and Phoenix Foundation passed on code commit 31b5d317.
+
+**Limitations:** This validates accurate **bounding box serialization**,
+not physical card-edge/corner accuracy, source-rotation angle, rotated
+quadrilateral, per-pixel segmentation, end-to-end GUI acceptance, or
+native GPU Mask R-CNN. The old 20-image fixture still lacks legitimate
+segmentation; do not train from it. See ADR 0008.
