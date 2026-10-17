@@ -48,7 +48,7 @@ def resolve_handoff(config):
             "Use a compatible, explicitly selected model; no job was created."
         )
     architecture = str(config.get("model_architecture") or
-                       config.get("pipeline_info", {}).get("model_architecture", "")).strip()
+                       (config.get("pipeline_info") or {}).get("model_architecture", "")).strip()
     if architecture and "yolo11s" not in architecture.lower():
         raise UnsupportedDatasetHandoff(
             f"Selected model architecture '{architecture}' conflicts with {pipeline}"
