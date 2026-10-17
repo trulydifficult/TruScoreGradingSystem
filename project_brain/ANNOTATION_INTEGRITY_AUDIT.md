@@ -607,3 +607,8 @@ export failures, missing earlier saves, non-final path and fresh batch.
 Extended existing triple-export source tests cover missing class 1 and
 simulated image-writing failure. CI run 38985208841 PASSED 38 tests.
 Actual workstation GUI and new batch output still pending. ADR 0007.
+
+
+## Final-card completion — real UI confirmation (2026-10-16)
+
+The user tested the post-ADR-0007 flow and confirmed the GUI displayed **"Annotations Complete 3/3 successfully annotated"**. The final-card completion UI has therefore passed this user-observed runtime behavior check; the historical issue of visually retaining a straightened final card is addressed at the visible UX level. The current three-card exported artifacts have **not** yet been inspected, so image rotation, label correctness, per-folder byte consistency, and subpixel alignment remain separate acceptance gates. Do not claim these files verified solely based on the completion count.
