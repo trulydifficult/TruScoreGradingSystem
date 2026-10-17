@@ -1,0 +1,119 @@
+name: Phoenix Foundation
+
+on:
+  pull_request:
+    paths:
+      - "src/modules/phoenix_trainer/**"
+      - "scripts/verify_phoenix_backend.py"
+      - "scripts/create_phoenix_vit_smoke_dataset.py"
+      - "tests/phoenix/**"
+      - ".github/workflows/phoenix-foundation.yml"
+  push:
+    branches:
+      - "refactor/phoenix-foundation"
+    paths:
+      - "src/modules/phoenix_trainer/**"
+      - "scripts/verify_phoenix_backend.py"
+      - "scripts/create_phoenix_vit_smoke_dataset.py"
+      - "tests/phoenix/**"
+      - ".github/workflows/phoenix-foundation.yml"
+
+jobs:
+  foundation-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Phoenix paths
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/workflows/phoenix-foundation.yml
+            src/modules/phoenix_trainer
+            src/modules/main_window/main_window.py
+            src/shared/essentials
+            scripts/verify_phoenix_backend.py
+            scripts/create_phoenix_vit_smoke_dataset.py
+            tests/phoenix
+            tests/fixtures/detectron2/coco_20_image_test.zip
+            20image/yolo
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.17"
+
+      - name: Install smoke-test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1 libx11-6 libxcursor1 libxinerama1 libxrandr2 libxi6
+          python -m pip install --upgrade pytest pillow dearpygui==2.1.1
+
+      - name: Compile touched Phoenix modules
+        run: |
+          python -m py_compile \
+            src/modules/phoenix_trainer/trainer_registry.py \
+            src/modules/phoenix_trainer/hardware_backend.py \
+            src/modules/phoenix_trainer/training_runtime.py \
+            src/modules/phoenix_trainer/run_artifacts.py \
+            src/modules/phoenix_trainer/queue_monitor.py \
+            src/modules/phoenix_trainer/atomic_io.py \
+            src/modules/phoenix_trainer/operator_logging.py \
+            src/modules/phoenix_trainer/phoenix_trainer_dpg.py \
+            src/modules/phoenix_trainer/phoenix_training_queue_standalone.py \
+            src/modules/phoenix_trainer/queue_manager.py \
+            src/modules/main_window/main_window.py \
+            src/modules/phoenix_trainer/trainers/base_trainer.py \
+            src/modules/phoenix_trainer/trainers/vit_trainer.py \
+            src/modules/phoenix_trainer/trainers/unet_trainer.py \
+            src/modules/phoenix_trainer/trainers/detectron2_trainer.py \
+            scripts/verify_phoenix_backend.py \
+            scripts/create_phoenix_vit_smoke_dataset.py
+
+      - name: Run Phoenix foundation unit tests
+        env:
+          PYTHONPATH: src
+        run: |
+          pytest -q \
+            tests/phoenix/test_trainer_registry.py \
+            tests/phoenix/test_hardware_backend.py \
+            tests/phoenix/test_process_entrypoints.py \
+            tests/phoenix/test_queue_reconciliation.py \
+            tests/phoenix/test_training_runtime.py \
+            tests/phoenix/test_checkpoint_resume_policy.py \
+            tests/phoenix/test_training_lifecycle_logging.py \
+            tests/phoenix/test_detectron2_fallback.py \
+            tests/phoenix/test_detectron2_split_contract.py \
+            tests/phoenix/test_detectron2_native_lifecycle.py \
+            tests/phoenix/test_real_coco_fixture.py \
+            tests/phoenix/test_run_artifacts.py \
+            tests/phoenix/test_queue_monitor.py \
+            tests/phoenix/test_operator_io.py
+
+      - name: Smoke launch Phoenix Trainer
+        env:
+          PYTHONPATH: src
+        run: |
+          set +e
+          xvfb-run -a timeout 5s python src/modules/phoenix_trainer/phoenix_trainer_dpg.py > /tmp/phoenix-trainer.log 2>&1
+          rc=$?
+          set -e
+          if [ "$rc" -ne 124 ]; then
+            cat /tmp/phoenix-trainer.log
+            echo "Phoenix Trainer exited during startup with code $rc"
+            exit 1
+          fi
+
+      - name: Smoke launch Phoenix Training Queue
+        env:
+          PYTHONPATH: src
+        run: |
+          set +e
+          xvfb-run -a timeout 5s python src/modules/phoenix_trainer/phoenix_training_queue_standalone.py > /tmp/phoenix-queue.log 2>&1
+          rc=$?
+          set -e
+          if [ "$rc" -ne 124 ]; then
+            cat /tmp/phoenix-queue.log
+            echo "Phoenix Training Queue exited during startup with code $rc"
+            exit 1
+          fi

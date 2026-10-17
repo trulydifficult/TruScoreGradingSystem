@@ -1,0 +1,58 @@
+name: Annotation Integrity
+
+on:
+  push:
+    branches:
+      - "refactor/phoenix-foundation"
+    paths:
+      - "src/modules/annotation_studio/**"
+      - "tests/annotation/**"
+      - "src/shared/annotations/**"
+      - ".github/workflows/annotation-integrity.yml"
+  pull_request:
+    paths:
+      - "src/modules/annotation_studio/**"
+      - "tests/annotation/**"
+      - ".github/workflows/annotation-integrity.yml"
+
+jobs:
+  annotation-contract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out current Annotation Studio and contract tests
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            src/modules/annotation_studio/modular_annotation_studio.py
+            src/modules/annotation_studio/plugins/border_detection_plugin.py
+            tests/annotation
+            src/shared/annotations/combined_dual_class
+            src/shared/annotations/graphic_border_model
+            src/shared/annotations/outer_border_model
+            src/Logs/modular_annotation.log
+            src/Logs/annotation_studio.log
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: python -m pip install pytest pillow
+
+      - name: Compile active Annotation Studio
+        run: |
+          python -m py_compile \
+            src/modules/annotation_studio/modular_annotation_studio.py \
+            src/modules/annotation_studio/plugins/border_detection_plugin.py
+
+      - name: Test actual Space and triple-export method bodies
+        run: pytest -q tests/annotation
+
+      - name: Emit four-card diagnostic contact sheet and first-card log excerpt
+        run: python tests/annotation/test_real_four_card_exports.py
+
+      - name: Emit six-card border overlay contact sheet
+        run: python tests/annotation/test_real_six_card_exports.py

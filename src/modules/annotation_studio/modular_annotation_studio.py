@@ -156,10 +156,15 @@ class ModularAnnotationStudio(QMainWindow):
 
 
         # Core data
+        # The canvas receives mouse events before a card is loaded. Keep an
+        # explicit empty original-image state so coordinate transforms are safe.
+        self.original_image = None
         self.current_image = None
         self.current_image_path = None
         self.image_files = []
         self.current_index = 0
+        self._successfully_saved_indices = set()
+        self._annotation_complete = False
         self.rotation_angle = 0.0  # For our beautiful rotation controls
         
         # Magnifier settings - DEFAULT TO 2X
@@ -718,6 +723,8 @@ class ModularAnnotationStudio(QMainWindow):
                     # CRITICAL: Store files exactly like working border_calibration.py
                     self.image_files = file_paths
                     self.current_index = 0
+                    self._successfully_saved_indices = set()
+                    self._annotation_complete = False
                     
                     self.logger.info(f"Loaded {len(file_paths)} cards successfully")
                     
@@ -833,6 +840,34 @@ class ModularAnnotationStudio(QMainWindow):
             self.logger.error(f"Plugin image update traceback: {traceback.format_exc()}")
     
     
+    def _connect_border_detection_results(self, settings_widget):
+        """Connect the active plugin's existing completion signal to Studio."""
+        signal = getattr(settings_widget, 'detection_completed', None)
+        if signal is None:
+            return
+        if getattr(settings_widget, '_studio_detection_receiver', None) is self:
+            return
+        signal.connect(
+            lambda annotations, owner=settings_widget:
+                self._receive_border_detection_results(owner, annotations)
+        )
+        settings_widget._studio_detection_receiver = self
+        self.logger.info("Connected border detection results to Studio canvas")
+
+    def _receive_border_detection_results(self, settings_widget, annotations):
+        """Only the displayed plugin may publish overlay annotations."""
+        if settings_widget is not self.current_plugin_widget:
+            self.logger.warning("Ignored results from an inactive annotation widget")
+            return
+        if self.original_image is None:
+            self.logger.warning("Ignored detections because no card is displayed")
+            return
+        self.logger.info(
+            "Received %d border predictions for %s",
+            len(annotations), getattr(self.current_image_path, 'name', 'unknown'),
+        )
+        self.update_image_with_annotations(annotations)
+
     def update_image_with_annotations(self, annotations):
         """
         Update display with plugin annotations - CALLED BY PLUGIN
@@ -1033,7 +1068,8 @@ class ModularAnnotationStudio(QMainWindow):
                                Returns (-1, -1) if outside image bounds
         """
         if not hasattr(self, 'image_label') or self.original_image is None:
-            return canvas_x, canvas_y
+            # No pixels loaded: a canvas event is not an annotation event.
+            return -1, -1
 
         try:
             # Get the actual displayed pixmap
@@ -1276,8 +1312,9 @@ class ModularAnnotationStudio(QMainWindow):
             return
 
         try:
-            # Auto-save current annotations
-            self.auto_save_current_annotations()
+            # Preserve existing Previous navigation; track genuine successes.
+            if self.auto_save_current_annotations() is True:
+                self._successfully_saved_indices.add(self.current_index)
 
             # Move to previous image
             self.current_index -= 1
@@ -1297,14 +1334,19 @@ class ModularAnnotationStudio(QMainWindow):
             self.logger.error(f"Previous image failed: {e}")
     
     def next_image_placeholder(self):
-        """Navigate to next image - FIXED USING WORKING BORDER_CALIBRATION.PY PATTERNS"""
+        """Normal Next action keeps the existing auto-save-before-navigation behavior."""
+        self._advance_to_next_image(save_current=True)
+
+    def _advance_to_next_image(self, *, save_current: bool):
+        """Advance once; Space already saved its current card before rotation reset."""
         if not self.image_files or self.current_index >= len(self.image_files) - 1:
             self.logger.debug("Reached end of dataset")
             return
 
         try:
             # Auto-save current annotations
-            self.auto_save_current_annotations()
+            if save_current and self.auto_save_current_annotations() is True:
+                self._successfully_saved_indices.add(self.current_index)
 
             # Move to next image
             self.current_index += 1
@@ -1352,7 +1394,7 @@ class ModularAnnotationStudio(QMainWindow):
     
     def update_navigation_buttons(self):
         """Update navigation button states"""
-        has_images = bool(self.image_files)
+        has_images = bool(self.image_files) and not getattr(self, "_annotation_complete", False)
         can_go_prev = has_images and self.current_index > 0
         can_go_next = has_images and self.current_index < len(self.image_files) - 1
         
@@ -1360,64 +1402,104 @@ class ModularAnnotationStudio(QMainWindow):
         self.next_btn.setEnabled(can_go_next)
     
     def auto_save_current_annotations(self):
-        """Auto-save current annotations"""
+        """Export the active plugin's annotations and report its actual outcome."""
         try:
-            # Try border plugin's 3-format export
-            if hasattr(self, 'current_plugin') and self.current_plugin:
-                if hasattr(self.current_plugin, 'auto_create_training_labels'):
-                    self.current_plugin.auto_create_training_labels()
-                    self.logger.info("Auto-saved with 3 training label formats")
-                    return
-                
-                # Try corner plugin's single annotation save
-                if hasattr(self.current_plugin, 'auto_save_current_annotation'):
-                    self.current_plugin.auto_save_current_annotation()
-                    self.logger.info("Auto-saved corner annotation")
-                    return
-            
-            # Fallback to old method
-            if hasattr(self, 'current_plugin_widget') and self.current_plugin_widget:
-                if hasattr(self.current_plugin_widget, 'auto_save_current_annotations'):
-                    self.current_plugin_widget.auto_save_current_annotations()
-                    self.logger.debug("Auto-saved annotations")
-                    
-        except Exception as e:
-            self.logger.error(f"Auto-save failed: {e}")
-    
+            if self.current_plugin:
+                if hasattr(self.current_plugin, "auto_create_training_labels"):
+                    success = self.current_plugin.auto_create_training_labels()
+                    if success is True:
+                        self.logger.info("Saved all border training formats")
+                        return True
+                    self.logger.error("Border training-data export did not succeed")
+                    return False
+                if hasattr(self.current_plugin, "auto_save_current_annotation"):
+                    return self.current_plugin.auto_save_current_annotation() is True
+            widget = getattr(self, "current_plugin_widget", None)
+            if widget is not None and hasattr(widget, "auto_save_current_annotations"):
+                return widget.auto_save_current_annotations() is True
+            self.logger.error("No annotation export method is available")
+            return False
+        except Exception as exc:
+            self.logger.error(f"Auto-save failed: {exc}", exc_info=True)
+            return False
+
     def save_rotated_image(self):
-        """Save the rotated image back to disk - OVERWRITES ORIGINAL"""
+        """Save the finalized rotated image to its existing source path."""
         try:
             import cv2
-            if self.current_image_path and self.current_image is not None:
-                # Save rotated image (overwrite original)
-                cv2.imwrite(str(self.current_image_path), self.current_image)
-                self.logger.info(f"💾 Saved rotated image: {self.current_image_path.name} ({self.rotation_angle:.3f}°)")
-        except Exception as e:
-            self.logger.error(f"❌ Failed to save rotated image: {e}")
-    
+            if self.current_image_path is None or self.current_image is None:
+                self.logger.error("Cannot save rotated image without a loaded card")
+                return False
+            if not cv2.imwrite(str(self.current_image_path), self.current_image):
+                self.logger.error("Rotated image write returned failure: %s", self.current_image_path)
+                return False
+            self.logger.info(
+                "Saved rotated source image: %s (%.3f degrees)",
+                self.current_image_path.name, self.rotation_angle,
+            )
+            return True
+        except Exception as exc:
+            self.logger.error(f"Failed to save rotated image: {exc}", exc_info=True)
+            return False
+
+    def _show_annotation_complete(self):
+        """Replace the last edited card with an explicit session summary."""
+        completed = len(self._successfully_saved_indices)
+        total = len(self.image_files)
+        self._annotation_complete = True
+
+        # No card remains active; this prevents a second Space-bar save and
+        # invalidates any delayed detector callback bound to the last image.
+        self.original_image = None
+        self.current_image = None
+        self.current_image_path = None
+        widget = getattr(self, "current_plugin_widget", None)
+        if widget is not None:
+            widget.current_image = None
+            widget.current_image_path = None
+
+        self.image_label.clear()
+        if completed == total:
+            message = f"Annotation complete!\n{completed}/{total} successfully annotated"
+        else:
+            message = f"Annotation session finished\n{completed}/{total} successfully saved"
+        self.image_label.setText(message)
+        self.card_counter.setText(f"{completed}/{total} saved")
+        if hasattr(self, "magnifier_display"):
+            self.magnifier_display.clear()
+        self.update_navigation_buttons()
+        self.logger.info("Annotation session finished: %d/%d saved", completed, total)
+
     def save_and_next_image(self):
-        """SPACE BAR - Save annotations, rotated image, reset rotation, and move to next"""
+        """Space: save once, then navigate or show completion on the final card."""
+        if not self.image_files or getattr(self, "_annotation_complete", False):
+            return False
+        if self.current_image_path is None:
+            self.logger.warning("Space ignored: no active card")
+            return False
+
         try:
-            self.logger.info("🔥 SPACE BAR PRESSED - save_and_next_image() called")
-            
-            # 1. Save rotated image if rotation was applied
-            if hasattr(self, 'rotation_angle') and abs(self.rotation_angle) > 0.001:
-                self.save_rotated_image()
-            
-            # 2. Save current image annotations (creates 3 training label formats)
-            self.auto_save_current_annotations()
-            
-            # 3. Reset rotation slider to 0° for next image
-            self.reset_rotation()
-            
-            # 4. Move to next image
-            self.next_image_placeholder()
-            
-            self.logger.info("✅ Saved (image + labels), reset rotation, and moved to next")
-            
-        except Exception as e:
-            self.logger.error(f"❌ Save and next failed: {e}")
-    
+            self.logger.info("Space: saving card %d/%d",
+                             self.current_index + 1, len(self.image_files))
+            # Preserve the deliberately rotated image and matching labels.
+            # Never reset rotation before the final export is confirmed.
+            if abs(self.rotation_angle) > 0.001 and not self.save_rotated_image():
+                return False
+            if not self.auto_save_current_annotations():
+                self.logger.error("Card export failed; keeping editor open for retry")
+                return False
+
+            self._successfully_saved_indices.add(self.current_index)
+            if self.current_index == len(self.image_files) - 1:
+                self._show_annotation_complete()
+            else:
+                self.reset_rotation()
+                self._advance_to_next_image(save_current=False)
+            return True
+        except Exception as exc:
+            self.logger.error(f"Save and next failed: {exc}", exc_info=True)
+            return False
+
     def zoom_out_placeholder(self):
         """Zoom out with professional scaling - EXACT from border calibration"""
         try:
@@ -1966,9 +2048,17 @@ class ModularAnnotationStudio(QMainWindow):
                     else:
                         self.logger.warning(f"Settings widget has no set_main_plugin method")
                     
+                    # Give the settings widget an explicit Studio/canvas target.
+                    # A plugin-panel-created widget may not have our canvas in
+                    # its parent chain, so inference can succeed without redraw.
+                    if hasattr(settings_widget, 'set_studio_canvas'):
+                        settings_widget.set_studio_canvas(self.image_label)
+                        settings_widget.studio = self
+
                     # Store both the main plugin AND the settings widget
                     self.current_plugin = plugin
                     self.current_plugin_widget = settings_widget
+                    self._connect_border_detection_results(settings_widget)
                     self.plugin_widget = settings_widget  
                     self.plugin_settings_widget = settings_widget
                     
@@ -2008,6 +2098,10 @@ class ModularAnnotationStudio(QMainWindow):
                     if hasattr(self.current_plugin_widget, 'set_current_image'):
                         self.current_plugin_widget.set_current_image(self.current_image)
                         self.logger.debug(f"Forwarded current image to plugin settings widget: {plugin_name}")
+                    if hasattr(self.current_plugin, 'on_image_changed') and self.current_image_path:
+                        self.current_plugin.on_image_changed(
+                            str(self.current_image_path), self.original_image
+                        )
                 
                 # TODO: Update plugin controls in left panel
                 # TODO: Configure plugin-specific settings
@@ -2127,10 +2221,12 @@ class ModularAnnotationStudio(QMainWindow):
 
                 # CRITICAL: Store reference to current plugin widget for image notifications
                 self.current_plugin_widget = settings_widget
+                self._connect_border_detection_results(settings_widget)
 
                 # CRITICAL: Set studio canvas reference so plugin can draw annotations
                 if hasattr(settings_widget, 'set_studio_canvas'):
                     settings_widget.set_studio_canvas(self.image_label)
+                    settings_widget.studio = self
                     self.logger.info("✅ Studio canvas reference passed to plugin")
 
                 # Clear existing settings and add new one
@@ -2140,6 +2236,24 @@ class ModularAnnotationStudio(QMainWindow):
                         child.widget().deleteLater()
 
                 self.plugin_settings_layout.addWidget(settings_widget)
+
+                # A card may already be open when the user selects the border
+                # plugin. In that startup order load_current_image() could not
+                # notify the plugin, so forward the existing image exactly once.
+                # Detection remains owned by on_image_changed() and its delayed
+                # real-model inference; do not introduce another detector.
+                if plugin_filename == "border_detection_plugin":
+                    loaded_image = getattr(self, "original_image", None)
+                    loaded_path = getattr(self, "current_image_path", None)
+                    if loaded_image is not None and loaded_path is not None:
+                        if hasattr(settings_widget, "set_current_image"):
+                            settings_widget.set_current_image(loaded_image)
+                        self.logger.info(
+                            "Border plugin activated with existing card: %s; scheduling first detection",
+                            loaded_path,
+                        )
+                        self.current_plugin.on_image_changed(str(loaded_path), loaded_image)
+
                 self.logger.info(f"✅ Plugin {plugin_filename} loaded and settings panel created")
                 self.logger.info(f"✅ current_plugin set to: {self.current_plugin}")
                 self.logger.info(f"✅ current_plugin_widget set to: {self.current_plugin_widget}")

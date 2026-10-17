@@ -45,7 +45,7 @@ It must not automatically be treated as obsolete code.
 
 Status:
 
-PARTIALLY INSPECTED
+AUDITED FOR PHOENIX REFACTOR
 
 Current counterpart:
 
@@ -134,3 +134,185 @@ Not yet sufficiently inspected.
 Never delete historical code solely because a newer file exists.
 
 First determine whether the newer implementation retained all valuable behavior.
+
+
+## Phoenix Trainer Formal Audit — 2026-10-13
+
+Full record: `project_brain/PHOENIX_TRAINER_AUDIT.md`
+
+### Current implementation
+
+The current ViT, U-Net, and Detectron2 implementations contain real training
+logic and are retained as the refactor anchors.
+
+The current fusion/routing layer is not reliable evidence of model support:
+several requested models were silently mapped to unrelated trainers. Trainer
+ownership is being consolidated so unsupported functionality fails explicitly.
+
+### Historical classifications
+
+- `photometric_dataset.py` — REFERENCE / SALVAGE CONCEPTS
+- `photometric_training.py` — BROKEN / REFERENCE
+- `model_architectures.py` — REFERENCE
+- `config_schemas.py` — REFERENCE / SALVAGE CONCEPTS
+- `revolutionary_training_engine.py` — REFERENCE
+- `enterprise_trainer.py` — BROKEN / REFERENCE
+- historical Phoenix Training Studio — BROKEN / REFERENCE
+- duplicate historical Phoenix queues — DUPLICATE / BROKEN
+- `revolutionary_llm_meta_learning.py` — REFERENCE / FUTURE AUDIT
+- `Checkplz/claude_fix/ai_development.py` — BROKEN / REFERENCE
+- `Checkplz/claude_fix/ai_development_enhanced.py` — BROKEN / REFERENCE
+- `trugrade_ai_trainer.py` — REFERENCE
+
+The older photometric material remains valuable, but it is not directly
+restorable as a working trainer. The dataset metadata contract, model input shape,
+and trainer/model interfaces conflict. Its multi-light design and photometric
+losses should be recovered deliberately after the shared Phoenix engine is stable.
+
+
+## Phoenix Queue / Training Monitor Recovery — 2026-10-15
+
+Historical sources inspected specifically for unattended training observability:
+
+- `Checkplz/phoenix_tensorzero_training/training/phoenix_training_queue.py`
+- `Checkplz/phoenix_tensorzero_training/phoenix_training_queue.py`
+- `Checkplz/phoenix_tensorzero_training/training/components/training_panel.py`
+- `Checkplz/phoenix_tensorzero_training/training/components/metrics_panel.py`
+- `Checkplz/phoenix_tensorzero_training/training/phoenix_training_studio.py`
+
+Classification remains DUPLICATE/BROKEN or BROKEN/REFERENCE for the historical
+executables because their training paths include simulations and duplicate
+ownership.
+
+Salvaged concepts:
+- persistent current-job panel
+- epoch/overall progress
+- live loss/LR/best-metric presentation
+- queue-level lifecycle visibility
+- multi-job operator continuity
+
+These concepts were reimplemented against the current real process-isolated
+architecture. They were not copied together with simulated training.
+
+Current owner:
+- `src/modules/phoenix_trainer/queue_monitor.py` — durable operational event history
+- `src/modules/phoenix_trainer/phoenix_training_queue_standalone.py` — Queue monitor UI/control plane
+- immutable model/run provenance remains owned by `run_artifacts.py`
+
+
+## Dataset Studio COCO/export archaeology — 2026-10-16
+
+Examined current \`src/modules/dataset_studio/dataset_studio.py\` manual
+export and ConversionWorker, \`src/shared/dataset_tools/\` converters and
+validators, existing fixture/audit material, and historical
+\`Checkplz/claude_fix/data_management.py\` (492 lines).
+
+Historical \`DataManagementSuite\` contains architectural aspirations
+for images, analytics and export, but the YOLO, COCO and Pascal VOC
+export method bodies are TODO placeholders. **Classification: REFERENCE,
+not SALVAGE as an implemented converter.** Do not replace the corrected
+working converter with these stubs.
+
+Current shared \`yolo_to_maskrcnn_converter.py\` contains valuable source
+polygon parsing/resampling as well as legacy synthetic bbox-derived
+polygon generation. The latter is NOT genuine segmentation ground truth;
+new Dataset Studio bbox-only routes do not use it. Remaining old callers
+and non-COCO conversion routes still require a full current/historical
+audit before consolidated ownership is declared.
+
+ADR 0008 implements a narrow truthful COCO detection slice. Historical
+Dataset Studio behavior must not be assumed fully audited or superseded
+solely because its current UI now passes source-method CI.
+
+### Dataset Export/Analysis preflight comparison — 2026-10-16
+
+Current owner was src/modules/dataset_studio/dataset_studio.py:
+update_analysis_dashboard counted all global label directories and
+update_pre_export_verification used nested QLabel/QFrame rows that the
+workstation rendered unreadably. Historical
+Checkplz/claude_fix/data_management.py lists a verification_center,
+coverage and image quality analysis concepts but implements no working
+pre-export UI or reliable dataset count logic (REFERENCE). Current
+project_dashboard.py contains TODO project export controls; it is not
+an alternative reliable analysis/dashboard implementation.
+
+Classification: retain working active UI and correct its scope;
+do not replace with older aspirational stubs. Shared project count logic
+now lives in src/shared/dataset_tools/dataset_analysis.py (ADR 0009);
+COCO conversion/export remains owned by prior converter/export methods.
+
+
+## Parallel documentation / agent-memory archaeology — 2026-10-16
+
+Documentation continuity audit identified several independent,
+older/auto-generated memory systems and templates in the repository:
+
+- src/Docs/documentation_context/ describes a Claude Code Kit
+  three-tier documentation architecture and generic handoff template.
+  Its docs-overview.md references root CLAUDE.md and
+  /docs/ai-context/... paths that are absent from this repository.
+  Classification: REFERENCE/TEMPLATE, not current live authority.
+- src/Docs/dataset_models/DATASET_STUDIO_PLAN.md proposes
+  aspirational future features, folder structures, model integrations
+  and agent assignments. It is not proof those features exist.
+  Classification: REFERENCE, pending relevance-driven archaeology.
+- .brainsync/rules/brainsync_auto.md,
+  .agents/rules/brainsyncory.md and .cursor/active-context.md
+  contain generated summaries/generic technology rules and potentially
+  stale IDE/session state. Classification: EXTERNAL GENERATED CONTEXT,
+  not trusted implementation status or override of project_brain.
+- .agent.md and .agent1.md are older agent-facing narratives/rules;
+  their style/goals must not supersede verified code, safety boundaries,
+  source ownership or the explicit project bootstrap workflow.
+  Classification: HISTORICAL/REFERENCE.
+- Initial ChatGPT Project uploads of nine Markdown documents are dated
+  snapshots; the live GitHub project_brain/ files have materially
+  progressed and are authoritative. Classification: BASELINE SNAPSHOTS.
+- README.md held unverified promotional accuracy figures and obsolete
+  CLI/clone instructions. A prominent truthfulness note and corrected
+  active launch path were added; the older marketing context is preserved
+  as aspirational material, not measured quality.
+
+No historical code was deleted or restored by this documentation audit.
+Project-memory navigation is centralized in PROJECT_MEMORY_INDEX.md,
+SESSION_START.md, PROJECT_BOOTSTRAP.md and ADR 0010. This review
+inventoried 47 assets under src/Docs but did NOT constitute complete
+technical study of every research asset or code archaeology of every
+subsystem. Evaluate relevant material when working on that domain.
+
+## Bbox training heritage re-evaluation — 2026-10-17
+
+Before connecting Dataset Studio→Phoenix, reviewed the active picker,
+both export buttons, queue/worker, central trainer registry, Mask
+R-CNN and ViT contracts, plus legacy
+Checkplz/phoenix_tensorzero_training/trugrade_ai_trainer.py and
+historical Phoenix queue/training studio.
+
+Historical TruGrade YOLO trainer uses real Ultralytics YOLO training,
+but its prepare/copy_and_label path fabricates border boxes from an
+assumed 2.75-inch scan margin and the final result dictionary
+reports placeholder accuracy/loss. Classification: REFERENCE ONLY,
+NEVER SALVAGE those false labeling/metric behaviors. The new YOLO11s
+adapter reuses the proven idea of native training while consuming
+the actual 7-image verified COCO annotations via normalized conversion.
+Checkplz's older Phoenix Training Queue includes
+`_simulate_training` and similarly cannot replace the real current
+isolated process control plane. Classification: HISTORICAL REFERENCE.
+
+The current Mask R-CNN segmentation trainer and source format
+validator refuse bbox-only labels, correctly preserving safety.
+ViT classifier is a real concrete trainer but cannot be used as a
+silent substitute for detector requests. Its prior real ROCm
+smoke test remains a separately verified behavior.
+
+See MODEL_CAPABILITY_MATRIX.md and ADR 0011 for exhaustive menu
+inventory, explicit supported pair and deferred annotation plugins.
+
+
+## Precision outer/graphic contour historical candidates — 2026-10-17
+
+User's root diagrams 24pointside.jpg and 24pointside (1).jpg prove their objective is 24 true geometric station measurements (5 top, 5 bottom, 7 left, 7 right), not a 2-bbox object detector. Inspected src/shared/truscore_system/twentyfour_centering.py: it permits true contours but re-samples to 48 vertices, after which poly_side_indices picks only one short edge per named side; failed intersections produce zero gap and zero-mean pairs produce false 50:50. Preserve mathematical intent, audit geometry with synthetic skew/rotation before restoring physical measurement claims.
+
+Inspected src/modules/annotation_studio/plugins/prompt_segmentation_plugin.py: some nominal SAM/FusionSAM branches are stub implementations that produce centrally placed rectangular masks and hard-coded confidence on absent/failing inference. Classification: UNSAFE PLACEHOLDER, not training-mask ground truth; do not promote or silently fallback. Relevant historical implementations to compare before replacing geometry: src/revolutionary_border_calibration.py (multiple repeated legacy UI/edit routines), src/shared/truscore_system/truscore_border_detection.py and src/trugrade_border_detection.py, plus Checkplz prior code and Git history. These have NOT been completely function-by-function compared in this research pass, so no salvage/supersede classification has yet been claimed for their algorithms.
+
+Candidate genuine segmentation research: Detectron2 PointRend (edge refinement), Mask2Former/high-resolution semantic segmentation, optional SAM2/3-assisted corrected masks, box-supervised BoxInst/Box2Mask (weak supervision, not mask GT), and geometric edge refinement. Full source URLs/limitations and acceptance criteria in DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md and ADR 0012. Existing YOLO11s pilot is retained only for auxiliary coarse-region detection.

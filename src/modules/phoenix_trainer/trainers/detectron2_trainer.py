@@ -14,6 +14,9 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Any
 import json
+import random
+import math
+import time
 import cv2
 
 from .base_trainer import BaseTrainer
@@ -31,7 +34,7 @@ class Detectron2Trainer(BaseTrainer):
         super().__init__(config)
         
         # Detectron2-specific config
-        self.num_classes = 2  # outer_border, inner_border
+        self.num_classes = int(config.get('num_classes', 2))
         self.model = None
         self.cfg = None
         self.data_loader_train = None
@@ -86,36 +89,93 @@ class Detectron2Trainer(BaseTrainer):
         
         self.log(f"Found {num_images} images with {num_annotations} annotations", "INFO")
         
-        # Register dataset
-        dataset_name = f"border_detection_{self.dataset_path.name}"
-        
-        # Remove if already registered
-        if dataset_name in DatasetCatalog:
-            DatasetCatalog.remove(dataset_name)
-            MetadataCatalog.remove(dataset_name)
-        
-        register_coco_instances(
-            dataset_name,
-            {},
-            str(annotations_file),
-            str(images_dir)
+        # Validate and split COCO image IDs, not only Python dataset dictionaries.
+        # Detectron2 and COCOEvaluator must consume the same disjoint partitions.
+        images = coco_data.get("images", [])
+        annotations = coco_data.get("annotations", [])
+        categories = coco_data.get("categories", [])
+        if len(images) < 2 or not categories:
+            raise ValueError(
+                "Detectron2 requires at least two COCO images and a non-empty categories list"
+            )
+        ids = [image["id"] for image in images]
+        if len(ids) != len(set(ids)):
+            raise ValueError("COCO images contain duplicate IDs")
+        unknown_ids = {annotation["image_id"] for annotation in annotations} - set(ids)
+        if unknown_ids:
+            raise ValueError(f"COCO annotations reference unknown image IDs: {sorted(unknown_ids)}")
+        # Mask R-CNN needs true instance masks. Detection boxes and synthetic
+        # refined polygons must not silently enter the segmentation trainer.
+        if not annotations:
+            raise ValueError("Detectron2 Mask R-CNN dataset has no annotations")
+        if coco_data.get("info", {}).get("segmentation_ground_truth") is False:
+            raise ValueError(
+                "This COCO export contains detection boxes only; Mask R-CNN "
+                "requires verified instance-segmentation ground truth"
+            )
+        for annotation in annotations:
+            if not annotation.get("segmentation"):
+                raise ValueError(
+                    f"Missing instance mask for COCO annotation {annotation.get('id')}"
+                )
+            attrs = annotation.get("attributes") or {}
+            if (attrs.get("source") == "yolo_conversion" and
+                    attrs.get("refinement_status") == "initial"):
+                raise ValueError("Synthetic bbox-derived polygons cannot train precision Mask R-CNN")
+
+        seed = int(self.config.get("seed", 42))
+        shuffled_ids = list(ids)
+        random.Random(seed).shuffle(shuffled_ids)
+        split_index = max(1, min(len(ids) - 1, int(len(ids) * 0.8)))
+        train_ids = set(shuffled_ids[:split_index])
+        val_ids = set(shuffled_ids[split_index:])
+        if train_ids & val_ids:
+            raise AssertionError("COCO train and validation partitions overlap")
+
+        split_root = self.output_dir / "coco_splits"
+        split_root.mkdir(parents=True, exist_ok=True)
+        self.train_dataset_name = f"border_train_{self.dataset_path.name}"
+        self.val_dataset_name = f"border_val_{self.dataset_path.name}"
+
+        category_names = [
+            category.get("name", f"class_{category.get('id', index)}")
+            for index, category in enumerate(
+                sorted(categories, key=lambda item: item["id"])
+            )
+        ]
+        self.num_classes = len(category_names)
+
+        for name, selected_ids, filename in (
+            (self.train_dataset_name, train_ids, "train.json"),
+            (self.val_dataset_name, val_ids, "val.json"),
+        ):
+            subset = dict(coco_data)
+            subset["images"] = [image for image in images if image["id"] in selected_ids]
+            subset["annotations"] = [
+                annotation for annotation in annotations
+                if annotation["image_id"] in selected_ids
+            ]
+            annotation_path = split_root / filename
+            annotation_path.write_text(
+                json.dumps(subset, indent=2), encoding="utf-8"
+            )
+            if name in DatasetCatalog:
+                DatasetCatalog.remove(name)
+                MetadataCatalog.remove(name)
+            register_coco_instances(
+                name, {}, str(annotation_path), str(images_dir)
+            )
+            MetadataCatalog.get(name).thing_classes = category_names
+
+        self.dataset_name = self.train_dataset_name
+        self.train_dataset = DatasetCatalog.get(self.train_dataset_name)
+        self.val_dataset = DatasetCatalog.get(self.val_dataset_name)
+        self.log(
+            f"COCO split (seed={seed}): "
+            f"{len(self.train_dataset)} train, {len(self.val_dataset)} validation",
+            "INFO",
         )
-        
-        # Set class names
-        MetadataCatalog.get(dataset_name).thing_classes = ["outer_border", "inner_border"]
-        
-        self.dataset_name = dataset_name
-        self.log(f"Dataset registered: {dataset_name}", "SUCCESS")
-        
-        # Create train/val split (80/20)
-        dataset_dicts = DatasetCatalog.get(dataset_name)
-        num_train = int(len(dataset_dicts) * 0.8)
-        
-        self.train_dataset = dataset_dicts[:num_train]
-        self.val_dataset = dataset_dicts[num_train:]
-        
-        self.log(f"Split: {len(self.train_dataset)} train, {len(self.val_dataset)} val", "INFO")
-    
+
     def build_model(self):
         """
         Build Mask R-CNN model with Detectron2
@@ -138,14 +198,14 @@ class Detectron2Trainer(BaseTrainer):
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = self.num_classes
         
         # Training config
-        cfg.DATASETS.TRAIN = (self.dataset_name,)
-        cfg.DATASETS.TEST = ()
+        cfg.DATASETS.TRAIN = (self.train_dataset_name,)
+        cfg.DATASETS.TEST = (self.val_dataset_name,)
         cfg.DATALOADER.NUM_WORKERS = self.config.get('num_workers', 2)
         
         # Solver (optimizer) config
         cfg.SOLVER.IMS_PER_BATCH = self.config['batch_size']
         cfg.SOLVER.BASE_LR = self.config['learning_rate']
-        cfg.SOLVER.MAX_ITER = self.config['epochs'] * len(self.train_dataset) // self.config['batch_size']
+        cfg.SOLVER.MAX_ITER = self.config['epochs'] * math.ceil(len(self.train_dataset) / self.config['batch_size'])
         cfg.SOLVER.STEPS = []  # No learning rate decay steps (for simplicity)
         cfg.SOLVER.CHECKPOINT_PERIOD = 500
         
@@ -157,7 +217,7 @@ class Detectron2Trainer(BaseTrainer):
         cfg.MODEL.DEVICE = 'cuda' if device == 'cuda' and torch.cuda.is_available() else 'cpu'
         
         # Mixed precision
-        if self.config.get('mixed_precision', True) and cfg.MODEL.DEVICE == 'cuda':
+        if str(self.config.get("precision", "fp32")).lower() == "fp16" and cfg.MODEL.DEVICE == 'cuda':
             cfg.SOLVER.AMP.ENABLED = True
         
         self.cfg = cfg
@@ -165,56 +225,81 @@ class Detectron2Trainer(BaseTrainer):
         # Create trainer
         self.trainer = DefaultTrainer(cfg)
         self.trainer.resume_or_load(resume=False)
+        self.model = self.trainer.model
+        self.optimizer = self.trainer.optimizer
         
         self.log(f"Model built: Mask R-CNN R50-FPN", "SUCCESS")
         self.log(f"Device: {cfg.MODEL.DEVICE}", "INFO")
         self.log(f"Mixed precision: {cfg.SOLVER.AMP.ENABLED}", "INFO")
     
+    def train(self):
+        """Execute one Detectron2-native iteration lifecycle, never BaseTrainer epochs.
+
+        DefaultTrainer.train() owns the iteration loop and native checkpoint hooks.
+        Phoenix supplies only the outer job lifecycle and post-training evaluation.
+        """
+        if self.config.get("resume_from"):
+            raise NotImplementedError(
+                "Detectron2 checkpoint resume is not yet supported by Phoenix; "
+                "do not use the conventional PyTorch resume format."
+            )
+        precision = str(self.config.get("precision", "fp32")).lower()
+        if precision not in {"fp32", "fp16"}:
+            raise NotImplementedError(
+                f"Detectron2 native trainer does not support precision={precision!r}"
+            )
+        if self.config.get("early_stopping"):
+            raise NotImplementedError(
+                "Detectron2 early stopping is not yet integrated with native hooks."
+            )
+        if self.config.get("grad_accumulation") and int(
+            self.config.get("accumulation_steps", 1)
+        ) != 1:
+            raise NotImplementedError(
+                "Detectron2 native trainer does not implement Phoenix gradient accumulation."
+            )
+
+        self.is_training = True
+        started = time.monotonic()
+        try:
+            self.load_dataset()
+            self.build_model()
+            if self.callbacks.get("on_epoch_start"):
+                # Allows Phoenix to capture the model identity/configuration.
+                self.callbacks["on_epoch_start"](0)
+
+            self.log(
+                f"Detectron2 native training: {self.cfg.SOLVER.MAX_ITER} iterations",
+                "INFO",
+            )
+            self.trainer.train()
+            if self.trainer.iter < self.cfg.SOLVER.MAX_ITER - 1:
+                raise RuntimeError(
+                    f"Detectron2 stopped at iteration {self.trainer.iter} "
+                    f"before target {self.cfg.SOLVER.MAX_ITER}"
+                )
+            # Never invent metrics when Detectron2 did not report them.
+            metrics = self.validate()
+            metrics["training_seconds"] = time.monotonic() - started
+            self.update_metrics(metrics)
+            total_epochs = int(self.config["epochs"])
+            self.current_epoch = total_epochs - 1
+            self.update_progress(total_epochs, total_epochs, 1.0)
+            if self.callbacks.get("on_epoch_end"):
+                self.callbacks["on_epoch_end"](self.current_epoch, metrics)
+            self.save_checkpoint(self.output_dir / "final_model.pth")
+            (self.output_dir / "training_history.json").write_text(
+                json.dumps(self.metrics_history, indent=2), encoding="utf-8"
+            )
+            self.log("Detectron2 training and evaluation completed", "SUCCESS")
+        finally:
+            self.is_training = False
+
     def train_epoch(self) -> Dict[str, float]:
-        """
-        Train one epoch - REAL TRAINING with gradient descent
-        
-        Returns:
-            Dictionary with training metrics
-        """
-        # Detectron2 handles epochs internally, so we'll do iterations instead
-        # and report progress after each checkpoint
-        
-        # Get current iteration
-        start_iter = self.trainer.iter
-        
-        # Train for one "epoch" worth of iterations
-        iters_per_epoch = len(self.train_dataset) // self.config['batch_size']
-        end_iter = min(start_iter + iters_per_epoch, self.cfg.SOLVER.MAX_ITER)
-        
-        # Perform training iterations
-        self.trainer.train()
-        
-        # Get training metrics from trainer
-        metrics = {}
-        
-        if hasattr(self.trainer, 'storage'):
-            storage = self.trainer.storage
-            
-            # Get loss values
-            if 'total_loss' in storage:
-                metrics['train_loss'] = storage.latest().get('total_loss', 0.0)
-            
-            if 'loss_cls' in storage:
-                metrics['loss_cls'] = storage.latest().get('loss_cls', 0.0)
-            
-            if 'loss_box_reg' in storage:
-                metrics['loss_box_reg'] = storage.latest().get('loss_box_reg', 0.0)
-            
-            if 'loss_mask' in storage:
-                metrics['loss_mask'] = storage.latest().get('loss_mask', 0.0)
-            
-            # Learning rate
-            if 'lr' in storage:
-                metrics['learning_rate'] = storage.latest().get('lr', self.config['learning_rate'])
-        
-        return metrics
-    
+        raise NotImplementedError(
+            "Detectron2 uses its native iteration lifecycle; call train() once."
+        )
+
     def validate(self) -> Dict[str, float]:
         """
         Run validation - REAL evaluation with mAP calculation
@@ -228,13 +313,13 @@ class Detectron2Trainer(BaseTrainer):
         # Build validation data loader
         val_loader = build_detection_test_loader(
             self.cfg,
-            self.dataset_name,
+            self.val_dataset_name,
             mapper=None
         )
         
         # Create evaluator
         evaluator = COCOEvaluator(
-            self.dataset_name,
+            self.val_dataset_name,
             output_dir=str(self.output_dir / "validation")
         )
         
@@ -244,51 +329,30 @@ class Detectron2Trainer(BaseTrainer):
         # Extract metrics
         metrics = {}
         
-        if 'bbox' in results:
-            metrics['mAP'] = results['bbox'].get('AP', 0.0)
-            metrics['mAP50'] = results['bbox'].get('AP50', 0.0)
-            metrics['mAP75'] = results['bbox'].get('AP75', 0.0)
+        if 'bbox' not in results or 'AP' not in results['bbox']:
+            raise RuntimeError('Detectron2 COCO evaluation did not produce bbox AP')
+        metrics['mAP'] = results['bbox']['AP']
+        for key, metric in (('AP50', 'mAP50'), ('AP75', 'mAP75')):
+            if key in results['bbox']:
+                metrics[metric] = results['bbox'][key]
         
         if 'segm' in results:
-            metrics['mAP_mask'] = results['segm'].get('AP', 0.0)
+            if 'AP' in results['segm']:
+                metrics['mAP_mask'] = results['segm']['AP']
         
         return metrics
     
     def save_checkpoint(self, filepath: Path):
-        """
-        Save model checkpoint
-        
-        Args:
-            filepath: Path to save checkpoint
-        """
-        self.log(f"Saving checkpoint: {filepath}", "INFO")
-        
-        # Save Detectron2 model
-        checkpoint_dir = filepath.parent / f"checkpoint_{filepath.stem}"
-        checkpoint_dir.mkdir(exist_ok=True)
-        
-        # Save model weights
-        model_path = checkpoint_dir / "model.pth"
-        torch.save(self.trainer.model.state_dict(), model_path)
-        
-        # Save config
-        config_path = checkpoint_dir / "config.yaml"
-        with open(config_path, 'w') as f:
-            f.write(self.cfg.dump())
-        
-        # Save training state
-        state_path = checkpoint_dir / "training_state.json"
-        state = {
-            'iteration': self.trainer.iter,
-            'epoch': self.current_epoch,
-            'best_metric': self.best_metric,
-            'config': self.config
-        }
-        
-        with open(state_path, 'w') as f:
-            json.dump(state, f, indent=2)
-        
-        self.log(f"Checkpoint saved to {checkpoint_dir}", "SUCCESS")
+        """Persist native Detectron2 model/optimizer/scheduler/iteration state."""
+        path = Path(filepath)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.suffix != ".pth":
+            raise ValueError("Detectron2 checkpoint target must end in .pth")
+        self.trainer.checkpointer.save(path.stem)
+        native_path = self.output_dir / f"{path.stem}.pth"
+        if not native_path.is_file():
+            raise RuntimeError(f"Detectron2 did not write checkpoint: {native_path}")
+        self.log(f"Native Detectron2 checkpoint saved: {native_path}", "SUCCESS")
 
 
 class Detectron2TrainerSimple(BaseTrainer):
@@ -330,22 +394,26 @@ class Detectron2TrainerSimple(BaseTrainer):
         """Build simple PyTorch model"""
         self.log("Building simple PyTorch model...", "INFO")
         
-        # TODO: Implement simple border detection model
-        # For now, this is a placeholder for when Detectron2 isn't available
-        
-        self.log("Simple model built", "SUCCESS")
+        raise NotImplementedError(
+            "Detectron2TrainerSimple has no implemented model; "
+            "install/configure real Detectron2 instead."
+        )
     
     def train_epoch(self) -> Dict[str, float]:
         """Train one epoch"""
-        # TODO: Implement simple training loop
-        return {'train_loss': 0.5}
+        raise NotImplementedError(
+            "Detectron2TrainerSimple has no training implementation."
+        )
     
     def validate(self) -> Dict[str, float]:
         """Validate"""
-        # TODO: Implement simple validation
-        return {'val_loss': 0.4}
+        raise NotImplementedError(
+            "Detectron2TrainerSimple cannot produce validation metrics."
+        )
     
     def save_checkpoint(self, filepath: Path):
         """Save checkpoint"""
         self.log(f"Saving simple checkpoint: {filepath}", "INFO")
-        # TODO: Implement checkpoint saving
+        raise NotImplementedError(
+            "Detectron2TrainerSimple cannot create real model checkpoints."
+        )

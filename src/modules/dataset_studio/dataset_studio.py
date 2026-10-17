@@ -20,7 +20,7 @@ if str(SRC_PATH) not in sys.path:
 from PyQt6.QtWidgets import (
     QFrame, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QTabWidget, QWidget, QMessageBox, QApplication, 
-    QCheckBox, QSlider, QComboBox, QScrollArea
+    QCheckBox, QSlider, QComboBox, QScrollArea, QPlainTextEdit
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QThread
 from PyQt6.QtGui import QFont, QPixmap, QImage, QPainter, QPen, QColor
@@ -50,6 +50,7 @@ from shared.essentials.button_styles import (
 
 # FlowLayout - the solution to our alignment nightmare!
 from modules.dataset_studio.flowlayout import FlowLayout
+from shared.dataset_tools.dataset_analysis import analyze_project_dataset
 
 class ConversionWorker(QThread):
     """Background thread for YOLO to COCO conversion to keep UI responsive"""
@@ -71,7 +72,7 @@ class ConversionWorker(QThread):
             from shared.dataset_tools.yolo_to_maskrcnn_converter import YOLOToMaskRCNNConverter
             
             # Initialize converter
-            converter = YOLOToMaskRCNNConverter(class_names=['border', 'surface'])
+            converter = YOLOToMaskRCNNConverter(class_names=['outer_border', 'graphic_border'])
             
             self.progress_updated.emit(25)
             
@@ -80,9 +81,15 @@ class ConversionWorker(QThread):
             self.logger.info(f"DEBUG: Converting {len(self.images)} images with {len(self.labels_data)} label entries")
             self.logger.info(f"DEBUG: First image: {self.images[0] if self.images else 'NONE'}")
             self.logger.info(f"DEBUG: labels_data keys: {list(self.labels_data.keys())[:3] if self.labels_data else 'EMPTY'}")
-            conversion_result = converter.convert_imported_data(self.images, self.labels_data, use_refined_polygons=True)
+            conversion_result = converter.convert_imported_data(self.images, self.labels_data, bbox_only=True)
+            coco_data = conversion_result["coco_data"]
+            failures = conversion_result["conversion_stats"]["failed_conversions"]
+            if failures or len(coco_data["images"]) != len(self.images):
+                raise ValueError(f"COCO conversion incomplete: {failures or 'missing images'}")
+            if not coco_data["annotations"]:
+                raise ValueError("COCO conversion produced no annotations")
             self.logger.info("Conversion process completed, starting file save...")
-            self.logger.info(f"DEBUG: Conversion result has {len(conversion_result.get('images', []))} images and {len(conversion_result.get('annotations', []))} annotations")
+            self.logger.info(f"DEBUG: Conversion result has {len(coco_data['images'])} images and {len(coco_data['annotations'])} annotations")
             self.progress_updated.emit(75)
             
             # Save converted dataset to modules/dataset_studio/converted_datasets/
@@ -94,7 +101,7 @@ class ConversionWorker(QThread):
             import json
             self.logger.info("Starting JSON file write...")
             with open(output_path, 'w') as f:
-                json.dump(conversion_result, f, separators=(',', ':'))  # Compact format = much faster
+                json.dump(coco_data, f, separators=(',', ':'))  # Compact format = much faster
             self.logger.info("JSON file write completed!")
             
             self.progress_updated.emit(100)
@@ -104,7 +111,7 @@ class ConversionWorker(QThread):
                 'output_path': output_path,
                 'total_images': len(self.images),
                 'labeled_images': len(self.labels_data),
-                'coco_data': conversion_result,  # CRITICAL: Include COCO data for verification
+                'coco_data': coco_data,  # The actual top-level COCO dataset
                 'conversion_stats': {
                     'total_images': len(self.images),
                     'labeled_images': len(self.labels_data)
@@ -1231,14 +1238,8 @@ class TruScoreDatasetFrame(QFrame):
         image_base_name = Path(image_path).stem
         image_base_lower = image_base_name.lower()
         
-        # 🚨 PRIORITY 0: Check annotation studio output folders first
-        # Check all three annotation studio folders for YOLO labels
-        annotations_base = Path(__file__).parent.parent.parent / "shared" / "annotations"
-        for folder in ['outer_border_model', 'graphic_border_model', 'combined_dual_class']:
-            label_path = annotations_base / folder / "labels" / f"{image_base_name}.txt"
-            if label_path.exists():
-                return True
-        
+        # Only count labels explicitly imported/converted into this project.
+        # Same-stem labels elsewhere in the global Studio workspace are not evidence.
         # 🚨 PRIORITY 1: Check COCO annotations (for loaded projects) even if imported_labels is empty
         if hasattr(self, 'coco_annotations') and self.coco_annotations:
             # Check if this image exists in COCO data
@@ -1347,6 +1348,19 @@ class TruScoreDatasetFrame(QFrame):
                             self.logger.error(f"Error reading label file: {e}")
                         break
             
+            # Source labels imported in the current project take precedence over
+            # a previous COCO conversion for the same filename. Otherwise a stale
+            # converted dataset can conceal the label file the operator is reviewing.
+            for label_info in getattr(self, "imported_labels", []):
+                label_path = Path(label_info["path"])
+                if (label_path.suffix.lower() == ".txt" and
+                        label_path.stem.lower() == image_base_lower):
+                    label_data = [line.strip() for line in
+                                  label_path.read_text(encoding="utf-8").splitlines()
+                                  if line.strip()]
+                    coco_annotations = []
+                    break
+
             # Draw label overlay on ORIGINAL SIZE image if labels exist
             if coco_annotations:
                 # Draw COCO annotations
@@ -1358,15 +1372,25 @@ class TruScoreDatasetFrame(QFrame):
                 category_names = {cat['id']: cat['name'] for cat in categories}
                 
                 # 🚨 CRITICAL: Get COCO recorded dimensions for this image
-                coco_img_width = 640  # Default from export
-                coco_img_height = 480  # Default from export
+                coco_img_width = original_width
+                coco_img_height = original_height
                 images_list = self.coco_annotations.get('images', [])
                 for img_info in images_list:
                     if img_info.get('file_name') == image_filename:
-                        coco_img_width = img_info.get('width', 640)
-                        coco_img_height = img_info.get('height', 480)
+                        coco_img_width = img_info.get('width')
+                        coco_img_height = img_info.get('height')
                         break
                 
+                # Reject untrustworthy dimensional metadata instead of inventing 640x480.
+                if not isinstance(coco_img_width, int) or not isinstance(coco_img_height, int) or coco_img_width <= 0 or coco_img_height <= 0:
+                    raise ValueError(f"COCO image {image_filename} has invalid dimensions; re-export labels")
+                if (coco_img_width, coco_img_height) != (original_width, original_height):
+                    self.logger.warning(
+                        f"COCO dimension mismatch for {image_filename}: "
+                        f"{coco_img_width}x{coco_img_height} metadata vs "
+                        f"{original_width}x{original_height} pixels; legacy overlay is scaled"
+                    )
+
                 # Calculate scale factors (COCO coords → Actual image coords)
                 scale_x = original_width / coco_img_width
                 scale_y = original_height / coco_img_height
@@ -1492,10 +1516,12 @@ class TruScoreDatasetFrame(QFrame):
                         cat_id = ann.get('category_id')
                         cat_name = category_names.get(cat_id, f"class_{cat_id}")
                         info_text += f"  • {cat_name}\n"
-                    info_text += "✅ Image-label pair verified (COCO)"
+                    info_text += "COCO image/label filename matched (geometric accuracy not verified)"
+                    if (coco_img_width, coco_img_height) != (original_width, original_height):
+                        info_text += "\nWARNING: COCO metadata dimensions differ from source pixels"
                 elif label_data:
                     info_text += f"Labels: {len(label_data)} YOLO annotations found\n"
-                    info_text += "✅ Image-label pair verified (YOLO)"
+                    info_text += "YOLO image/label filename matched (geometric accuracy not verified)"
                 else:
                     info_text += "⚠️ No labels found for this image"
                 
@@ -1682,8 +1708,19 @@ class TruScoreDatasetFrame(QFrame):
             }}
         """)
         verification_layout = QVBoxLayout(self.verification_frame)
-        verification_layout.setSpacing(10)
-        self.verification_frame.setLayout(verification_layout)
+        verification_layout.setContentsMargins(8, 8, 8, 8)
+        verification_layout.setSpacing(0)
+        # A single, legible status report replaces the inherited nested-row
+        # labels that rendered as unreadable dark bars on real workstations.
+        self.pre_export_report = QPlainTextEdit(self.verification_frame)
+        self.pre_export_report.setReadOnly(True)
+        self.pre_export_report.setMinimumHeight(240)
+        self.pre_export_report.setStyleSheet(
+            "QPlainTextEdit { color: #f8fafc; background-color: #0f172a; "
+            "border: 1px solid #06b6d4; border-radius: 5px; padding: 10px; "
+            "font-family: monospace; font-size: 12px; }"
+        )
+        verification_layout.addWidget(self.pre_export_report)
         stats_layout.addWidget(self.verification_frame)
         
         # Refresh button
@@ -2128,6 +2165,8 @@ class TruScoreDatasetFrame(QFrame):
                 
                 if new_paths:
                     self.images.extend(new_paths)
+                    self.coco_annotations = {}  # Invalidate old conversion on dataset change
+                    self.labels_data = {}  # Invalidate cached label mapping
                     
                     # 🚨 CRITICAL: Set data_path for project loading
                     # Use parent directory of first image as data_path
@@ -2471,8 +2510,10 @@ class TruScoreDatasetFrame(QFrame):
             
             self.update_status(f"Imported {processed_count} label files")
             
-            # Auto-save project after importing labels
+            # Conversion metadata is no longer current when source labels change.
             if processed_count > 0:
+                self.coco_annotations = {}
+                self.labels_data = {}
                 self.save_project_progress()
                 self.logger.info("Project progress auto-saved after label import")
             
@@ -2608,7 +2649,7 @@ class TruScoreDatasetFrame(QFrame):
                 self.logger.debug(f"conversion_result keys: {list(conversion_result.keys())}")
             stats = conversion_result['conversion_stats']
             # Update status label
-            self.coco_status_label.setText(f"✅ COCO Dataset Successfully Converted!")
+            self.coco_status_label.setText("COCO detection boxes converted (not segmentation masks)")
             self.coco_status_label.setStyleSheet(f"color: {TruScoreTheme.QUANTUM_GREEN}; font-weight: bold;")
             
             # Create detailed conversion info widget
@@ -2671,8 +2712,8 @@ class TruScoreDatasetFrame(QFrame):
             file_info = QLabel(f"""
             <b>File Path:</b> {output_path}<br>
             <b>Format:</b> COCO JSON<br>
-            <b>Compatible With:</b> Detectron2, Mask R-CNN, PyTorch<br>
-            <b>Status:</b> ✅ Ready for training
+            <b>Geometry:</b> Axis-aligned detection bounding boxes<br>
+            <b>Mask R-CNN:</b> Requires separately verified instance masks
             """)
             file_info.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; margin-left: 10px;")
             file_layout.addWidget(file_info)
@@ -2701,7 +2742,7 @@ class TruScoreDatasetFrame(QFrame):
             categories = self.coco_annotations.get('categories', [])
             
             # Update status
-            self.coco_status_label.setText(f"✅ COCO Dataset Available!")
+            self.coco_status_label.setText("COCO dataset available; inspect geometry before training")
             self.coco_status_label.setStyleSheet(f"color: {TruScoreTheme.QUANTUM_GREEN}; font-weight: bold;")
             
             # Create details widget
@@ -2774,9 +2815,8 @@ class TruScoreDatasetFrame(QFrame):
             format_info = QLabel(f"""
             <b>Format:</b> COCO JSON<br>
             <b>Categories Defined:</b> {len(categories)}<br>
-            <b>Compatible With:</b> Detectron2, Mask R-CNN, PyTorch, MMDetection<br>
-            <b>Annotation Types:</b> Bounding Boxes, Segmentation Masks<br>
-            <b>Status:</b> ✅ Ready for Training
+            <b>Annotation Type:</b> COCO object detection boxes<br>
+            <b>Mask R-CNN:</b> Check real segmentation ground truth before training
             """)
             format_info.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; margin-left: 10px;")
             format_layout.addWidget(format_info)
@@ -2954,6 +2994,7 @@ class TruScoreDatasetFrame(QFrame):
             
             # Clear label storage
             self.imported_labels.clear()
+            self.coco_annotations = {}
             if hasattr(self, 'labels'):
                 self.labels.clear()
             if hasattr(self, 'labels_data'):
@@ -3298,10 +3339,11 @@ Path: {label_info['path']}
                 self, 
                 "Conversion Complete", 
                 f"Successfully converted {labeled_images} labeled images to COCO format.\n"
-                f"Dataset saved to: {output_path.name}"
+                f"Dataset saved to: {output_path.name}\n"
+                f"These are detection boxes, not verified Mask R-CNN instance masks."
             )
             
-            self.update_status("Labels converted to COCO format - dataset ready for training!")
+            self.update_status("COCO detection boxes converted; segmentation not yet verified")
             self.logger.debug("Callback completed successfully!")
             
             # Auto-save project after successful conversion
@@ -3330,105 +3372,86 @@ Path: {label_info['path']}
             print(f"Error in conversion failure handler: {e}")
 
     def update_analysis_dashboard(self):
-        """Update the analysis dashboard with current dataset statistics"""
+        """Refresh analysis from project-owned images and imported labels."""
         try:
-            # Clear existing stats
-            for i in reversed(range(self.stats_grid_layout.count())):
-                child = self.stats_grid_layout.itemAt(i).widget()
-                if child:
-                    child.setParent(None)
-            
-            # Calculate dataset statistics
-            total_images = len(self.images) if hasattr(self, 'images') else 0
-            
-            # 🚨 FIX: Count total annotations (COCO or YOLO)
-            total_labels = 0
-            
-            # Count labels from annotation studio output folders
-            annotations_base = Path(__file__).parent.parent.parent / "shared" / "annotations"
-            for folder in ['outer_border_model', 'graphic_border_model', 'combined_dual_class']:
-                labels_dir = annotations_base / folder / "labels"
-                if labels_dir.exists():
-                    total_labels += len(list(labels_dir.glob("*.txt")))
-            
-            # Also count imported COCO annotations
-            if hasattr(self, 'coco_annotations') and self.coco_annotations:
-                total_labels += len(self.coco_annotations.get('annotations', []))
-            # Also count imported YOLO label files
-            elif hasattr(self, 'imported_labels') and self.imported_labels:
-                total_labels += len(self.imported_labels)
-            
-            labeled_images = 0
-            high_quality_images = 0
-            
-            # 🚨 FIX: Count quality scores directly from image_cards (simpler and more reliable)
-            for card in (self.image_cards if hasattr(self, 'image_cards') else []):
-                # Check if this card has a label
-                if hasattr(card, 'image_path') and self._image_has_label(card.image_path):
-                    labeled_images += 1
-                
-                # Check quality score
-                if hasattr(card, 'quality_score') and card.quality_score:
-                    if card.quality_score >= 70:
-                        high_quality_images += 1
-            
-            self.logger.info(f"Quality analysis: {high_quality_images}/{len(self.image_cards) if hasattr(self, 'image_cards') else 0} high quality images")
-            
-            # Create statistics display
+            if not hasattr(self, "stats_grid_layout"):
+                return
+
+            # No global Annotation Studio directory scan. Never count both
+            # imported YOLO and its derived COCO JSON for the same card.
+            analysis = analyze_project_dataset(
+                getattr(self, "images", []),
+                getattr(self, "imported_labels", []),
+                getattr(self, "coco_annotations", None)
+            )
+
+            loaded_paths = {str(Path(path).resolve())
+                            for path in getattr(self, "images", [])}
+            high_quality = 0
+            for card in getattr(self, "image_cards", []):
+                card_path = getattr(card, "image_path", None)
+                if (card_path is not None
+                        and str(Path(card_path).resolve()) in loaded_paths
+                        and getattr(card, "quality_score", None) is not None
+                        and card.quality_score >= 70):
+                    high_quality += 1
+
+            layout = self.stats_grid_layout
+            while layout.count():
+                item = layout.takeAt(0)
+                if item.widget():
+                    item.widget().deleteLater()
+
+            filter_enabled = (hasattr(self, "quality_filter_cb")
+                              and self.quality_filter_cb.isChecked())
+            detection_ready = (
+                analysis.detection_export_ready and
+                (not filter_enabled or high_quality > 0)
+            )
             stats = [
-                ("Total Images", total_images, TruScoreTheme.NEON_CYAN),
-                ("Total Labels", total_labels, TruScoreTheme.QUANTUM_GREEN),
-                ("Labeled Images", labeled_images, TruScoreTheme.PLASMA_BLUE),
-                ("High Quality (70%+)", high_quality_images, TruScoreTheme.QUANTUM_GREEN),
-                ("Coverage", f"{(labeled_images/total_images*100):.1f}%" if total_images > 0 else "0%", TruScoreTheme.NEON_CYAN),
-                ("Dataset Ready", "✓ Yes" if labeled_images > 0 else "✗ No", TruScoreTheme.QUANTUM_GREEN if labeled_images > 0 else TruScoreTheme.ERROR_RED)
+                ("Project Images", analysis.total_images, TruScoreTheme.NEON_CYAN),
+                ("Matched YOLO Label Files", analysis.yolo_label_files, TruScoreTheme.QUANTUM_GREEN),
+                ("Actual Annotations", analysis.annotation_count, TruScoreTheme.QUANTUM_GREEN),
+                ("Labeled Images", analysis.labeled_images, TruScoreTheme.PLASMA_BLUE),
+                ("High Quality (70%+)", high_quality, TruScoreTheme.QUANTUM_GREEN),
+                ("Coverage", f"{analysis.coverage:.1f}%", TruScoreTheme.NEON_CYAN),
+                ("COCO Detection Export", "Ready" if detection_ready else "Blocked",
+                 TruScoreTheme.QUANTUM_GREEN if detection_ready else TruScoreTheme.ERROR_RED),
             ]
-            
-            for stat_name, stat_value, color in stats:
-                stat_frame = QFrame()
-                stat_frame.setStyleSheet(f"""
-                    QFrame {{
-                        background-color: {TruScoreTheme.QUANTUM_DARK};
-                        border-radius: 6px;
-                        border: 1px solid {color};
-                        padding: 5px;
-                    }}
-                """)
-                stat_frame.setFixedHeight(40)
-                
-                stat_layout = QHBoxLayout(stat_frame)
-                stat_layout.setContentsMargins(8, 3, 8, 3)
-                stat_layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)  # Center vertically
-                
-                name_label = QLabel(stat_name)
-                name_label.setFont(QFont("Arial", 9))
-                name_label.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; border: none;")
-                name_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
-                stat_layout.addWidget(name_label)
-                
-                stat_layout.addStretch()
-                
-                value_label = QLabel(str(stat_value))
-                value_label.setFont(QFont("Arial", 9, QFont.Weight.Bold))
-                value_label.setStyleSheet(f"color: {color}; border: none;")
-                value_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight)
-                stat_layout.addWidget(value_label)
-                
-                self.stats_grid_layout.addWidget(stat_frame)
-            
-            # Update quality analysis (Images tab)
-            self.update_quality_analysis(high_quality_images, total_images)
-            
-            # Update pre-export verification (Export tab)
-            self.update_pre_export_verification(labeled_images, total_images)
-            
-        except Exception as e:
-            # Fallback if logger doesn't exist
-            if hasattr(self, 'logger'):
-                self.logger.error(f"Error updating analysis dashboard: {e}")
-            else:
-                print(f"Error updating analysis dashboard: {e}")  # Fallback to print
-    
+
+            for name, value, color in stats:
+                frame = QFrame()
+                frame.setStyleSheet(
+                    f"QFrame {{ background-color: {TruScoreTheme.QUANTUM_DARK}; "
+                    f"border: 1px solid {color}; border-radius: 6px; padding: 5px; }}"
+                )
+                frame.setFixedHeight(40)
+                row = QHBoxLayout(frame)
+                row.setContentsMargins(8, 3, 8, 3)
+                caption = QLabel(name)
+                caption.setFont(QFont("Arial", 9))
+                caption.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; border: none;")
+                row.addWidget(caption)
+                row.addStretch()
+                amount = QLabel(str(value))
+                amount.setFont(QFont("Arial", 9, QFont.Weight.Bold))
+                amount.setStyleSheet(f"color: {color}; border: none;")
+                row.addWidget(amount)
+                layout.addWidget(frame)
+
+            self.update_quality_analysis(high_quality, analysis.total_images)
+            self.update_pre_export_verification(analysis, high_quality)
+            self.logger.info(
+                f"Project analysis: {analysis.labeled_images}/{analysis.total_images} "
+                f"labeled, {analysis.annotation_count} annotations, "
+                f"{len(analysis.errors)} problems"
+            )
+        except Exception as exc:
+            self.logger.exception(f"Could not update dataset analysis: {exc}")
+            if hasattr(self, "pre_export_report"):
+                self.pre_export_report.setPlainText(f"Analysis failed: {exc}")
+
+
     def update_quality_analysis(self, high_quality_count, total_count):
         """Update quality analysis section"""
         try:
@@ -3501,132 +3524,69 @@ Path: {label_info['path']}
             if not hasattr(self, 'quality_frame'):
                 self.logger.warning("quality_frame not found, skipping quality analysis update")
     
-    def update_pre_export_verification(self, labeled_images, total_images):
-        """Update pre-export verification section with model, pipeline, and completeness checks"""
+    def update_pre_export_verification(self, analysis, high_quality_count):
+        """Actionable evidence, not a placeholder or training-readiness claim."""
+        if not hasattr(self, "pre_export_report"):
+            return
         try:
-            if not hasattr(self, 'verification_frame') or not self.verification_frame:
-                return  # Verification frame not created yet
+            config = getattr(self, "current_config", None) or {}
+            if not isinstance(config, dict):
+                config = {}
+            dataset_type = str(config.get("dataset_type", "unspecified"))
+            pipeline = str(config.get("pipeline", "not selected"))
+            model = str(config.get("model_architecture", "not selected"))
+            all_images = analysis.total_images
+            unmatched = all_images - analysis.labeled_images
+            source = ", ".join(analysis.sources) or "none"
 
-            layout = self.verification_frame.layout()
-            if layout is None:
-                layout = QVBoxLayout(self.verification_frame)
-                layout.setSpacing(10)
-                layout.setContentsMargins(8, 8, 8, 8)
-                self.verification_frame.setLayout(layout)
+            quality_filter = (
+                hasattr(self, "quality_filter_cb")
+                and self.quality_filter_cb.isChecked()
+            )
+            selected_for_export = high_quality_count if quality_filter else all_images
+            box_ready = analysis.detection_export_ready and selected_for_export > 0
 
-            # Clear existing widgets
-            if layout.count():
-                for i in reversed(range(layout.count())):
-                    child = layout.itemAt(i).widget()
-                    if child:
-                        child.setParent(None)
-            
-            # Get project configuration
-            model_type = self.current_config.get('model_architecture', 'Mask R-CNN') if hasattr(self, 'current_config') and self.current_config else 'Mask R-CNN'
-            pipeline = self.current_config.get('pipeline', 'Phoenix Specialized Model') if hasattr(self, 'current_config') and self.current_config else 'Phoenix Specialized Model'
-            dataset_type = self.current_config.get('dataset_type', 'border_detection') if hasattr(self, 'current_config') and self.current_config else 'border_detection'
-            export_format = self.current_config.get('export_format', 'COCO JSON') if hasattr(self, 'current_config') and self.current_config else 'COCO JSON'
-            
-            # Determine status checks
-            has_images = total_images > 0
-            has_labels = labeled_images > 0
-            sufficient_data = labeled_images >= 10  # Minimum 10 labeled images recommended
-            ready_to_export = has_images and has_labels and sufficient_data
-            
-            # Create verification items
-            verification_items = [
-                ("🎯 Target Model", model_type, TruScoreTheme.NEON_CYAN),
-                ("🔧 Training Pipeline", pipeline, TruScoreTheme.PLASMA_BLUE),
-                ("📦 Dataset Type", dataset_type.replace('_', ' ').title(), TruScoreTheme.QUANTUM_GREEN),
-                ("📄 Export Format", export_format, TruScoreTheme.NEON_CYAN),
+            lines = [
+                f"Project: {dataset_type} | Model: {model}",
+                f"Pipeline: {pipeline}",
+                f"Image/label pairs: {analysis.labeled_images}/{all_images}"
+                f"  ({analysis.coverage:.1f}% coverage)",
+                f"Imported YOLO files matched: {analysis.yolo_label_files}",
+                f"Detection annotations: {analysis.annotation_count} ({source})",
+                "Classes (source YOLO IDs): " +
+                    (", ".join(f"{cid}={count}" for cid, count in analysis.class_counts.items())
+                     or "none"),
+                f"Missing/invalid image-label pairs: {unmatched}",
+                f"High-quality images (70%+): {high_quality_count}/{all_images}",
+                f"Current quality filter: {'ON' if quality_filter else 'OFF'}"
+                f"  | Eligible images: {selected_for_export}",
+                f"COCO bbox export: {'READY' if box_ready else 'BLOCKED'}",
             ]
-            
-            # Render info items
-            for label, value, color in verification_items:
-                item_frame = QFrame()
-                item_frame.setStyleSheet(f"""
-                    QFrame {{
-                        background-color: rgba(30, 41, 59, 0.5);
-                        border-radius: 6px;
-                        border-left: 3px solid {color};
-                        padding: 8px;
-                    }}
-                """)
-                item_layout = QHBoxLayout(item_frame)
-                item_layout.setContentsMargins(10, 5, 10, 5)
-                
-                label_widget = QLabel(label)
-                label_widget.setFont(QFont("Arial", 10))
-                label_widget.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; border: none;")
-                item_layout.addWidget(label_widget)
-                
-                item_layout.addStretch()
-                
-                value_widget = QLabel(value)
-                value_widget.setFont(QFont("Arial", 10, QFont.Weight.Bold))
-                value_widget.setStyleSheet(f"color: {color}; border: none;")
-                item_layout.addWidget(value_widget)
-                
-                layout.addWidget(item_frame)
-            
-            # Add divider
-            divider = QFrame()
-            divider.setFrameShape(QFrame.Shape.HLine)
-            divider.setStyleSheet(f"background-color: {TruScoreTheme.NEON_CYAN}; max-height: 2px;")
-            layout.addWidget(divider)
-            
-            # Add status checks
-            status_items = [
-                ("✓ Images Loaded" if has_images else "✗ Images Loaded", 
-                 f"{total_images} images" if has_images else "No images loaded", 
-                 TruScoreTheme.QUANTUM_GREEN if has_images else TruScoreTheme.ERROR_RED, 
-                 False),
-                ("✓ Labels Present" if has_labels else "✗ Labels Present", 
-                 f"{labeled_images} labeled" if has_labels else "No labels found", 
-                 TruScoreTheme.QUANTUM_GREEN if has_labels else TruScoreTheme.ERROR_RED, 
-                 False),
-                ("✓ Sufficient Data" if sufficient_data else "⚠ Insufficient Data", 
-                 f"{labeled_images} images" if sufficient_data else f"{labeled_images}/10 minimum", 
-                 TruScoreTheme.QUANTUM_GREEN if sufficient_data else TruScoreTheme.PLASMA_ORANGE, 
-                 False),
-                ("✓ READY TO EXPORT" if ready_to_export else "✗ NOT READY", 
-                 "All checks passed" if ready_to_export else "Requirements not met", 
-                 TruScoreTheme.QUANTUM_GREEN if ready_to_export else TruScoreTheme.ERROR_RED, 
-                 True),
-            ]
-            
-            # Render status check items
-            for label, value, color, is_final in status_items:
-                item_frame = QFrame()
-                item_frame.setStyleSheet(f"""
-                    QFrame {{
-                        background-color: {TruScoreTheme.QUANTUM_DARK if is_final else 'rgba(30, 41, 59, 0.5)'};
-                        border-radius: 6px;
-                        border: {'3px' if is_final else '2px'} solid {color};
-                        padding: {'12px' if is_final else '8px'};
-                    }}
-                """)
-                item_layout = QHBoxLayout(item_frame)
-                item_layout.setContentsMargins(10, 5, 10, 5)
-                
-                label_widget = QLabel(label)
-                label_widget.setFont(QFont("Arial", 11 if is_final else 10, QFont.Weight.Bold if is_final else QFont.Weight.Normal))
-                label_widget.setStyleSheet(f"color: {color}; border: none;")
-                item_layout.addWidget(label_widget)
-                
-                item_layout.addStretch()
-                
-                value_widget = QLabel(value)
-                value_widget.setFont(QFont("Arial", 10))
-                value_widget.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; border: none;")
-                item_layout.addWidget(value_widget)
-                
-                layout.addWidget(item_frame)
-            
-        except Exception as e:
-            if hasattr(self, 'logger'):
-                self.logger.error(f"Error updating pre-export verification: {e}")
-    
+
+            # A COCO bounding box is not a physical corner polygon or mask.
+            if "mask" in model.lower() or "detectron" in pipeline.lower():
+                lines.append(
+                    "Phoenix Mask R-CNN: NOT VERIFIED — requires real instance masks"
+                )
+            else:
+                lines.append("Precision border geometry / masks: NOT VERIFIED")
+
+            if analysis.errors:
+                lines.append("Problems to correct:")
+                lines.extend("  - " + problem for problem in analysis.errors[:5])
+                if len(analysis.errors) > 5:
+                    lines.append(f"  ...and {len(analysis.errors) - 5} more")
+            elif not all_images:
+                lines.append("Import images and their labels before exporting.")
+            elif not box_ready:
+                lines.append("Check the quality filter or missing annotations.")
+
+            self.pre_export_report.setPlainText("\n".join(lines))
+        except Exception as exc:
+            self.logger.exception(f"Pre-export verification failed: {exc}")
+            self.pre_export_report.setPlainText(f"Pre-export verification failed: {exc}")
+
+
     def browse_export_destination(self):
         """Browse for export destination directory"""
         from PyQt6.QtWidgets import QFileDialog
@@ -3666,25 +3626,26 @@ Path: {label_info['path']}
                 QMessageBox.warning(self, "Export Warning", "Please select at least one export format.")
                 return
             
-            # GURU ABSORPTION: Dataset Export Event
-            self.guru.absorb_dataset_event('dataset_exported', {
-                'export_formats': selected_formats,
-                'image_count': len(self.images) if hasattr(self, 'images') else 0,
-                'label_count': len(self.imported_labels) if hasattr(self, 'imported_labels') else 0,
-                'dataset_name': getattr(self.current_config, 'name', 'Unknown'),
-                'dataset_type': getattr(self.current_config, 'type', 'Unknown'),
-                'metadata': {
-                    'export_destination': 'file_system',
-                    'selected_formats': selected_formats,
-                    'user_workflow': 'dataset_studio→export',
-                    'export_method': 'manual_export'
-                }
-            })
-            
+            unsupported = set(selected_formats) - {"coco", "yolo"}
+            if unsupported:
+                QMessageBox.warning(
+                    self, "Export Not Implemented",
+                    f"Unsupported export formats: {', '.join(sorted(unsupported))}. "
+                    "Only COCO detection JSON and YOLO TXT are currently implemented."
+                )
+                return
+
             # Get export options
             include_images = self.include_images_cb.isChecked()
             quality_filter = self.quality_filter_cb.isChecked()
             split_dataset = self.split_dataset_cb.isChecked()
+            if split_dataset:
+                QMessageBox.warning(
+                    self, "Split Not Implemented",
+                    "Dataset train/validation splitting is not implemented in this "
+                    "manual export path. Uncheck Split Dataset or use a verified split tool."
+                )
+                return
             generate_photometric = self.photometric_stereo_cb.isChecked()
             export_path = self.export_path_label.text()
             
@@ -3754,6 +3715,33 @@ Proceed with export?
                         photometric_count = self._generate_photometric_data(images_to_export, dataset_export_dir)
                         self.logger.info(f"Generated photometric data for {photometric_count} images")
                     
+                    if exported_count <= 0:
+                        raise RuntimeError("Export produced zero files; refusing a success report")
+                    if generate_photometric and photometric_count <= 0:
+                        raise RuntimeError("Photometric export requested but no data was produced")
+
+                    # Publish only after output writers reported successful completion.
+                    try:
+                        if getattr(self, "guru", None) is not None:
+                            self.guru.absorb_dataset_event("dataset_exported", {
+                                "export_formats": selected_formats,
+                                "image_count": len(images_to_export),
+                                "label_count": len(self.imported_labels),
+                                "dataset_name": dataset_name,
+                                "dataset_type": self.current_config.get("type", "Unknown")
+                                    if isinstance(getattr(self, "current_config", None), dict)
+                                    else getattr(self.current_config, "type", "Unknown"),
+                                "metadata": {
+                                    "export_destination": str(dataset_export_dir),
+                                    "files_written": exported_count,
+                                    "selected_formats": selected_formats,
+                                    "user_workflow": "dataset_studio→export",
+                                    "export_method": "manual_export"
+                                }
+                            })
+                    except Exception:
+                        self.logger.exception("Guru event logging failed after successful dataset write")
+
                     # Show real success message
                     photometric_msg = f"\n\nPhotometric Data: {photometric_count} images processed" if generate_photometric else ""
                     QMessageBox.information(
@@ -3778,107 +3766,85 @@ Proceed with export?
             QMessageBox.critical(self, "Export Error", f"Failed to export dataset:\n{str(e)}")
 
     def _export_coco_format(self, images_to_export, export_dir, include_images):
-        """Export dataset in COCO format"""
-        try:
-            import json
-            import shutil
-            from datetime import datetime
-            
-            exported_files = 0
-            
-            # Create COCO JSON structure
-            coco_data = {
-                "info": {
-                    "description": "TruScore Dataset Export",
-                    "version": "1.0",
-                    "year": datetime.now().year,
-                    "contributor": "TruScore Dataset Studio",
-                    "date_created": datetime.now().isoformat()
-                },
-                "licenses": [{"id": 1, "name": "Unknown", "url": ""}],
-                "images": [],
-                "annotations": [],
-                "categories": [
-                    {"id": 1, "name": "border", "supercategory": "object"},
-                    {"id": 2, "name": "surface", "supercategory": "object"}
-                ]
-            }
-            
-            annotation_id = 1
-            
-            # Create images subdirectory if including images
-            if include_images:
-                images_dir = export_dir / "images"
-                images_dir.mkdir(exist_ok=True)
-            
-            # Process each image
-            for i, image_path in enumerate(images_to_export):
-                image_path = Path(image_path)
-                
-                # Add image to COCO data
-                coco_data["images"].append({
-                    "id": i + 1,
-                    "file_name": image_path.name,
-                    "width": 640,  # Default, would need actual image dimensions
-                    "height": 480,
-                    "license": 1,
-                    "flickr_url": "",
-                    "coco_url": "",
-                    "date_captured": ""
-                })
-                
-                # Copy image file if requested
-                if include_images:
-                    shutil.copy2(image_path, images_dir / image_path.name)
-                    exported_files += 1
-                
-                # Find and process corresponding label
-                image_base_name = image_path.stem
-                for label_info in self.imported_labels:
-                    label_base_name = Path(label_info['path']).stem
-                    if image_base_name == label_base_name:
-                        # Read YOLO label and convert to COCO annotation
-                        try:
-                            with open(label_info['path'], 'r') as f:
-                                for line in f:
-                                    parts = line.strip().split()
-                                    if len(parts) >= 5:
-                                        class_id = int(parts[0]) + 1  # COCO uses 1-based IDs
-                                        x_center, y_center, width, height = map(float, parts[1:5])
-                                        
-                                        # Convert from YOLO to COCO format (normalized to pixel coordinates)
-                                        img_width, img_height = 640, 480  # Default
-                                        x = (x_center - width/2) * img_width
-                                        y = (y_center - height/2) * img_height
-                                        w = width * img_width
-                                        h = height * img_height
-                                        
-                                        coco_data["annotations"].append({
-                                            "id": annotation_id,
-                                            "image_id": i + 1,
-                                            "category_id": class_id,
-                                            "bbox": [x, y, w, h],
-                                            "area": w * h,
-                                            "iscrowd": 0
-                                        })
-                                        annotation_id += 1
-                        except Exception as e:
-                            self.logger.error(f"Error processing label {label_info['path']}: {e}")
-                        break
-            
-            # Save COCO JSON file
-            coco_file = export_dir / "annotations.json"
-            with open(coco_file, 'w') as f:
-                json.dump(coco_data, f, indent=2)
-            exported_files += 1
-            
-            self.logger.info(f"COCO export completed: {exported_files} files")
-            return exported_files
-            
-        except Exception as e:
-            self.logger.error(f"COCO export failed: {e}")
-            raise e
-    
+        """Export real-dimension COCO detection boxes through the shared converter.
+
+        Five-value YOLO annotations are not segmentation masks. Reject missing or
+        ambiguous pairs and preserve native class identity and pixel geometry.
+        """
+        import json
+        import shutil
+        from shared.dataset_tools.yolo_to_maskrcnn_converter import YOLOToMaskRCNNConverter
+
+        if not images_to_export:
+            raise ValueError("No images selected for COCO export")
+
+        labels_by_stem = {}
+        for label_info in self.imported_labels:
+            label_path = Path(label_info["path"])
+            if label_path.suffix.lower() != ".txt":
+                continue
+            stem = label_path.stem.lower()
+            if stem in labels_by_stem:
+                raise ValueError(f"Ambiguous duplicate labels for {stem}")
+            labels_by_stem[stem] = label_path
+
+        label_data = {}
+        seen_stems = set()
+        for image in images_to_export:
+            image_path = Path(image)
+            stem = image_path.stem.lower()
+            if stem in seen_stems:
+                raise ValueError(f"Ambiguous duplicate image stem: {stem}")
+            seen_stems.add(stem)
+            label_path = labels_by_stem.get(stem)
+            if label_path is None:
+                raise ValueError(f"Missing imported YOLO labels for {image_path.name}")
+            rows = [line.strip() for line in label_path.read_text(encoding="utf-8").splitlines()
+                    if line.strip()]
+            if not rows:
+                raise ValueError(f"Empty YOLO labels for {image_path.name}")
+            label_data[str(image_path)] = rows
+
+        converter = YOLOToMaskRCNNConverter(
+            class_names=["outer_border", "graphic_border"]
+        )
+        result = converter.convert_imported_data(
+            images_to_export, label_data, bbox_only=True
+        )
+        coco_data = result["coco_data"]
+        failures = result["conversion_stats"]["failed_conversions"]
+        if failures or len(coco_data["images"]) != len(images_to_export):
+            raise ValueError(f"COCO export incomplete: {failures or 'missing images'}")
+        if not coco_data["annotations"]:
+            raise ValueError("COCO export contains no annotations")
+
+        export_dir = Path(export_dir)
+        export_dir.mkdir(parents=True, exist_ok=True)
+        exported_files = 0
+        if include_images:
+            images_dir = export_dir / "images"
+            images_dir.mkdir(parents=True, exist_ok=True)
+            for image in images_to_export:
+                source = Path(image)
+                destination = images_dir / source.name
+                if source.resolve() != destination.resolve():
+                    shutil.copy2(source, destination)
+                exported_files += 1
+        else:
+            self.logger.warning(
+                "COCO exported without images: this labels-only package "
+                "cannot be loaded as a self-contained Phoenix dataset"
+            )
+
+        target = export_dir / "annotations.json"
+        target.write_text(json.dumps(coco_data, indent=2), encoding="utf-8")
+        exported_files += 1
+        self.logger.info(
+            f"COCO bbox export completed: {len(coco_data['images'])} images, "
+            f"{len(coco_data['annotations'])} boxes (no segmentation masks)"
+        )
+        return exported_files
+
     def _export_yolo_format(self, images_to_export, export_dir, include_images):
         """Export dataset in YOLO format"""
         try:
@@ -3930,458 +3896,113 @@ Proceed with export?
             self.logger.error(f"YOLO export failed: {e}")
             raise e
 
-    def export_to_trainer(self):
-        """Export dataset directly to Phoenix Training Studio"""
-        if not hasattr(self, 'images') or not self.images:
-            QMessageBox.warning(self, "Export Warning", "No images to export. Please import images first.")
-            return
-            
+    def _export_to_phoenix(self, *, queue):
+        """Publish only explicitly supported validated datasets to Phoenix."""
         try:
-            # Get dataset info
-            dataset_name = getattr(self, 'project_name', 'Dataset')
-            dataset_path = f"{dataset_name} ({len(self.images)} images)"
-            model_type = getattr(self, 'model_architecture', 'Phoenix Specialized Model')
-            
-            self.logger.info(f"Exporting to trainer: {dataset_path} -> {model_type}")
-            
-            # Import required modules
-            import subprocess
-            import sys
-            import tempfile
-            import json
-            from pathlib import Path
-            from datetime import datetime
-            
-            # Path to training studio launcher
-            launcher_path = Path(__file__).parents[2] / "ui" / "training" / "run_phoenix_training_studio.py"
-            
-            if launcher_path.exists():
-                # Create dataset export file for trainer to read
-                export_data = {
-                    'dataset_name': dataset_name,
-                    'dataset_path': dataset_path,
-                    'model_type': model_type,
-                    'image_count': len(self.images),
-                    'export_source': 'Dataset Studio',
-                    'export_time': datetime.now().isoformat()
-                }
-                
-                # Save export data to temporary file for trainer to pick up
-                import tempfile
-                import json
-                export_file = Path(tempfile.gettempdir()) / 'truscore_dataset_export.json'
-                with open(export_file, 'w') as f:
-                    json.dump(export_data, f)
-                
-                # Launch Phoenix Training Studio with dataset flag
-                subprocess.Popen([sys.executable, str(launcher_path), '--dataset-import', str(export_file)])
-                
-                # No popup dialog - clean experience
-                self.logger.info(f"Dataset exported to trainer: {dataset_path}")
-                
-            else:
-                self.logger.error("Phoenix Training Studio launcher not found.")
-            
-        except Exception as e:
-            self.logger.error(f"Failed to export to trainer: {e}")
-            QMessageBox.critical(self, "Export Failed", f"Failed to export to trainer: {e}")
-    
-    def _generate_photometric_data(self, images_to_export, dataset_export_dir):
-        """Generate photometric stereo data (surface normals, depth, albedo) for training"""
-        try:
-            from shared.truscore_system.photometric.photometric_stereo import TruScorePhotometricStereo
-            import cv2
-            
-            # Create photometric directories
-            normals_dir = dataset_export_dir / "normals"
-            depth_dir = dataset_export_dir / "depth"
-            albedo_dir = dataset_export_dir / "albedo"
-            confidence_dir = dataset_export_dir / "confidence"
-            
-            for dir_path in [normals_dir, depth_dir, albedo_dir, confidence_dir]:
-                dir_path.mkdir(parents=True, exist_ok=True)
-            
-            # Initialize photometric stereo engine
-            photometric_engine = TruScorePhotometricStereo()
-            
-            processed_count = 0
-            for img_data in images_to_export:
-                try:
-                    image_path = img_data['path']
-                    image_name = Path(image_path).stem
-                    
-                    # Run photometric stereo analysis
-                    self.logger.info(f"Processing photometric data for: {image_name}")
-                    result = photometric_engine.analyze_card(image_path)
-                    
-                    # Save surface normals (3-channel)
-                    normals_rgb = ((result.surface_normals + 1) / 2 * 255).astype(np.uint8)
-                    cv2.imwrite(str(normals_dir / f"{image_name}.png"), cv2.cvtColor(normals_rgb, cv2.COLOR_RGB2BGR))
-                    
-                    # Save depth map (1-channel)
-                    depth_normalized = (result.depth_map / result.depth_map.max() * 255).astype(np.uint8)
-                    cv2.imwrite(str(depth_dir / f"{image_name}.png"), depth_normalized)
-                    
-                    # Save albedo map (1-channel)
-                    albedo_normalized = (result.albedo_map * 255).astype(np.uint8)
-                    cv2.imwrite(str(albedo_dir / f"{image_name}.png"), albedo_normalized)
-                    
-                    # Save confidence map (1-channel)
-                    confidence_normalized = (result.confidence_map * 255).astype(np.uint8)
-                    cv2.imwrite(str(confidence_dir / f"{image_name}.png"), confidence_normalized)
-                    
-                    processed_count += 1
-                    
-                except Exception as e:
-                    self.logger.error(f"Failed to process photometric data for {image_path}: {e}")
-                    continue
-            
-            # Save metadata about photometric data
-            photometric_metadata = {
-                'generated': True,
-                'processed_count': processed_count,
-                'directories': {
-                    'normals': str(normals_dir),
-                    'depth': str(depth_dir),
-                    'albedo': str(albedo_dir),
-                    'confidence': str(confidence_dir)
-                },
-                'format': 'PNG',
-                'normalization': 'uint8 (0-255)',
-                'channels': {
-                    'normals': 3,
-                    'depth': 1,
-                    'albedo': 1,
-                    'confidence': 1
-                }
-            }
-            
-            import json
-            with open(dataset_export_dir / "photometric_metadata.json", 'w') as f:
-                json.dump(photometric_metadata, f, indent=2)
-            
-            self.logger.info(f"Photometric data generation complete: {processed_count} images")
-            return processed_count
-            
-        except Exception as e:
-            self.logger.error(f"Failed to generate photometric data: {e}")
-            import traceback
-            self.logger.error(traceback.format_exc())
-            return 0
-    
-    def load_existing_project(self):
-        """Load existing project from file browser"""
-        from PyQt6.QtWidgets import QFileDialog
-        import json
-        
-        try:
-            # Open file browser to select project JSON
-            projects_dir = Path(__file__).parent / "projects"
-            project_file, _ = QFileDialog.getOpenFileName(
-                self,
-                "Load Existing Project",
-                str(projects_dir),
-                "Project Files (*.json);;All Files (*)"
-            )
-            
-            if not project_file:
-                return  # User cancelled
-            
-            self.logger.info(f"Loading project from: {project_file}")
-            
-            # Load project JSON
-            with open(project_file, 'r') as f:
-                project_data = json.load(f)
-            
-            # Set project configuration
-            self.current_config = project_data
-            self.current_pipeline = project_data.get('pipeline', 'Phoenix Specialized Model')
-            self.project_name = project_data.get('name', 'Loaded Project')
-            
-            # Update UI
-            if hasattr(self, 'project_info_label'):
-                dataset_type = project_data.get('dataset_type', 'Unknown')
-                self.project_info_label.setText(f"Project: {self.project_name} | Type: {dataset_type}")
-            
-            self.update_status(f"Project loaded: {self.project_name}")
-            
-            # Load images and labels from data_path
-            data_path = project_data.get('data_path')
-            if data_path and Path(data_path).exists():
-                self.logger.info(f"Loading images and labels from: {data_path}")
-                # Use QTimer to ensure UI is ready
-                from PyQt6.QtCore import QTimer
-                QTimer.singleShot(300, lambda: self.load_project_data(data_path))
-            else:
-                self.logger.warning(f"No data_path in project or path doesn't exist: {data_path}")
-                QMessageBox.warning(
-                    self,
-                    "Data Not Found",
-                    f"Project loaded but data path not found:\n{data_path}\n\nPlease import images and labels manually."
-                )
-            
-        except FileNotFoundError:
-            QMessageBox.critical(self, "Project Not Found", f"Project file not found:\n{project_file}")
-        except json.JSONDecodeError as e:
-            QMessageBox.critical(self, "Invalid Project", f"Invalid project file:\n{e}")
-        except Exception as e:
-            self.logger.error(f"Failed to load project: {e}")
-            QMessageBox.critical(self, "Load Error", f"Failed to load project:\n{e}")
-    
-    def load_project_data(self, data_path: str):
-        """Load images and labels from project data directory"""
-        from pathlib import Path
-        import json
-        data_path = Path(data_path)
-        
-        print(f"DEBUG: load_project_data called with: {data_path}")
-        self.logger.info(f"Loading project data from: {data_path}")
-        
-        # Load images
-        images_dir = data_path / "images"
-        print(f"DEBUG: Checking images dir: {images_dir}, exists: {images_dir.exists()}")
-        if images_dir.exists():
-            image_files = list(images_dir.glob("*.jpg")) + list(images_dir.glob("*.png"))
-            print(f"DEBUG: Found {len(image_files)} images")
-            self.logger.info(f"Found {len(image_files)} images in {images_dir}")
-            if image_files:
-                print(f"DEBUG: Loading {len(image_files)} images into flow layout")
-                
-                # 🚨 CRITICAL FIX: Add images to self.images list BEFORE loading into UI
-                self.images.extend(image_files)
-                self.logger.info(f"Added {len(image_files)} images to self.images list")
-                
-                # Import images into flow layout
-                self.load_images_into_flow_layout([str(f) for f in image_files])
-                print(f"DEBUG: Images loaded successfully")
-        else:
-            print(f"DEBUG: Images directory does not exist!")
-        
-        # Load labels - Check for COCO format first, then YOLO format
-        coco_file = data_path / "annotations.json"
-        labels_dir = data_path / "labels"
-        
-        if coco_file.exists():
-            # Load COCO format annotations
-            print(f"DEBUG: Found COCO annotations file: {coco_file}")
-            try:
-                with open(coco_file, 'r') as f:
-                    coco_data = json.load(f)
-                
-                # Store COCO data
-                self.coco_annotations = coco_data
-                num_images = len(coco_data.get('images', []))
-                num_annotations = len(coco_data.get('annotations', []))
-                print(f"DEBUG: Loaded COCO data - {num_images} images, {num_annotations} annotations")
-                self.logger.info(f"Loaded COCO annotations: {num_images} images, {num_annotations} annotations")
-                
-                # 🚨 NEW: Create label card for COCO file to display in Labels tab
-                label_info = {
-                    'format': 'JSON',
-                    'type': 'COCO/annotation format',
-                    'path': coco_file,
-                    'pipeline_compatible': True,  # COCO is compatible with most pipelines
-                    'compatibility_message': f'✅ COCO Format - {num_images} images, {num_annotations} annotations'
-                }
-                
-                # Add to imported_labels list if not already present
-                if not hasattr(self, 'imported_labels'):
-                    self.imported_labels = []
-                
-                if not any(label['path'] == coco_file for label in self.imported_labels):
-                    self.imported_labels.append(label_info)
-                    # Create visual label card
-                    self._create_label_card(label_info)
-                    print(f"DEBUG: Created label card for COCO annotations")
-                
-                # Trigger COCO tab update
-                if hasattr(self, 'update_coco_display'):
-                    self.update_coco_display()
-                
-            except Exception as e:
-                print(f"DEBUG: Error loading COCO annotations: {e}")
-                self.logger.error(f"Error loading COCO annotations: {e}")
-        
-        elif labels_dir.exists():
-            # Load YOLO format labels (.txt files)
-            print(f"DEBUG: Checking labels dir: {labels_dir}, exists: {labels_dir.exists()}")
-            label_files = list(labels_dir.glob("*.txt"))
-            print(f"DEBUG: Found {len(label_files)} YOLO labels")
-            self.logger.info(f"Found {len(label_files)} YOLO labels in {labels_dir}")
-            if label_files:
-                # Initialize imported_labels as list if needed
-                if not hasattr(self, 'imported_labels'):
-                    self.imported_labels = []
-                
-                # Import each YOLO label file
-                for label_file in label_files:
-                    # Analyze the label file
-                    label_info = self._analyze_label_file(label_file)
-                    
-                    # Add pipeline compatibility info
-                    if self.current_pipeline:
-                        label_info['pipeline_compatible'] = False  # YOLO might not be compatible
-                        label_info['compatibility_message'] = '⚠️ YOLO format - may need conversion'
-                    else:
-                        label_info['pipeline_compatible'] = None
-                        label_info['compatibility_message'] = '⚠️ No pipeline selected'
-                    
-                    # Check if already imported
-                    if not any(label['path'] == label_file for label in self.imported_labels):
-                        self.imported_labels.append(label_info)
-                        # Create visual label card
-                        self._create_label_card(label_info)
-                
-                self.logger.info(f"Loaded {len(label_files)} YOLO labels")
-                print(f"DEBUG: YOLO labels loaded and displayed successfully")
-        else:
-            print(f"DEBUG: No annotations found (no COCO file or labels directory)")
-        
-        # 🚨 CRITICAL: Reset verification tab flag so it repopulates when clicked
-        if hasattr(self, '_verification_populated'):
-            delattr(self, '_verification_populated')
-            print("DEBUG: Verification tab reset for repopulation")
-        
-        print("DEBUG: Project data loading complete")
-        self.logger.info("Project data loaded successfully")
-    
-    def export_to_queue(self):
-        """Export dataset to Phoenix Training Queue"""
-        if not hasattr(self, 'images') or not self.images:
-            QMessageBox.warning(self, "Export Warning", "No images to export. Please import images first.")
-            return
-        
-        if not hasattr(self, 'imported_labels') or not self.imported_labels:
-            QMessageBox.warning(self, "Export Warning", "No labels to export. Please import labels first.")
-            return
-            
-        try:
-            # Get dataset info from current project configuration
-            if not hasattr(self, 'current_config') or not self.current_config:
-                QMessageBox.warning(self, "Configuration Missing", 
-                                  "Please create or load a project first before exporting.")
-                return
-            
-            # 🚨 DEBUG: Log current_config contents
-            self.logger.info(f"current_config contents: {self.current_config}")
-            
-            dataset_name = self.current_config.get('name', 'Dataset')
-            dataset_type = self.current_config.get('dataset_type', 'Unknown')
-            pipeline = self.current_config.get('pipeline', 'Unknown')
-            model_architecture = self.current_config.get('model_architecture', 'Unknown')
-            
-            self.logger.info(f"Exporting to queue: {dataset_name} | Type: {dataset_type} | Pipeline: {pipeline} | Model: {model_architecture}")
-            
-            from datetime import datetime
-            from pathlib import Path
-            import json
-            import shutil
-            import subprocess
-            import sys
-            
-            # Create unique dataset folder with timestamp
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            unique_dataset_name = f"{dataset_name.replace(' ', '_')}_{timestamp}"
-            
-            # Queue directory structure
+            from shared.dataset_tools.phoenix_handoff import publish_dataset
+            from shared.dataset_tools.phoenix_contract import resolve_handoff
+
+            if not getattr(self, "images", []):
+                raise ValueError("Import labeled images before exporting to Phoenix")
+            config = getattr(self, "current_config", None)
+            # Fail before writing files; unsupported model choices stay visible
+            # for future annotation plugins, but cannot be launched as training.
+            capability = resolve_handoff(config)
             project_root = Path(__file__).parents[3]
-            queue_pending_dir = project_root / "exports" / "training_queue" / "pending"
-            dataset_export_dir = queue_pending_dir / unique_dataset_name
-            dataset_export_dir.mkdir(parents=True, exist_ok=True)
-            
-            # Use EXISTING export functionality to create proper dataset structure
-            # Export in COCO format (standard for training)
-            images_to_export = self.images  # Export all images
-            exported_count = self._export_coco_format(images_to_export, dataset_export_dir, include_images=True)
-            
-            # Create dataset configuration JSON for trainer
-            dataset_config = {
-                'dataset_name': dataset_name,
-                'unique_name': unique_dataset_name,
-                'model_type': pipeline,  # e.g., "Phoenix Specialized Model"
-                'model_architecture': model_architecture,  # e.g., "Mask R-CNN"
-                'image_count': len(self.images),
-                'label_count': len(self.imported_labels),
-                'export_format': 'COCO',
-                'export_source': 'Dataset Studio',
-                'export_time': datetime.now().isoformat(),
-                'dataset_type': dataset_type,  # e.g., "border_detection_2class"
-                'training_config': {
-                    'epochs': 100,
-                    'batch_size': 4,
-                    'learning_rate': 0.001,
-                    'optimizer': 'Adam',
-                    'framework': 'Detectron2'
-                },
-                'paths': {
-                    'images': str(dataset_export_dir / 'images'),
-                    'annotations': str(dataset_export_dir / 'annotations.json'),
-                    'dataset_root': str(dataset_export_dir)
-                }
-            }
-            
-            # Save configuration
-            config_file = dataset_export_dir / 'dataset_config.json'
-            with open(config_file, 'w') as f:
-                json.dump(dataset_config, f, indent=2)
-            
-            self.logger.info(f"Dataset exported to queue: {dataset_export_dir}")
-            self.logger.info(f"Exported {exported_count} files")
-            
-            # 🚨 CRITICAL: Update current_config with data_path so "Load Existing Project" can find it
-            if hasattr(self, 'current_config') and self.current_config:
-                self.current_config['data_path'] = str(dataset_export_dir)
-                # Save project with updated data_path
-                self.save_project_progress()
-                self.logger.info(f"Project updated with data_path: {dataset_export_dir}")
-            
-            # GURU ABSORPTION: Export to Queue Event
-            self.guru.absorb_dataset_event('dataset_exported_to_queue', {
-                'dataset_name': dataset_name,
-                'model_type': pipeline,  # 🚨 FIX: Use 'pipeline' variable defined earlier
-                'image_count': len(self.images),
-                'export_path': str(dataset_export_dir),
-                'metadata': {
-                    'export_format': 'COCO',
-                    'user_workflow': 'dataset_studio→training_queue'
-                }
-            })
-            
-            # Launch queue application if not already running
-            queue_launcher = project_root / "launch_training_queue.py"
-            
-            if queue_launcher.exists():
-                try:
-                    # Launch queue app (it will detect the new dataset automatically)
-                    subprocess.Popen([sys.executable, str(queue_launcher)], 
-                                   stdout=subprocess.DEVNULL, 
-                                   stderr=subprocess.DEVNULL)
-                    
-                    self.logger.info("Training queue launched")
-                except Exception as e:
-                    self.logger.error(f"Could not launch queue app: {e}")
-            
-            # Show success message
-            QMessageBox.information(
-                self,
-                "Export to Queue Success",
-                f"Dataset exported to training queue:\n\n"
-                f"Dataset: {dataset_name}\n"
-                f"Model: {pipeline}\n"  # 🚨 FIX: Use 'pipeline' variable defined earlier
-                f"Images: {len(self.images)}\n\n"
-                f"The Phoenix Training Queue should open automatically.\n"
-                f"You can now prioritize and train when ready."
+            destination = (project_root / "exports" / "training_queue" / "pending"
+                           if queue else project_root / "exports" / "training_direct")
+
+            output = publish_dataset(
+                self.images,
+                config,
+                self._export_coco_format,
+                destination
             )
-            
-        except Exception as e:
-            self.logger.error(f"Failed to export to queue: {e}")
-            import traceback
-            self.logger.error(traceback.format_exc())
-            QMessageBox.critical(self, "Export Failed", f"Failed to export to queue: {e}")
+            self.logger.info(
+                "Published %s Phoenix detection dataset: %s",
+                capability.trainer, output
+            )
+
+            if queue:
+                # No duplicate Queue process: use Main Window's existing
+                # Phoenix Training System launcher/Operations Monitor.
+                QMessageBox.information(
+                    self, "Dataset Added to Phoenix Queue",
+                    f"Validated dataset: {output.name}\n"
+                    f"Model: {capability.pipeline}\n"
+                    f"Images: {len(self.images)}\n\n"
+                    "Open Phoenix Training System from the main window "
+                    "to inspect and schedule this dataset."
+                )
+            else:
+                # Direct means a separately isolated Trainer GUI with the
+                # published directory loaded; it does not start training.
+                import subprocess
+                import sys
+
+                launcher = (
+                    project_root / "src" / "modules" / "phoenix_trainer"
+                    / "phoenix_trainer_dpg.py"
+                )
+                if not launcher.is_file():
+                    raise FileNotFoundError(f"Phoenix Trainer launcher missing: {launcher}")
+                proc = subprocess.Popen(
+                    [sys.executable, str(launcher), "--dataset", str(output)],
+                    cwd=str(launcher.parent)
+                )
+                self.logger.info(
+                    "Launched Phoenix Trainer %s for dataset %s",
+                    proc.pid, output
+                )
+                QMessageBox.information(
+                    self, "Dataset Loaded in Phoenix Trainer",
+                    f"Validated dataset: {output.name}\n"
+                    f"Model: {capability.pipeline}\n"
+                    "Training has not started. Review the Phoenix settings "
+                    "before starting the run."
+                )
+            if getattr(self, "guru", None) is not None:
+                try:
+                    self.guru.absorb_dataset_event(
+                        "dataset_exported_to_queue" if queue else
+                        "dataset_exported_to_trainer",
+                        {
+                            "dataset_name": config.get("name", "Dataset"),
+                            "model_type": capability.pipeline,
+                            "image_count": len(self.images),
+                            "export_path": str(output),
+                            "metadata": {
+                                "export_format": "COCO",
+                                "user_workflow": ("dataset_studio→training_queue"
+                                                  if queue else "dataset_studio→trainer"),
+                            }
+                        }
+                    )
+                except Exception:
+                    self.logger.exception("Guru event failed after Phoenix publication")
+            return output
+        except Exception as exc:
+            self.logger.exception("Dataset Studio Phoenix handoff failed: %s", exc)
+            QMessageBox.critical(self, "Phoenix Handoff Blocked", str(exc))
+            return None
+
+    def export_to_trainer(self):
+        """Open the validated dataset in the existing standalone Phoenix Trainer."""
+        return self._export_to_phoenix(queue=False)
+
+    def export_to_queue(self):
+        """Publish a validated, immutable dataset to the existing Queue."""
+        return self._export_to_phoenix(queue=True)
 
     def on_tab_changed(self, index):
         """Handle tab changes - populate verification tab when clicked"""
         try:
+            # Reconcile counts every time the export tab becomes visible.
+            # The manual Refresh button remains available for troubleshooting.
+            if index == self.tab_widget.indexOf(self.export_tab):
+                self.update_analysis_dashboard()
+                return
+
             # Check if user clicked on Verification tab (index 3: Images=0, Labels=1, Predictions=2, Verification=3)
             if index == 3:  # Verification tab
                 self.logger.info(f"Verification tab clicked (index {index})")

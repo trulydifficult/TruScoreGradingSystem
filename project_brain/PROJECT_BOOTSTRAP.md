@@ -77,14 +77,29 @@ Documentation is not proof of implementation.
 
 Any claim that a documented feature currently works must be verified against current source code and/or runtime behavior.
 
+## Canonical project-memory entrypoint
+
+Read [PROJECT_MEMORY_INDEX.md](PROJECT_MEMORY_INDEX.md) for complete file
+roles and [SESSION_START.md](SESSION_START.md) for the current live
+state/next action. These are authoritative navigation and current snapshots
+on the active development branch; HANDOFF.md retains dated history.
+The nine uploaded ChatGPT Project baseline Markdown files are older
+snapshots and never override their corresponding live GitHub versions.
+Read ADR 0010 for the evidence hierarchy and the definition of VERIFIED.
+
+A later feature acceptance can supersede an earlier historical TODO:
+do not treat the October 15 Phoenix queue continuation, or the
+oldest HANDOFF "NEW SESSION START HERE" marker, as the current task
+when newer evidence is recorded in SESSION_START.md.
+
 ## Required Session Startup
 
 Before substantial development work:
 
-1. Read this file.
+1. Read this file, `PROJECT_MEMORY_INDEX.md`, and `SESSION_START.md`.
 2. Read `CURRENT_STATE.md`.
 3. Read `REFACTOR_STATUS.md`.
-4. Read `HANDOFF.md`.
+4. Consult `HANDOFF.md` as dated history; `SESSION_START.md` owns the current active objective. The latest `NEW SESSION START HERE` marker in `HANDOFF.md` points back to that snapshot. Earlier dated instructions are historical.
 5. Read the relevant existing architecture files:
    - `TruScore_Project_Brain_v1.md`
    - `TruScore_Modules_v1.md`
@@ -115,3 +130,23 @@ Before substantial development work:
 The objective is not simply to make TruScore run.
 
 The objective is to transform the existing working application into a coherent, testable, maintainable professional architecture without losing valuable functionality created during earlier development.
+
+
+## Runtime Acceptance Protocol
+
+User acceptance testing for TruScore is end-to-end from the real application
+entrypoint.
+
+The standard acceptance sequence is:
+
+1. Activate the normal TruScore Python environment.
+2. Launch the application through `run_truscore.py`.
+3. Navigate through the real application UI to the subsystem under test.
+4. Exercise the target behavior from that point.
+
+Launching a module directly is useful for developer diagnostics and component
+smoke tests, but it does NOT count as runtime acceptance unless the same behavior
+has also been reached from `run_truscore.py`.
+
+This rule exists to catch integration defects in startup, navigation, environment,
+subprocess launching, and inter-module wiring that isolated tests can miss.

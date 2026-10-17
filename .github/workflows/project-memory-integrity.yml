@@ -1,0 +1,37 @@
+name: Project Memory Integrity
+
+on:
+  push:
+    branches:
+      - refactor/phoenix-foundation
+    paths:
+      - "AGENTS.md"
+      - "README.md"
+      - "project_brain/**"
+      - "tests/memory/**"
+      - ".github/workflows/project-memory-integrity.yml"
+  pull_request:
+    paths:
+      - "AGENTS.md"
+      - "README.md"
+      - "project_brain/**"
+      - "tests/memory/**"
+      - ".github/workflows/project-memory-integrity.yml"
+
+jobs:
+  canonical-memory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            AGENTS.md
+            README.md
+            project_brain
+            tests/memory
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify active memory entrypoint and document index
+        run: python -m unittest discover -s tests/memory -v

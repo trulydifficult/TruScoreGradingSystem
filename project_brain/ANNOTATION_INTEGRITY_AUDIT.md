@@ -1,0 +1,739 @@
+# Annotation Integrity Gate — Annotation Studio → YOLO → Dataset Studio → COCO → 24-point Centering
+
+Date: 2026-10-15
+Status: AUDIT IN PROGRESS — TRAINING BLOCKED
+
+## Authoritative geometry contract
+
+User-confirmed YOLO labels: class 0 = outer physical card boundary; class 1 = inner graphic boundary.
+The precision workflow supports rotated boundaries. Standard five-field YOLO
+(class, center_x, center_y, width, height) does not preserve corner-specific
+rotation or quadrilateral geometry.
+
+The user supplied root images `24pointside.jpg` and `24pointside (1).jpg`
+(commit ce8e8b3). The current centering implementation at
+`src/shared/truscore_system/twentyfour_centering.py` accepts polygons and
+measures 24 rays: top 5, bottom 5, left 7, right 7. These image references
+are useful design context; they are not proof of runtime measurement accuracy.
+
+## Verified source findings
+
+- `src/modules/dataset_studio/dataset_studio.py::_export_coco_format`
+  hard-codes every image to width=640 and height=480, uses those constants to
+  convert normalized YOLO bounding boxes, and emits *no segmentation geometry*.
+  This is not a faithful high-precision image geometry export and must not
+  be sent to Mask R-CNN segmentation training as if it were annotated masks.
+- The same export hard-codes COCO categories 1=border, 2=surface. Actual user
+  contract is 1=outer, 2=inner following conversion from YOLO 0/1.
+- The separate `_convert_yolo_to_coco` + `YOLOToMaskRCNNConverter` path
+  is different. It can create/refine polygons from YOLO boxes, but synthetic
+  polygon edges cannot recreate actual rotation that is not stored in the
+  original annotation. Do not confuse the existence of converted polygons
+  with ground-truth instance masks.
+- `_export_coco_format` and `_convert_yolo_to_coco` match image/label
+  stems. A label-image mismatch has been suspected but NOT established;
+  duplicate stems, incorrect original pairing, and preview discrepancies
+  require separate audit.
+- `src/modules/annotation_studio/plugins/border_detection_plugin.py`
+  exports standard five-value YOLO boxes with `ann.to_yolo_format()`.
+  The active implementation includes a historical hard-coded
+  `/home/dewster/Projects/Vanguard/src/shared/annotations` export path;
+  investigate whether the user workstation uses this path and whether
+  rotation is applied consistently to images and annotations.
+- The committed `detectron2test.json` has `image_count=0`, `label_count=0`,
+  and `data_path=null` despite a separate 20-image/40-annotation export.
+  Determine whether it is stale project metadata or a persistence defect.
+
+## Dataset evidence / CI
+
+Original source YOLO files: `20image/yolo/Test001.txt` through
+`Test020.txt`; a two-class box format (5 numeric fields per label line).
+The 20-image export was committed as
+`tests/fixtures/detectron2/coco_20_image_test.zip` (7386ab7).
+The ZIP holds `annotations.json` and `images/TestNNN.jpg`. COCO
+`images[].file_name` is `TestNNN.jpg`, which is valid *relative to*
+the `images/` image root; the first fixture test incorrectly treated the
+ZIP root as the image root. That test was corrected.
+
+The later read-only audit compares the fixture with committed YOLO source
+labels by filename and bounding-box geometry and verifies image dimensions
+with Pillow. It explicitly treats the old export as a *known-defective
+negative fixture*, not a successful training acceptance case.
+CI outcome for that expanded audit was pending when recorded.
+
+## Acceptance gates before training
+
+1. One-to-one, unambiguous image ↔ annotation association verified for all
+   20 image/label pairs, with visual overlays reviewed.
+2. Original image dimensions equal COCO metadata; no placeholder dimensions.
+3. Labels retain authoritative outer/inner class semantics.
+4. Real rotated quadrilateral or polygon geometry preserved through an
+   explicit, versioned annotation contract; if only axis-aligned boxes are
+   present, fail explicitly for precision-centering/segmentation purposes.
+5. Centroid/rotation and 24-point centering results validated against
+   measured reference geometry, including non-axis-aligned examples.
+6. Dataset Studio exports and Phoenix refuse unsupported or inconsistent
+   geometry rather than inventing a training-ready interpretation.
+
+Do NOT report the 20-image COCO ZIP as production-validated until these pass.
+
+## Historical cross-check and test result
+
+The older `src/revolutionary_border_calibration.py` preserved human-correction
+metadata and a rotation-applied image property in its per-card report, but its
+YOLO export still emitted axis-aligned five-field boxes. This material is a
+salvage reference for human corrections and original annotation context; it is
+not a proven rotated-polygon export pipeline. It remains important to inspect
+other archived source before changing annotation ownership.
+
+GitHub Actions 38822223789 and 38822219622 passed 51 unit tests and both
+Phoenix Trainer/Queue GUI startup smoke checks. Those tests established that
+COCO box/class values in the committed ZIP correspond numerically to the
+original same-stem source `20image/yolo/TestNNN.txt` labels. They also
+established the negative fixture is missing all 40 segmentation arrays and
+contains at least one image whose true dimensions differ from the recorded
+640x480 metadata. This is PASS of an integrity *audit*, NOT PASS of the
+production dataset acceptance gate. Original YOLO box visual correctness,
+per-image annotation provenance and rotated quadrilateral geometry remain
+unverified.
+
+## Current active Annotation Studio ownership (source verified)
+
+The current application is `src/modules/annotation_studio/modular_annotation_studio.py`
+(`ModularAnnotationStudio`) plus the active
+`src/modules/annotation_studio/plugins/border_detection_plugin.py`.
+These must be the primary implementation for repairs; the legacy
+`src/revolutionary_border_calibration.py` is archaeology, not the active UI.
+
+Actual path for border annotation saving:
+`ModularAnnotationStudio.save_and_next_image()` →
+`auto_save_current_annotations()` →
+`BorderDetectionPlugin.auto_create_training_labels()` →
+`BorderDetectionSettingsWidget.auto_create_training_labels()`.
+The plugin method delegates to its settings widget, which is the real owner
+of the triple YOLO export. It uses `ann.to_yolo_format(w,h)` to serialize
+five-field axis-aligned boxes, losing independent rotated corners. The
+`BorderAnnotation` dataclass represents x1,y1,x2,y2, not a polygon.
+
+The studio rotation slider redraws a transformed pixel image; its
+`save_rotated_image()` calls `cv2.imwrite` on the original path and explicitly
+OVERWRITES the image. The plugin `on_image_rotated()` is a no-op. It is not
+proven that annotations maintain the same coordinate frame as the overwritten
+rotated pixels; that is a high-priority integrity risk. Do not replace this
+workflow casually: isolate and test transforms and the current Space-bar save
+semantics before any change. The settings widget's actual triple export hardcodes
+`/home/dewster/Projects/Vanguard/src/shared/annotations`, which may differ
+from the user's current checkout at `/home/dewster/Vanguard`.
+
+Additional concern: `ModularAnnotationStudio.canvas_to_image_coords()`
+converts canvas scaling/translation but does not reverse the displayed
+rotation. Check with synthetic rotated coordinates and widget tests before
+making claims of precise border placement.
+
+## User-confirmed original workflow and refactor invariants
+
+User clarification (2026-10-15): In Annotation Studio, the rotation control
+was deliberately implemented to rotate the **card image**, because the outer
+and inner bounding boxes were not independently rotatable. Earlier image
+exports lost the image rotation, causing boxes to misalign with the image.
+The adopted workaround is to **save/export the rotated image together with
+the annotations in the same coordinate frame**. This is INTENDED FUNCTIONALITY,
+not accidental corruption. Do not "fix" it by reverting exports to an
+unrotated image, or by independently rotating boxes without designing and
+testing the coordinate-frame transform.
+
+The Space-bar operation is intentionally optimized for repetitive labeling:
+(a) save the user's corrected current-card boundaries and appropriately
+rotated image; (b) move to the next card; (c) run the user's **single
+two-class detector** to produce an approximate outer box (class 0) and inner
+box (class 1); (d) allow the user to adjust those boxes with fine control.
+Preserve automatic detection and editing, not replace it with two separate
+inference models. The three single/dual-class export directory variants are
+**outputs**, not evidence of three separate inference models.
+
+Current source confirmation:
+- `ModularAnnotationStudio.setup_keyboard_shortcuts` connects Space to
+  `save_and_next_image`.
+- `save_and_next_image` persists rotated pixels on nonzero rotation,
+  exports labels, resets the rotation slider, then navigates.
+- `next_image_placeholder` independently invokes annotation auto-save,
+  so Space causes **two** auto-save requests. Verify idempotency and
+  whether second save can overwrite good data.
+- `load_current_image` calls the border plugin's `on_image_changed` and
+  the settings widget's `set_current_image`.
+- `BorderDetectionPlugin.on_image_changed` schedules the settings
+  widget's `run_detection` after 500ms **conditional on the main plugin's
+  model_loaded flag**. The settings widget also has its own model state;
+  verify single-model ownership and that detector warmup/loaded-state
+  updates are synchronized. This is a test target, not a proven regression.
+- The main studio's `save_rotated_image()` overwrites the original path,
+  while the plugin writes a rotated-image/label pair to export folders.
+  Rotated pixels and labels MUST be transformed once, against identical
+  dimensions and provenance; verify no double rotation or mixed frames.
+- `canvas_to_image_coords()` accounts for zoom/pixmap offset but does not
+  invert the displayed rotation. Test mouse edits on nonzero rotation.
+
+Required preservation/acceptance tests:
+1. Nonzero-degree image rotation, manual outer/inner box edits, Space save:
+   verify exported saved image and both boxes align at known pixel locations.
+2. Next card auto-load invokes the existing single two-class model exactly
+   once and places two initial editable predictions, preserving user changes
+   on the previous card.
+3. No save-time re-rotation of already-rotated image or annotations; repeated
+   save must be idempotent; original source image retention/replacement
+   should be explicit and reversible.
+4. Source export pairing tracks image content (not just an ambiguous basename)
+   and annotation-frame provenance, including duplicate stems.
+5. Test zero rotation, nonzero rotation, zoom and fit mode before changing
+   any coordinate transform or current Space-bar behavior.
+
+The present precision objective is not to *automatically* replace the
+workflow with rotating boxes. It is to preserve working image-rotation
+normalization and add an explicit, verified coordinate-frame contract for
+export and future polygon-based 24-point measurement.
+
+## User-confirmed three-target Space-bar export contract (2026-10-16)
+
+The normal Space-bar save must create/refresh **three image/label pairs**
+under the ACTUAL current workstation checkout path:
+`/home/dewster/Vanguard/src/shared/annotations/`
+
+- `combined_dual_class/images/<stem>.<ext>` and
+  `combined_dual_class/labels/<stem>.txt`: both annotations, source
+  YOLO class 0=outer physical border, class 1=inner graphic border.
+- `graphic_border_model/images/<stem>.<ext>` and
+  `graphic_border_model/labels/<stem>.txt`: inner graphic only,
+  reindexed to **class 0** for a single-class target.
+- `outer_border_model/images/<stem>.<ext>` and
+  `outer_border_model/labels/<stem>.txt`: outer physical only,
+  class 0 for the single-class target.
+
+All three image files must carry the SAME finalized rotation; their YOLO
+boxes must match those exact pixels in the same coordinate frame.
+Maintain matching image/label basenames and separate `images/` and
+`labels/` subfolders; the triple-export requirement is independent
+of the single two-class detection model used for the next card.
+
+Current source `BorderDetectionSettingsWidget.auto_create_training_labels`
+already implements the three export targets and per-class filtering, but
+still hardcodes the **wrong old path**
+`/home/dewster/Projects/Vanguard/src/shared/annotations`.
+Fix to a repo-derived path as part of the guarded implementation,
+rather than a new workstation-specific hardcoded path. Its saved image
+and annotation coordinates still require a rotated-card acceptance test.
+The per-format class-ID remapping in the single-class graphic export also
+must be verified against `to_yolo_format()`: filtering an annotation of
+class 1 does NOT by itself reassign it to single-class 0.
+
+## Guarded source repair — 2026-10-16
+
+Implemented in active `src/` on `refactor/phoenix-foundation`:
+
+- `BorderDetectionSettingsWidget.auto_create_training_labels` computes the
+  three-export directory from `Path(__file__).resolve().parents[3] /
+  "shared" / "annotations"`. The current checkout location no longer matters;
+  old `/home/dewster/Projects/Vanguard` is not used by this export.
+- The two single-target training outputs encode class 0, including the
+  inner graphic-only target; the combined output still preserves class 0
+  (outer) and 1 (inner) without mutating source annotation class IDs.
+- `ModularAnnotationStudio.save_and_next_image` now advances with
+  `_advance_to_next_image(save_current=False)`, avoiding the second
+  annotation/image export after reset_rotation. The original
+  `next_image_placeholder()` continues delegating with
+  `save_current=True` for ordinary navigation. The Space shortcut and
+  model-on-image-change path were not changed.
+- Regression file `tests/annotation/test_spacebar_export_contract.py`
+  compiles **the active method AST**, executes triple-export behavior
+  with synthetic image/annotation stubs, and checks three target paths,
+  matching rotated pixel bytes, class remapping, absence of source class
+  mutation, Space save exactly once, ordinary Next save, and shortcut/
+  detection wiring invariants.
+- `.github/workflows/annotation-integrity.yml` isolates these contract
+  tests from Phoenix GUI/test dependencies. GitHub Actions run
+  `38976427040`: **4 tests passed**, and both active modules compiled.
+  This is code-level regression verification only. It does NOT prove
+  actual GUI rotation alignment, image provenance, loaded model behavior,
+  or annotation-to-pixel geometry under mouse editing.
+
+Still pending: end-to-end run via `run_truscore.py` on workstation,
+manual rotation/box overlay checks, a representative two-class detection
+on next card, failure propagation/atomic image+label writes, reliable
+historical recovery of polygon geometry, and a corrected Dataset Studio
+COCO export.
+
+## Two-class detector activation repair — 2026-10-16
+
+User acceptance from the real Annotation Studio reported: loading 3 card
+images yielded NO bounding boxes on the first card, and the manual
+"Run Detection" button also yielded none. This is a production blocking
+failure; previous CI for Space-bar export did not cover model activation.
+
+Root code defects verified in active `src/modules/annotation_studio/`:
+
+- Settings widget and main border plugin hard-coded an obsolete
+  `/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt`
+  path. The tracked real checkpoint is at
+  `src/models/revolutionary_border_detector.pt` (52 MB); use a path
+  derived from `__file__` to be independent of the checkout location.
+- `BorderDetectionPlugin.load_model()` previously set
+  `self.model = {"path": ..., "loaded": True}` without loading YOLO;
+  replaced with delegation to genuine `_load_default_model()`.
+  Errors must report real failures, not simulated model availability.
+- Settings widget and main plugin each could load the detector
+  independently; synchronize and reuse an actually loaded Ultralytics
+  model when both target the same checkpoint.
+- Previous automatic detection required the main plugin model-loaded
+  flag before it would schedule, even though settings-widget startup
+  could load later. Now schedule against each new image; the UI
+  detection method lazily loads the genuine checkpoint as needed.
+  Reject delayed callbacks for a previous image.
+- Manual Run Detection also attempts genuine lazy model loading if
+  no callable/predictive model is available; use the user-controlled
+  confidence threshold (default 0.25), not an unrelated hard-coded 0.5.
+  Missing checkpoint or dependencies fail visibly/log explicitly.
+- Plugin-panel activation failed to guarantee the settings widget's
+  Studio/canvas reference, which could prevent completed detections
+  from redrawing. Both plugin activation routes now connect the
+  widget to the Studio canvas, and plugin selection with an existing
+  image forwards that image through on_image_changed.
+
+The plugin retains ONE two-class YOLO model (outer 0, inner 1), manual
+border correction, image-rotation behavior, and Space → triple export.
+All modifications were confined to the current active `src/` tree.
+
+Regression tests: `tests/annotation/test_border_detection_model_loading.py`
+exercises actual method AST with synthetic Ultralytics detector and
+synthetic Qt timer; it checks bundled model resolution, real loader
+reuse, missing checkpoint failure, manual two-box production, stale
+timer rejection, and plugin selection overlay wiring. The annotation
+workflow CI run 38977937318 PASSED after repairs; Phoenix foundation
+run 38977896821 PASSED the previous repair set. These are controlled
+code-level tests, not an actual RX 7900 XTX/YOLO image inference run.
+
+NEXT USER ACCEPTANCE: pull branch; launch from `run_truscore.py`;
+load test cards with Border Detection selected; confirm model status
+shows `revolutionary_border_detector.pt`, automatic prediction of
+editable outer+inner boxes on each card, button manual prediction, and
+correct Space save+next behavior. If predictions are still missing,
+read live Annotation Studio logs, model load exceptions, true YOLO
+confidence/results and plugin selection messages. Do NOT claim model
+weights or GPU inference are verified until those tests pass. Keep
+Datasets/COCO training gate blocked pending annotation geometry audit.
+
+## Lost plugin controls after model-path fix — 2026-10-16
+
+User observed a real GUI regression: Border Detection Plugin selected and
+reported "Loaded Successfully!", but the left plugin controls region was
+empty (screenshot 2026-10-16_17-56.jpg, card counter 0/0). This was a
+separate problem from missing bounding boxes; there was not yet an image
+loaded in that screenshot.
+
+**Verified active-code cause:**
+`BorderDetectionPlugin.create_settings_panel()` (last of two duplicate
+definitions within that class) conditionally called
+`self.settings_widget.apply_settings(self.settings)` when main-plugin
+settings were populated. The existing `BorderDetectionSettingsWidget`
+has NO `apply_settings` method. After the real model path repair,
+`_load_default_model()` sets `self.settings['model_path']`, turning on
+this otherwise dormant AttributeError. Its catch block returned an EMPTY
+`QWidget(parent)` instead of the original full controls widget; the
+caller considered this success. This explains why fixing checkpoint
+loading exposed a blank settings panel.
+
+**Bounded repair:** The active settings widget already owns a `settings`
+dictionary, so the panel creation merges the main plugin's config into it
+rather than calling the nonexistent method. Panel constructor errors now
+log and re-raise, so the Studio reports failed plugin loading rather than
+claiming success with a blank widget. No rotation, exports, drawing,
+model family, or inference algorithm was changed in this slice.
+
+**Tests:** `tests/annotation/test_border_plugin_panel.py` compiles the
+actual effective (last-definition) `create_settings_panel` method
+against minimal GUI doubles and asserts the real-model-loaded case
+preserves controls, propagates constructor failure, and retains all
+existing UI sections. Annotation Integrity GitHub Actions run
+`38979071929` passed **15 tests**. This is source-level regression
+verification only, not full Qt GUI acceptance.
+
+**NEXT:** Pull latest branch and launch from `run_truscore.py`.
+Select Border Detection Plugin; first confirm visible model controls,
+Run Detection, outer/graphic selection, confidence, export, and status.
+Then load a card and inspect the genuine detection count and rendered boxes.
+If still empty, get the actual log traceback rather than adding another
+unverified fallback. Current Studio contains duplicate method definitions
+in the border plugin; consolidate only after working runtime behavior is
+recorded and verified.
+
+
+## Real ROCm/YOLO image-to-overlay acceptance and first-card lifecycle gap — 2026-10-16
+
+The user verified through the normal `run_truscore.py` UI, launched with
+`env -u LD_LIBRARY_PATH -u LD_PRELOAD ./vanguard/bin/python run_truscore.py`,
+that the actual `revolutionary_border_detector.pt` predicts an outer
+card boundary (YOLO class 0, screenshot confidence ~0.97) and inner
+graphics boundary (class 1, screenshot confidence ~0.95), with both
+rectangles and adjustment handles clearly displayed. UI reported
+`Detection: 1 outer / 1 graphic`. This confirms actual ROCm inference
+plus working plugin->Studio overlay rendering for the observed card,
+not a simulated test. The inference library-loader failure was caused
+by one or both of the original library environment variables; root
+variable/collision is not yet isolated.
+
+The user manually corrected and used Save/Next on four cards, reporting
+all three exports appear correctly saved. Exported source images and YOLO
+pairs have NOT been inspected remotely: no claim of rotation, annotation
+pairing, or three-target file-content acceptance yet.
+
+Remaining issue: user had to press `Run Detection` for the first card,
+while later workflow operated. Actual active
+`ModularAnnotationStudio.load_plugin_from_file()` did not notify a newly
+selected plugin if an image had been loaded *before* plugin selection,
+unlike alternate `on_plugin_selected()` route. The bounded fix
+for `border_detection_plugin` only now detects already-loaded
+`original_image`/path after inserting and wiring settings widget;
+it calls the existing widget `set_current_image()` and the plugin's
+`on_image_changed()` ONCE. The plugin's existing delayed detection,
+stale-image guard and single real checkpoint remain authoritative.
+When plugin is selected before card loading, normal
+`load_current_image()` remains responsible for notification.
+
+Regression tests `tests/annotation/test_first_card_activation.py`
+exercise the effective source methods for BOTH startup orders. CI run
+38981656677 PASS: 20 Annotation Integrity tests. The real-world
+first-card startup behavior has NOT been retested since this fix.
+If this persists when the plugin was already selected before card
+loading, inspect the exact application log and scheduling messages
+rather than blaming the untested activation-order hypothesis.
+
+Next steps: selective sync of only four annotated card images and
+matching label files in each of the three output folders; inspect
+actual exports visually and verify classes, stems, image dimensions and
+rotation. Do not commit the entire virtualenv, archived scripts, or
+every older runtime artifact. Keep Mask R-CNN / COCO precision training
+blocked pending export validation.
+
+
+## Four committed real exports + application logs audited — 2026-10-16
+
+User pushed commit `c582a4401e0434ee1b002ddf1b167671260db314`
+containing all 24 new export files under
+`src/shared/annotations/{combined_dual_class,outer_border_model,graphic_border_model}`
+and 28 captured application log files under `src/Logs/`.
+Four sample stems are `image001F` through `image004F`.
+
+**Source-backed positive results:**
+
+- 12 valid 1632 x 2284 JPEG files; within each card, all three JPEGs
+  are byte-identical by Git blob hash. No class-dependent rotation,
+  image encoding, or accidental file substitution across export targets.
+- Combined class IDs are [0 outer, 1 graphic]; outer-only class 0
+  exactly matches combined class 0 geometry; graphic-only class 0
+  exactly matches combined class 1 geometry. Every card has one outer
+  and one inner annotation in combined form.
+- All normalized coordinates fall in 0..1; outer boxes contain inner
+  boxes. All four rendered contact-sheet overlays appear approximately
+  aligned with the intended card/graphics boundaries at preview scale.
+  NOT a corner- or subpixel-precision validation.
+- `src/Logs/annotation_studio.log` records Space save operations at
+  18:20:44, 18:21:28, 18:22:13, and 18:22:49 on 2026-10-16,
+  with each next-card transition. It records an explicit
+  `image003F.jpg (-0.150°)` rotation save before annotation export.
+  Image and class mapping are verified, but this does NOT prove exact
+  rotation/annotation coordinate frame alignment against reference
+  corner measurements.
+
+**First-card behavior, correcting prior hypothesis:**
+
+The actual successful runtime session selected Border Detection
+around 18:18:24, THEN loaded the first card at 18:18:36.
+The first card received *three* two-box detection completion events
+at 18:18:44 (approximately 8 seconds after card load);
+the later cards each received a two-box event about 0.52 seconds
+after their respective loads. The previously implemented fix for
+activating a plugin AFTER card load is valid and covered by tests,
+but it CANNOT explain the delayed first-card detection observed
+in this session, since plugin selection came first.
+Potential first YOLO/GPU warmup and duplicate queued inference requests
+are hypotheses; the log does not identify which of the first three
+requests was automatic vs manual.
+
+**Repeatable tests / verification:**
+
+`tests/annotation/test_real_four_card_exports.py` validates real
+files (not synthetic annotation doubles): Pillow JPEG integrity,
+dimensions, cross-folder image hashes, exact class mapping, unique
+labels, normalized geometry, and outer/inner containment. It also
+produces a diagnostic JPEG contact sheet with the saved boxes
+overlaid for inspection. Annotation Integrity CI run
+`38982467645` PASSED 24 tests, and follow-up run
+`38982472140` passed; Phoenix Foundation run
+`38982472153` passed. Code/CI acceptance for these constraints
+is VERIFIED. Real model inference and Studio overlay were observed
+in the user's screenshot from earlier; first-card unattended auto
+detection specifically remains UNVERIFIED.
+
+**Next gate:** Run a clean-env app session, select Border Detection,
+load a new first card, wait at least ~10-15 seconds without manually
+clicking Run Detection, record whether boxes appear and corresponding
+log timestamps. If first-card detection remains absent, inspect
+timer scheduling, model warmup, and request deduplication based on
+actual timing. Continue to block Detectron2/24-point ground-truth
+claims until polygon/rotation coordinate fidelity is accepted.
+
+## Definitive runtime log classification / CPU vs ROCm first inference — 2026-10-16
+
+User reported that first-card CPU inference used to appear immediately,
+unlike ROCm GPU first-card inference, and that `modular_annotation.log`
+seemed to contain a very large number of detections. The actual GitHub
+blob `src/Logs/modular_annotation.log` (SHA 1c857b922ebf...) was
+successfully read in full (11,312 lines) instead of relying on the
+GitHub text file endpoint, which returned empty for this >1 MB log.
+
+**Verified counts in the successful 18:18–18:22 four-card session:**
+
+- 4 `on_image_changed` notifications (one for each newly loaded card).
+- 6 actual YOLO inference calls (3 for image001F, 1 each for image002F–
+  image004F).
+- 671 overlay `draw_overlay CALLED` messages, plus 1,348 corresponding
+  per-annotation detail lines (2,019 draw-only INFO records).
+- 4 Space-triggered triple-export completions (12 target writes).
+
+Most perceived repeated "detections" were actually **GUI redraw logs**,
+not extra model inference. The redraws themselves are required for
+responsive dragging/magnifier and should NOT be suppressed. We removed
+only redundant INFO diagnostics from the active
+`BorderDetectionSettingsWidget.draw_overlay` method and retained true
+`run_detection` inference counts, errors and prediction logs. New
+`tests/annotation/test_overlay_log_noise.py` verifies that the active
+overlay method still draws outer cyan/inner magenta boxes and selection
+handles, without per-frame INFO logging. CI verification is separate.
+
+**First card was AUTO-TRIGGERED**:
+18:18:36.457 `on_image_changed` was called,
+18:18:36.958 YOLO inference began (exactly ~501ms after load),
+18:18:44.393 first inference returned (~7.435 sec).
+The other two first-card inferences started at 18:18:44.456 and
+18:18:44.516 and completed in roughly 12ms and 11ms respectively.
+The log does not identify their origin; queued manual clicks are
+plausible but NOT confirmed. Cards 2–4 each had one automatic
+inference with ~12–16ms logged inference time after the 500ms timer.
+One detector checkpoint was reused by the settings widget; no evidence
+of repeated weight loading in this session.
+
+Thus previous "first card failed to schedule automatically" hypothesis
+is **disproven for this user session**. CPU's faster initial perception
+and GPU's first call cost can coexist; code/logs support a first GPU
+inference delay, not the precise library/system portion responsible.
+No automatic model fallback should be introduced.
+
+Later possible UI optimization (not implemented here): distinguish
+auto/manual inference requests in logs; display a "Detecting…" status
+before GPU work starts, avoid duplicate user requests during an active
+inference, and consider asynchronous worker execution if measured
+startup blocking merits the added threading complexity. The existing
+`run_actual_detection` method has a guard, but the real
+`run_detection` is a different implementation and does not use that
+guard. Preserve manual re-detection capability and all editing/saving.
+No need to repeat a 15-second waiting test solely to prove that the
+first auto timer fired; the committed logs prove it already did.
+
+## Guarded ROCm inference feedback and duplicate-request protection — 2026-10-16
+
+Following audit of the full 1.27 MB production modular_annotation.log,
+the first card was confirmed to have scheduled its automatic YOLO pass
+500 ms after image load; the first actual ROCm inference took about 7.4
+seconds. Six model calls total were made for four cards, whereas 671
+normal drag/paint redraw events generated a disproportionate number
+of INFO records. Per-frame INFO logging was removed earlier without
+altering the redraw algorithm.
+
+Current incremental changes to the actual working plugin:
+`BorderDetectionSettingsWidget.run_detection(source="manual"|"auto")`
+now has a shared in-flight guard, busy-state status and disabled manual
+button, and logs the request source, actual image dimensions, and
+observed request duration. It uses
+`QApplication.processEvents(ExcludeUserInputEvents)` to render the busy
+message before synchronous YOLO GPU initialization. A finally block
+re-enables the button on errors as well as success. The model and
+actual inference/prediction parsing are unchanged.
+
+`BorderDetectionPlugin.on_image_changed()` increments a per-load token
+and queues its original 500 ms automatic request, now explicitly tagged
+`source="auto"`. Stale previous-load callbacks, including a previous
+load with exactly the same image path, do not execute. A manual run
+that already completed for the same token suppresses a pending auto
+callback; explicit future manual detection remains permitted.
+
+The old `run_actual_detection` method is historical/unused in this
+Studio path and has different tracking; its fallback simulated
+detections MUST NOT be reactivated as part of this change.
+
+Regression: `tests/annotation/test_detection_request_lifecycle.py`
+and updated existing source-body tests. Annotation Integrity CI
+38983844204 passed 30 tests after repair of test harness image-shape
+stubs; full PyQt GUI + real GPU startup must be retested. Decision:
+`project_brain/decisions/0006-annotation-inference-request-lifecycle.md`.
+Do not equate code-level pass with hardware GUI acceptance.
+
+## Final-card save/completion regression — 2026-10-16
+
+Verified active Studio source sequence before patch: the Space shortcut
+saved a rotated source file first, called the three training exports,
+then reset rotation and attempted next; next helper refuses to advance
+past last index, so the editor visually straightened the last card
+despite the prior export. User reasonably questioned whether their
+last saved image also lost the rotation. Source ordering makes that
+unlikely, but the new three-card files have not been observed here.
+
+Bounded current-source improvement adds a completion state: after
+successful source rotation write and *all three* class-specific
+training exports, save the batch index and either reset+navigate for
+nonfinal cards or replace the final image with an explicit saved count.
+A failed export does not get marked complete, re-rotate image, advance,
+or claim success. `cv2.imwrite` now has checked return codes for
+source and target image writes. Combined class 0/1 must both exist;
+all three export targets must succeed rather than accepting 1/3.
+
+Last-card UI clears active card pixels and plugin image path to stop
+stale display/inference; magnifier is cleared; navigation disabled;
+second Space is inert; new batch reinitializes progress. Truthful
+partial completion messages cover earlier skipped/failed saves.
+Normal Previous/Next auto-save paths also credit actual successful
+exports without changing ordinary navigation behavior.
+
+Regression `tests/annotation/test_annotation_session_completion.py`
+covers 3/3 completion, final rotated source preserved before clearance,
+export failures, missing earlier saves, non-final path and fresh batch.
+Extended existing triple-export source tests cover missing class 1 and
+simulated image-writing failure. CI run 38985208841 PASSED 38 tests.
+Actual workstation GUI and new batch output still pending. ADR 0007.
+
+
+## Final-card completion — real UI confirmation (2026-10-16)
+
+The user tested the post-ADR-0007 flow and confirmed the GUI displayed **"Annotations Complete 3/3 successfully annotated"**. The final-card completion UI has therefore passed this user-observed runtime behavior check; the historical issue of visually retaining a straightened final card is addressed at the visible UX level. The current three-card exported artifacts have **not** yet been inspected, so image rotation, label correctness, per-folder byte consistency, and subpixel alignment remain separate acceptance gates. Do not claim these files verified solely based on the completion count.
+
+## Six fresh real Annotation Studio exports audited (fe3f248) — 2026-10-16
+
+Commit `fe3f2481fd3796e4a2b5ab96c15b1f2bdc391c92` pushed 36 new
+image/label files in the three existing training targets and 9 updated
+application logs. Audited exact stems
+`image092F, image093F, image094F, card094, card095, card096`.
+
+**Verified by authoritative Git blob IDs, file contents and new CI:**
+- For each card all 3 stored JPEGs have identical Git blob SHA (same
+  actual encoded pixels across combined / outer / graphic exports).
+- Every output has a corresponding .txt file with the same stem.
+  Combined target has exactly two rows with classes 0=outer and
+  1=inner graphic; outer-only class 0 row matches combined outer
+  exactly; graphic-only class 0 row matches combined graphic
+  coordinates exactly (aside from its class index).
+- Every actual JPEG decodes as JPEG. `image092F, image093F, image094F`
+  dimensions are 1640x2291; `card094` 1571x2174; `card095`
+  1589x2174; `card096` 1580x2188. Normalized YOLO boxes are in
+  bounds and outer encloses inner on all six.
+- A 3-column x 2-row contact sheet produced from the committed JPEGs
+  with cyan outer and magenta inner pixel overlays was visually reviewed.
+  All six boxes plausibly cover their intended printed/card boundaries.
+  The `card096` *printed design* is sideways within a portrait card,
+  but its borders align visually with the physical card; that is not,
+  by itself, evidence of a rotation export error.
+
+**Runtime provenance from captured logs:**
+- Earlier 3-card batch: image092F +0.650°, image093F +0.460°;
+  image094F saved on the final card twice at +0.350° then +0.320°
+  under the old Space behavior that reset/retained the final card.
+  The committed image094F JPEG is the last version.
+- Post-fix 3-card batch: card094 −0.200°; card095 +0.130°;
+  card096 +0.110°. The studio log shows
+  `Space: saving card 3/3` → `Saved rotated source image:
+  card096.jpg (0.110 degrees)` → `Saved all border training formats`
+  → `Annotation session finished: 3/3 saved` without a second Space
+  export. The application also automatically predicted one outer
+  and one inner box for each of these three cards.
+- At startup the log still contains a nonfatal
+  `Failed to import PluginSettingsPanel` for
+  `modules.annotation_studio.plugins.plugin_panel`, even while the
+  real Border Detection settings controls subsequently loaded.
+  Treat as future module-discovery/optional-import cleanup, not as a
+  present failure of these saved results.
+
+**Automated evidence:** New
+`tests/annotation/test_real_six_card_exports.py` checks six true
+JPEGs and exact class/geometry identity; its standalone diagnostic
+generates the contact-sheet preview in Annotation Integrity Actions
+logs. Workflows updated to include the six-card acceptance preview
+and the runtime audit log. GitHub Actions run `38986486752` passed
+45 tests; Phoenix run `38986490725` passed. After initial validation,
+mutable log timestamps were moved from hard CI assertions into a
+diagnostic-only report, preventing an eventual log rotation from
+falsely failing otherwise correct source/dataset contracts.
+
+**Remaining limitations:** The exported-source JPEGs are the
+post-rotation images. Original pre-rotation pixels/reference corner
+coordinates were not supplied for this six-card batch; therefore
+the exact applied angle (+0.110°, etc.) and pixel-precision corner
+alignment cannot be independently reconstructed. Neither this audit
+nor 5-field YOLO annotations provides segmentation masks or genuine
+rotated quadrilaterals. Do not mark precision 24-point validation or
+Detectron2 Mask R-CNN ground-truth segmentation ready yet.
+
+**Next architecture task:** continue Dataset Studio source-to-COCO
+conversion audit and preserve card/image coordinate provenance;
+fix the already identified hardcoded image dimensions and missing
+mask/rotation contract *without discarding the working three-export
+Annotation Studio path*.
+
+
+## Dataset Studio conversion and preview integrity implementation — 2026-10-16
+
+Following the six-card analysis, the active Dataset Studio paths were
+inspected directly. Manual \`_export_coco_format\` had hard-coded 640x480
+metadata and wrong border/surface categories; \`ConversionWorker\` wrote
+the converter return *wrapper* (coco_data + statistics) to the COCO JSON
+file, which is not a standard top-level COCO dataset. Worker also gave
+misleading zero image/annotation counts and generated approximate masks
+from YOLO boxes. The preview could count same-named workspace labels as
+imported project labels and could favor stale converted data.
+
+**Fix:** Use existing shared converter in explicit \`bbox_only=True\`
+mode; real pixels and normalized coordinates define the COCO bbox;
+YOLO class 0/1 becomes COCO 1=outer_border and 2=graphic_border.
+The worker now writes actual \`coco_data\`. Both paths refuse incomplete
+conversions. COCO info identifies axis-aligned bbox/no segmentation ground
+truth. Mask R-CNN export/validation and Phoenix Detectron2 refuse missing
+masks and known converter-derived approximate polygons.
+
+Preview and status now distinguish source filename matches from verified
+geometry. Source label imports take precedence over stale converted labels,
+and changing source images/labels invalidates conversion state. Dimension
+mismatches warn. Unsupported manual export formats/split flag now fail
+rather than reporting success.
+
+**Evidence:** Dataset Integrity run 38998188997 passed 14 tests,
+using real six-card fixture images and source annotation coordinates,
+headless execution of actual manual/background exporter method bodies,
+invalid input and fake-mask rejection, and verification source matching.
+Annotation Integrity and Phoenix Foundation passed on code commit 31b5d317.
+
+**Limitations:** This validates accurate **bounding box serialization**,
+not physical card-edge/corner accuracy, source-rotation angle, rotated
+quadrilateral, per-pixel segmentation, end-to-end GUI acceptance, or
+native GPU Mask R-CNN. The old 20-image fixture still lacks legitimate
+segmentation; do not train from it. See ADR 0008.
+
+### Dataset validator and export provenance follow-up — 2026-10-16
+
+Found and corrected two analogous truthfulness defects in the common
+dataset validator: YOLO bbox labels had been reported convertible to
+Mask R-CNN without masks; image-label matching used an unsafe substring
+test (Test1 could match Test10). Target Mask R-CNN now rejects YOLO
+bbox-only readiness; matching compares exact lowercase filename stems.
+Dual-border expected class naming matches outer_border/graphic_border.
+
+Manual export emitted a Guru dataset_exported event *before confirmation*,
+even for cancelled or failed writes. The event now follows confirmed
+positive exported count; failed/cancelled exports emit nothing. The test
+exercises the live AST entrypoint through cancel/success/writer failure.
+Latest Dataset Integrity run 38998658381 **PASSED 19 tests**.
+This is headless source-code evidence, NOT workstation GUI acceptance.

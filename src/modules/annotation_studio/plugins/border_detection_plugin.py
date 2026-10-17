@@ -34,6 +34,12 @@ import logging
 import time
 import pickle
 from pathlib import Path
+
+def _default_border_model_path() -> Path:
+    """Bundled two-class YOLO model, independent of installation path or CWD."""
+    return Path(__file__).resolve().parents[3] / "models" / "revolutionary_border_detector.pt"
+
+
 from typing import Optional, List, Dict, Any, Tuple, Union
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
@@ -54,7 +60,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import (
     Qt, QTimer, pyqtSignal, QObject, QPoint, QRect, QSize,
-    QThread, QMutex, QMutexLocker, QPropertyAnimation, QEasingCurve
+    QThread, QMutex, QMutexLocker, QPropertyAnimation, QEasingCurve, QEventLoop
 )
 from PyQt6.QtGui import (
     QFont, QPixmap, QImage, QKeyEvent, QMouseEvent, QPainter, QPen,
@@ -479,7 +485,7 @@ class BorderDetectionSettingsWidget(QWidget):
 
         # Enterprise settings with defaults from border_calibration.py
         self.settings = {
-            'model_path': '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt',
+            'model_path': str(_default_border_model_path()),
             'confidence_threshold': 0.25,
             'detection_mode': 'dual_class',  # dual_class, outside_only, graphic_only
             'export_format': 'yolo',
@@ -502,6 +508,8 @@ class BorderDetectionSettingsWidget(QWidget):
 
         # Detection state to prevent duplicates
         self._detecting = False
+        self._auto_request_token = 0
+        self._completed_detection_token = None
 
         # Session management
         self.session_file = None
@@ -524,6 +532,10 @@ class BorderDetectionSettingsWidget(QWidget):
     def set_main_plugin(self, main_plugin):
         """Set reference to main plugin instance - required by studio"""
         self.main_plugin = main_plugin
+        if main_plugin.model_loaded and getattr(main_plugin, 'model', None) is not None:
+            self.model = main_plugin.model
+            self.model_loaded = True
+            self._loaded_model_path = getattr(main_plugin, '_loaded_model_path', None)
         self.logger.debug(f"Main plugin reference set: {type(main_plugin)}")
 
     def set_studio_canvas(self, studio_canvas):
@@ -654,11 +666,10 @@ class BorderDetectionSettingsWidget(QWidget):
         From calibration.py lines 2148-2235 draw_border_annotations()
         """
         try:
-            self.logger.info(f"🎨 draw_overlay CALLED with {len(self.annotations) if hasattr(self, 'annotations') else 0} annotations")
-            if self.annotations:
-                for i, ann in enumerate(self.annotations):
-                    self.logger.info(f"   Annotation {i}: class_id={ann.class_id}, label={ann.label}")
-            
+            # Draws can occur hundreds of times during handle dragging.
+            # Per-frame INFO output obscures real YOLO requests/completions
+            # and makes the persistent diagnostic log grow unnecessarily.
+            # Real inference results/errors are logged by run_detection().
             if not self.annotations:
                 return image
             
@@ -1189,7 +1200,7 @@ class BorderDetectionSettingsWidget(QWidget):
         detect_layout = QHBoxLayout()
 
         self.run_detection_btn = TruScoreButton("Run Detection", width=120, height=30)
-        self.run_detection_btn.clicked.connect(self.run_detection)
+        self.run_detection_btn.clicked.connect(lambda: self.run_detection(source="manual"))
         detect_layout.addWidget(self.run_detection_btn)
 
         self.clear_btn = TruScoreButton("Clear", width=70, height=30, style_type="secondary")
@@ -1331,7 +1342,7 @@ class BorderDetectionSettingsWidget(QWidget):
     def load_model(self):
         """Load AI model for detection"""
         try:
-            model_path = self.settings.get('model_path', '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt')
+            model_path = self.settings.get('model_path', str(_default_border_model_path()))
             self.logger.info(f"Attempting to load model from: {model_path}")
 
             if not model_path:
@@ -1353,8 +1364,20 @@ class BorderDetectionSettingsWidget(QWidget):
             try:
                 from ultralytics import YOLO
                 self.logger.info(f"Loading YOLO model: {model_path}")
-                self.model = YOLO(model_path)
-                self.logger.info("Ultralytics YOLO model loaded successfully")
+                main_plugin = getattr(self, 'main_plugin', None)
+                model_file = Path(model_path).expanduser().resolve()
+                if (main_plugin is not None
+                        and getattr(main_plugin, 'model_loaded', False)
+                        and getattr(main_plugin, '_loaded_model_path', None) == str(model_file)):
+                    self.model = main_plugin.model
+                    self.logger.info("Reusing the already-loaded two-class detector")
+                elif (self.model_loaded and self.model is not None
+                      and getattr(self, '_loaded_model_path', None) == str(model_file)):
+                    self.logger.info("Detector already loaded in settings widget")
+                else:
+                    self.model = YOLO(str(model_file))
+                    self.logger.info("Ultralytics YOLO model loaded successfully")
+                self._loaded_model_path = str(model_file)
             except ImportError:
                 self.logger.error("Ultralytics not available - cannot load model")
                 self.model_status_label.setText("Model: YOLO Missing")
@@ -1367,6 +1390,11 @@ class BorderDetectionSettingsWidget(QWidget):
                 return False
 
             self.model_loaded = True
+            if main_plugin is not None:
+                main_plugin.model = self.model
+                main_plugin.model_loaded = True
+                main_plugin._loaded_model_path = str(model_file)
+                main_plugin.settings['model_path'] = str(model_file)
             # Show model filename, not just "Loaded"
             model_name = Path(model_path).name
             self.model_status_label.setText(f"Model: {model_name}")
@@ -1393,7 +1421,7 @@ class BorderDetectionSettingsWidget(QWidget):
             browser = ModernFileBrowser(
                 parent=self,
                 title="Select Border Detection Model",
-                initial_dir="/home/dewster/Projects/Vanguard/src/models",
+                initial_dir=str(_default_border_model_path().parent),
                 file_type="models"  # Custom type for model files
             )
 
@@ -1423,7 +1451,7 @@ class BorderDetectionSettingsWidget(QWidget):
                 file_path, _ = QFileDialog.getOpenFileName(
                     self,
                     "Select Border Detection Model",
-                    "/home/dewster/Projects/Vanguard/src/models",
+                    str(_default_border_model_path().parent),
                     "Model Files (*.pt *.pth *.onnx);;All Files (*.*)"
                 )
 
@@ -1785,7 +1813,11 @@ class BorderDetectionSettingsWidget(QWidget):
             self.logger.info(f"🚀 auto_create_training_labels() called - {len(self.annotations) if hasattr(self, 'annotations') else 0} annotations")
             
             if not self.annotations:
-                self.logger.warning("❌ No annotations to export")
+                self.logger.warning("No annotations to export")
+                return False
+            classes = {ann.class_id for ann in self.annotations}
+            if not {0, 1}.issubset(classes):
+                self.logger.error("Both outer class 0 and graphic class 1 are required for triple export")
                 return False
 
             if self.current_image is None:
@@ -1819,7 +1851,7 @@ class BorderDetectionSettingsWidget(QWidget):
                 rotated_image = self.current_image.copy()
 
             # Base export directory - annotations subdirectory
-            base_dir = Path("/home/dewster/Projects/Vanguard/src/shared/annotations")
+            base_dir = Path(__file__).resolve().parents[3] / "shared" / "annotations"
             
             # Image dimensions (from rotated image)
             h, w = rotated_image.shape[:2]
@@ -1861,7 +1893,9 @@ class BorderDetectionSettingsWidget(QWidget):
                 
                 # Save rotated image
                 img_save_path = images_dir / f"{img_name}{img_ext}"
-                cv2.imwrite(str(img_save_path), rotated_image)
+                if not cv2.imwrite(str(img_save_path), rotated_image):
+                    self.logger.error("Failed to write export image: %s", img_save_path)
+                    return False
                 
                 # Create YOLO label file
                 label_save_path = labels_dir / f"{img_name}.txt"
@@ -1869,18 +1903,22 @@ class BorderDetectionSettingsWidget(QWidget):
                     for ann in export['annotations']:
                         # to_yolo_format returns tuple (class_id, x_center, y_center, width, height)
                         class_id, x_center, y_center, width, height = ann.to_yolo_format(w, h)
+                        # Each single-target dataset has its own class-0 label;
+                        # combined_dual_class retains 0=outer, 1=graphic.
+                        if export['name'] != 'combined_dual_class':
+                            class_id = 0
                         yolo_line = f"{class_id} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f}"
                         f.write(f"{yolo_line}\n")
                 
                 exported_count += 1
                 self.logger.info(f"✅ Exported {export['description']}: {img_save_path.name}")
             
-            if exported_count > 0:
-                self.logger.info(f"🎉 Successfully exported {exported_count} formats to {base_dir}")
+            if exported_count == len(exports):
+                self.logger.info("Exported all %d image/label datasets to %s",
+                                 exported_count, base_dir)
                 return True
-            else:
-                self.logger.warning("No formats were exported")
-                return False
+            self.logger.error("Incomplete triple export: %d/%d", exported_count, len(exports))
+            return False
 
         except Exception as e:
             self.logger.error(f"Export failed: {e}")
@@ -2022,9 +2060,26 @@ class BorderDetectionSettingsWidget(QWidget):
 
 
 
-    def run_detection(self):
-        """Run YOLO detection on current image - REAL DETECTION FROM BORDER_CALIBRATION.PY"""
+    def run_detection(self, source="manual"):
+        """Run real YOLO once; expose request origin and busy state."""
+        if source not in ("manual", "auto"):
+            source = "manual"
+        if getattr(self, "_detecting", False):
+            self.logger.info("Skipped overlapping %s detection: %s",
+                             source, getattr(self, "current_image_path", None))
+            return False
+        self._detecting = True
+        started_at = time.monotonic()
+        request_path = getattr(self, "current_image_path", None)
+        request_token = getattr(self, "_auto_request_token", None)
+        if hasattr(self, "status_label"):
+            self.status_label.setText(f"Detecting... ({source})")
+        if hasattr(self, "run_detection_btn"):
+            self.run_detection_btn.setEnabled(False)
+        self.logger.info("YOLO %s detection starting: %s", source, request_path)
         try:
+            if QApplication.instance() is not None:
+                QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
             # Get YOLO model - check settings widget first, then main plugin
             yolo_model = None
             
@@ -2038,22 +2093,36 @@ class BorderDetectionSettingsWidget(QWidget):
                     yolo_model = self.main_plugin.model
                     self.logger.debug("Using model from main plugin")
 
-            if not yolo_model:
-                self.logger.warning("No YOLO model loaded for detection")
-                return
+            if not yolo_model or not hasattr(yolo_model, 'predict'):
+                # The user may click Run Detection before the initialization
+                # timer has loaded the real checkpoint. Never use a dummy model.
+                if not self.load_model():
+                    self.logger.error("Cannot detect borders: no real YOLO model loaded")
+                    if hasattr(self, 'status_label'):
+                        self.status_label.setText("Detection unavailable: model failed to load")
+                    return False
+                yolo_model = self.model
             
             if self.current_image is None:
                 self.logger.warning("No current image for detection")
-                return
+                if hasattr(self, 'status_label'):
+                    self.status_label.setText("Detection unavailable: no card loaded")
+                return False
 
-            print("⚡ Running YOLO detection at 640×480 (model's preferred resolution)...")
+            image_h, image_w = self.current_image.shape[:2]
+            self.logger.info(
+                "YOLO %s source image size %dx%d; model controls its own preprocessing",
+                source, image_w, image_h
+            )
 
             # Use confidence value or default
-            confidence_value = getattr(self, 'confidence_value', 0.5)
+            confidence_value = self.settings.get('confidence_threshold', 0.25)
 
             # Run YOLO model inference using main plugin's model
             results = yolo_model(self.current_image, conf=confidence_value)
 
+            self.logger.info("YOLO inference returned %d result batches for %s",
+                             len(results), self.current_image_path)
             # Clear previous annotations
             self.annotations = []
             self.selected_annotation = None
@@ -2084,6 +2153,15 @@ class BorderDetectionSettingsWidget(QWidget):
 
                         print(f"Detection: {class_names.get(cls)} at ({x1:.0f},{y1:.0f})-({x2:.0f},{y2:.0f}) conf={conf:.3f}")
 
+            outer_count = sum(ann.class_id == 0 for ann in self.annotations)
+            graphic_count = sum(ann.class_id == 1 for ann in self.annotations)
+            if hasattr(self, 'status_label'):
+                self.status_label.setText(
+                    f"Detection: {outer_count} outer / {graphic_count} graphic"
+                    if self.annotations else "Detection: 0 boxes — check model/confidence"
+                )
+            self.logger.info("Two-class YOLO prediction count: outer=%d, graphic=%d; image=%s",
+                             outer_count, graphic_count, self.current_image_path)
             print(f"✅ Detection found {len(self.annotations)} borders")
 
             # AUTO-SELECT OUTER BORDER (class 0) by default like original
@@ -2097,12 +2175,35 @@ class BorderDetectionSettingsWidget(QWidget):
             # Update display with real YOLO results
             self.update_visualization()
             self.update_statistics()
+            # The editable boxes live in this settings widget. Publish to
+            # the Studio canvas explicitly; do not depend on parent walking
+            # or an opportunistic cached redraw.
+            self.detection_completed.emit(self.annotations)
 
-            self.logger.info(f"YOLO detected {len(self.annotations)} borders")
+            self._completed_detection_token = request_token
+            self.logger.info("YOLO %s detection returned %d boxes: %s",
+                             source, len(self.annotations), request_path)
+            return True
 
         except Exception as e:
-            self.logger.error(f"YOLO detection failed: {e}")
+            self.logger.error(f"YOLO detection failed: {e}", exc_info=True)
+            # The Studio is launched as a subprocess with stderr piped.
+            # The widget's differently named logger does not necessarily
+            # reach AnnotationStudio's log file. Persist the full traceback
+            # through the existing file-backed application logger as well.
+            logging.getLogger("AnnotationStudio").exception(
+                "Border YOLO detection failed for %s", self.current_image_path
+            )
+            if hasattr(self, 'status_label'):
+                self.status_label.setText(f"Detection error: {type(e).__name__} (see log)")
             print(f"❌ Detection failed: {e}")
+            return False
+        finally:
+            self._detecting = False
+            if hasattr(self, "run_detection_btn"):
+                self.run_detection_btn.setEnabled(True)
+            self.logger.info("YOLO %s request duration %.3fs: %s",
+                             source, time.monotonic() - started_at, request_path)
 
     def batch_process_dataset(self):
         """Batch process multiple images"""
@@ -2245,27 +2346,34 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         return False
     
     def on_image_changed(self, image_path: str, image_data: np.ndarray):
-        """Notification that Studio loaded new image - Interface contract method"""
+        """Queue automatic inference once per card load, never over manual work."""
         self.logger.info(f"on_image_changed called with image: {image_path}")
-        
-        # Store image data in plugin
         self.current_image = image_data
-        
-        # Pass image to settings widget (it has the detection logic)
-        if self.settings_widget:
-            self.settings_widget.current_image = image_data
-            self.settings_widget.current_image_path = image_path
-            
-            # CORRECT auto-detection - 500ms delay
-            if hasattr(self, 'model') and self.model_loaded:
-                self.logger.info("Auto-running detection on new image (500ms delay)")
-                from PyQt6.QtCore import QTimer
-                QTimer.singleShot(500, self.settings_widget.run_detection)
-            else:
-                self.logger.info("No model loaded - skipping auto-detection")
-        else:
-            self.logger.warning("Settings widget not available for auto-detection")
-    
+        widget = self.settings_widget
+        if widget is None:
+            self.logger.error("No border settings widget available for auto-detection")
+            return
+
+        widget.current_image = image_data
+        widget.current_image_path = image_path
+        widget._auto_request_token = getattr(widget, "_auto_request_token", 0) + 1
+        request_token = widget._auto_request_token
+        if hasattr(widget, "status_label"):
+            widget.status_label.setText("Detection queued (automatic)")
+        from PyQt6.QtCore import QTimer
+        # A token distinguishes two loads of the SAME path and prevents
+        # an older timer from replacing newer edits or manual detection.
+        QTimer.singleShot(
+            500,
+            lambda expected=image_path, token=request_token, target=widget: (
+                target.run_detection(source="auto")
+                if (target.current_image_path == expected
+                    and target._auto_request_token == token
+                    and getattr(target, "_completed_detection_token", None) != token)
+                else None
+            ),
+        )
+
     def on_image_rotated(self, rotation_angle: float):
         """Notification that Studio rotated image - Interface contract method"""
         # Rotation is handled by Studio, annotations are in original coordinates
@@ -2425,7 +2533,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             author="TruScore Technologies",
             category="border",
             requires_model=True,
-            default_model_path="models/border_detection.pt",
+            default_model_path=str(_default_border_model_path()),
             supported_formats=["jpg", "jpeg", "png", "bmp", "tiff"],
             export_types=["yolo", "coco", "pascal_voc", "truscore"],
             keyboard_shortcuts={
@@ -2437,31 +2545,16 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         )
 
     def load_model(self, model_path: Optional[str] = None) -> bool:
-        """Load the border detection model"""
-        try:
-            if model_path is None:
-                model_path = self.metadata.default_model_path
-
-            if not model_path or not os.path.exists(model_path):
-                self.logger.warning(f"Model file not found: {model_path}")
-                return False
-
-            # TODO: Implement actual model loading based on file extension
-            # For now, simulate successful loading
-            self.model = {"path": model_path, "loaded": True}
-            self.settings['model_path'] = model_path
-
-            self.logger.info(f"Border detection model loaded: {model_path}")
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Failed to load border detection model: {e}")
-            return False
+        """Load the real two-class YOLO detector; never fabricate loaded state."""
+        if model_path is not None:
+            self.settings['model_path'] = str(model_path)
+        return self._load_default_model()
 
     def create_settings_panel(self, parent: QWidget) -> QWidget:
         """Create the settings panel for the plugin"""
         try:
             self.settings_widget = BorderDetectionSettingsWidget(parent)
+            self.settings_widget.set_main_plugin(self)
 
             # CRITICAL FIX: Pass studio canvas reference for coordinate conversion - FROM MEMORY 113
             if hasattr(parent, 'image_label'):
@@ -2473,9 +2566,12 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             # Connect settings changes
             self.settings_widget.settings_changed.connect(self.on_settings_changed)
 
-            # Apply current settings
+            # The widget already owns its settings dictionary. The previous
+            # call to apply_settings() referenced a method that does not exist
+            # and caused the panel to be silently replaced with an empty QWidget
+            # as soon as a real detector populated the plugin settings.
             if self.settings:
-                self.settings_widget.apply_settings(self.settings)
+                self.settings_widget.settings.update(self.settings)
 
             # Update UI to show main plugin's model status with filename
             if hasattr(self, 'model_loaded') and self.model_loaded:
@@ -2495,8 +2591,10 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             return self.settings_widget
 
         except Exception as e:
-            self.logger.error(f"Failed to create settings panel: {e}")
-            return QWidget(parent)  # Return empty widget as fallback
+            self.logger.exception("Failed to create Border Detection settings panel")
+            # A blank widget is NOT a working plugin. The Studio must report
+            # activation failure instead of announcing successful loading.
+            raise
 
     def process_image(self, image_array, settings: Dict[str, Any]) -> AnnotationResult:
         """Process an image and return border annotations"""
@@ -2627,47 +2725,41 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             self.logger.error(f"Display update after drag failed: {e}")
 
     def _load_default_model(self):
-        """Load the default border detection model for main plugin"""
+        """Load or reuse a genuine Ultralytics two-class detector."""
+        model_file = Path(self.settings.get('model_path') or
+                          _default_border_model_path()).expanduser().resolve()
+        if (self.model_loaded and getattr(self, 'model', None) is not None
+                and getattr(self, '_loaded_model_path', None) == str(model_file)):
+            return True
+        widget = self.settings_widget
+        if (widget is not None and getattr(widget, 'model_loaded', False)
+                and getattr(widget, '_loaded_model_path', None) == str(model_file)):
+            self.model = widget.model
+            self.model_loaded = True
+            self._loaded_model_path = str(model_file)
+            return True
         try:
-            # Prevent duplicate loading
-            if hasattr(self, 'model_loaded') and self.model_loaded:
-                self.logger.debug("Model already loaded, skipping duplicate load")
-                return True
-
-            model_path = '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt'
-            model_file = Path(model_path)
-
-            if not model_file.exists():
-                self.logger.error(f"Model file not found at: {model_path}")
-                return False
-
-            # Load actual YOLO model
-            try:
-                from ultralytics import YOLO
-                self.model = YOLO(model_path)
-                self.model_loaded = True
-                self.logger.info(f"✅ Main plugin model loaded: {model_path}")
-                
-                # Update settings widget's model status if it exists
-                if hasattr(self, 'settings_widget') and self.settings_widget:
-                    if hasattr(self.settings_widget, 'model_status_label'):
-                        model_name = Path(model_path).name
-                        self.settings_widget.model_status_label.setText(f"Model: {model_name}")
-                        self.settings_widget.model_status_label.setStyleSheet(f"color: {TruScoreTheme.QUANTUM_GREEN};")
-                    self.settings_widget.model_loaded = True
-                    self.settings_widget.model = self.model
-                
-                return True
-            except ImportError:
-                self.logger.error("❌ Ultralytics not available - install with: pip install ultralytics")
-                return False
-            except Exception as e:
-                self.logger.error(f"❌ Model loading failed: {e}")
-                return False
-
-        except Exception as e:
-            self.logger.error(f"❌ _load_default_model failed: {e}")
+            if not model_file.is_file():
+                raise FileNotFoundError(f"Two-class YOLO checkpoint not found: {model_file}")
+            from ultralytics import YOLO
+            model = YOLO(str(model_file))
+        except Exception as exc:
+            self.model = None
+            self.model_loaded = False
+            self._loaded_model_path = None
+            self.logger.error(f"Border detector failed to load: {exc}", exc_info=True)
             return False
+        self.model = model
+        self.model_loaded = True
+        self._loaded_model_path = str(model_file)
+        self.settings['model_path'] = str(model_file)
+        if widget is not None:
+            widget.model = model
+            widget.model_loaded = True
+            widget._loaded_model_path = str(model_file)
+            widget.model_status_label.setText(f"Model: {model_file.name}")
+        self.logger.info(f"Loaded real two-class YOLO checkpoint: {model_file}")
+        return True
 
     def auto_create_training_labels(self):
         """

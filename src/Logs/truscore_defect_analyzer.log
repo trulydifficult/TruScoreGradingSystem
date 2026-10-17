@@ -1,0 +1,766 @@
+2026-01-12 11:07:10,586 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 11:07:10,586 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 11:27:50,519 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 11:27:50,523 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 11:34:46,874 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 11:34:46,874 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 11:40:11,860 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 11:40:11,860 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 11:45:38,977 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 11:45:38,977 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 12:04:06,476 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 12:04:06,479 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 12:55:34,618 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 12:55:34,618 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 15:29:28,102 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 15:29:28,102 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 15:31:53,227 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 15:31:53,227 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 15:37:29,756 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 15:37:29,756 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 15:45:19,420 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 15:45:19,420 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 15:52:15,782 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 15:52:15,782 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 15:54:38,147 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 15:54:38,147 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 15:57:29,581 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 15:57:29,581 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 16:07:59,198 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 16:07:59,198 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 16:14:06,659 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 16:14:06,659 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 16:22:40,095 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 16:22:40,095 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 16:43:25,862 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 16:43:25,862 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 16:57:49,262 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 16:57:49,262 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 17:00:45,475 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 17:00:45,475 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 17:16:12,711 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 17:16:12,711 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 17:21:38,467 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 17:21:38,467 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-12 17:27:45,862 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-12 17:27:45,862 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:46:16,470 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 20:46:16,471 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:46:17,804 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 20:46:17,804 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:46:17,813 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 20:46:17,815 | INFO     | advanced_defect_analyzer - Initial detections: 50640 pixels
+2026-01-17 20:46:17,863 | INFO     | advanced_defect_analyzer - Found 2239 potential defect regions (50640 pixels total)
+2026-01-17 20:46:17,863 | WARNING  | advanced_defect_analyzer - Too many components (2239), analyzing top 1000 by size
+2026-01-17 20:46:18,061 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 20:46:18,261 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 20:46:18,461 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 20:46:18,663 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 20:46:18,862 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 20:46:19,030 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 20:46:19,105 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 20:46:19,180 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 20:46:19,255 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 20:46:19,331 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 20:46:19,331 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 20:46:19,331 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 20:46:19,331 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 20:46:19,331 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 20:46:19,335 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 20:46:19,335 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 20:46:19,335 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 20:46:19,335 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 20:46:19,335 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-17 20:46:35,809 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 20:46:35,810 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:46:36,769 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 20:46:36,769 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:46:36,778 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 20:46:36,780 | INFO     | advanced_defect_analyzer - Initial detections: 50640 pixels
+2026-01-17 20:46:36,827 | INFO     | advanced_defect_analyzer - Found 2239 potential defect regions (50640 pixels total)
+2026-01-17 20:46:36,827 | WARNING  | advanced_defect_analyzer - Too many components (2239), analyzing top 1000 by size
+2026-01-17 20:46:37,016 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 20:46:37,208 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 20:46:37,413 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 20:46:37,612 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 20:46:37,803 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 20:46:37,971 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 20:46:38,042 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 20:46:38,106 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 20:46:38,173 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 20:46:38,237 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 20:46:38,237 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 20:46:38,238 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 20:46:38,238 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 20:46:38,238 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 20:46:38,240 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 20:46:38,240 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 20:46:38,240 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 20:46:38,240 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 20:46:38,240 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-17 20:50:29,331 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 20:50:29,331 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:50:30,452 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 20:50:30,452 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:50:30,461 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 20:50:30,464 | INFO     | advanced_defect_analyzer - Initial detections: 44699 pixels
+2026-01-17 20:50:30,512 | INFO     | advanced_defect_analyzer - Found 2830 potential defect regions (44699 pixels total)
+2026-01-17 20:50:30,512 | WARNING  | advanced_defect_analyzer - Too many components (2830), analyzing top 1000 by size
+2026-01-17 20:50:30,742 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 20:50:30,954 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 20:50:31,174 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 20:50:31,375 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 20:50:31,588 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 20:50:31,791 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 20:50:31,888 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 20:50:31,961 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 20:50:32,038 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 20:50:32,110 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 20:50:32,111 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 20:50:32,111 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 20:50:32,111 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 20:50:32,111 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 20:50:32,113 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 20:50:32,113 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 20:50:32,113 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 20:50:32,113 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 20:50:32,113 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-17 20:58:33,300 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 20:58:33,300 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:58:34,352 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 20:58:34,352 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 20:58:34,362 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 20:58:34,364 | INFO     | advanced_defect_analyzer - Initial detections: 43298 pixels
+2026-01-17 20:58:34,413 | INFO     | advanced_defect_analyzer - Found 2640 potential defect regions (43298 pixels total)
+2026-01-17 20:58:34,413 | WARNING  | advanced_defect_analyzer - Too many components (2640), analyzing top 1000 by size
+2026-01-17 20:58:34,645 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 20:58:34,852 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 20:58:35,057 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 20:58:35,258 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 20:58:35,461 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 20:58:35,688 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 20:58:35,805 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 20:58:35,880 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 20:58:35,955 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 20:58:36,030 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 20:58:36,031 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 20:58:36,031 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 20:58:36,031 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 20:58:36,031 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 20:58:36,035 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 20:58:36,035 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 20:58:36,035 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 20:58:36,035 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 20:58:36,035 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-17 22:29:58,233 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 22:29:58,233 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 22:29:59,257 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 22:29:59,257 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 22:29:59,267 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 22:29:59,269 | INFO     | advanced_defect_analyzer - Initial detections: 33860 pixels
+2026-01-17 22:29:59,316 | INFO     | advanced_defect_analyzer - Found 2111 potential defect regions (33860 pixels total)
+2026-01-17 22:29:59,316 | WARNING  | advanced_defect_analyzer - Too many components (2111), analyzing top 1000 by size
+2026-01-17 22:29:59,515 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 22:29:59,719 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 22:29:59,925 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 22:30:00,139 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 22:30:00,340 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 22:30:00,439 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 22:30:00,539 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 22:30:00,638 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 22:30:00,736 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 22:30:00,837 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 22:30:00,838 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 22:30:00,838 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 22:30:00,838 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 22:30:00,838 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 22:30:00,841 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 22:30:00,841 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 22:30:00,841 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 22:30:00,841 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 22:30:00,841 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-17 22:39:54,151 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 22:39:54,151 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 22:39:55,197 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 22:39:55,197 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 22:39:55,205 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 22:39:55,207 | INFO     | advanced_defect_analyzer - Initial detections: 56595 pixels
+2026-01-17 22:39:55,255 | INFO     | advanced_defect_analyzer - Found 1953 potential defect regions (56595 pixels total)
+2026-01-17 22:39:55,255 | WARNING  | advanced_defect_analyzer - Too many components (1953), analyzing top 1000 by size
+2026-01-17 22:39:55,451 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 22:39:55,652 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 22:39:55,854 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 22:39:56,063 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 22:39:56,264 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 22:39:56,470 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 22:39:56,588 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 22:39:56,660 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 22:39:56,732 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 22:39:56,805 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 22:39:56,805 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 22:39:56,806 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 22:39:56,806 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 22:39:56,806 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 22:39:56,808 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 22:39:56,808 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 22:39:56,808 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 22:39:56,808 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 22:39:56,808 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-17 23:39:01,011 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 23:39:01,011 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 23:39:02,263 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 23:39:02,263 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 23:39:02,274 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 23:39:02,276 | INFO     | advanced_defect_analyzer - Initial detections: 60939 pixels
+2026-01-17 23:39:02,324 | INFO     | advanced_defect_analyzer - Found 2561 potential defect regions (60939 pixels total)
+2026-01-17 23:39:02,324 | WARNING  | advanced_defect_analyzer - Too many components (2561), analyzing top 1000 by size
+2026-01-17 23:39:02,533 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 23:39:02,739 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 23:39:02,941 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 23:39:03,145 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 23:39:03,344 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 23:39:03,493 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 23:39:03,567 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 23:39:03,639 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 23:39:03,712 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 23:39:03,783 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 23:39:03,784 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 23:39:03,784 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 23:39:03,784 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 23:39:03,784 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 23:39:03,787 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 23:39:03,787 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 23:39:03,787 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 23:39:03,787 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 23:39:03,787 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-17 23:41:19,084 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 23:41:19,084 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 23:41:20,499 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 23:41:20,499 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 23:41:20,510 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 23:41:20,512 | INFO     | advanced_defect_analyzer - Initial detections: 80506 pixels
+2026-01-17 23:41:20,566 | INFO     | advanced_defect_analyzer - Found 2891 potential defect regions (80506 pixels total)
+2026-01-17 23:41:20,567 | WARNING  | advanced_defect_analyzer - Too many components (2891), analyzing top 1000 by size
+2026-01-17 23:41:20,890 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 23:41:21,304 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 23:41:21,731 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 23:41:22,073 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 23:41:22,427 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 23:41:22,871 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 23:41:23,213 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 23:41:23,607 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 23:41:23,838 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 23:41:23,919 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 23:41:23,920 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 23:41:23,920 | INFO     | advanced_defect_analyzer - Real defects: 55
+2026-01-17 23:41:23,920 | INFO     | advanced_defect_analyzer - Card features filtered: 945
+2026-01-17 23:41:23,920 | INFO     | advanced_defect_analyzer - Accuracy improvement: 94.5% noise removed
+2026-01-17 23:41:23,924 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 23:41:23,924 | INFO     | advanced_defect_analyzer - Smart defects detected: 55
+2026-01-17 23:41:23,924 | INFO     | advanced_defect_analyzer - Estimated grade: 6-7 (Fine)
+2026-01-17 23:41:23,924 | INFO     | advanced_defect_analyzer - Grade confidence: 95.0%
+2026-01-17 23:41:23,924 | INFO     | advanced_defect_analyzer - Overall condition: 72.4%
+2026-01-17 23:50:25,622 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 23:50:25,622 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 23:50:26,694 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 23:50:26,694 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 23:50:26,704 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 23:50:26,706 | INFO     | advanced_defect_analyzer - Initial detections: 54061 pixels
+2026-01-17 23:50:26,756 | INFO     | advanced_defect_analyzer - Found 2277 potential defect regions (54061 pixels total)
+2026-01-17 23:50:26,757 | WARNING  | advanced_defect_analyzer - Too many components (2277), analyzing top 1000 by size
+2026-01-17 23:50:26,954 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 23:50:27,171 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 23:50:27,372 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 23:50:27,580 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 23:50:27,781 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 23:50:27,982 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 23:50:28,086 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 23:50:28,157 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 23:50:28,228 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 23:50:28,298 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 23:50:28,299 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 23:50:28,299 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 23:50:28,299 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 23:50:28,299 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 23:50:28,302 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 23:50:28,302 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 23:50:28,302 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 23:50:28,302 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 23:50:28,302 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-17 23:53:30,563 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 23:53:30,563 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 23:53:31,997 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-17 23:53:31,997 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-17 23:53:32,008 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-17 23:53:32,010 | INFO     | advanced_defect_analyzer - Initial detections: 42505 pixels
+2026-01-17 23:53:32,063 | INFO     | advanced_defect_analyzer - Found 3087 potential defect regions (42505 pixels total)
+2026-01-17 23:53:32,064 | WARNING  | advanced_defect_analyzer - Too many components (3087), analyzing top 1000 by size
+2026-01-17 23:53:32,299 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-17 23:53:32,555 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-17 23:53:32,794 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-17 23:53:33,045 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-17 23:53:33,284 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-17 23:53:33,527 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-17 23:53:33,707 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-17 23:53:33,785 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-17 23:53:33,866 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-17 23:53:33,946 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-17 23:53:33,947 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-17 23:53:33,947 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-17 23:53:33,947 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-17 23:53:33,947 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-17 23:53:33,951 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-17 23:53:33,951 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-17 23:53:33,951 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-17 23:53:33,951 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-17 23:53:33,951 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-18 00:00:08,151 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 00:00:08,151 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 00:11:42,985 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 00:11:42,985 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 14:22:28,720 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 14:22:28,720 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 14:22:30,345 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 14:22:30,345 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 14:22:30,357 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-18 14:22:30,359 | INFO     | advanced_defect_analyzer - Initial detections: 53739 pixels
+2026-01-18 14:22:30,413 | INFO     | advanced_defect_analyzer - Found 2489 potential defect regions (53739 pixels total)
+2026-01-18 14:22:30,413 | WARNING  | advanced_defect_analyzer - Too many components (2489), analyzing top 1000 by size
+2026-01-18 14:22:30,682 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-18 14:22:30,950 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-18 14:22:31,217 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-18 14:22:31,475 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-18 14:22:31,729 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-18 14:22:31,976 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-18 14:22:32,225 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-18 14:22:32,414 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-18 14:22:32,501 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-18 14:22:32,585 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-18 14:22:32,587 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-18 14:22:32,587 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-18 14:22:32,587 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-18 14:22:32,587 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-18 14:22:32,591 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-18 14:22:32,592 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-18 14:22:32,592 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-18 14:22:32,592 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-18 14:22:32,592 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-18 14:23:37,792 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 14:23:37,792 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 14:24:32,030 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 14:24:32,030 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 14:24:32,264 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 14:24:32,264 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 14:24:32,267 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-18 14:24:32,267 | INFO     | advanced_defect_analyzer - Initial detections: 10024 pixels
+2026-01-18 14:24:32,282 | INFO     | advanced_defect_analyzer - Found 529 potential defect regions (10024 pixels total)
+2026-01-18 14:24:32,304 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/529 (18.9%)
+2026-01-18 14:24:32,315 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/529 (37.8%)
+2026-01-18 14:24:32,330 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/529 (56.7%)
+2026-01-18 14:24:32,342 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/529 (75.6%)
+2026-01-18 14:24:32,357 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/529 (94.5%)
+2026-01-18 14:24:32,360 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 529/529 (100.0%)
+2026-01-18 14:24:32,360 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-18 14:24:32,360 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-18 14:24:32,360 | INFO     | advanced_defect_analyzer - Card features filtered: 529
+2026-01-18 14:24:32,360 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-18 14:24:32,361 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-18 14:24:32,361 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-18 14:24:32,361 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-18 14:24:32,361 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-18 14:24:32,361 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-01-18 14:25:35,195 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 14:25:35,195 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 14:25:36,281 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-01-18 14:25:36,281 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-01-18 14:25:36,292 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-01-18 14:25:36,293 | INFO     | advanced_defect_analyzer - Initial detections: 36393 pixels
+2026-01-18 14:25:36,342 | INFO     | advanced_defect_analyzer - Found 2214 potential defect regions (36393 pixels total)
+2026-01-18 14:25:36,342 | WARNING  | advanced_defect_analyzer - Too many components (2214), analyzing top 1000 by size
+2026-01-18 14:25:36,531 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-01-18 14:25:36,737 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-01-18 14:25:36,964 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-01-18 14:25:37,167 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-01-18 14:25:37,243 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-01-18 14:25:37,316 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-01-18 14:25:37,394 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-01-18 14:25:37,468 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-01-18 14:25:37,544 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-01-18 14:25:37,627 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-01-18 14:25:37,628 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-01-18 14:25:37,628 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-01-18 14:25:37,628 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-01-18 14:25:37,628 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-01-18 14:25:37,631 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-01-18 14:25:37,631 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-01-18 14:25:37,631 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-01-18 14:25:37,631 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-01-18 14:25:37,631 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-02-04 03:27:30,039 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-04 03:27:30,039 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-04 03:27:31,593 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-04 03:27:31,593 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-04 03:27:31,605 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-02-04 03:27:31,607 | INFO     | advanced_defect_analyzer - Initial detections: 45980 pixels
+2026-02-04 03:27:31,662 | INFO     | advanced_defect_analyzer - Found 3659 potential defect regions (45980 pixels total)
+2026-02-04 03:27:31,662 | WARNING  | advanced_defect_analyzer - Too many components (3659), analyzing top 1000 by size
+2026-02-04 03:27:31,943 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-02-04 03:27:32,221 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-02-04 03:27:32,498 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-02-04 03:27:32,782 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-02-04 03:27:33,049 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-02-04 03:27:33,334 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-02-04 03:27:33,600 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-02-04 03:27:33,829 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-02-04 03:27:33,927 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-02-04 03:27:34,028 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-02-04 03:27:34,030 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-02-04 03:27:34,030 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-02-04 03:27:34,030 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-02-04 03:27:34,030 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-02-04 03:27:34,035 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-02-04 03:27:34,035 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-02-04 03:27:34,035 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-02-04 03:27:34,035 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-02-04 03:27:34,035 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-02-04 03:27:39,654 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-04 03:27:39,654 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-04 03:27:40,785 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-04 03:27:40,785 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-04 03:27:40,798 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-02-04 03:27:40,801 | INFO     | advanced_defect_analyzer - Initial detections: 45980 pixels
+2026-02-04 03:27:40,856 | INFO     | advanced_defect_analyzer - Found 3659 potential defect regions (45980 pixels total)
+2026-02-04 03:27:40,856 | WARNING  | advanced_defect_analyzer - Too many components (3659), analyzing top 1000 by size
+2026-02-04 03:27:41,151 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-02-04 03:27:41,435 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-02-04 03:27:41,714 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-02-04 03:27:41,995 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-02-04 03:27:42,264 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-02-04 03:27:42,552 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-02-04 03:27:42,812 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-02-04 03:27:43,047 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-02-04 03:27:43,148 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-02-04 03:27:43,250 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-02-04 03:27:43,251 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-02-04 03:27:43,251 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-02-04 03:27:43,251 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-02-04 03:27:43,251 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-02-04 03:27:43,254 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-02-04 03:27:43,254 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-02-04 03:27:43,254 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-02-04 03:27:43,254 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-02-04 03:27:43,254 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-02-04 03:35:44,807 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-04 03:35:44,807 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-04 03:35:45,997 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-04 03:35:45,997 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-04 03:35:46,003 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-02-04 03:35:46,005 | INFO     | advanced_defect_analyzer - Initial detections: 27542 pixels
+2026-02-04 03:35:46,052 | INFO     | advanced_defect_analyzer - Found 3300 potential defect regions (27542 pixels total)
+2026-02-04 03:35:46,052 | WARNING  | advanced_defect_analyzer - Too many components (3300), analyzing top 1000 by size
+2026-02-04 03:35:46,248 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-02-04 03:35:46,446 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-02-04 03:35:46,641 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-02-04 03:35:46,737 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-02-04 03:35:46,809 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-02-04 03:35:46,880 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-02-04 03:35:46,950 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-02-04 03:35:47,022 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-02-04 03:35:47,090 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-02-04 03:35:47,164 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-02-04 03:35:47,165 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-02-04 03:35:47,165 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-02-04 03:35:47,165 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-02-04 03:35:47,165 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-02-04 03:35:47,168 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-02-04 03:35:47,168 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-02-04 03:35:47,168 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-02-04 03:35:47,168 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-02-04 03:35:47,168 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-02-04 03:35:48,619 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-04 03:35:48,619 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-04 03:35:48,625 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-02-04 03:35:48,627 | INFO     | advanced_defect_analyzer - Initial detections: 61139 pixels
+2026-02-04 03:35:48,674 | INFO     | advanced_defect_analyzer - Found 2341 potential defect regions (61139 pixels total)
+2026-02-04 03:35:48,674 | WARNING  | advanced_defect_analyzer - Too many components (2341), analyzing top 1000 by size
+2026-02-04 03:35:48,880 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-02-04 03:35:49,084 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-02-04 03:35:49,290 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-02-04 03:35:49,497 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-02-04 03:35:49,705 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-02-04 03:35:49,912 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-02-04 03:35:50,119 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-02-04 03:35:50,326 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-02-04 03:35:50,533 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-02-04 03:35:50,717 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-02-04 03:35:50,717 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-02-04 03:35:50,717 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-02-04 03:35:50,717 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-02-04 03:35:50,717 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-02-04 03:35:50,720 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-02-04 03:35:50,720 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-02-04 03:35:50,720 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-02-04 03:35:50,720 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-02-04 03:35:50,720 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-02-16 13:54:02,574 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-16 13:54:02,574 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-16 13:54:03,856 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-16 13:54:03,856 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-16 13:54:03,868 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-02-16 13:54:03,870 | INFO     | advanced_defect_analyzer - Initial detections: 25937 pixels
+2026-02-16 13:54:03,924 | INFO     | advanced_defect_analyzer - Found 3592 potential defect regions (25937 pixels total)
+2026-02-16 13:54:03,924 | WARNING  | advanced_defect_analyzer - Too many components (3592), analyzing top 1000 by size
+2026-02-16 13:54:04,157 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-02-16 13:54:04,387 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-02-16 13:54:04,492 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-02-16 13:54:04,567 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-02-16 13:54:04,643 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-02-16 13:54:04,719 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-02-16 13:54:04,795 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-02-16 13:54:04,872 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-02-16 13:54:04,948 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-02-16 13:54:05,023 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-02-16 13:54:05,024 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-02-16 13:54:05,024 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-02-16 13:54:05,024 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-02-16 13:54:05,024 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-02-16 13:54:05,031 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-02-16 13:54:05,031 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-02-16 13:54:05,031 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-02-16 13:54:05,031 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-02-16 13:54:05,031 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-02-23 18:22:07,102 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-23 18:22:07,102 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-23 18:22:08,273 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-02-23 18:22:08,273 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-02-23 18:22:08,281 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-02-23 18:22:08,282 | INFO     | advanced_defect_analyzer - Initial detections: 74121 pixels
+2026-02-23 18:22:08,332 | INFO     | advanced_defect_analyzer - Found 2379 potential defect regions (74121 pixels total)
+2026-02-23 18:22:08,332 | WARNING  | advanced_defect_analyzer - Too many components (2379), analyzing top 1000 by size
+2026-02-23 18:22:08,532 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-02-23 18:22:08,739 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-02-23 18:22:08,940 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-02-23 18:22:09,151 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-02-23 18:22:09,362 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-02-23 18:22:09,575 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-02-23 18:22:09,787 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-02-23 18:22:10,006 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-02-23 18:22:10,113 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-02-23 18:22:10,189 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-02-23 18:22:10,189 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-02-23 18:22:10,189 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-02-23 18:22:10,189 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-02-23 18:22:10,190 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-02-23 18:22:10,196 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-02-23 18:22:10,196 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-02-23 18:22:10,196 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-02-23 18:22:10,196 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-02-23 18:22:10,196 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-04-19 12:15:19,242 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-04-19 12:15:19,242 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-04-19 12:15:20,372 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-04-19 12:15:20,372 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-04-19 12:15:20,380 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-04-19 12:15:20,381 | INFO     | advanced_defect_analyzer - Initial detections: 74121 pixels
+2026-04-19 12:15:20,430 | INFO     | advanced_defect_analyzer - Found 2379 potential defect regions (74121 pixels total)
+2026-04-19 12:15:20,430 | WARNING  | advanced_defect_analyzer - Too many components (2379), analyzing top 1000 by size
+2026-04-19 12:15:20,623 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-04-19 12:15:20,824 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-04-19 12:15:21,020 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-04-19 12:15:21,217 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-04-19 12:15:21,413 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-04-19 12:15:21,615 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-04-19 12:15:21,813 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-04-19 12:15:22,019 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-04-19 12:15:22,116 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-04-19 12:15:22,180 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-04-19 12:15:22,181 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-04-19 12:15:22,181 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-04-19 12:15:22,181 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-04-19 12:15:22,181 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-04-19 12:15:22,187 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-04-19 12:15:22,187 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-04-19 12:15:22,187 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-04-19 12:15:22,187 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-04-19 12:15:22,187 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-04-19 12:15:31,062 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-04-19 12:15:31,062 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-04-19 12:15:31,873 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-04-19 12:15:31,873 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-04-19 12:15:31,881 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-04-19 12:15:31,883 | INFO     | advanced_defect_analyzer - Initial detections: 74121 pixels
+2026-04-19 12:15:31,930 | INFO     | advanced_defect_analyzer - Found 2379 potential defect regions (74121 pixels total)
+2026-04-19 12:15:31,930 | WARNING  | advanced_defect_analyzer - Too many components (2379), analyzing top 1000 by size
+2026-04-19 12:15:32,115 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-04-19 12:15:32,305 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-04-19 12:15:32,493 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-04-19 12:15:32,688 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-04-19 12:15:32,883 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-04-19 12:15:33,081 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-04-19 12:15:33,277 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-04-19 12:15:33,480 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-04-19 12:15:33,572 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-04-19 12:15:33,629 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-04-19 12:15:33,630 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-04-19 12:15:33,630 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-04-19 12:15:33,630 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-04-19 12:15:33,630 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-04-19 12:15:33,633 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-04-19 12:15:33,633 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-04-19 12:15:33,633 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-04-19 12:15:33,633 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-04-19 12:15:33,633 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-04-19 12:16:36,261 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-04-19 12:16:36,261 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-04-19 12:20:39,276 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-04-19 12:20:39,276 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-04-19 12:20:40,252 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-04-19 12:20:40,252 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-04-19 12:20:40,257 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-04-19 12:20:40,259 | INFO     | advanced_defect_analyzer - Initial detections: 59892 pixels
+2026-04-19 12:20:40,304 | INFO     | advanced_defect_analyzer - Found 2728 potential defect regions (59892 pixels total)
+2026-04-19 12:20:40,304 | WARNING  | advanced_defect_analyzer - Too many components (2728), analyzing top 1000 by size
+2026-04-19 12:20:40,482 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-04-19 12:20:40,660 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-04-19 12:20:40,837 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-04-19 12:20:41,015 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-04-19 12:20:41,194 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-04-19 12:20:41,377 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-04-19 12:20:41,508 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-04-19 12:20:41,564 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-04-19 12:20:41,620 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-04-19 12:20:41,675 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-04-19 12:20:41,675 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-04-19 12:20:41,675 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-04-19 12:20:41,676 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-04-19 12:20:41,676 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-04-19 12:20:41,678 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-04-19 12:20:41,678 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-04-19 12:20:41,678 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-04-19 12:20:41,678 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-04-19 12:20:41,678 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-04-19 12:20:42,767 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-04-19 12:20:42,767 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-04-19 12:20:42,773 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-04-19 12:20:42,775 | INFO     | advanced_defect_analyzer - Initial detections: 66740 pixels
+2026-04-19 12:20:42,820 | INFO     | advanced_defect_analyzer - Found 4024 potential defect regions (66740 pixels total)
+2026-04-19 12:20:42,820 | WARNING  | advanced_defect_analyzer - Too many components (4024), analyzing top 1000 by size
+2026-04-19 12:20:42,996 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-04-19 12:20:43,173 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-04-19 12:20:43,348 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-04-19 12:20:43,523 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-04-19 12:20:43,699 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-04-19 12:20:43,874 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-04-19 12:20:44,050 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-04-19 12:20:44,226 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-04-19 12:20:44,401 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-04-19 12:20:44,576 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-04-19 12:20:44,578 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-04-19 12:20:44,578 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-04-19 12:20:44,578 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-04-19 12:20:44,578 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-04-19 12:20:44,581 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-04-19 12:20:44,581 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-04-19 12:20:44,581 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-04-19 12:20:44,581 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-04-19 12:20:44,581 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-06-19 22:04:41,459 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-06-19 22:04:41,459 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-06-19 22:04:41,987 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-06-19 22:04:41,987 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-06-19 22:04:41,990 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-06-19 22:04:41,991 | INFO     | advanced_defect_analyzer - Initial detections: 9072 pixels
+2026-06-19 22:04:42,007 | INFO     | advanced_defect_analyzer - Found 666 potential defect regions (9072 pixels total)
+2026-06-19 22:04:42,029 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/666 (15.0%)
+2026-06-19 22:04:42,039 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/666 (30.0%)
+2026-06-19 22:04:42,056 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/666 (45.0%)
+2026-06-19 22:04:42,069 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/666 (60.1%)
+2026-06-19 22:04:42,082 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/666 (75.1%)
+2026-06-19 22:04:42,094 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/666 (90.1%)
+2026-06-19 22:04:42,102 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 666/666 (100.0%)
+2026-06-19 22:04:42,102 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-06-19 22:04:42,102 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-06-19 22:04:42,102 | INFO     | advanced_defect_analyzer - Card features filtered: 666
+2026-06-19 22:04:42,102 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-06-19 22:04:42,103 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-06-19 22:04:42,103 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-06-19 22:04:42,103 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-06-19 22:04:42,104 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-06-19 22:04:42,104 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-06-19 22:05:08,208 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-06-19 22:05:08,208 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-06-19 22:05:08,464 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-06-19 22:05:08,464 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-06-19 22:05:08,467 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-06-19 22:05:08,468 | INFO     | advanced_defect_analyzer - Initial detections: 9072 pixels
+2026-06-19 22:05:08,482 | INFO     | advanced_defect_analyzer - Found 666 potential defect regions (9072 pixels total)
+2026-06-19 22:05:08,502 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/666 (15.0%)
+2026-06-19 22:05:08,512 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/666 (30.0%)
+2026-06-19 22:05:08,524 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/666 (45.0%)
+2026-06-19 22:05:08,537 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/666 (60.1%)
+2026-06-19 22:05:08,550 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/666 (75.1%)
+2026-06-19 22:05:08,561 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/666 (90.1%)
+2026-06-19 22:05:08,569 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 666/666 (100.0%)
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - Card features filtered: 666
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-06-19 22:05:08,570 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-09-11 11:18:27,928 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-09-11 11:18:27,928 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-09-11 11:18:29,789 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-09-11 11:18:29,789 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-09-11 11:18:29,831 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-09-11 11:18:29,833 | INFO     | advanced_defect_analyzer - Initial detections: 18361 pixels
+2026-09-11 11:18:29,885 | INFO     | advanced_defect_analyzer - Found 2478 potential defect regions (18361 pixels total)
+2026-09-11 11:18:29,885 | WARNING  | advanced_defect_analyzer - Too many components (2478), analyzing top 1000 by size
+2026-09-11 11:18:30,117 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-09-11 11:18:30,282 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-09-11 11:18:30,365 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-09-11 11:18:30,448 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-09-11 11:18:30,531 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-09-11 11:18:30,613 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-09-11 11:18:30,694 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-09-11 11:18:30,775 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-09-11 11:18:30,859 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-09-11 11:18:30,940 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-09-11 11:18:30,941 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-09-11 11:18:30,941 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-09-11 11:18:30,941 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-09-11 11:18:30,941 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-09-11 11:18:30,944 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-09-11 11:18:30,944 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-09-11 11:18:30,944 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-09-11 11:18:30,944 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-09-11 11:18:30,944 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%
+2026-09-11 11:18:46,874 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-09-11 11:18:46,874 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-09-11 11:18:48,268 | INFO     | advanced_defect_analyzer - TruScore Defect Analyzer initialized
+2026-09-11 11:18:48,268 | INFO     | advanced_defect_analyzer - Smart filtering: Design features vs actual damage
+2026-09-11 11:18:48,311 | INFO     | advanced_defect_analyzer - Starting intelligent defect analysis
+2026-09-11 11:18:48,313 | INFO     | advanced_defect_analyzer - Initial detections: 18361 pixels
+2026-09-11 11:18:48,366 | INFO     | advanced_defect_analyzer - Found 2478 potential defect regions (18361 pixels total)
+2026-09-11 11:18:48,366 | WARNING  | advanced_defect_analyzer - Too many components (2478), analyzing top 1000 by size
+2026-09-11 11:18:48,606 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 100/1000 (10.0%)
+2026-09-11 11:18:48,782 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 200/1000 (20.0%)
+2026-09-11 11:18:48,869 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 300/1000 (30.0%)
+2026-09-11 11:18:48,957 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 400/1000 (40.0%)
+2026-09-11 11:18:49,044 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 500/1000 (50.0%)
+2026-09-11 11:18:49,132 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 600/1000 (60.0%)
+2026-09-11 11:18:49,220 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 700/1000 (70.0%)
+2026-09-11 11:18:49,308 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 800/1000 (80.0%)
+2026-09-11 11:18:49,396 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 900/1000 (90.0%)
+2026-09-11 11:18:49,483 | INFO     | advanced_defect_analyzer - Analyzing defect regions: 1000/1000 (100.0%)
+2026-09-11 11:18:49,484 | INFO     | advanced_defect_analyzer - Intelligent analysis complete
+2026-09-11 11:18:49,484 | INFO     | advanced_defect_analyzer - Real defects: 0
+2026-09-11 11:18:49,484 | INFO     | advanced_defect_analyzer - Card features filtered: 1000
+2026-09-11 11:18:49,484 | INFO     | advanced_defect_analyzer - Accuracy improvement: 100.0% noise removed
+2026-09-11 11:18:49,488 | INFO     | advanced_defect_analyzer - TruScore DEFECT ANALYSIS COMPLETE
+2026-09-11 11:18:49,488 | INFO     | advanced_defect_analyzer - Smart defects detected: 0
+2026-09-11 11:18:49,488 | INFO     | advanced_defect_analyzer - Estimated grade: 9-10 (Mint)
+2026-09-11 11:18:49,488 | INFO     | advanced_defect_analyzer - Grade confidence: 70.0%
+2026-09-11 11:18:49,488 | INFO     | advanced_defect_analyzer - Overall condition: 90.0%

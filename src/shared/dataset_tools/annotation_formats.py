@@ -311,9 +311,14 @@ class AnnotationFormatValidator:
             for i, annotation in enumerate(annotations):
                 # Mask R-CNN typically requires segmentation masks
                 if "segmentation" not in annotation:
-                    result.warnings.append(f"Annotation {i}: Missing segmentation (recommended for Mask R-CNN)")
+                    result.errors.append(f"Annotation {i}: Missing segmentation (required for Mask R-CNN)")
+                elif not annotation["segmentation"]:
+                    result.errors.append(f"Annotation {i}: Empty segmentation")
                 else:
                     segmentation_required += 1
+                attrs = annotation.get("attributes") or {}
+                if attrs.get("source") == "yolo_conversion" and attrs.get("refinement_status") == "initial":
+                    result.errors.append(f"Annotation {i}: Approximate polygon is not segmentation ground truth")
                 
                 # Check for RLE format (common in Mask R-CNN)
                 if "segmentation" in annotation:
@@ -329,6 +334,7 @@ class AnnotationFormatValidator:
             if result.statistics["segmentation_coverage"] < 0.5:
                 result.warnings.append("Low segmentation coverage - Mask R-CNN works best with segmentation masks")
         
+        result.is_valid = not result.errors
         result.format_type = ExportFormat.MASK_RCNN
         return result
     
@@ -499,40 +505,26 @@ class AnnotationFormatConverter:
             return False, errors
     
     def convert_to_mask_rcnn(self, coco_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Convert COCO data to Mask R-CNN format (adds required fields)"""
-        mask_rcnn_data = coco_data.copy()
-        
-        # Ensure all annotations have required Mask R-CNN fields
-        annotations = mask_rcnn_data.get("annotations", [])
-        for annotation in annotations:
-            # Add iscrowd field if missing
-            if "iscrowd" not in annotation:
-                annotation["iscrowd"] = 0
-            
-            # Ensure segmentation exists (even if empty)
-            if "segmentation" not in annotation:
-                # Create segmentation from bbox if missing
-                bbox = annotation.get("bbox", [])
-                if len(bbox) == 4:
-                    x, y, w, h = bbox
-                    # Create rectangular segmentation
-                    segmentation = [
-                        [x, y, x + w, y, x + w, y + h, x, y + h]
-                    ]
-                    annotation["segmentation"] = segmentation
-                else:
-                    annotation["segmentation"] = []
-            
-            # Ensure area is calculated
-            if "area" not in annotation:
-                bbox = annotation.get("bbox", [])
-                if len(bbox) == 4:
-                    annotation["area"] = bbox[2] * bbox[3]  # width * height
-                else:
-                    annotation["area"] = 0
-        
-        return mask_rcnn_data
-    
+        """Accept sourced instance masks; never fabricate them from bboxes."""
+        if coco_data.get("info", {}).get("segmentation_ground_truth") is False:
+            raise ValueError("Box-only COCO data cannot be promoted to Mask R-CNN masks")
+        result = {
+            **coco_data,
+            "annotations": [dict(ann) for ann in coco_data.get("annotations", [])]
+        }
+        for ann in result["annotations"]:
+            if not ann.get("segmentation"):
+                raise ValueError(
+                    f"Mask R-CNN requires actual segmentation for annotation "
+                    f"{ann.get('id', 'unknown')}; YOLO boxes are not masks"
+                )
+            attrs = ann.get("attributes") or {}
+            if (attrs.get("source") == "yolo_conversion" and
+                    attrs.get("refinement_status") == "initial"):
+                raise ValueError("Approximate bbox-derived polygons are not mask ground truth")
+            ann.setdefault("iscrowd", 0)
+        return result
+
     def convert_to_detectron2(self, coco_data: Dict[str, Any]) -> Dict[str, Any]:
         """Convert COCO data to Detectron2 format"""
         # Detectron2 uses COCO format but with specific requirements

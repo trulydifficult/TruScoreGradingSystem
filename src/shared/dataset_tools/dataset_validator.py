@@ -89,8 +89,9 @@ class TruScoreDatasetValidator:
             'detectron2_maskrcnn': {
                 'label_format': 'coco',
                 'min_annotations_per_image': 1,
-                'required_fields': ['bbox', 'category_id'],
-                'supports_segmentation': True
+                'required_fields': ['bbox', 'category_id', 'segmentation'],
+                'supports_segmentation': True,
+                'requires_true_segmentation': True
             },
             'yolo_detection': {
                 'label_format': 'yolo',
@@ -101,7 +102,7 @@ class TruScoreDatasetValidator:
             'dual_border_detection': {
                 'label_format': 'coco',
                 'min_classes': 2,
-                'expected_classes': ['outer_border', 'inner_border'],
+                'expected_classes': ['outer_border', 'graphic_border'],
                 'min_annotations_per_image': 2
             }
         }
@@ -343,7 +344,14 @@ class TruScoreDatasetValidator:
         target_format = self.model_requirements.get(output_format, {}).get('label_format', 'unknown')
         
         if detected_format and target_format != 'unknown':
-            if detected_format != target_format:
+            if output_format == "detectron2_maskrcnn" and detected_format == "yolo":
+                self.validation_results.append(ValidationResult(
+                    passed=False,
+                    message="Mask R-CNN needs genuine instance masks; YOLO boxes are insufficient",
+                    severity="error",
+                    fix_suggestion="Annotate real segmentation polygons/masks, not synthetic bbox-derived masks"
+                ))
+            elif detected_format != target_format:
                 conversion_needed = True
                 self.validation_results.append(ValidationResult(
                     passed=True,  # Not an error, just needs conversion
@@ -412,7 +420,7 @@ class TruScoreDatasetValidator:
             
             # Find corresponding labels
             for label_path, label_data in labels.items():
-                if img_stem in label_path or Path(label_path).stem == img_stem:
+                if Path(label_path).stem.lower() == img_stem.lower():
                     if isinstance(label_data, list):
                         label_count = len([item for item in label_data if isinstance(item, (str, dict)) and item])
                     break
@@ -438,7 +446,7 @@ class TruScoreDatasetValidator:
                     message=f" Dual border detection: expecting {len(expected_classes)} classes",
                     severity="info",
                     details={"expected_classes": expected_classes},
-                    fix_suggestion="Ensure labels contain both outer and inner border annotations"
+                    fix_suggestion="Ensure labels contain both outer and graphic border annotations"
                 ))
         
         # Success case

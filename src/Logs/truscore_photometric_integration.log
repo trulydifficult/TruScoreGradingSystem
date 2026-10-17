@@ -1,0 +1,885 @@
+2026-01-17 18:44:58,388 | ERROR    | TruScore_photometric_integration - Some analysis engines not available: expected an indented block after function definition on line 235 (truscore_border_detection.py, line 236)
+2026-01-17 18:44:58,467 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 19:15:29,841 | ERROR    | TruScore_photometric_integration - Some analysis engines not available: expected an indented block after function definition on line 235 (truscore_border_detection.py, line 236)
+2026-01-17 19:15:29,919 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 20:36:57,440 | ERROR    | TruScore_photometric_integration - Some analysis engines not available: expected an indented block after function definition on line 235 (truscore_border_detection.py, line 236)
+2026-01-17 20:36:57,440 | INFO     | TruScore_photometric_integration - Starting Photometric-Only Analysis
+2026-01-17 20:36:57,440 | INFO     | TruScore_photometric_integration - Image path: /home/dewster/Pictures/Sports Cards/7-1-25done/Front/card013F.jpg
+2026-01-17 20:36:57,440 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 20:36:57,441 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 20:36:57,441 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 20:36:57,441 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 20:36:57,451 | ERROR    | TruScore_photometric_integration - Photometric-only analysis failed: 'TruScorePhotometricIntegration' object has no attribute 'photometric_engine'
+2026-01-17 20:41:43,084 | ERROR    | TruScore_photometric_integration - Some analysis engines not available: expected an indented block after function definition on line 235 (truscore_border_detection.py, line 236)
+2026-01-17 20:41:43,084 | INFO     | TruScore_photometric_integration - Starting Photometric-Only Analysis
+2026-01-17 20:41:43,084 | INFO     | TruScore_photometric_integration - Image path: /home/dewster/Pictures/Sports Cards/7-20-25done/Front2/image102F.jpg
+2026-01-17 20:41:43,084 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 20:41:43,085 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 20:41:43,085 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 20:41:43,085 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 20:41:43,089 | ERROR    | TruScore_photometric_integration - Photometric-only analysis failed: 'TruScorePhotometricIntegration' object has no attribute 'photometric_engine'
+2026-01-17 20:46:16,396 | INFO     | TruScore_photometric_integration - All TruScore analysis engines imported successfully
+2026-01-17 20:46:16,396 | INFO     | TruScore_photometric_integration - 24-Point Centering System integrated
+2026-01-17 20:46:16,397 | INFO     | TruScore_photometric_integration - Starting Photometric-Only Analysis
+2026-01-17 20:46:16,397 | INFO     | TruScore_photometric_integration - Image path: /home/dewster/Pictures/Sports Cards/7-2-25done/front/card304F.jpg
+2026-01-17 20:46:16,397 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 20:46:16,397 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 20:46:16,397 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 20:46:16,470 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 20:46:16,471 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 20:46:16,471 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 20:46:16,471 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 20:46:19,335 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-17 20:46:19,336 | INFO     | TruScore_photometric_integration - Allowed tabs: {'surface normals', 'depth map', 'albedo map', 'confidence'}
+2026-01-17 20:46:19,336 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-17 20:46:19,394 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-17 20:46:19,405 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-17 20:46:19,417 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-17 20:46:19,423 | INFO     | TruScore_photometric_integration - Skipping tab: Corner Analysis (not in allowed_tabs)
+2026-01-17 20:46:19,423 | INFO     | TruScore_photometric_integration - Skipping tab: Border Detection (not in allowed_tabs)
+2026-01-17 20:46:19,423 | INFO     | TruScore_photometric_integration - Skipping tab: 24-Point Centering (not in allowed_tabs)
+2026-01-17 20:46:19,423 | INFO     | TruScore_photometric_integration - Skipping tab: Analysis Summary (not in allowed_tabs)
+2026-01-17 20:46:19,423 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 20:46:24,761 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-17 20:46:35,777 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 20:46:35,777 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 20:46:35,777 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 20:46:35,809 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - === ANALYSIS CALL DETECTED ===
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - Image: /home/dewster/Pictures/Sports Cards/7-2-25done/front/card304F.jpg
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - Call stack (last 5 frames):
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 39, in <module>
+    sys.exit(main())
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 35, in main
+    return app.exec()
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/card_manager/card_manager.py", line 1193, in start_full_analysis
+    results = integration.analyze_card_comprehensive(self.current_card.image_path)
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/truscore_grading/TruScore_photometric_integration.py", line 159, in analyze_card_comprehensive
+    call_stack = traceback.format_stack()
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - === END CALL STACK ===
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - Starting TruScore analysis for: /home/dewster/Pictures/Sports Cards/7-2-25done/front/card304F.jpg
+2026-01-17 20:46:35,810 | INFO     | TruScore_photometric_integration - Stage 1: Starting photometric stereo analysis
+2026-01-17 20:46:36,769 | INFO     | TruScore_photometric_integration - Stage 1: Photometric analysis complete
+2026-01-17 20:46:36,769 | INFO     | TruScore_photometric_integration - Stage 2: Starting smart defect analysis
+2026-01-17 20:46:38,240 | INFO     | TruScore_photometric_integration - Stage 2: Defect analysis complete
+2026-01-17 20:46:38,241 | INFO     | TruScore_photometric_integration - Stage 3: Starting corner analysis
+2026-01-17 20:46:38,486 | INFO     | TruScore_photometric_integration - Stage 3: Corner analysis complete
+2026-01-17 20:46:38,486 | INFO     | TruScore_photometric_integration - Stage 4: Starting border detection
+2026-01-17 20:46:38,726 | ERROR    | TruScore_photometric_integration - TruScore analysis failed: 'TruScoreBorderResult' object has no attribute 'detection_method'
+2026-01-17 20:46:38,726 | INFO     | TruScore_photometric_integration - Creating fallback results for /home/dewster/Pictures/Sports Cards/7-2-25done/front/card304F.jpg
+2026-01-17 20:50:29,267 | INFO     | TruScore_photometric_integration - All TruScore analysis engines imported successfully
+2026-01-17 20:50:29,267 | INFO     | TruScore_photometric_integration - 24-Point Centering System integrated
+2026-01-17 20:50:29,267 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 20:50:29,267 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 20:50:29,268 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - === ANALYSIS CALL DETECTED ===
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - Image: /home/dewster/Pictures/Sports Cards/7-1-25done/Front2/card089F.jpg
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - Call stack (last 5 frames):
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 39, in <module>
+    sys.exit(main())
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 35, in main
+    return app.exec()
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/card_manager/card_manager.py", line 1193, in start_full_analysis
+    results = integration.analyze_card_comprehensive(self.current_card.image_path)
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/truscore_grading/TruScore_photometric_integration.py", line 159, in analyze_card_comprehensive
+    call_stack = traceback.format_stack()
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - === END CALL STACK ===
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - Starting TruScore analysis for: /home/dewster/Pictures/Sports Cards/7-1-25done/Front2/card089F.jpg
+2026-01-17 20:50:29,331 | INFO     | TruScore_photometric_integration - Stage 1: Starting photometric stereo analysis
+2026-01-17 20:50:30,451 | INFO     | TruScore_photometric_integration - Stage 1: Photometric analysis complete
+2026-01-17 20:50:30,451 | INFO     | TruScore_photometric_integration - Stage 2: Starting smart defect analysis
+2026-01-17 20:50:32,114 | INFO     | TruScore_photometric_integration - Stage 2: Defect analysis complete
+2026-01-17 20:50:32,114 | INFO     | TruScore_photometric_integration - Stage 3: Starting corner analysis
+2026-01-17 20:50:32,282 | INFO     | TruScore_photometric_integration - Stage 3: Corner analysis complete
+2026-01-17 20:50:32,282 | INFO     | TruScore_photometric_integration - Stage 4: Starting border detection
+2026-01-17 20:50:32,449 | INFO     | TruScore_photometric_integration - Stage 4.5: Starting 24-point centering analysis
+2026-01-17 20:50:32,449 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-17 20:50:32,480 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 96.2%
+2026-01-17 20:50:32,481 | INFO     | TruScore_photometric_integration - 24-point centering analysis complete: 96.2%
+2026-01-17 20:50:32,481 | INFO     | TruScore_photometric_integration - Stage 4: Border detection complete
+2026-01-17 20:50:32,481 | INFO     | TruScore_photometric_integration - Stage 5: Generating insights
+2026-01-17 20:50:32,481 | INFO     | TruScore_photometric_integration - Stage 5: Insights generation complete
+2026-01-17 20:50:32,481 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 0.9%, Errors: 0, Fallbacks: 0
+2026-01-17 20:50:32,481 | INFO     | TruScore_photometric_integration - TruScore analysis complete in 3.15s
+2026-01-17 20:50:32,489 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-17 20:50:32,490 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-17 20:50:32,490 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-17 20:50:32,538 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-17 20:50:32,549 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-17 20:50:32,560 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-17 20:50:32,568 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-17 20:50:32,570 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-17 20:50:32,583 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-17 20:50:32,586 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-17 20:50:32,587 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 20:56:44,332 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-17 20:58:33,250 | INFO     | TruScore_photometric_integration - All TruScore analysis engines imported successfully
+2026-01-17 20:58:33,250 | INFO     | TruScore_photometric_integration - 24-Point Centering System integrated
+2026-01-17 20:58:33,250 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 20:58:33,250 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 20:58:33,250 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 20:58:33,299 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - === ANALYSIS CALL DETECTED ===
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - Image: /home/dewster/Pictures/Sports Cards/7-1-25done/Front2/card114F.jpg
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - Call stack (last 5 frames):
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 39, in <module>
+    sys.exit(main())
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 35, in main
+    return app.exec()
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/card_manager/card_manager.py", line 1193, in start_full_analysis
+    results = integration.analyze_card_comprehensive(self.current_card.image_path)
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/truscore_grading/TruScore_photometric_integration.py", line 159, in analyze_card_comprehensive
+    call_stack = traceback.format_stack()
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - === END CALL STACK ===
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - Starting TruScore analysis for: /home/dewster/Pictures/Sports Cards/7-1-25done/Front2/card114F.jpg
+2026-01-17 20:58:33,300 | INFO     | TruScore_photometric_integration - Stage 1: Starting photometric stereo analysis
+2026-01-17 20:58:34,352 | INFO     | TruScore_photometric_integration - Stage 1: Photometric analysis complete
+2026-01-17 20:58:34,352 | INFO     | TruScore_photometric_integration - Stage 2: Starting smart defect analysis
+2026-01-17 20:58:36,035 | INFO     | TruScore_photometric_integration - Stage 2: Defect analysis complete
+2026-01-17 20:58:36,035 | INFO     | TruScore_photometric_integration - Stage 3: Starting corner analysis
+2026-01-17 20:58:36,177 | INFO     | TruScore_photometric_integration - Stage 3: Corner analysis complete
+2026-01-17 20:58:36,177 | INFO     | TruScore_photometric_integration - Stage 4: Starting border detection
+2026-01-17 20:58:36,375 | INFO     | TruScore_photometric_integration - Stage 4.5: Starting 24-point centering analysis
+2026-01-17 20:58:36,375 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-17 20:58:36,406 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 89.6%
+2026-01-17 20:58:36,407 | INFO     | TruScore_photometric_integration - 24-point centering analysis complete: 89.6%
+2026-01-17 20:58:36,407 | INFO     | TruScore_photometric_integration - Stage 4: Border detection complete
+2026-01-17 20:58:36,407 | INFO     | TruScore_photometric_integration - Stage 5: Generating insights
+2026-01-17 20:58:36,407 | INFO     | TruScore_photometric_integration - Stage 5: Insights generation complete
+2026-01-17 20:58:36,407 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 0.9%, Errors: 0, Fallbacks: 0
+2026-01-17 20:58:36,407 | INFO     | TruScore_photometric_integration - TruScore analysis complete in 3.11s
+2026-01-17 20:58:36,414 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-17 20:58:36,415 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-17 20:58:36,415 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-17 20:58:36,462 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-17 20:58:36,474 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-17 20:58:36,485 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-17 20:58:36,491 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-17 20:58:36,494 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-17 20:58:36,509 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-17 20:58:36,512 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-17 20:58:36,513 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 20:59:39,834 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-17 22:29:58,183 | INFO     | TruScore_photometric_integration - All TruScore analysis engines imported successfully
+2026-01-17 22:29:58,183 | INFO     | TruScore_photometric_integration - 24-Point Centering System integrated
+2026-01-17 22:29:58,184 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 22:29:58,184 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 22:29:58,184 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - === ANALYSIS CALL DETECTED ===
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - Image: /home/dewster/Pictures/Sports Cards/7-1-25done/Front2/card139F.jpg
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - Call stack (last 5 frames):
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 39, in <module>
+    sys.exit(main())
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 35, in main
+    return app.exec()
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/card_manager/card_manager.py", line 1192, in start_full_analysis
+    results = integration.analyze_card_comprehensive(self.current_card.image_path)
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/truscore_grading/TruScore_photometric_integration.py", line 159, in analyze_card_comprehensive
+    call_stack = traceback.format_stack()
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - === END CALL STACK ===
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - Starting TruScore analysis for: /home/dewster/Pictures/Sports Cards/7-1-25done/Front2/card139F.jpg
+2026-01-17 22:29:58,233 | INFO     | TruScore_photometric_integration - Stage 1: Starting photometric stereo analysis
+2026-01-17 22:29:59,257 | INFO     | TruScore_photometric_integration - Stage 1: Photometric analysis complete
+2026-01-17 22:29:59,257 | INFO     | TruScore_photometric_integration - Stage 2: Starting smart defect analysis
+2026-01-17 22:30:00,842 | INFO     | TruScore_photometric_integration - Stage 2: Defect analysis complete
+2026-01-17 22:30:00,842 | INFO     | TruScore_photometric_integration - Stage 3: Starting corner analysis
+2026-01-17 22:30:01,000 | INFO     | TruScore_photometric_integration - Stage 3: Corner analysis complete
+2026-01-17 22:30:01,000 | INFO     | TruScore_photometric_integration - Stage 4: Starting border detection
+2026-01-17 22:30:01,273 | INFO     | TruScore_photometric_integration - Stage 4.5: Starting 24-point centering analysis
+2026-01-17 22:30:01,273 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-17 22:30:01,305 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 99.1%
+2026-01-17 22:30:01,305 | INFO     | TruScore_photometric_integration - 24-point centering analysis complete: 99.1%
+2026-01-17 22:30:01,305 | INFO     | TruScore_photometric_integration - Stage 4: Border detection complete
+2026-01-17 22:30:01,305 | INFO     | TruScore_photometric_integration - Stage 5: Generating insights
+2026-01-17 22:30:01,305 | INFO     | TruScore_photometric_integration - Stage 5: Insights generation complete
+2026-01-17 22:30:01,305 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 0.9%, Errors: 0, Fallbacks: 0
+2026-01-17 22:30:01,305 | INFO     | TruScore_photometric_integration - TruScore analysis complete in 3.07s
+2026-01-17 22:30:01,312 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-17 22:30:01,313 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-17 22:30:01,313 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-17 22:30:01,359 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-17 22:30:01,370 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-17 22:30:01,382 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-17 22:30:01,388 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-17 22:30:01,391 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-17 22:30:01,405 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-17 22:30:01,408 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-17 22:30:01,409 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 22:35:03,581 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-17 22:39:54,099 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 22:39:54,099 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 22:39:54,102 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration - === ANALYSIS CALL DETECTED ===
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration - Image: /home/dewster/Pictures/Sports Cards/7-2-25done/front/card306F.jpg
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration - Call stack (last 5 frames):
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 39, in <module>
+    sys.exit(main())
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/run_truscore.py", line 35, in main
+    return app.exec()
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/card_manager/card_manager.py", line 1192, in start_full_analysis
+    results = integration.analyze_card_comprehensive(self.current_card.image_path)
+2026-01-17 22:39:54,151 | INFO     | TruScore_photometric_integration -   File "/home/dewster/Vanguard/src/modules/truscore_grading/TruScore_photometric_integration.py", line 159, in analyze_card_comprehensive
+    call_stack = traceback.format_stack()
+2026-01-17 22:39:54,152 | INFO     | TruScore_photometric_integration - === END CALL STACK ===
+2026-01-17 22:39:54,152 | INFO     | TruScore_photometric_integration - Starting TruScore analysis for: /home/dewster/Pictures/Sports Cards/7-2-25done/front/card306F.jpg
+2026-01-17 22:39:57,149 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-17 22:39:57,177 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 91.2%
+2026-01-17 22:39:57,177 | INFO     | TruScore_photometric_integration - Stage 4: Border detection complete
+2026-01-17 22:39:57,177 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 0.9%, Errors: 0, Fallbacks: 0
+2026-01-17 22:39:57,185 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-17 22:39:57,185 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-17 22:39:57,185 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-17 22:39:57,231 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-17 22:39:57,242 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-17 22:39:57,254 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-17 22:39:57,260 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-17 22:39:57,263 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-17 22:39:57,275 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-17 22:39:57,279 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-17 22:39:57,279 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 22:40:36,642 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-17 23:39:00,956 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 23:39:00,956 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 23:39:00,957 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 23:39:01,011 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 23:39:01,011 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 23:39:01,011 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-17 23:39:01,011 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 23:39:01,012 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 23:39:01,012 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: card307F.jpg
+2026-01-17 23:39:01,024 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2100
+2026-01-17 23:39:01,024 | INFO     | TruScore_photometric_integration - Stage 1: Image loaded and validated
+2026-01-17 23:39:02,263 | INFO     | TruScore_photometric_integration - Stage 2: Surface analysis complete - Score: 806.5/1000
+2026-01-17 23:39:03,787 | INFO     | TruScore_photometric_integration - Stage 3: Defect analysis complete - Found 0 defects
+2026-01-17 23:39:03,956 | INFO     | TruScore_photometric_integration - Stage 4: Corner analysis complete - Score: 940.9/1000
+2026-01-17 23:39:04,118 | INFO     | TruScore_photometric_integration - Stage 5: Border detection complete - Edge Score: 880.0/1000
+2026-01-17 23:39:04,118 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-17 23:39:04,150 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 90.2%
+2026-01-17 23:39:04,150 | INFO     | TruScore_photometric_integration - Stage 6: 24-point centering complete - Score: 902.0/1000
+2026-01-17 23:39:04,150 | INFO     | TruScore_photometric_integration - Final Scores: Corners=940.9 Centering=902.0 Surface=806.5 Edges=880.0 Total=3529.4/4000 Grade=8.5/10.0
+2026-01-17 23:39:04,150 | INFO     | TruScore_photometric_integration - Stage 7: Score aggregation complete - Final Grade: 8.5/10.0
+2026-01-17 23:39:04,150 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-17 23:39:04,150 | INFO     | TruScore_photometric_integration - Stage 8: Results compilation complete
+2026-01-17 23:39:04,150 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 88.2%, Errors: 0, Fallbacks: 0
+2026-01-17 23:39:04,158 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-17 23:39:04,158 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-17 23:39:04,158 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-17 23:39:04,205 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-17 23:39:04,216 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-17 23:39:04,228 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-17 23:39:04,234 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-17 23:39:04,237 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-17 23:39:04,252 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-17 23:39:04,255 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-17 23:39:04,256 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 23:39:27,366 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-17 23:41:18,950 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 23:41:18,950 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 23:41:18,950 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 23:41:19,084 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 23:41:19,084 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 23:41:19,084 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-17 23:41:19,084 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 23:41:19,084 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 23:41:19,084 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: card069F.jpg
+2026-01-17 23:41:19,102 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1650x2310
+2026-01-17 23:41:19,102 | INFO     | TruScore_photometric_integration - Stage 1: Image loaded and validated
+2026-01-17 23:41:20,499 | INFO     | TruScore_photometric_integration - Stage 2: Surface analysis complete - Score: 788.8/1000
+2026-01-17 23:41:23,924 | ERROR    | TruScore_photometric_integration - Unified Master Pipeline failed: 'SmartDefect' object has no attribute 'get'
+2026-01-17 23:41:23,924 | ERROR    | TruScore_photometric_integration - Traceback (most recent call last):
+  File "/home/dewster/Vanguard/src/modules/truscore_grading/TruScore_photometric_integration.py", line 276, in analyze_card_master_pipeline
+    raise e
+  File "/home/dewster/Vanguard/src/modules/truscore_grading/TruScore_photometric_integration.py", line 264, in analyze_card_master_pipeline
+    'defect_types': [d.get('type', 'unknown') for d in smart_defects]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dewster/Vanguard/src/modules/truscore_grading/TruScore_photometric_integration.py", line 264, in <listcomp>
+    'defect_types': [d.get('type', 'unknown') for d in smart_defects]
+                     ^^^^^
+AttributeError: 'SmartDefect' object has no attribute 'get'
+
+2026-01-17 23:50:25,573 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 23:50:25,573 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 23:50:25,573 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 23:50:25,622 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 23:50:25,622 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 23:50:25,622 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-17 23:50:25,622 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 23:50:25,622 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 23:50:25,622 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: card153F.jpg
+2026-01-17 23:50:25,634 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2100
+2026-01-17 23:50:25,634 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-01-17 23:50:26,694 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 828.4/1000
+2026-01-17 23:50:28,302 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-01-17 23:50:28,505 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 934.5/1000
+2026-01-17 23:50:28,657 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-01-17 23:50:28,657 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-17 23:50:28,689 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 94.8%
+2026-01-17 23:50:28,689 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 948.3/1000
+2026-01-17 23:50:28,689 | INFO     | TruScore_photometric_integration - Final Scores: Corners=934.5 Centering=948.3 Surface=828.4 Edges=880.0 Total=3591.1/4000 Grade=8.5/10.0
+2026-01-17 23:50:28,689 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.5/10.0
+2026-01-17 23:50:28,689 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-17 23:50:28,689 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-01-17 23:50:28,689 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 89.8%, Errors: 0, Fallbacks: 0
+2026-01-17 23:50:28,697 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-17 23:50:28,697 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-17 23:50:28,697 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-17 23:50:28,744 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-17 23:50:28,755 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-17 23:50:28,767 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-17 23:50:28,774 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-17 23:50:28,777 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-17 23:50:28,791 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-17 23:50:28,794 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-17 23:50:28,795 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 23:51:04,036 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-17 23:53:30,511 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-17 23:53:30,514 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-17 23:53:30,514 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-17 23:53:30,562 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-17 23:53:30,563 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-17 23:53:30,563 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-17 23:53:30,563 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-17 23:53:30,563 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-17 23:53:30,563 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: card032F.jpg
+2026-01-17 23:53:30,586 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1650x2310
+2026-01-17 23:53:30,587 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-01-17 23:53:31,997 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 888.5/1000
+2026-01-17 23:53:34,036 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-01-17 23:53:34,210 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 898.9/1000
+2026-01-17 23:53:34,408 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-01-17 23:53:34,408 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-17 23:53:34,443 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 90.6%
+2026-01-17 23:53:34,449 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 905.7/1000
+2026-01-17 23:53:34,449 | INFO     | TruScore_photometric_integration - Final Scores: Corners=898.9 Centering=905.7 Surface=888.5 Edges=880.0 Total=3573.1/4000 Grade=8.5/10.0
+2026-01-17 23:53:34,455 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.5/10.0
+2026-01-17 23:53:34,455 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-17 23:53:34,455 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-01-17 23:53:34,455 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 89.3%, Errors: 0, Fallbacks: 0
+2026-01-17 23:53:34,462 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-17 23:53:34,463 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-17 23:53:34,463 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-17 23:53:34,512 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-17 23:53:34,524 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-17 23:53:34,537 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-17 23:53:34,544 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-17 23:53:34,547 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-17 23:53:34,561 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-17 23:53:34,564 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-17 23:53:34,565 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-17 23:53:54,934 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-18 00:00:08,103 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-18 00:00:08,103 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-18 00:00:08,103 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-18 00:00:08,151 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-18 00:00:08,151 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-18 00:00:08,151 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-18 00:00:08,151 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-18 00:00:08,151 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-18 00:11:42,937 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-18 00:11:42,937 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-18 00:11:42,937 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-18 00:11:42,985 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-18 00:11:42,985 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-18 00:11:42,985 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-18 00:11:42,985 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-18 00:11:42,985 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-18 14:22:28,648 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-18 14:22:28,649 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-18 14:22:28,649 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-18 14:22:28,720 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-18 14:22:28,720 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-18 14:22:28,720 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-18 14:22:28,721 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-18 14:22:28,721 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-18 14:22:28,721 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: card052F.jpg
+2026-01-18 14:22:28,742 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1650x2310
+2026-01-18 14:22:28,742 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-01-18 14:22:30,345 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 859.0/1000
+2026-01-18 14:22:32,600 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-01-18 14:22:32,767 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 870.0/1000
+2026-01-18 14:22:33,038 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-01-18 14:22:33,038 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-18 14:22:33,076 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 94.1%
+2026-01-18 14:22:33,081 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 940.7/1000
+2026-01-18 14:22:33,081 | INFO     | TruScore_photometric_integration - Final Scores: Corners=870.0 Centering=940.7 Surface=859.0 Edges=880.0 Total=3549.7/4000 Grade=8.5/10.0
+2026-01-18 14:22:33,086 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.5/10.0
+2026-01-18 14:22:33,086 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-18 14:22:33,086 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-01-18 14:22:33,086 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 88.7%, Errors: 0, Fallbacks: 0
+2026-01-18 14:22:33,094 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-18 14:22:33,095 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-18 14:22:33,095 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-18 14:22:33,156 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-18 14:22:33,168 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-18 14:22:33,180 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-18 14:22:33,186 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-18 14:22:33,189 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-18 14:22:33,204 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-18 14:22:33,207 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-18 14:22:33,208 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-18 14:23:03,031 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-18 14:23:37,759 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-18 14:23:37,759 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-18 14:23:37,759 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-18 14:23:37,792 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-18 14:23:37,792 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-18 14:23:37,792 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-18 14:23:37,792 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-18 14:23:37,792 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-18 14:24:31,996 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-18 14:24:31,996 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-18 14:24:31,996 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-18 14:24:32,030 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-18 14:24:32,030 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-18 14:24:32,030 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-18 14:24:32,030 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-18 14:24:32,030 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-18 14:24:32,030 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: image101F.jpg
+2026-01-18 14:24:32,042 | INFO     | TruScore_photometric_integration - Image loaded successfully: 750x1050
+2026-01-18 14:24:32,042 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-01-18 14:24:32,263 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 872.7/1000
+2026-01-18 14:24:32,367 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-01-18 14:24:32,510 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 843.3/1000
+2026-01-18 14:24:32,645 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-01-18 14:24:32,645 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-18 14:24:32,657 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 93.2%
+2026-01-18 14:24:32,664 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 931.8/1000
+2026-01-18 14:24:32,664 | INFO     | TruScore_photometric_integration - Final Scores: Corners=843.3 Centering=931.8 Surface=872.7 Edges=880.0 Total=3527.8/4000 Grade=8.5/10.0
+2026-01-18 14:24:32,669 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.5/10.0
+2026-01-18 14:24:32,669 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-18 14:24:32,669 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-01-18 14:24:32,669 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 88.2%, Errors: 0, Fallbacks: 0
+2026-01-18 14:24:32,670 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-18 14:24:32,670 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-18 14:24:32,670 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-18 14:24:32,685 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-18 14:24:32,696 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-18 14:24:32,704 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-18 14:24:32,709 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-18 14:24:32,711 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-18 14:24:32,715 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-18 14:24:32,718 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-18 14:24:32,719 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-18 14:25:05,382 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-01-18 14:25:35,159 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-01-18 14:25:35,159 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-01-18 14:25:35,159 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-01-18 14:25:35,195 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-01-18 14:25:35,195 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-01-18 14:25:35,195 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-01-18 14:25:35,195 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-01-18 14:25:35,195 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-01-18 14:25:35,195 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: card081F.jpg
+2026-01-18 14:25:35,275 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2100
+2026-01-18 14:25:35,275 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-01-18 14:25:36,281 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 884.5/1000
+2026-01-18 14:25:37,636 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-01-18 14:25:37,779 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 900.0/1000
+2026-01-18 14:25:37,930 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-01-18 14:25:37,930 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-01-18 14:25:37,962 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 90.8%
+2026-01-18 14:25:37,969 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 908.0/1000
+2026-01-18 14:25:37,969 | INFO     | TruScore_photometric_integration - Final Scores: Corners=900.0 Centering=908.0 Surface=884.5 Edges=880.0 Total=3572.5/4000 Grade=8.5/10.0
+2026-01-18 14:25:37,974 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.5/10.0
+2026-01-18 14:25:37,974 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-01-18 14:25:37,974 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-01-18 14:25:37,974 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 89.3%, Errors: 0, Fallbacks: 0
+2026-01-18 14:25:37,975 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-01-18 14:25:37,975 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-01-18 14:25:37,975 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-01-18 14:25:38,012 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-01-18 14:25:38,029 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-01-18 14:25:38,040 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-01-18 14:25:38,046 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-01-18 14:25:38,049 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-01-18 14:25:38,062 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-01-18 14:25:38,065 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-01-18 14:25:38,066 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-01-18 14:26:00,718 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-02-04 03:27:29,972 | INFO     | TruScore_photometric_integration - Starting Photometric-Only Analysis
+2026-02-04 03:27:29,972 | INFO     | TruScore_photometric_integration - Image path: /home/dewster/Pictures/Sports Cards/7-1-25done/Front/card006F.jpg
+2026-02-04 03:27:29,972 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-02-04 03:27:29,972 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-02-04 03:27:29,973 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-02-04 03:27:30,038 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-02-04 03:27:30,039 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-02-04 03:27:30,039 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-02-04 03:27:30,039 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-02-04 03:27:30,039 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-02-04 03:27:34,035 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-02-04 03:27:34,036 | INFO     | TruScore_photometric_integration - Allowed tabs: {'surface normals', 'albedo map', 'depth map', 'confidence'}
+2026-02-04 03:27:34,036 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-02-04 03:27:34,144 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-02-04 03:27:34,157 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-02-04 03:27:34,169 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-02-04 03:27:34,175 | INFO     | TruScore_photometric_integration - Skipping tab: Corner Analysis (not in allowed_tabs)
+2026-02-04 03:27:34,175 | INFO     | TruScore_photometric_integration - Skipping tab: Border Detection (not in allowed_tabs)
+2026-02-04 03:27:34,175 | INFO     | TruScore_photometric_integration - Skipping tab: 24-Point Centering (not in allowed_tabs)
+2026-02-04 03:27:34,175 | INFO     | TruScore_photometric_integration - Skipping tab: Analysis Summary (not in allowed_tabs)
+2026-02-04 03:27:34,176 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-02-04 03:27:38,385 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-02-04 03:27:39,613 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-02-04 03:27:39,613 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-02-04 03:27:39,613 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-02-04 03:27:39,653 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-02-04 03:27:39,654 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-02-04 03:27:39,654 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-02-04 03:27:39,654 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-02-04 03:27:39,654 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-02-04 03:27:39,654 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: card006F.jpg
+2026-02-04 03:27:39,675 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1650x2310
+2026-02-04 03:27:39,675 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-02-04 03:27:40,785 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 879.4/1000
+2026-02-04 03:27:43,318 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-02-04 03:27:43,474 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 896.4/1000
+2026-02-04 03:27:43,687 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-02-04 03:27:43,687 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-02-04 03:27:43,724 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 82.5%
+2026-02-04 03:27:43,730 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 825.0/1000
+2026-02-04 03:27:43,730 | INFO     | TruScore_photometric_integration - Final Scores: Corners=896.4 Centering=825.0 Surface=879.4 Edges=880.0 Total=3480.8/4000 Grade=8.0/10.0
+2026-02-04 03:27:43,734 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.0/10.0
+2026-02-04 03:27:43,734 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-02-04 03:27:43,734 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-02-04 03:27:43,734 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 87.0%, Errors: 0, Fallbacks: 0
+2026-02-04 03:27:43,741 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-02-04 03:27:43,742 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-02-04 03:27:43,742 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-02-04 03:27:43,785 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-02-04 03:27:43,799 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-02-04 03:27:43,811 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-02-04 03:27:43,817 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-02-04 03:27:43,822 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-02-04 03:27:43,839 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-02-04 03:27:43,843 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-02-04 03:27:43,844 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-02-04 03:28:06,744 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-02-04 03:35:44,753 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-02-04 03:35:44,753 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-02-04 03:35:44,753 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-02-04 03:35:44,806 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-02-04 03:35:44,807 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-02-04 03:35:44,807 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-02-04 03:35:44,807 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-02-04 03:35:44,807 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-02-04 03:35:44,807 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: front.jpeg
+2026-02-04 03:35:44,879 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2000
+2026-02-04 03:35:44,879 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-02-04 03:35:45,996 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 908.2/1000
+2026-02-04 03:35:47,232 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-02-04 03:35:47,412 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 849.1/1000
+2026-02-04 03:35:47,645 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-02-04 03:35:47,646 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-02-04 03:35:47,690 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 9.1%
+2026-02-04 03:35:47,697 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 90.9/1000
+2026-02-04 03:35:47,698 | INFO     | TruScore_photometric_integration - Final Scores: Corners=849.1 Centering=90.9 Surface=908.2 Edges=880.0 Total=2728.2/4000 Grade=6.0/10.0
+2026-02-04 03:35:47,701 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 6.0/10.0
+2026-02-04 03:35:47,701 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 6.0/10.0
+2026-02-04 03:35:47,701 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-02-04 03:35:47,702 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 68.2%, Errors: 0, Fallbacks: 0
+2026-02-04 03:35:47,702 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: back.jpeg
+2026-02-04 03:35:47,712 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2000
+2026-02-04 03:35:47,713 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-02-04 03:35:48,619 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 796.2/1000
+2026-02-04 03:35:50,784 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-02-04 03:35:50,937 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 900.2/1000
+2026-02-04 03:35:51,094 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-02-04 03:35:51,094 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-02-04 03:35:51,119 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 1.9%
+2026-02-04 03:35:51,126 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 18.9/1000
+2026-02-04 03:35:51,126 | INFO     | TruScore_photometric_integration - Final Scores: Corners=900.2 Centering=18.9 Surface=796.2 Edges=880.0 Total=2595.3/4000 Grade=5.5/10.0
+2026-02-04 03:35:51,130 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 5.5/10.0
+2026-02-04 03:35:51,130 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 5.5/10.0
+2026-02-04 03:35:51,130 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-02-04 03:35:51,130 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 2, Success Rate: 100.00%, Avg Confidence: 66.5%, Errors: 0, Fallbacks: 0
+2026-02-16 13:54:02,498 | INFO     | TruScore_photometric_integration - Starting Photometric-Only Analysis
+2026-02-16 13:54:02,499 | INFO     | TruScore_photometric_integration - Image path: /home/dewster/Pictures/Sports Cards/7-1-25done/Front/card008F.jpg
+2026-02-16 13:54:02,499 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-02-16 13:54:02,499 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-02-16 13:54:02,499 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-02-16 13:54:02,574 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-02-16 13:54:02,574 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-02-16 13:54:02,574 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-02-16 13:54:02,574 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-02-16 13:54:02,574 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-02-16 13:54:05,031 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-02-16 13:54:05,032 | INFO     | TruScore_photometric_integration - Allowed tabs: {'depth map', 'albedo map', 'surface normals', 'confidence'}
+2026-02-16 13:54:05,032 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-02-16 13:54:05,076 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-02-16 13:54:05,088 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-02-16 13:54:05,099 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-02-16 13:54:05,106 | INFO     | TruScore_photometric_integration - Skipping tab: Corner Analysis (not in allowed_tabs)
+2026-02-16 13:54:05,106 | INFO     | TruScore_photometric_integration - Skipping tab: Border Detection (not in allowed_tabs)
+2026-02-16 13:54:05,106 | INFO     | TruScore_photometric_integration - Skipping tab: 24-Point Centering (not in allowed_tabs)
+2026-02-16 13:54:05,106 | INFO     | TruScore_photometric_integration - Skipping tab: Analysis Summary (not in allowed_tabs)
+2026-02-16 13:54:05,106 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-02-16 13:54:18,496 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-02-23 18:22:07,023 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-02-23 18:22:07,023 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-02-23 18:22:07,024 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-02-23 18:22:07,101 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-02-23 18:22:07,102 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-02-23 18:22:07,102 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-02-23 18:22:07,102 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-02-23 18:22:07,102 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-02-23 18:22:07,102 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: image328F.jpg
+2026-02-23 18:22:07,120 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2100
+2026-02-23 18:22:07,120 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-02-23 18:22:08,272 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 764.7/1000
+2026-02-23 18:22:10,201 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-02-23 18:22:10,602 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 904.8/1000
+2026-02-23 18:22:10,782 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-02-23 18:22:10,782 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-02-23 18:22:10,811 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 77.2%
+2026-02-23 18:22:10,816 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 772.1/1000
+2026-02-23 18:22:10,816 | INFO     | TruScore_photometric_integration - Final Scores: Corners=904.8 Centering=772.1 Surface=764.7 Edges=880.0 Total=3321.6/4000 Grade=7.5/10.0
+2026-02-23 18:22:10,822 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 7.5/10.0
+2026-02-23 18:22:10,822 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 7.5/10.0
+2026-02-23 18:22:10,822 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-02-23 18:22:10,822 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 83.0%, Errors: 0, Fallbacks: 0
+2026-02-23 18:22:10,828 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-02-23 18:22:10,829 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-02-23 18:22:10,829 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-02-23 18:22:10,879 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-02-23 18:22:10,891 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-02-23 18:22:10,903 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-02-23 18:22:10,909 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-02-23 18:22:10,912 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-02-23 18:22:10,924 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-02-23 18:22:10,927 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-02-23 18:22:10,927 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-02-23 18:23:22,324 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-04-19 12:15:19,165 | INFO     | TruScore_photometric_integration - Starting Photometric-Only Analysis
+2026-04-19 12:15:19,165 | INFO     | TruScore_photometric_integration - Image path: /home/dewster/Pictures/Sports Cards/7-20-25done/Front4/image328F.jpg
+2026-04-19 12:15:19,165 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-04-19 12:15:19,165 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-04-19 12:15:19,166 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-04-19 12:15:19,241 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-04-19 12:15:19,242 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-04-19 12:15:19,242 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-04-19 12:15:19,242 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-04-19 12:15:19,242 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-04-19 12:15:22,187 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-04-19 12:15:22,188 | INFO     | TruScore_photometric_integration - Allowed tabs: {'depth map', 'surface normals', 'confidence', 'albedo map'}
+2026-04-19 12:15:22,188 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-04-19 12:15:22,229 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-04-19 12:15:22,240 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-04-19 12:15:22,251 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-04-19 12:15:22,257 | INFO     | TruScore_photometric_integration - Skipping tab: Corner Analysis (not in allowed_tabs)
+2026-04-19 12:15:22,257 | INFO     | TruScore_photometric_integration - Skipping tab: Border Detection (not in allowed_tabs)
+2026-04-19 12:15:22,257 | INFO     | TruScore_photometric_integration - Skipping tab: 24-Point Centering (not in allowed_tabs)
+2026-04-19 12:15:22,257 | INFO     | TruScore_photometric_integration - Skipping tab: Analysis Summary (not in allowed_tabs)
+2026-04-19 12:15:22,257 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-04-19 12:15:29,607 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-04-19 12:15:31,029 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-04-19 12:15:31,029 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-04-19 12:15:31,029 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-04-19 12:15:31,062 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-04-19 12:15:31,062 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-04-19 12:15:31,062 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-04-19 12:15:31,062 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-04-19 12:15:31,062 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-04-19 12:15:31,062 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: image328F.jpg
+2026-04-19 12:15:31,137 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2100
+2026-04-19 12:15:31,137 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-04-19 12:15:31,873 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 764.7/1000
+2026-04-19 12:15:33,699 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-04-19 12:15:34,080 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 904.8/1000
+2026-04-19 12:15:34,272 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-04-19 12:15:34,272 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-04-19 12:15:34,299 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 77.2%
+2026-04-19 12:15:34,305 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 772.1/1000
+2026-04-19 12:15:34,305 | INFO     | TruScore_photometric_integration - Final Scores: Corners=904.8 Centering=772.1 Surface=764.7 Edges=880.0 Total=3321.6/4000 Grade=7.5/10.0
+2026-04-19 12:15:34,311 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 7.5/10.0
+2026-04-19 12:15:34,311 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 7.5/10.0
+2026-04-19 12:15:34,311 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-04-19 12:15:34,311 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 83.0%, Errors: 0, Fallbacks: 0
+2026-04-19 12:15:34,317 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-04-19 12:15:34,318 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-04-19 12:15:34,318 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-04-19 12:15:34,351 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-04-19 12:15:34,362 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-04-19 12:15:34,373 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-04-19 12:15:34,379 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-04-19 12:15:34,381 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-04-19 12:15:34,393 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-04-19 12:15:34,396 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-04-19 12:15:34,397 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-04-19 12:16:21,742 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-04-19 12:16:36,229 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-04-19 12:16:36,229 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-04-19 12:16:36,229 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-04-19 12:16:36,261 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-04-19 12:16:36,261 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-04-19 12:16:36,261 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-04-19 12:16:36,261 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-04-19 12:16:36,261 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-04-19 12:20:39,228 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-04-19 12:20:39,228 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-04-19 12:20:39,228 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-04-19 12:20:39,276 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-04-19 12:20:39,276 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-04-19 12:20:39,276 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-04-19 12:20:39,276 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-04-19 12:20:39,276 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-04-19 12:20:39,276 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: front.jpeg
+2026-04-19 12:20:39,293 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2000
+2026-04-19 12:20:39,293 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-04-19 12:20:40,252 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 800.4/1000
+2026-04-19 12:20:41,687 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-04-19 12:20:41,830 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 702.0/1000
+2026-04-19 12:20:41,979 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-04-19 12:20:41,979 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-04-19 12:20:42,020 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 0.9%
+2026-04-19 12:20:42,028 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 9.1/1000
+2026-04-19 12:20:42,028 | INFO     | TruScore_photometric_integration - Final Scores: Corners=702.0 Centering=9.1 Surface=800.4 Edges=880.0 Total=2391.4/4000 Grade=5.0/10.0
+2026-04-19 12:20:42,033 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 5.0/10.0
+2026-04-19 12:20:42,033 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 5.0/10.0
+2026-04-19 12:20:42,033 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-04-19 12:20:42,034 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 59.8%, Errors: 0, Fallbacks: 0
+2026-04-19 12:20:42,034 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: back.jpeg
+2026-04-19 12:20:42,047 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1500x2000
+2026-04-19 12:20:42,047 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-04-19 12:20:42,767 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 777.5/1000
+2026-04-19 12:20:44,646 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-04-19 12:20:44,789 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 927.2/1000
+2026-04-19 12:20:44,884 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-04-19 12:20:44,884 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-04-19 12:20:44,910 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 80.0%
+2026-04-19 12:20:44,932 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 800.0/1000
+2026-04-19 12:20:44,932 | INFO     | TruScore_photometric_integration - Final Scores: Corners=927.2 Centering=800.0 Surface=777.5 Edges=880.0 Total=3384.8/4000 Grade=8.0/10.0
+2026-04-19 12:20:44,938 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.0/10.0
+2026-04-19 12:20:44,938 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.0/10.0
+2026-04-19 12:20:44,938 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-04-19 12:20:44,938 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 2, Success Rate: 100.00%, Avg Confidence: 72.2%, Errors: 0, Fallbacks: 0
+2026-06-19 22:04:41,383 | INFO     | TruScore_photometric_integration - Starting Photometric-Only Analysis
+2026-06-19 22:04:41,383 | INFO     | TruScore_photometric_integration - Image path: /home/dewster/Pictures/Sports Cards/7-20-25done/Front2/image109F.jpg
+2026-06-19 22:04:41,383 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-06-19 22:04:41,383 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-06-19 22:04:41,383 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-06-19 22:04:41,459 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-06-19 22:04:41,459 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-06-19 22:04:41,460 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-06-19 22:04:41,460 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-06-19 22:04:41,460 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-06-19 22:04:42,104 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-06-19 22:04:42,105 | INFO     | TruScore_photometric_integration - Allowed tabs: {'confidence', 'surface normals', 'depth map', 'albedo map'}
+2026-06-19 22:04:42,105 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-06-19 22:04:42,132 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-06-19 22:04:42,142 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-06-19 22:04:42,151 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-06-19 22:04:42,156 | INFO     | TruScore_photometric_integration - Skipping tab: Corner Analysis (not in allowed_tabs)
+2026-06-19 22:04:42,156 | INFO     | TruScore_photometric_integration - Skipping tab: Border Detection (not in allowed_tabs)
+2026-06-19 22:04:42,156 | INFO     | TruScore_photometric_integration - Skipping tab: 24-Point Centering (not in allowed_tabs)
+2026-06-19 22:04:42,156 | INFO     | TruScore_photometric_integration - Skipping tab: Analysis Summary (not in allowed_tabs)
+2026-06-19 22:04:42,156 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-06-19 22:05:06,981 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-06-19 22:05:08,175 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-06-19 22:05:08,175 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-06-19 22:05:08,176 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-06-19 22:05:08,208 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-06-19 22:05:08,208 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-06-19 22:05:08,208 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-06-19 22:05:08,208 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-06-19 22:05:08,208 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-06-19 22:05:08,208 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: image109F.jpg
+2026-06-19 22:05:08,279 | INFO     | TruScore_photometric_integration - Image loaded successfully: 750x1050
+2026-06-19 22:05:08,279 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-06-19 22:05:08,464 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 884.8/1000
+2026-06-19 22:05:08,579 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-06-19 22:05:08,941 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 886.4/1000
+2026-06-19 22:05:09,174 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-06-19 22:05:09,174 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-06-19 22:05:09,185 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 94.6%
+2026-06-19 22:05:09,190 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 946.2/1000
+2026-06-19 22:05:09,190 | INFO     | TruScore_photometric_integration - Final Scores: Corners=886.4 Centering=946.2 Surface=884.8 Edges=880.0 Total=3597.4/4000 Grade=8.5/10.0
+2026-06-19 22:05:09,195 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.5/10.0
+2026-06-19 22:05:09,196 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-06-19 22:05:09,196 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-06-19 22:05:09,196 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 89.9%, Errors: 0, Fallbacks: 0
+2026-06-19 22:05:09,202 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-06-19 22:05:09,203 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-06-19 22:05:09,203 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-06-19 22:05:09,218 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-06-19 22:05:09,227 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-06-19 22:05:09,236 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-06-19 22:05:09,240 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-06-19 22:05:09,243 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-06-19 22:05:09,247 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-06-19 22:05:09,249 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-06-19 22:05:09,250 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-06-19 22:05:35,980 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-09-11 11:18:27,858 | INFO     | TruScore_photometric_integration - Starting Photometric-Only Analysis
+2026-09-11 11:18:27,858 | INFO     | TruScore_photometric_integration - Image path: /home/dewster/Pictures/Sports Cards/7-24-25/Front/image011F.jpg
+2026-09-11 11:18:27,858 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-09-11 11:18:27,858 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-09-11 11:18:27,859 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-09-11 11:18:27,928 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-09-11 11:18:27,928 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-09-11 11:18:27,928 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-09-11 11:18:27,928 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-09-11 11:18:27,928 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-09-11 11:18:30,944 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-09-11 11:18:30,945 | INFO     | TruScore_photometric_integration - Allowed tabs: {'depth map', 'confidence', 'albedo map', 'surface normals'}
+2026-09-11 11:18:30,945 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-09-11 11:18:30,993 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-09-11 11:18:31,005 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-09-11 11:18:31,018 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-09-11 11:18:31,024 | INFO     | TruScore_photometric_integration - Skipping tab: Corner Analysis (not in allowed_tabs)
+2026-09-11 11:18:31,024 | INFO     | TruScore_photometric_integration - Skipping tab: Border Detection (not in allowed_tabs)
+2026-09-11 11:18:31,024 | INFO     | TruScore_photometric_integration - Skipping tab: 24-Point Centering (not in allowed_tabs)
+2026-09-11 11:18:31,024 | INFO     | TruScore_photometric_integration - Skipping tab: Analysis Summary (not in allowed_tabs)
+2026-09-11 11:18:31,024 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-09-11 11:18:45,299 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully
+2026-09-11 11:18:46,813 | INFO     | TruScore_photometric_integration - Initializing TruScore Photometric Integration System
+2026-09-11 11:18:46,813 | INFO     | TruScore_photometric_integration - Loading analysis engines: Photometric, Border Detector, Defect Analyzer
+2026-09-11 11:18:46,813 | INFO     | TruScore_photometric_integration - Photometric engine initialized
+2026-09-11 11:18:46,874 | INFO     | TruScore_photometric_integration - Border detector initialized
+2026-09-11 11:18:46,874 | INFO     | TruScore_photometric_integration - Defect analyzer initialized
+2026-09-11 11:18:46,874 | INFO     | TruScore_photometric_integration - 📝 Quality statements database initialized (40 statements, expandable to 500+)
+2026-09-11 11:18:46,874 | INFO     | TruScore_photometric_integration - Performance tracking initialized
+2026-09-11 11:18:46,874 | INFO     | TruScore_photometric_integration - TruScore Photometric Integration ready
+2026-09-11 11:18:46,874 | INFO     | TruScore_photometric_integration - Starting Unified Master Analysis: image011F.jpg
+2026-09-11 11:18:46,923 | INFO     | TruScore_photometric_integration - Image loaded successfully: 1619x2274
+2026-09-11 11:18:46,923 | INFO     | TruScore_photometric_integration - Stage 1 - Image loading complete
+2026-09-11 11:18:48,268 | INFO     | TruScore_photometric_integration - Stage 2 - Surface analysis complete - Score: 950.1/1000
+2026-09-11 11:18:49,495 | INFO     | TruScore_photometric_integration - Stage 3 - Defect analysis complete - Found 0 defects
+2026-09-11 11:18:49,684 | INFO     | TruScore_photometric_integration - Stage 4 - Corner analysis complete - Score: 789.4/1000
+2026-09-11 11:18:49,891 | INFO     | TruScore_photometric_integration - Stage 5 - Border detection complete - Edge Score: 880.0/1000
+2026-09-11 11:18:49,891 | INFO     | TruScore_photometric_integration - Performing real 24-point border width measurements
+2026-09-11 11:18:49,934 | INFO     | TruScore_photometric_integration - Real 24-point centering complete: 97.7%
+2026-09-11 11:18:49,938 | INFO     | TruScore_photometric_integration - Stage 6 - 24-point centering complete - Score: 976.8/1000
+2026-09-11 11:18:49,938 | INFO     | TruScore_photometric_integration - Final Scores: Corners=789.4 Centering=976.8 Surface=950.1 Edges=880.0 Total=3596.4/4000 Grade=8.5/10.0
+2026-09-11 11:18:49,942 | INFO     | TruScore_photometric_integration - Stage 7 - Score aggregation complete - Final Grade: 8.5/10.0
+2026-09-11 11:18:49,942 | INFO     | TruScore_photometric_integration - Master results compiled successfully - Final Grade: 8.5/10.0
+2026-09-11 11:18:49,942 | INFO     | TruScore_photometric_integration - Stage 8 - Results compilation complete
+2026-09-11 11:18:49,942 | INFO     | TruScore_photometric_integration - Performance Stats - Total: 1, Success Rate: 100.00%, Avg Confidence: 89.9%, Errors: 0, Fallbacks: 0
+2026-09-11 11:18:49,949 | INFO     | TruScore_photometric_integration - Displaying Photometric Results Viewer
+2026-09-11 11:18:49,950 | INFO     | TruScore_photometric_integration - Allowed tabs: None
+2026-09-11 11:18:49,950 | INFO     | TruScore_photometric_integration - Adding tab: Surface Normals
+2026-09-11 11:18:49,997 | INFO     | TruScore_photometric_integration - Adding tab: Depth Map
+2026-09-11 11:18:50,008 | INFO     | TruScore_photometric_integration - Adding tab: Confidence
+2026-09-11 11:18:50,021 | INFO     | TruScore_photometric_integration - Adding tab: Albedo Map
+2026-09-11 11:18:50,028 | INFO     | TruScore_photometric_integration - Adding tab: Corner Analysis
+2026-09-11 11:18:50,031 | INFO     | TruScore_photometric_integration - Adding tab: Border Detection
+2026-09-11 11:18:50,078 | INFO     | TruScore_photometric_integration - Adding tab: 24-Point Centering
+2026-09-11 11:18:50,082 | INFO     | TruScore_photometric_integration - Adding tab: Analysis Summary
+2026-09-11 11:18:50,082 | INFO     | TruScore_photometric_integration - TruScore Photometric Results Viewer created
+2026-09-11 11:20:20,386 | INFO     | TruScore_photometric_integration - Photometric Results Viewer displayed successfully

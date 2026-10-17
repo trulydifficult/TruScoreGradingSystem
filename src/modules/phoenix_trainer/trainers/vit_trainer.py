@@ -23,6 +23,11 @@ from PIL import Image
 import torchvision.transforms as transforms
 
 from .base_trainer import BaseTrainer
+from ..training_runtime import (
+    TrainingRuntime,
+    make_dataloader_generator,
+    seed_dataloader_worker,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +61,8 @@ class ViTTrainer(BaseTrainer):
     """
     
     def __init__(self, config: Dict[str, Any]):
+        config.setdefault("monitor_metric", "accuracy")
+        config.setdefault("monitor_mode", "max")
         super().__init__(config)
         
         # ViT-specific config
@@ -150,9 +157,9 @@ class ViTTrainer(BaseTrainer):
         if len(image_paths) == 0:
             raise ValueError("No images found in dataset!")
         
-        # Convert to numpy for shuffling
-        indices = np.arange(len(image_paths))
-        np.random.shuffle(indices)
+        # Deterministic split for reproducible runs.
+        rng = np.random.default_rng(self.seed)
+        indices = rng.permutation(len(image_paths))
         
         image_paths = [image_paths[i] for i in indices]
         labels = [labels[i] for i in indices]
@@ -188,12 +195,15 @@ class ViTTrainer(BaseTrainer):
         val_dataset = CornerDataset(val_images, val_labels, val_transform)
         
         # Create data loaders
+        loader_generator = make_dataloader_generator(self.seed)
         self.train_loader = DataLoader(
             train_dataset,
             batch_size=self.config['batch_size'],
             shuffle=True,
             num_workers=self.config.get('num_workers', 2),
-            pin_memory=True if torch.cuda.is_available() else False
+            pin_memory=True if torch.cuda.is_available() else False,
+            worker_init_fn=seed_dataloader_worker,
+            generator=loader_generator,
         )
         
         self.val_loader = DataLoader(
@@ -201,10 +211,11 @@ class ViTTrainer(BaseTrainer):
             batch_size=self.config['batch_size'],
             shuffle=False,
             num_workers=self.config.get('num_workers', 2),
-            pin_memory=True if torch.cuda.is_available() else False
+            pin_memory=True if torch.cuda.is_available() else False,
+            worker_init_fn=seed_dataloader_worker,
+            generator=make_dataloader_generator(self.seed + 1),
         )
         
-        self.log("Dataset loaded successfully", "SUCCESS")
     
     def build_model(self):
         """
@@ -218,13 +229,15 @@ class ViTTrainer(BaseTrainer):
         # Create ViT model (pretrained on ImageNet)
         model_name = self.config.get('model_name', 'vit_base_patch16_224')
         
+        pretrained = bool(self.config.get("pretrained", True))
         self.model = timm.create_model(
             model_name,
-            pretrained=True,
-            num_classes=self.num_classes
+            pretrained=pretrained,
+            num_classes=self.num_classes,
         )
         
         self.log(f"Model: {model_name}", "INFO")
+        self.log(f"Pretrained weights: {pretrained}", "INFO")
         self.log(f"Parameters: {sum(p.numel() for p in self.model.parameters()) / 1e6:.2f}M", "INFO")
         
         # Move to device
@@ -263,125 +276,110 @@ class ViTTrainer(BaseTrainer):
             self.optimizer,
             T_max=self.config['epochs']
         )
+
+        self.training_runtime = TrainingRuntime(
+            self.config,
+            self.device,
+            self.optimizer,
+        )
+        runtime_state = self.training_runtime.describe()
+        self.log(
+            "Runtime: "
+            f"precision={runtime_state.precision}, "
+            f"accumulation={runtime_state.accumulation_steps}, "
+            f"clip={runtime_state.gradient_clipping}",
+            "INFO",
+        )
         
-        self.log("Model built successfully", "SUCCESS")
     
     def train_epoch(self) -> Dict[str, float]:
-        """
-        Train one epoch - REAL TRAINING with gradient descent
-        
-        Returns:
-            Dictionary with training metrics
-        """
+        """Train one real epoch using the shared Phoenix runtime."""
         self.model.train()
-        
+
         running_loss = 0.0
         correct = 0
         total = 0
-        
+        total_batches = len(self.train_loader)
+        self.training_runtime.begin_epoch()
+
         for batch_idx, (images, labels) in enumerate(self.train_loader):
-            # Move to device
             images = images.to(self.device)
             labels = labels.to(self.device)
-            
-            # Zero gradients
-            self.optimizer.zero_grad()
-            
-            # Forward pass - REAL COMPUTATION
-            outputs = self.model(images)
-            loss = self.criterion(outputs, labels)
-            
-            # Backward pass - REAL GRADIENT DESCENT
-            loss.backward()
-            self.optimizer.step()
-            
-            # Statistics
+
+            with self.training_runtime.autocast():
+                outputs = self.model(images)
+                loss = self.criterion(outputs, labels)
+
+            self.training_runtime.backward_and_step(
+                loss,
+                self.model,
+                batch_idx,
+                total_batches,
+            )
+
             running_loss += loss.item()
             _, predicted = outputs.max(1)
             total += labels.size(0)
             correct += predicted.eq(labels).sum().item()
-            
-            # Log progress every 10 batches
-            if batch_idx % 10 == 0:
-                self.log(f"Batch {batch_idx}/{len(self.train_loader)}: Loss={loss.item():.4f}", "INFO")
-        
-        # Update learning rate
+
+            log_interval = max(1, int(self.config.get("log_interval_batches", 10)))
+            if batch_idx % log_interval == 0 or batch_idx + 1 == total_batches:
+                self.log(
+                    f"Batch {batch_idx + 1}/{total_batches}: "
+                    f"Loss={loss.item():.4f}",
+                    "INFO",
+                )
+
         self.scheduler.step()
-        
-        # Calculate metrics
-        avg_loss = running_loss / len(self.train_loader)
+
+        avg_loss = running_loss / total_batches
         accuracy = 100.0 * correct / total
         current_lr = self.optimizer.param_groups[0]['lr']
-        
-        metrics = {
+
+        return {
             'train_loss': avg_loss,
             'train_accuracy': accuracy,
-            'learning_rate': current_lr
+            'learning_rate': current_lr,
         }
-        
-        return metrics
-    
+
     def validate(self) -> Dict[str, float]:
-        """
-        Run validation - REAL evaluation with accuracy calculation
-        
-        Returns:
-            Dictionary with validation metrics
-        """
+        """Run validation with the same precision policy used for training."""
         self.model.eval()
-        
+
         running_loss = 0.0
         correct = 0
         total = 0
-        
+
         with torch.no_grad():
             for images, labels in self.val_loader:
                 images = images.to(self.device)
                 labels = labels.to(self.device)
-                
-                # Forward pass
-                outputs = self.model(images)
-                loss = self.criterion(outputs, labels)
-                
-                # Statistics
+
+                with self.training_runtime.autocast():
+                    outputs = self.model(images)
+                    loss = self.criterion(outputs, labels)
+
                 running_loss += loss.item()
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
                 correct += predicted.eq(labels).sum().item()
-        
-        # Calculate metrics
+
         avg_loss = running_loss / len(self.val_loader)
         accuracy = 100.0 * correct / total
-        
-        metrics = {
+
+        return {
             'val_loss': avg_loss,
-            'accuracy': accuracy
+            'accuracy': accuracy,
         }
-        
-        return metrics
-    
+
     def save_checkpoint(self, filepath: Path):
-        """
-        Save model checkpoint
-        
-        Args:
-            filepath: Path to save checkpoint
-        """
+        """Save a resumable checkpoint plus model-only weights."""
         self.log(f"Saving checkpoint: {filepath}", "INFO")
-        
-        checkpoint = {
-            'epoch': self.current_epoch,
-            'model_state_dict': self.model.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-            'scheduler_state_dict': self.scheduler.state_dict(),
-            'best_metric': self.best_metric,
-            'config': self.config
-        }
-        
+
+        checkpoint = self.build_common_checkpoint_payload()
         torch.save(checkpoint, filepath)
-        
-        # Also save just the model weights for easy loading
+
         model_only_path = filepath.parent / f"{filepath.stem}_model_only.pth"
         torch.save(self.model.state_dict(), model_only_path)
-        
+
         self.log(f"Checkpoint saved to {filepath}", "SUCCESS")
