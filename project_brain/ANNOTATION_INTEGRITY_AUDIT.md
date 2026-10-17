@@ -612,3 +612,74 @@ Actual workstation GUI and new batch output still pending. ADR 0007.
 ## Final-card completion — real UI confirmation (2026-10-16)
 
 The user tested the post-ADR-0007 flow and confirmed the GUI displayed **"Annotations Complete 3/3 successfully annotated"**. The final-card completion UI has therefore passed this user-observed runtime behavior check; the historical issue of visually retaining a straightened final card is addressed at the visible UX level. The current three-card exported artifacts have **not** yet been inspected, so image rotation, label correctness, per-folder byte consistency, and subpixel alignment remain separate acceptance gates. Do not claim these files verified solely based on the completion count.
+
+## Six fresh real Annotation Studio exports audited (fe3f248) — 2026-10-16
+
+Commit `fe3f2481fd3796e4a2b5ab96c15b1f2bdc391c92` pushed 36 new
+image/label files in the three existing training targets and 9 updated
+application logs. Audited exact stems
+`image092F, image093F, image094F, card094, card095, card096`.
+
+**Verified by authoritative Git blob IDs, file contents and new CI:**
+- For each card all 3 stored JPEGs have identical Git blob SHA (same
+  actual encoded pixels across combined / outer / graphic exports).
+- Every output has a corresponding .txt file with the same stem.
+  Combined target has exactly two rows with classes 0=outer and
+  1=inner graphic; outer-only class 0 row matches combined outer
+  exactly; graphic-only class 0 row matches combined graphic
+  coordinates exactly (aside from its class index).
+- Every actual JPEG decodes as JPEG. `image092F, image093F, image094F`
+  dimensions are 1640x2291; `card094` 1571x2174; `card095`
+  1589x2174; `card096` 1580x2188. Normalized YOLO boxes are in
+  bounds and outer encloses inner on all six.
+- A 3-column x 2-row contact sheet produced from the committed JPEGs
+  with cyan outer and magenta inner pixel overlays was visually reviewed.
+  All six boxes plausibly cover their intended printed/card boundaries.
+  The `card096` *printed design* is sideways within a portrait card,
+  but its borders align visually with the physical card; that is not,
+  by itself, evidence of a rotation export error.
+
+**Runtime provenance from captured logs:**
+- Earlier 3-card batch: image092F +0.650°, image093F +0.460°;
+  image094F saved on the final card twice at +0.350° then +0.320°
+  under the old Space behavior that reset/retained the final card.
+  The committed image094F JPEG is the last version.
+- Post-fix 3-card batch: card094 −0.200°; card095 +0.130°;
+  card096 +0.110°. The studio log shows
+  `Space: saving card 3/3` → `Saved rotated source image:
+  card096.jpg (0.110 degrees)` → `Saved all border training formats`
+  → `Annotation session finished: 3/3 saved` without a second Space
+  export. The application also automatically predicted one outer
+  and one inner box for each of these three cards.
+- At startup the log still contains a nonfatal
+  `Failed to import PluginSettingsPanel` for
+  `modules.annotation_studio.plugins.plugin_panel`, even while the
+  real Border Detection settings controls subsequently loaded.
+  Treat as future module-discovery/optional-import cleanup, not as a
+  present failure of these saved results.
+
+**Automated evidence:** New
+`tests/annotation/test_real_six_card_exports.py` checks six true
+JPEGs and exact class/geometry identity; its standalone diagnostic
+generates the contact-sheet preview in Annotation Integrity Actions
+logs. Workflows updated to include the six-card acceptance preview
+and the runtime audit log. GitHub Actions run `38986486752` passed
+45 tests; Phoenix run `38986490725` passed. After initial validation,
+mutable log timestamps were moved from hard CI assertions into a
+diagnostic-only report, preventing an eventual log rotation from
+falsely failing otherwise correct source/dataset contracts.
+
+**Remaining limitations:** The exported-source JPEGs are the
+post-rotation images. Original pre-rotation pixels/reference corner
+coordinates were not supplied for this six-card batch; therefore
+the exact applied angle (+0.110°, etc.) and pixel-precision corner
+alignment cannot be independently reconstructed. Neither this audit
+nor 5-field YOLO annotations provides segmentation masks or genuine
+rotated quadrilaterals. Do not mark precision 24-point validation or
+Detectron2 Mask R-CNN ground-truth segmentation ready yet.
+
+**Next architecture task:** continue Dataset Studio source-to-COCO
+conversion audit and preserve card/image coordinate provenance;
+fix the already identified hardcoded image dimensions and missing
+mask/rotation contract *without discarding the working three-export
+Annotation Studio path*.
