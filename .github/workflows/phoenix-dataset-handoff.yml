@@ -1,0 +1,64 @@
+name: Phoenix Dataset Handoff
+
+on:
+  push:
+    branches:
+      - refactor/phoenix-foundation
+    paths:
+      - "src/shared/dataset_tools/phoenix_contract.py"
+      - "src/shared/dataset_tools/phoenix_handoff.py"
+      - "src/modules/phoenix_trainer/yolo_dataset.py"
+      - "src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py"
+      - "src/modules/phoenix_trainer/trainer_registry.py"
+      - "src/modules/dataset_studio/dataset_studio.py"
+      - "src/modules/dataset_studio/project_management/project_creation_dialog.py"
+      - "tests/phoenix/test_yolo11_dataset_handoff.py"
+      - ".github/workflows/phoenix-dataset-handoff.yml"
+  pull_request:
+    paths:
+      - "src/shared/dataset_tools/phoenix_contract.py"
+      - "src/shared/dataset_tools/phoenix_handoff.py"
+      - "src/modules/phoenix_trainer/yolo_dataset.py"
+      - "src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py"
+      - "src/modules/phoenix_trainer/trainer_registry.py"
+      - "src/modules/dataset_studio/dataset_studio.py"
+      - "src/modules/dataset_studio/project_management/project_creation_dialog.py"
+      - "tests/phoenix/test_yolo11_dataset_handoff.py"
+      - ".github/workflows/phoenix-dataset-handoff.yml"
+
+jobs:
+  validated-handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            src/shared/dataset_tools/phoenix_contract.py
+            src/shared/dataset_tools/phoenix_handoff.py
+            src/modules/phoenix_trainer/yolo_dataset.py
+            src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py
+            src/modules/phoenix_trainer/trainer_registry.py
+            src/modules/dataset_studio/dataset_studio.py
+            src/modules/dataset_studio/project_management/project_creation_dialog.py
+            tests/phoenix/test_yolo11_dataset_handoff.py
+            src/modules/dataset_studio/exports/Dataset_20261016_230734
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install minimal source-integrity dependencies
+        run: python -m pip install pytest pillow
+      - name: Compile actual integration modules
+        run: |
+          python -m py_compile \
+            src/shared/dataset_tools/phoenix_contract.py \
+            src/shared/dataset_tools/phoenix_handoff.py \
+            src/modules/phoenix_trainer/yolo_dataset.py \
+            src/modules/phoenix_trainer/trainers/yolo11_detection_trainer.py \
+            src/modules/phoenix_trainer/trainer_registry.py \
+            src/modules/dataset_studio/dataset_studio.py \
+            src/modules/dataset_studio/project_management/project_creation_dialog.py
+      - name: Validate real seven-image detection pipeline and handoff
+        env:
+          PYTHONPATH: src
+        run: python -m pytest -q tests/phoenix/test_yolo11_dataset_handoff.py
