@@ -46,6 +46,21 @@ Contain current grading, photometric, border, centering, corner, and related ana
 
 Contains dataset management, conversion, project management, pipeline compatibility, and trainer export functionality.
 
+**2026-10-16 incremental correction (ADR 0008):** The active manual
+COCO exporter and background conversion worker now produce truthful
+COCO **detection boxes** using original image dimensions and correct
+outer/graphic class semantics. Background conversion writes the actual
+COCO top-level object rather than the previous wrapper. The Verification
+tab no longer treats unimported global labels as project annotations,
+invalidates stale conversion caches when imports change, and describes
+matched filenames as unverified geometry.
+
+Current five-field YOLO annotations are NOT instance-segmentation masks
+or rotated polygons. Phoenix Detectron2 Mask R-CNN rejects absent or
+known synthetic instance masks. Dataset Integrity CI exercises 14
+tests including six real exports and active method bodies. Full Qt
+workstation preview/export acceptance remains pending. See ADR 0008.
+
 ### Annotation Studio
 
 `src/modules/annotation_studio/`
