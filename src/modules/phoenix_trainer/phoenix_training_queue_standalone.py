@@ -109,6 +109,18 @@ class DatasetWatcher(FileSystemEventHandler):
             logger.info(f"New dataset detected: {dataset_path}")
             self.callback(dataset_path)
 
+    def on_moved(self, event):
+        """Recognize atomic staging -> pending publication on Linux/inotify.
+
+        The publisher writes an entire dataset outside pending and moves
+        the completed directory into place; on_created alone can miss it.
+        Never notify for individual files.
+        """
+        if event.is_directory:
+            dataset_path = Path(event.dest_path)
+            logger.info("Atomically published dataset detected: %s", dataset_path)
+            self.callback(dataset_path)
+
 
 class PhoenixTrainingQueueApp:
     """
