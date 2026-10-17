@@ -216,3 +216,32 @@ def test_detectron2_rejects_unverified_segmentation_before_training(tmp_path, mo
                                 config={}, log=lambda *args, **kwargs: None)
     with pytest.raises(ValueError, match="Missing instance mask|Synthetic bbox-derived"):
         load(obj)
+
+
+
+def test_verification_does_not_claim_unimported_global_annotations():
+    """Global annotation folders can have the same stem as unrelated imports."""
+    has_label = isolated_method(
+        "src/modules/dataset_studio/dataset_studio.py",
+        "TruScoreDatasetFrame", "_image_has_label", {"Path": Path}
+    )
+    image, label = pairs("image092F")
+    project = types.SimpleNamespace(
+        imported_labels=[], labels_data={}, coco_annotations={}
+    )
+    assert has_label(project, image) is False
+    project.imported_labels = [{"path": str(label)}]
+    assert has_label(project, image) is True
+
+
+def test_preview_marks_geometry_as_unverified():
+    """No filename match alone should be displayed as geometric acceptance."""
+    source = (ROOT / "src/modules/dataset_studio/dataset_studio.py").read_text(
+        encoding="utf-8"
+    )
+    preview = source.split("    def show_verification_preview(self, image_path):", 1)[1]
+    preview = preview.split("    def setup_verification_header(", 1)[0]
+    assert "filename matched (geometric accuracy not verified)" in preview
+    assert "self.logger.warning(" in preview
+    assert "coco_annotations = []" in preview
+    assert "Image-label pair verified" not in preview
