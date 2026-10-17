@@ -69,9 +69,17 @@ def publish_dataset(images, project_config, export_coco, destination_root):
         "gradient_clipping": False,
         "grad_accumulation": False,
         "early_stopping": True,
+        "enable_uncertainty": False,
+        "enable_active_learning": False,
+        "extra_modalities": {},
+        "fusion_mode": None,
+        "resume_from": None,
     }
     if training["precision"] not in ("fp32", "fp16"):
         raise ValueError("YOLO11s does not implement requested training precision")
+    hardware = str(project_config.get("hardware_hint", "gpu")).lower()
+    if hardware not in {"gpu", "rocm", "cpu"}:
+        raise ValueError(f"Unrecognized Phoenix hardware target: {hardware}")
 
     try:
         scratch.mkdir()
@@ -98,7 +106,7 @@ def publish_dataset(images, project_config, export_coco, destination_root):
             "export_format": "COCO",
             "export_source": "Dataset Studio",
             "export_time": datetime.now().isoformat(),
-            "hardware_hint": "gpu",
+            "hardware_hint": hardware,
             "training_config": training,
         }
         with (scratch / "dataset_config.json").open("w", encoding="utf-8") as handle:
