@@ -1237,14 +1237,8 @@ class TruScoreDatasetFrame(QFrame):
         image_base_name = Path(image_path).stem
         image_base_lower = image_base_name.lower()
         
-        # 🚨 PRIORITY 0: Check annotation studio output folders first
-        # Check all three annotation studio folders for YOLO labels
-        annotations_base = Path(__file__).parent.parent.parent / "shared" / "annotations"
-        for folder in ['outer_border_model', 'graphic_border_model', 'combined_dual_class']:
-            label_path = annotations_base / folder / "labels" / f"{image_base_name}.txt"
-            if label_path.exists():
-                return True
-        
+        # Only count labels explicitly imported/converted into this project.
+        # Same-stem labels elsewhere in the global Studio workspace are not evidence.
         # 🚨 PRIORITY 1: Check COCO annotations (for loaded projects) even if imported_labels is empty
         if hasattr(self, 'coco_annotations') and self.coco_annotations:
             # Check if this image exists in COCO data
@@ -1353,6 +1347,19 @@ class TruScoreDatasetFrame(QFrame):
                             self.logger.error(f"Error reading label file: {e}")
                         break
             
+            # Source labels imported in the current project take precedence over
+            # a previous COCO conversion for the same filename. Otherwise a stale
+            # converted dataset can conceal the label file the operator is reviewing.
+            for label_info in getattr(self, "imported_labels", []):
+                label_path = Path(label_info["path"])
+                if (label_path.suffix.lower() == ".txt" and
+                        label_path.stem.lower() == image_base_lower):
+                    label_data = [line.strip() for line in
+                                  label_path.read_text(encoding="utf-8").splitlines()
+                                  if line.strip()]
+                    coco_annotations = []
+                    break
+
             # Draw label overlay on ORIGINAL SIZE image if labels exist
             if coco_annotations:
                 # Draw COCO annotations
@@ -1364,15 +1371,25 @@ class TruScoreDatasetFrame(QFrame):
                 category_names = {cat['id']: cat['name'] for cat in categories}
                 
                 # 🚨 CRITICAL: Get COCO recorded dimensions for this image
-                coco_img_width = 640  # Default from export
-                coco_img_height = 480  # Default from export
+                coco_img_width = original_width
+                coco_img_height = original_height
                 images_list = self.coco_annotations.get('images', [])
                 for img_info in images_list:
                     if img_info.get('file_name') == image_filename:
-                        coco_img_width = img_info.get('width', 640)
-                        coco_img_height = img_info.get('height', 480)
+                        coco_img_width = img_info.get('width')
+                        coco_img_height = img_info.get('height')
                         break
                 
+                # Reject untrustworthy dimensional metadata instead of inventing 640x480.
+                if not isinstance(coco_img_width, int) or not isinstance(coco_img_height, int) or coco_img_width <= 0 or coco_img_height <= 0:
+                    raise ValueError(f"COCO image {image_filename} has invalid dimensions; re-export labels")
+                if (coco_img_width, coco_img_height) != (original_width, original_height):
+                    self.logger.warning(
+                        f"COCO dimension mismatch for {image_filename}: "
+                        f"{coco_img_width}x{coco_img_height} metadata vs "
+                        f"{original_width}x{original_height} pixels; legacy overlay is scaled"
+                    )
+
                 # Calculate scale factors (COCO coords → Actual image coords)
                 scale_x = original_width / coco_img_width
                 scale_y = original_height / coco_img_height
@@ -1498,10 +1515,12 @@ class TruScoreDatasetFrame(QFrame):
                         cat_id = ann.get('category_id')
                         cat_name = category_names.get(cat_id, f"class_{cat_id}")
                         info_text += f"  • {cat_name}\n"
-                    info_text += "✅ Image-label pair verified (COCO)"
+                    info_text += "COCO image/label filename matched (geometric accuracy not verified)"
+                    if (coco_img_width, coco_img_height) != (original_width, original_height):
+                        info_text += "\nWARNING: COCO metadata dimensions differ from source pixels"
                 elif label_data:
                     info_text += f"Labels: {len(label_data)} YOLO annotations found\n"
-                    info_text += "✅ Image-label pair verified (YOLO)"
+                    info_text += "YOLO image/label filename matched (geometric accuracy not verified)"
                 else:
                     info_text += "⚠️ No labels found for this image"
                 
@@ -2134,6 +2153,7 @@ class TruScoreDatasetFrame(QFrame):
                 
                 if new_paths:
                     self.images.extend(new_paths)
+                    self.coco_annotations = {}  # Invalidate old conversion on dataset change
                     
                     # 🚨 CRITICAL: Set data_path for project loading
                     # Use parent directory of first image as data_path
@@ -2477,8 +2497,9 @@ class TruScoreDatasetFrame(QFrame):
             
             self.update_status(f"Imported {processed_count} label files")
             
-            # Auto-save project after importing labels
+            # Conversion metadata is no longer current when source labels change.
             if processed_count > 0:
+                self.coco_annotations = {}
                 self.save_project_progress()
                 self.logger.info("Project progress auto-saved after label import")
             
@@ -2959,6 +2980,7 @@ class TruScoreDatasetFrame(QFrame):
             
             # Clear label storage
             self.imported_labels.clear()
+            self.coco_annotations = {}
             if hasattr(self, 'labels'):
                 self.labels.clear()
             if hasattr(self, 'labels_data'):
