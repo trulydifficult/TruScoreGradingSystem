@@ -57,7 +57,7 @@ matched filenames as unverified geometry.
 
 Current five-field YOLO annotations are NOT instance-segmentation masks
 or rotated polygons. Phoenix Detectron2 Mask R-CNN rejects absent or
-known synthetic instance masks. Dataset Integrity CI exercises 14
+known synthetic instance masks. Dataset Integrity CI exercises 19
 tests including six real exports and active method bodies. Full Qt
 workstation preview/export acceptance remains pending. See ADR 0008.
 
