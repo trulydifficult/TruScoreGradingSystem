@@ -574,3 +574,36 @@ and updated existing source-body tests. Annotation Integrity CI
 stubs; full PyQt GUI + real GPU startup must be retested. Decision:
 `project_brain/decisions/0006-annotation-inference-request-lifecycle.md`.
 Do not equate code-level pass with hardware GUI acceptance.
+
+## Final-card save/completion regression — 2026-10-16
+
+Verified active Studio source sequence before patch: the Space shortcut
+saved a rotated source file first, called the three training exports,
+then reset rotation and attempted next; next helper refuses to advance
+past last index, so the editor visually straightened the last card
+despite the prior export. User reasonably questioned whether their
+last saved image also lost the rotation. Source ordering makes that
+unlikely, but the new three-card files have not been observed here.
+
+Bounded current-source improvement adds a completion state: after
+successful source rotation write and *all three* class-specific
+training exports, save the batch index and either reset+navigate for
+nonfinal cards or replace the final image with an explicit saved count.
+A failed export does not get marked complete, re-rotate image, advance,
+or claim success. `cv2.imwrite` now has checked return codes for
+source and target image writes. Combined class 0/1 must both exist;
+all three export targets must succeed rather than accepting 1/3.
+
+Last-card UI clears active card pixels and plugin image path to stop
+stale display/inference; magnifier is cleared; navigation disabled;
+second Space is inert; new batch reinitializes progress. Truthful
+partial completion messages cover earlier skipped/failed saves.
+Normal Previous/Next auto-save paths also credit actual successful
+exports without changing ordinary navigation behavior.
+
+Regression `tests/annotation/test_annotation_session_completion.py`
+covers 3/3 completion, final rotated source preserved before clearance,
+export failures, missing earlier saves, non-final path and fresh batch.
+Extended existing triple-export source tests cover missing class 1 and
+simulated image-writing failure. CI run 38985208841 PASSED 38 tests.
+Actual workstation GUI and new batch output still pending. ADR 0007.
