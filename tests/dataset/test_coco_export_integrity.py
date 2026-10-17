@@ -171,7 +171,7 @@ def test_mask_rcnn_conversion_rejects_boxes_and_synthetic_masks():
         "AnnotationFormatConverter", "convert_to_mask_rcnn",
         {"Dict": Dict, "Any": Any}
     )
-    with pytest.raises(ValueError, match="boxes"):
+    with pytest.raises(ValueError, match="Box-only"):
         convert(None, {"info": {"segmentation_ground_truth": False},
                        "annotations": [{"id": 1, "bbox": [1, 2, 3, 4]}]})
     with pytest.raises(ValueError, match="requires actual segmentation"):
