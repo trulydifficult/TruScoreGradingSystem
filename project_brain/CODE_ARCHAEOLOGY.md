@@ -307,3 +307,12 @@ smoke test remains a separately verified behavior.
 
 See MODEL_CAPABILITY_MATRIX.md and ADR 0011 for exhaustive menu
 inventory, explicit supported pair and deferred annotation plugins.
+
+
+## Precision outer/graphic contour historical candidates — 2026-10-17
+
+User's root diagrams 24pointside.jpg and 24pointside (1).jpg prove their objective is 24 true geometric station measurements (5 top, 5 bottom, 7 left, 7 right), not a 2-bbox object detector. Inspected src/shared/truscore_system/twentyfour_centering.py: it permits true contours but re-samples to 48 vertices, after which poly_side_indices picks only one short edge per named side; failed intersections produce zero gap and zero-mean pairs produce false 50:50. Preserve mathematical intent, audit geometry with synthetic skew/rotation before restoring physical measurement claims.
+
+Inspected src/modules/annotation_studio/plugins/prompt_segmentation_plugin.py: some nominal SAM/FusionSAM branches are stub implementations that produce centrally placed rectangular masks and hard-coded confidence on absent/failing inference. Classification: UNSAFE PLACEHOLDER, not training-mask ground truth; do not promote or silently fallback. Relevant historical implementations to compare before replacing geometry: src/revolutionary_border_calibration.py (multiple repeated legacy UI/edit routines), src/shared/truscore_system/truscore_border_detection.py and src/trugrade_border_detection.py, plus Checkplz prior code and Git history. These have NOT been completely function-by-function compared in this research pass, so no salvage/supersede classification has yet been claimed for their algorithms.
+
+Candidate genuine segmentation research: Detectron2 PointRend (edge refinement), Mask2Former/high-resolution semantic segmentation, optional SAM2/3-assisted corrected masks, box-supervised BoxInst/Box2Mask (weak supervision, not mask GT), and geometric edge refinement. Full source URLs/limitations and acceptance criteria in DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md and ADR 0012. Existing YOLO11s pilot is retained only for auxiliary coarse-region detection.
