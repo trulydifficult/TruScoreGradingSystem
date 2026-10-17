@@ -1108,3 +1108,8 @@ NEXT: user pull the latest branch, test 3-card workflow through
 rotation on final, Space → canvas completion summary. Examine the
 actual new three-card saved image/labels to confirm physical alignment.
 Other historical archive scripts remain reference only.
+
+
+## Final-card completion — REAL GUI ACCEPTANCE (user confirmed, 2026-10-16)
+
+After pulling the implementation of ADR 0007 and testing through the normal application, the user explicitly confirmed that the interface displayed **"Annotations Complete 3/3 successfully annotated"** after finishing the third/final card. This is user-observed GUI acceptance of the final-card completion message, replacing the previous behavior that left a straightened final card visible. **Do not conflate the completion UI with independent verification of the actual three-card export image bytes, labels, image rotations, or precision alignment.** Next, selectively obtain the new image/label outputs from all three training folders and relevant Annotation Studio logs for an independent export audit. Existing three-format structure and last-card save regression coverage remain as recorded in ADR 0007.
