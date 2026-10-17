@@ -298,7 +298,7 @@ def test_validator_never_pairs_test1_with_test10():
 
 
 @pytest.mark.parametrize("case", ["cancelled", "success", "failed"])
-def test_export_event_fires_only_after_confirmed_file_writes(tmp_path, case):
+def test_export_event_fires_only_after_confirmed_file_writes(tmp_path, case, converter_class):
     from datetime import datetime
 
     events, notifications = [], []
