@@ -371,7 +371,7 @@ def test_export_event_fires_only_after_confirmed_file_writes(tmp_path, case):
 
     entrypoint(obj)
     if case == "success":
-        assert len(events) == 1
+        assert len(events) == 1, notifications
         assert any(level == "success" for level, args in notifications)
     else:
         assert not events
