@@ -644,3 +644,57 @@ Repair:
 - Run ID and run.log path are terminal-visible.
 
 This separation is formalized in Decision 0005.
+
+## External trainer research — Unsloth AMD/VLM evaluation (2026-10-17)
+
+User asked whether https://github.com/unslothai/unsloth and
+https://unsloth.ai could improve efficiency of the Phoenix training
+platform. This is a **research finding / deferred adapter proposal**,
+NOT a verified integration or committed algorithm change.
+
+Official Unsloth README and AMD documentation (checked 2026-10-17):
+- AMD RX 7000 / RDNA 3 ROCm supported, with dedicated AMD install
+  guidance and separate ROCm Docker image; likely applicable to the
+  workstation RX 7900 XTX, but NOT locally benchmarked for TruScore.
+- Unsloth optimizes fine-tuning for supported LLM/VLM, diffusion,
+  embedding and related model families. VLM recipes include
+  Qwen multimodal and model-specific vision LoRA methods.
+- Advertised 2x speed / ~70% VRAM improvement is vendor-reported for
+  selected supported workloads; it MUST NOT be attributed to the
+  Phoenix YOLO11, Detectron2 Mask R-CNN, U-Net or ordinary timm ViT
+  training without independent same-model benchmarks.
+- No official Unsloth drop-in accelerator for Phoenix's specific
+  YOLO bbox detector / Detectron2 instance mask model was verified.
+  Fine-tuning a multimodal chat VLM is NOT equivalent to training a
+  precision bbox or mask detector; VLM example data and model outputs
+  require distinct labeling contracts.
+- Official AMD install warns a naive Python installation can replace
+  the ROCm-specific PyTorch with CUDA wheels. Future Unsloth evaluation
+  must run in a separate isolated environment/process and preserve
+  Phoenix's currently verified ROCm wheel versions. Never auto-upgrade
+  the active Phoenix venv.
+- Licensing: the public Unsloth README describes Apache 2.0 for core
+  and AGPL-3.0 for optional Studio; review component-level obligations
+  before copying/integrating any frontend or distribution.
+
+Recommended architecture: optional *future* Phoenix VLM/LLM adapter
+with explicit task/annotation schema, separate environment, provenance
+and a reproducible same-model RX 7900 XTX memory/speed/accuracy
+benchmark. Preserve existing Phoenix Queue/worker and dataset gates.
+Do not install or invoke Unsloth as part of today's bbox detection
+handoff. Source: unslothai/unsloth README; unsloth.ai/docs/basics/amd;
+unsloth.ai/docs/get-started/install/amd;
+unsloth.ai/docs/basics/vision-fine-tuning.
+
+### Work-in-progress source warning (same date)
+
+Following the seven-card export checkpoint, initial exploratory commits
+on refactor/phoenix-foundation added an explicit YOLO11s capability
+contract, COCO->YOLO dataset adapter, model trainer, registry mapping,
+and staging publisher. As of this note the Dataset Studio UI entrypoints
+are NOT yet connected to that publisher, and the new path has not passed
+dedicated end-to-end GPU training acceptance or new adapter-specific
+regression testing. The existing green CI suites are NOT evidence of
+that new path's completeness. Do not tell the operator to export-to-
+queue or train the new type until integration, tests and local ROCm
+acceptance are completed.
