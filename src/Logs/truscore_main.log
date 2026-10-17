@@ -2841,3 +2841,28 @@
 2026-10-16 18:18:19,866 | INFO     | main_window - Launching Annotation Studio: /home/dewster/Vanguard/src/modules/main_window/run_annotation_studio.py
 2026-10-16 18:18:19,866 | INFO     | main_window - Annotation Studio launched with PID: 577975
 2026-10-16 18:27:31,202 | INFO     | main_window - Button re-enabled: Launch Annotation Studio
+2026-10-16 18:58:42,059 | INFO     | main_window - Initializing TruScore with PyDracula + Glassmorphism fusion
+2026-10-16 18:58:42,060 | INFO     | main_window - Mobile jobs path set to: /home/dewster/Vanguard/src/exports/mobile_jobs
+2026-10-16 18:58:42,287 | INFO     | main_window - Custom fonts loaded: 127 fonts
+2026-10-16 18:58:42,287 | INFO     | main_window - X11 detected - using fully frameless window mode
+2026-10-16 18:58:42,329 | INFO     | main_window - Static background image initialized: 2000x1300
+2026-10-16 18:58:42,436 | INFO     | main_window - ✓ Animated logo GIF loaded: /home/dewster/Vanguard/src/usethisone.gif
+2026-10-16 18:58:43,034 | INFO     | main_window - TruScore Card Manager loaded successfully
+2026-10-16 18:58:43,047 | INFO     | main_window - TruScore initialization complete
+2026-10-16 18:58:45,444 | INFO     | main_window - Page transition to: Annotation Studio
+2026-10-16 18:58:45,444 | INFO     | main_window - Switched to page: annotation_studio
+2026-10-16 18:58:46,843 | INFO     | main_window - Launching Annotation Studio: /home/dewster/Vanguard/src/modules/main_window/run_annotation_studio.py
+2026-10-16 18:58:46,843 | INFO     | main_window - Annotation Studio launched with PID: 585812
+2026-10-16 19:18:47,552 | INFO     | main_window - Initializing TruScore with PyDracula + Glassmorphism fusion
+2026-10-16 19:18:47,552 | INFO     | main_window - Mobile jobs path set to: /home/dewster/Vanguard/src/exports/mobile_jobs
+2026-10-16 19:18:47,740 | INFO     | main_window - Custom fonts loaded: 127 fonts
+2026-10-16 19:18:47,740 | INFO     | main_window - X11 detected - using fully frameless window mode
+2026-10-16 19:18:47,780 | INFO     | main_window - Static background image initialized: 2000x1300
+2026-10-16 19:18:47,871 | INFO     | main_window - ✓ Animated logo GIF loaded: /home/dewster/Vanguard/src/usethisone.gif
+2026-10-16 19:18:48,220 | INFO     | main_window - TruScore Card Manager loaded successfully
+2026-10-16 19:18:48,233 | INFO     | main_window - TruScore initialization complete
+2026-10-16 19:18:49,688 | INFO     | main_window - Page transition to: Annotation Studio
+2026-10-16 19:18:49,689 | INFO     | main_window - Switched to page: annotation_studio
+2026-10-16 19:18:50,943 | INFO     | main_window - Launching Annotation Studio: /home/dewster/Vanguard/src/modules/main_window/run_annotation_studio.py
+2026-10-16 19:18:50,944 | INFO     | main_window - Annotation Studio launched with PID: 588486
+2026-10-16 19:23:00,124 | INFO     | main_window - Button re-enabled: Launch Annotation Studio

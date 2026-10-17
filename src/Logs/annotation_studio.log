@@ -722,3 +722,176 @@
 2026-10-16 18:22:49,460 | DEBUG    | modular_annotation_studio - Rotation reset to 0.0°
 2026-10-16 18:22:49,460 | DEBUG    | modular_annotation_studio - Reached end of dataset
 2026-10-16 18:22:49,460 | INFO     | modular_annotation_studio - ✅ Saved (image + labels), reset rotation, and moved to next
+2026-10-16 18:58:47,065 | INFO     | static_background - Selected background: 5165849.jpg
+2026-10-16 18:58:47,093 | INFO     | static_background - Background loaded: 5165849.jpg (3000x2000)
+2026-10-16 18:58:47,095 | ERROR    | modular_annotation_studio - Failed to import PluginSettingsPanel: No module named 'modules.annotation_studio.plugins.plugin_panel'
+2026-10-16 18:58:47,135 | DEBUG    | modular_annotation_studio - Three-panel UI created successfully (30%-50%-20%)
+2026-10-16 18:58:47,135 | DEBUG    | modular_annotation_studio - Keyboard shortcuts configured
+2026-10-16 18:58:47,136 | DEBUG    | modular_annotation_studio - Signals connected
+2026-10-16 18:58:47,136 | INFO     | modular_annotation_studio - Modular Annotation Studio initialized
+2026-10-16 18:58:51,108 | INFO     | modular_annotation_studio - Scanning plugins in: /home/dewster/Vanguard/src/modules/annotation_studio/plugins
+2026-10-16 18:58:51,109 | INFO     | modular_annotation_studio - Found 9 plugin files: ['top_left_corner_plugin.py', 'top_right_corner_plugin.py', 'prompt_segmentation_plugin.py', 'corner_analysis_plugin.py', 'bottom_left_corner_plugin.py', 'base_plugin.py', 'bottom_right_corner_plugin.py', 'surface_quality_plugin.py', 'border_detection_plugin.py']
+2026-10-16 18:58:51,109 | INFO     | modular_annotation_studio - Loading plugin: 
+2026-10-16 18:58:53,920 | INFO     | modular_annotation_studio - Loading plugin: Border Detection Plugin
+2026-10-16 18:58:53,920 | INFO     | modular_annotation_studio - Loading plugin: border_detection_plugin
+2026-10-16 18:59:05,481 | INFO     | modular_annotation_studio - ✅ Plugin activated: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7ff05d5cc050>
+2026-10-16 18:59:05,488 | INFO     | modular_annotation_studio - Connected border detection results to Studio canvas
+2026-10-16 18:59:05,488 | INFO     | modular_annotation_studio - ✅ Studio canvas reference passed to plugin
+2026-10-16 18:59:05,488 | INFO     | modular_annotation_studio - ✅ Plugin border_detection_plugin loaded and settings panel created
+2026-10-16 18:59:05,488 | INFO     | modular_annotation_studio - ✅ current_plugin set to: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7ff05d5cc050>
+2026-10-16 18:59:05,488 | INFO     | modular_annotation_studio - ✅ current_plugin_widget set to: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionSettingsWidget object at 0x7fee7b443d00>
+2026-10-16 18:59:05,511 | INFO     | modular_annotation_studio - Loading plugin: Surface Quality Plugin
+2026-10-16 18:59:05,511 | INFO     | modular_annotation_studio - Loading plugin: surface_quality_plugin
+2026-10-16 18:59:05,511 | WARNING  | modular_annotation_studio - Plugin surface_quality_plugin not implemented yet
+2026-10-16 18:59:08,432 | INFO     | modular_annotation_studio - Loading plugin: Border Detection Plugin
+2026-10-16 18:59:08,432 | INFO     | modular_annotation_studio - Loading plugin: border_detection_plugin
+2026-10-16 18:59:08,594 | INFO     | modular_annotation_studio - ✅ Plugin activated: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7fee7bd736d0>
+2026-10-16 18:59:08,600 | INFO     | modular_annotation_studio - Connected border detection results to Studio canvas
+2026-10-16 18:59:08,601 | INFO     | modular_annotation_studio - ✅ Studio canvas reference passed to plugin
+2026-10-16 18:59:08,601 | INFO     | modular_annotation_studio - ✅ Plugin border_detection_plugin loaded and settings panel created
+2026-10-16 18:59:08,601 | INFO     | modular_annotation_studio - ✅ current_plugin set to: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7fee7bd736d0>
+2026-10-16 18:59:08,601 | INFO     | modular_annotation_studio - ✅ current_plugin_widget set to: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionSettingsWidget object at 0x7ff05d538d30>
+2026-10-16 18:59:25,280 | INFO     | modular_annotation_studio - Loaded 3 cards successfully
+2026-10-16 18:59:25,281 | INFO     | modular_annotation_studio - Loading image: image092F.jpg
+2026-10-16 18:59:25,342 | DEBUG    | modular_annotation_studio - DEBUG: hasattr current_plugin: True
+2026-10-16 18:59:25,342 | DEBUG    | modular_annotation_studio - DEBUG: current_plugin value: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7fee7bd736d0>
+2026-10-16 18:59:25,342 | DEBUG    | modular_annotation_studio - DEBUG: Plugin has on_image_changed: True
+2026-10-16 18:59:25,342 | INFO     | modular_annotation_studio - Notifying plugin of image change
+2026-10-16 18:59:25,343 | INFO     | modular_annotation_studio - ✅ Loaded image: image092F.jpg
+2026-10-16 18:59:25,343 | DEBUG    | modular_annotation_studio - DEBUG: update_image_counter called - has card_counter: True
+2026-10-16 18:59:25,343 | DEBUG    | modular_annotation_studio - DEBUG: card_counter exists: True
+2026-10-16 18:59:25,343 | DEBUG    | modular_annotation_studio - DEBUG: image_files length: 3
+2026-10-16 18:59:25,343 | DEBUG    | modular_annotation_studio - DEBUG: current_index: 0
+2026-10-16 18:59:25,343 | INFO     | modular_annotation_studio - Counter updated to: 1/3
+2026-10-16 18:59:27,464 | INFO     | modular_annotation_studio - Received 2 border predictions for image092F.jpg
+2026-10-16 19:00:29,696 | INFO     | modular_annotation_studio - 🔥 TAB PRESSED - cycle_border_selection() called
+2026-10-16 19:00:29,700 | INFO     | modular_annotation_studio - Tab pressed - cycling border selection
+2026-10-16 19:00:46,807 | INFO     | modular_annotation_studio - 🔥 SPACE BAR PRESSED - save_and_next_image() called
+2026-10-16 19:00:46,824 | INFO     | modular_annotation_studio - 💾 Saved rotated image: image092F.jpg (0.650°)
+2026-10-16 19:00:46,860 | INFO     | modular_annotation_studio - Auto-saved with 3 training label formats
+2026-10-16 19:00:46,860 | DEBUG    | modular_annotation_studio - Rotation reset to 0.0°
+2026-10-16 19:00:46,860 | INFO     | modular_annotation_studio - Loading image: image093F.jpg
+2026-10-16 19:00:46,896 | DEBUG    | modular_annotation_studio - DEBUG: hasattr current_plugin: True
+2026-10-16 19:00:46,896 | DEBUG    | modular_annotation_studio - DEBUG: current_plugin value: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7fee7bd736d0>
+2026-10-16 19:00:46,896 | DEBUG    | modular_annotation_studio - DEBUG: Plugin has on_image_changed: True
+2026-10-16 19:00:46,896 | INFO     | modular_annotation_studio - Notifying plugin of image change
+2026-10-16 19:00:46,897 | INFO     | modular_annotation_studio - ✅ Loaded image: image093F.jpg
+2026-10-16 19:00:46,897 | DEBUG    | modular_annotation_studio - DEBUG: update_image_counter called - has card_counter: True
+2026-10-16 19:00:46,897 | DEBUG    | modular_annotation_studio - DEBUG: card_counter exists: True
+2026-10-16 19:00:46,897 | DEBUG    | modular_annotation_studio - DEBUG: image_files length: 3
+2026-10-16 19:00:46,897 | DEBUG    | modular_annotation_studio - DEBUG: current_index: 1
+2026-10-16 19:00:46,897 | INFO     | modular_annotation_studio - Counter updated to: 2/3
+2026-10-16 19:00:46,897 | INFO     | modular_annotation_studio - Next: 2/3 - image093F
+2026-10-16 19:00:46,897 | INFO     | modular_annotation_studio - ✅ Saved (image + labels), reset rotation, and moved to next
+2026-10-16 19:00:47,444 | INFO     | modular_annotation_studio - Received 2 border predictions for image093F.jpg
+2026-10-16 19:01:16,711 | INFO     | modular_annotation_studio - 🔥 TAB PRESSED - cycle_border_selection() called
+2026-10-16 19:01:16,715 | INFO     | modular_annotation_studio - Tab pressed - cycling border selection
+2026-10-16 19:01:31,491 | INFO     | modular_annotation_studio - 🔥 SPACE BAR PRESSED - save_and_next_image() called
+2026-10-16 19:01:31,501 | INFO     | modular_annotation_studio - 💾 Saved rotated image: image093F.jpg (0.460°)
+2026-10-16 19:01:31,527 | INFO     | modular_annotation_studio - Auto-saved with 3 training label formats
+2026-10-16 19:01:31,527 | DEBUG    | modular_annotation_studio - Rotation reset to 0.0°
+2026-10-16 19:01:31,527 | INFO     | modular_annotation_studio - Loading image: image094F.jpg
+2026-10-16 19:01:31,570 | DEBUG    | modular_annotation_studio - DEBUG: hasattr current_plugin: True
+2026-10-16 19:01:31,570 | DEBUG    | modular_annotation_studio - DEBUG: current_plugin value: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7fee7bd736d0>
+2026-10-16 19:01:31,570 | DEBUG    | modular_annotation_studio - DEBUG: Plugin has on_image_changed: True
+2026-10-16 19:01:31,570 | INFO     | modular_annotation_studio - Notifying plugin of image change
+2026-10-16 19:01:31,571 | INFO     | modular_annotation_studio - ✅ Loaded image: image094F.jpg
+2026-10-16 19:01:31,571 | DEBUG    | modular_annotation_studio - DEBUG: update_image_counter called - has card_counter: True
+2026-10-16 19:01:31,571 | DEBUG    | modular_annotation_studio - DEBUG: card_counter exists: True
+2026-10-16 19:01:31,571 | DEBUG    | modular_annotation_studio - DEBUG: image_files length: 3
+2026-10-16 19:01:31,571 | DEBUG    | modular_annotation_studio - DEBUG: current_index: 2
+2026-10-16 19:01:31,571 | INFO     | modular_annotation_studio - Counter updated to: 3/3
+2026-10-16 19:01:31,571 | INFO     | modular_annotation_studio - Next: 3/3 - image094F
+2026-10-16 19:01:31,571 | INFO     | modular_annotation_studio - ✅ Saved (image + labels), reset rotation, and moved to next
+2026-10-16 19:01:32,102 | INFO     | modular_annotation_studio - Received 2 border predictions for image094F.jpg
+2026-10-16 19:01:44,135 | INFO     | modular_annotation_studio - 🔥 TAB PRESSED - cycle_border_selection() called
+2026-10-16 19:01:44,139 | INFO     | modular_annotation_studio - Tab pressed - cycling border selection
+2026-10-16 19:01:56,651 | INFO     | modular_annotation_studio - 🔥 SPACE BAR PRESSED - save_and_next_image() called
+2026-10-16 19:01:56,667 | INFO     | modular_annotation_studio - 💾 Saved rotated image: image094F.jpg (0.350°)
+2026-10-16 19:01:56,698 | INFO     | modular_annotation_studio - Auto-saved with 3 training label formats
+2026-10-16 19:01:56,698 | DEBUG    | modular_annotation_studio - Rotation reset to 0.0°
+2026-10-16 19:01:56,698 | DEBUG    | modular_annotation_studio - Reached end of dataset
+2026-10-16 19:01:56,698 | INFO     | modular_annotation_studio - ✅ Saved (image + labels), reset rotation, and moved to next
+2026-10-16 19:02:06,447 | INFO     | modular_annotation_studio - 🔥 SPACE BAR PRESSED - save_and_next_image() called
+2026-10-16 19:02:06,456 | INFO     | modular_annotation_studio - 💾 Saved rotated image: image094F.jpg (0.320°)
+2026-10-16 19:02:06,488 | INFO     | modular_annotation_studio - Auto-saved with 3 training label formats
+2026-10-16 19:02:06,488 | DEBUG    | modular_annotation_studio - Rotation reset to 0.0°
+2026-10-16 19:02:06,488 | DEBUG    | modular_annotation_studio - Reached end of dataset
+2026-10-16 19:02:06,488 | INFO     | modular_annotation_studio - ✅ Saved (image + labels), reset rotation, and moved to next
+2026-10-16 19:18:51,136 | INFO     | static_background - Selected background: 5241260.jpg
+2026-10-16 19:18:51,176 | INFO     | static_background - Background loaded: 5241260.jpg (3000x2000)
+2026-10-16 19:18:51,178 | ERROR    | modular_annotation_studio - Failed to import PluginSettingsPanel: No module named 'modules.annotation_studio.plugins.plugin_panel'
+2026-10-16 19:18:51,227 | DEBUG    | modular_annotation_studio - Three-panel UI created successfully (30%-50%-20%)
+2026-10-16 19:18:51,227 | DEBUG    | modular_annotation_studio - Keyboard shortcuts configured
+2026-10-16 19:18:51,227 | DEBUG    | modular_annotation_studio - Signals connected
+2026-10-16 19:18:51,227 | INFO     | modular_annotation_studio - Modular Annotation Studio initialized
+2026-10-16 19:18:53,587 | INFO     | modular_annotation_studio - Scanning plugins in: /home/dewster/Vanguard/src/modules/annotation_studio/plugins
+2026-10-16 19:18:53,587 | INFO     | modular_annotation_studio - Found 9 plugin files: ['top_left_corner_plugin.py', 'top_right_corner_plugin.py', 'prompt_segmentation_plugin.py', 'corner_analysis_plugin.py', 'bottom_left_corner_plugin.py', 'base_plugin.py', 'bottom_right_corner_plugin.py', 'surface_quality_plugin.py', 'border_detection_plugin.py']
+2026-10-16 19:18:53,587 | INFO     | modular_annotation_studio - Loading plugin: 
+2026-10-16 19:18:56,039 | INFO     | modular_annotation_studio - Loading plugin: Border Detection Plugin
+2026-10-16 19:18:56,039 | INFO     | modular_annotation_studio - Loading plugin: border_detection_plugin
+2026-10-16 19:19:05,767 | INFO     | modular_annotation_studio - ✅ Plugin activated: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7f06ea7d0050>
+2026-10-16 19:19:05,774 | INFO     | modular_annotation_studio - Connected border detection results to Studio canvas
+2026-10-16 19:19:05,775 | INFO     | modular_annotation_studio - ✅ Studio canvas reference passed to plugin
+2026-10-16 19:19:05,775 | INFO     | modular_annotation_studio - ✅ Plugin border_detection_plugin loaded and settings panel created
+2026-10-16 19:19:05,775 | INFO     | modular_annotation_studio - ✅ current_plugin set to: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7f06ea7d0050>
+2026-10-16 19:19:05,775 | INFO     | modular_annotation_studio - ✅ current_plugin_widget set to: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionSettingsWidget object at 0x7f050dbf4430>
+2026-10-16 19:19:18,319 | INFO     | modular_annotation_studio - Loaded 3 cards successfully
+2026-10-16 19:19:18,319 | INFO     | modular_annotation_studio - Loading image: card094.jpg
+2026-10-16 19:19:18,353 | DEBUG    | modular_annotation_studio - DEBUG: hasattr current_plugin: True
+2026-10-16 19:19:18,353 | DEBUG    | modular_annotation_studio - DEBUG: current_plugin value: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7f06ea7d0050>
+2026-10-16 19:19:18,353 | DEBUG    | modular_annotation_studio - DEBUG: Plugin has on_image_changed: True
+2026-10-16 19:19:18,353 | INFO     | modular_annotation_studio - Notifying plugin of image change
+2026-10-16 19:19:18,354 | INFO     | modular_annotation_studio - ✅ Loaded image: card094.jpg
+2026-10-16 19:19:18,354 | DEBUG    | modular_annotation_studio - DEBUG: update_image_counter called - has card_counter: True
+2026-10-16 19:19:18,354 | DEBUG    | modular_annotation_studio - DEBUG: card_counter exists: True
+2026-10-16 19:19:18,354 | DEBUG    | modular_annotation_studio - DEBUG: image_files length: 3
+2026-10-16 19:19:18,354 | DEBUG    | modular_annotation_studio - DEBUG: current_index: 0
+2026-10-16 19:19:18,354 | INFO     | modular_annotation_studio - Counter updated to: 1/3
+2026-10-16 19:19:20,343 | INFO     | modular_annotation_studio - Received 2 border predictions for card094.jpg
+2026-10-16 19:19:33,563 | INFO     | modular_annotation_studio - 🔥 TAB PRESSED - cycle_border_selection() called
+2026-10-16 19:19:33,567 | INFO     | modular_annotation_studio - Tab pressed - cycling border selection
+2026-10-16 19:19:47,555 | INFO     | modular_annotation_studio - Space: saving card 1/3
+2026-10-16 19:19:47,571 | INFO     | modular_annotation_studio - Saved rotated source image: card094.jpg (-0.200 degrees)
+2026-10-16 19:19:47,604 | INFO     | modular_annotation_studio - Saved all border training formats
+2026-10-16 19:19:47,604 | DEBUG    | modular_annotation_studio - Rotation reset to 0.0°
+2026-10-16 19:19:47,604 | INFO     | modular_annotation_studio - Loading image: card095.jpg
+2026-10-16 19:19:47,620 | DEBUG    | modular_annotation_studio - DEBUG: hasattr current_plugin: True
+2026-10-16 19:19:47,620 | DEBUG    | modular_annotation_studio - DEBUG: current_plugin value: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7f06ea7d0050>
+2026-10-16 19:19:47,620 | DEBUG    | modular_annotation_studio - DEBUG: Plugin has on_image_changed: True
+2026-10-16 19:19:47,620 | INFO     | modular_annotation_studio - Notifying plugin of image change
+2026-10-16 19:19:47,620 | INFO     | modular_annotation_studio - ✅ Loaded image: card095.jpg
+2026-10-16 19:19:47,621 | DEBUG    | modular_annotation_studio - DEBUG: update_image_counter called - has card_counter: True
+2026-10-16 19:19:47,621 | DEBUG    | modular_annotation_studio - DEBUG: card_counter exists: True
+2026-10-16 19:19:47,621 | DEBUG    | modular_annotation_studio - DEBUG: image_files length: 3
+2026-10-16 19:19:47,621 | DEBUG    | modular_annotation_studio - DEBUG: current_index: 1
+2026-10-16 19:19:47,621 | INFO     | modular_annotation_studio - Counter updated to: 2/3
+2026-10-16 19:19:47,621 | INFO     | modular_annotation_studio - Next: 2/3 - card095
+2026-10-16 19:19:48,144 | INFO     | modular_annotation_studio - Received 2 border predictions for card095.jpg
+2026-10-16 19:19:55,975 | INFO     | modular_annotation_studio - 🔥 TAB PRESSED - cycle_border_selection() called
+2026-10-16 19:19:55,979 | INFO     | modular_annotation_studio - Tab pressed - cycling border selection
+2026-10-16 19:20:22,222 | INFO     | modular_annotation_studio - 🔥 TAB PRESSED - cycle_border_selection() called
+2026-10-16 19:20:22,226 | INFO     | modular_annotation_studio - Tab pressed - cycling border selection
+2026-10-16 19:20:30,194 | INFO     | modular_annotation_studio - Space: saving card 2/3
+2026-10-16 19:20:30,203 | INFO     | modular_annotation_studio - Saved rotated source image: card095.jpg (0.130 degrees)
+2026-10-16 19:20:30,229 | INFO     | modular_annotation_studio - Saved all border training formats
+2026-10-16 19:20:30,229 | DEBUG    | modular_annotation_studio - Rotation reset to 0.0°
+2026-10-16 19:20:30,229 | INFO     | modular_annotation_studio - Loading image: card096.jpg
+2026-10-16 19:20:30,247 | DEBUG    | modular_annotation_studio - DEBUG: hasattr current_plugin: True
+2026-10-16 19:20:30,247 | DEBUG    | modular_annotation_studio - DEBUG: current_plugin value: <modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin object at 0x7f06ea7d0050>
+2026-10-16 19:20:30,247 | DEBUG    | modular_annotation_studio - DEBUG: Plugin has on_image_changed: True
+2026-10-16 19:20:30,247 | INFO     | modular_annotation_studio - Notifying plugin of image change
+2026-10-16 19:20:30,248 | INFO     | modular_annotation_studio - ✅ Loaded image: card096.jpg
+2026-10-16 19:20:30,248 | DEBUG    | modular_annotation_studio - DEBUG: update_image_counter called - has card_counter: True
+2026-10-16 19:20:30,248 | DEBUG    | modular_annotation_studio - DEBUG: card_counter exists: True
+2026-10-16 19:20:30,248 | DEBUG    | modular_annotation_studio - DEBUG: image_files length: 3
+2026-10-16 19:20:30,248 | DEBUG    | modular_annotation_studio - DEBUG: current_index: 2
+2026-10-16 19:20:30,248 | INFO     | modular_annotation_studio - Counter updated to: 3/3
+2026-10-16 19:20:30,248 | INFO     | modular_annotation_studio - Next: 3/3 - card096
+2026-10-16 19:20:30,771 | INFO     | modular_annotation_studio - Received 2 border predictions for card096.jpg
+2026-10-16 19:20:47,322 | INFO     | modular_annotation_studio - 🔥 TAB PRESSED - cycle_border_selection() called
+2026-10-16 19:20:47,326 | INFO     | modular_annotation_studio - Tab pressed - cycling border selection
+2026-10-16 19:21:12,266 | INFO     | modular_annotation_studio - Space: saving card 3/3
+2026-10-16 19:21:12,275 | INFO     | modular_annotation_studio - Saved rotated source image: card096.jpg (0.110 degrees)
+2026-10-16 19:21:12,301 | INFO     | modular_annotation_studio - Saved all border training formats
+2026-10-16 19:21:12,301 | INFO     | modular_annotation_studio - Annotation session finished: 3/3 saved
