@@ -1,4 +1,24 @@
 # TruScore Grading System
+
+> **Implementation and evidence notice (2026-10-16):** This README
+> contains original product/marketing aspirations, not a verified feature
+> matrix. Figures such as "98.5%+ Accuracy", "sub-second grading"
+> and comparisons to human graders are **unverified targets, not
+> established measured model performance**. Several architectures,
+> grading capabilities and model families are partially implemented,
+> experimental, or still awaiting production acceptance.
+>
+> The authoritative working source is src/ on the active
+> refactor/phoenix-foundation branch. Start development work at
+> [project_brain/PROJECT_BOOTSTRAP.md](project_brain/PROJECT_BOOTSTRAP.md)
+> then [project_brain/SESSION_START.md](project_brain/SESSION_START.md),
+> [project_brain/PROJECT_MEMORY_INDEX.md](project_brain/PROJECT_MEMORY_INDEX.md)
+> and the relevant decisions/audits.
+>
+> Main desktop entrypoint: run_truscore.py. The former example referencing
+> an external 'your-org/trugrade' repo and 'main.py' is obsolete.
+
+
 ## The Revolutionary Ecosystem That Will Overthrow Traditional Grading
 
 **TruScore** is the world's most advanced professional card grading platform! Our revolutionary AI grading engine that combines 24-point centering analysis, photometric stereo defect detection, and continuous learning to deliver superhuman grading accuracy.
@@ -43,14 +63,15 @@ TruGrade Platform
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/trugrade.git
-cd trugrade
+git clone https://github.com/trulydifficult/TruScoreGradingSystem.git
+cd TruScoreGradingSystem
+git switch refactor/phoenix-foundation
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Launch TruGrade Platform
-python main.py
+python run_truscore.py
 ```
 
 ---
