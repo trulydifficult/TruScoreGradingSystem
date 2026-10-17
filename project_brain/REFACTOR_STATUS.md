@@ -1,6 +1,10 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last updated: 2026-10-15
+Last substantive status review: 2026-10-16 (CDT) / 2026-10-17 (UTC)
+
+> Current actionable handoff and evidence tiers: SESSION_START.md.
+> The matrix below is a subsystem-level overview; individual passed
+> source tests and GUI/GPU smoke checks are described in dated sections.
 
 ## Status Legend
 
@@ -9,6 +13,8 @@ Last updated: 2026-10-15
 - AUDITED — current + historical implementations reviewed
 - PLANNED — consolidation/refactor design completed
 - IN PROGRESS — code changes underway
+- PARTIAL VERIFICATION — specific tested/runtime slices accepted, but
+  the subsystem as a whole has not passed complete acceptance
 - VERIFIED — refactor completed and tested
 
 ## Project Status
@@ -19,14 +25,30 @@ Last updated: 2026-10-15
 | Card Manager | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | TruScore Grading Engine | PARTIAL AUDIT | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED |
 | Photometric Runtime | PARTIAL AUDIT | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED |
-| Dataset Studio | PARTIAL AUDIT | PARTIAL AUDIT | PLANNED | IN PROGRESS | NOT STARTED |
-| Annotation Studio | PARTIAL AUDIT | PARTIAL AUDIT | PLANNED | IN PROGRESS | NOT STARTED |
-| Phoenix Trainer | AUDITED | AUDITED | PLANNED | IN PROGRESS | NOT STARTED |
+| Dataset Studio | PARTIAL AUDIT | PARTIAL AUDIT | PLANNED | IN PROGRESS | PARTIAL VERIFICATION (manual COCO export only) |
+| Annotation Studio | PARTIAL AUDIT | PARTIAL AUDIT | PLANNED | IN PROGRESS | PARTIAL VERIFICATION (border plugin/export) |
+| Phoenix Trainer | AUDITED | AUDITED | PLANNED | IN PROGRESS | PARTIAL VERIFICATION (ROCm ViT/single job) |
 | Guru / Continuous Learning | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | Mobile API | PARTIAL AUDIT | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | Flutter Mobile App | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | CardSight Integration | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | Market / Decision Pipeline | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
+
+## Highest-priority open gate — Dataset Studio → Phoenix
+
+- Manual real seven-card **COCO detection** serialization and JPEG
+  fidelity accepted: GitHub commit 8eee8ff, Dataset Integrity workflow
+  39002287868, 43 tests.
+- Source-level audit found Export to Trainer disconnected and Export
+  to Queue partially wired but incompatible with the current Mask
+  R-CNN instance-segmentation labels. No current production
+  acceptance of either button.
+- Next: choose genuine box-detector implementation OR collect verified
+  instance masks for Mask R-CNN, preserving existing Phoenix Queue
+  and isolated worker. Refuse simulated/model-substitution shortcuts.
+- A real GUI/export success, a GPU smoke run, and a measured model
+  precision benchmark are distinct evidence types. See ADR 0010,
+  SESSION_START.md and the Dataset-to-Phoenix audit.
 
 ## Enterprise Architecture
 
