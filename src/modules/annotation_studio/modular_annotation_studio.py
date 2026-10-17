@@ -1459,9 +1459,9 @@ class ModularAnnotationStudio(QMainWindow):
 
         self.image_label.clear()
         if completed == total:
-            message = f"Annotation complete!\\n{completed}/{total} successfully annotated"
+            message = f"Annotation complete!\n{completed}/{total} successfully annotated"
         else:
-            message = f"Annotation session finished\\n{completed}/{total} successfully saved"
+            message = f"Annotation session finished\n{completed}/{total} successfully saved"
         self.image_label.setText(message)
         self.card_counter.setText(f"{completed}/{total} saved")
         if hasattr(self, "magnifier_display"):
