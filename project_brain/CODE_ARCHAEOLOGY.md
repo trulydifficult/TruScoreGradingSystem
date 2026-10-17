@@ -240,3 +240,42 @@ Classification: retain working active UI and correct its scope;
 do not replace with older aspirational stubs. Shared project count logic
 now lives in src/shared/dataset_tools/dataset_analysis.py (ADR 0009);
 COCO conversion/export remains owned by prior converter/export methods.
+
+
+## Parallel documentation / agent-memory archaeology — 2026-10-16
+
+Documentation continuity audit identified several independent,
+older/auto-generated memory systems and templates in the repository:
+
+- src/Docs/documentation_context/ describes a Claude Code Kit
+  three-tier documentation architecture and generic handoff template.
+  Its docs-overview.md references root CLAUDE.md and
+  /docs/ai-context/... paths that are absent from this repository.
+  Classification: REFERENCE/TEMPLATE, not current live authority.
+- src/Docs/dataset_models/DATASET_STUDIO_PLAN.md proposes
+  aspirational future features, folder structures, model integrations
+  and agent assignments. It is not proof those features exist.
+  Classification: REFERENCE, pending relevance-driven archaeology.
+- .brainsync/rules/brainsync_auto.md,
+  .agents/rules/brainsyncory.md and .cursor/active-context.md
+  contain generated summaries/generic technology rules and potentially
+  stale IDE/session state. Classification: EXTERNAL GENERATED CONTEXT,
+  not trusted implementation status or override of project_brain.
+- .agent.md and .agent1.md are older agent-facing narratives/rules;
+  their style/goals must not supersede verified code, safety boundaries,
+  source ownership or the explicit project bootstrap workflow.
+  Classification: HISTORICAL/REFERENCE.
+- Initial ChatGPT Project uploads of nine Markdown documents are dated
+  snapshots; the live GitHub project_brain/ files have materially
+  progressed and are authoritative. Classification: BASELINE SNAPSHOTS.
+- README.md held unverified promotional accuracy figures and obsolete
+  CLI/clone instructions. A prominent truthfulness note and corrected
+  active launch path were added; the older marketing context is preserved
+  as aspirational material, not measured quality.
+
+No historical code was deleted or restored by this documentation audit.
+Project-memory navigation is centralized in PROJECT_MEMORY_INDEX.md,
+SESSION_START.md, PROJECT_BOOTSTRAP.md and ADR 0010. This review
+inventoried 47 assets under src/Docs but did NOT constitute complete
+technical study of every research asset or code archaeology of every
+subsystem. Evaluate relevant material when working on that domain.
