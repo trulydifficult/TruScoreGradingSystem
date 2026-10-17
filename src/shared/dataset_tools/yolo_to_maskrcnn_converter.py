@@ -5,6 +5,7 @@ Converts YOLO bounding boxes to COCO format polygon masks for precision training
 """
 
 import json
+import math
 import numpy as np
 from pathlib import Path
 from PIL import Image
@@ -337,7 +338,7 @@ class YOLOToMaskRCNNConverter:
         return bbox, area
 
     def convert_image_annotations(self, image_path: Path, yolo_annotations: List[Dict],
-                                 use_refined_polygons: bool = True) -> Dict:
+                                 use_refined_polygons: bool = True, bbox_only: bool = False) -> Dict:
         """
         Convert YOLO annotations for a single image to COCO format
         
@@ -369,6 +370,41 @@ class YOLOToMaskRCNNConverter:
             # Convert annotations
             converted_annotations = []
             for ann in yolo_annotations:
+                if bbox_only:
+                    if ann.get("poly") is not None:
+                        raise ValueError("Polygon labels require a separate source-polygon export path")
+                    bbox_norm = ann.get("bbox")
+                    if bbox_norm is None or len(bbox_norm) != 4:
+                        raise ValueError("Expected five-field YOLO bounding box")
+                    cx, cy, bw, bh = (float(v) for v in bbox_norm)
+                    if not all(math.isfinite(v) for v in (cx, cy, bw, bh)):
+                        raise ValueError("Non-finite YOLO bounding box")
+                    x0, y0 = cx - bw / 2, cy - bh / 2
+                    x1, y1 = cx + bw / 2, cy + bh / 2
+                    if not (bw > 0 and bh > 0 and
+                            0 <= x0 < x1 <= 1 and 0 <= y0 < y1 <= 1):
+                        raise ValueError(f"Invalid YOLO bounds: {bbox_norm}")
+                    class_id = int(ann["class_id"])
+                    if class_id not in range(len(self.class_names)):
+                        raise ValueError(f"Unknown YOLO class: {class_id}")
+                    pixel_bbox = [x0 * image_width, y0 * image_height,
+                                  bw * image_width, bh * image_height]
+                    converted_annotations.append({
+                        "id": self.annotation_id_counter,
+                        "image_id": self.image_id_counter,
+                        "category_id": class_id + 1,
+                        "bbox": pixel_bbox,
+                        "area": pixel_bbox[2] * pixel_bbox[3],
+                        "iscrowd": 0,
+                        "attributes": {
+                            "source": "yolo_bbox",
+                            "geometry": "axis_aligned_bbox",
+                            "segmentation_ground_truth": False
+                        }
+                    })
+                    self.annotation_id_counter += 1
+                    continue
+
                 # 1) Build polygon (either from YOLO poly or from bbox)
                 if ann.get('poly') is not None:
                     polygon = self._norm_poly_to_px(ann['poly'], image_width, image_height)
@@ -421,7 +457,8 @@ class YOLOToMaskRCNNConverter:
             return None
     
     def convert_dataset(self, images_dir: Path, labels_dir: Path, 
-                       output_path: Path = None, use_refined_polygons: bool = True) -> Dict:
+                       output_path: Path = None, use_refined_polygons: bool = True,
+                        bbox_only: bool = False) -> Dict:
         """
         Convert entire YOLO dataset to COCO format
         
@@ -446,6 +483,10 @@ class YOLOToMaskRCNNConverter:
         
         # Setup categories
         self.setup_categories()
+        self.coco_data["info"]["annotation_geometry"] = (
+            "axis_aligned_bbox" if bbox_only else "derived_or_source_polygon"
+        )
+        self.coco_data["info"]["segmentation_ground_truth"] = False if bbox_only else None
         
         conversion_stats = {
             "total_images": 0,
@@ -483,7 +524,7 @@ class YOLOToMaskRCNNConverter:
             
             # Convert to COCO format
             conversion_result = self.convert_image_annotations(
-                image_path, yolo_annotations, use_refined_polygons
+                image_path, yolo_annotations, use_refined_polygons, bbox_only=bbox_only
             )
             
             if conversion_result:
@@ -523,7 +564,8 @@ class YOLOToMaskRCNNConverter:
             "conversion_stats": conversion_stats
         }
     
-    def convert_imported_data(self, images: List, labels: Dict, use_refined_polygons: bool = True) -> Dict:
+    def convert_imported_data(self, images: List, labels: Dict, use_refined_polygons: bool = True,
+                              bbox_only: bool = False) -> Dict:
         """
         Convert imported YOLO data to COCO format (no filesystem scanning)
         
@@ -547,6 +589,10 @@ class YOLOToMaskRCNNConverter:
         
         # Setup categories
         self.setup_categories()
+        self.coco_data["info"]["annotation_geometry"] = (
+            "axis_aligned_bbox" if bbox_only else "derived_or_source_polygon"
+        )
+        self.coco_data["info"]["segmentation_ground_truth"] = False if bbox_only else None
         
         conversion_stats = {
             "total_images": len(images),
@@ -589,7 +635,7 @@ class YOLOToMaskRCNNConverter:
             
             # Convert to COCO format
             conversion_result = self.convert_image_annotations(
-                Path(image_path), yolo_annotations, use_refined_polygons
+                Path(image_path), yolo_annotations, use_refined_polygons, bbox_only=bbox_only
             )
             
             if conversion_result:
@@ -602,7 +648,7 @@ class YOLOToMaskRCNNConverter:
                 # Track class distribution
                 for ann in conversion_result["annotations"]:
                     class_id = ann["category_id"]
-                    class_name = self.class_names[class_id] if class_id < len(self.class_names) else f"class_{class_id}"
+                    class_name = self.class_names[class_id - 1] if 1 <= class_id <= len(self.class_names) else f"class_{class_id}"
                     conversion_stats["class_distribution"][class_name] = conversion_stats["class_distribution"].get(class_name, 0) + 1
                 
                 self.logger.debug(f"Converted {image_name}: {len(conversion_result['annotations'])} annotations")
