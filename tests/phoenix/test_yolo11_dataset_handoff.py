@@ -307,7 +307,7 @@ def test_all_picker_options_are_accounted_for_and_never_implicitly_trainable():
             / "project_creation_dialog.py")
     tree = ast.parse(path.read_text(encoding="utf-8"))
     cls = next(n for n in tree.body if isinstance(n, ast.ClassDef)
-               and n.name == "ProfessionalDatasetCreationDialog")
+               and n.name == "ProjectCreationDialog")
     types = None
     pipelines = None
     for node in ast.walk(cls):
