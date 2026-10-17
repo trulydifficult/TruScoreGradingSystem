@@ -1304,3 +1304,35 @@ accurate project-only counts and a practical pre-export report.
 
 GUI screenshots verify the observed defect only; workstation acceptance
 of the replacement rendering remains pending.
+
+## Latest operator update — seven-card COCO export and Phoenix handoff (2026-10-16)
+
+The user reports the repaired Dataset Studio Export/Analysis UI now looks
+good and successfully clicked manual export for seven card images at:
+
+`/home/dewster/Vanguard/src/modules/dataset_studio/exports/Dataset_20261016_230734/`
+
+**The local exported contents were not supplied or read.** Do not mark
+the actual annotations.json and images as independently accepted yet.
+Do not change the working Dataset Studio UI without a new requirement.
+
+Source-only audit of the extra buttons:
+- Export to Trainer targets a non-existent legacy Phoenix Training
+  Studio launcher and sends only temporary descriptive metadata.
+  NOT CONNECTED to the current Trainer.
+- Export to Queue points at the real Phoenix pending folder and writes
+  COCO plus dataset_config.json, but has an absent launcher, fabricated
+  default training options and an omitted GPU hint. The chosen border
+  dataset routes to Mask R-CNN, which correctly rejects five-field
+  YOLO detection boxes lacking true segmentation masks.
+- Main Window → Phoenix Training System launches the REAL standalone
+  Queue; a real ROCm ViT smoke job previously succeeded through it.
+
+**Next step:** validate this exact seven-card export's JSON and JPEGs,
+then deliberately choose a box detector or real segmentation masks
+before repairing and verifying the Trainer/Queue buttons. DO NOT
+click Export to Queue to initiate training for this dataset yet.
+Source classification and future acceptance in
+`project_brain/DATASET_TO_PHOENIX_HANDOFF_AUDIT.md`.
+
+No application source files were changed in this audit.
