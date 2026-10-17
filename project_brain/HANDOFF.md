@@ -1416,3 +1416,17 @@ training/real model checkpoint has been executed by this session**.
 The native Qt and GPU acceptance gates are NEXT. Remaining picker
 options have no implicit training guarantee; see matrix.
 Do not use last month's project snapshots as current implementation.
+
+## Newest 2026-10-17 handoff continuation — atomic Queue watcher verified
+
+ADR 0011 + MODEL_CAPABILITY_MATRIX.md remain current.
+The correct standalone Queue now watches both created and moved-in
+whole dataset directories. This is required because the new
+publisher moves a complete validated directory atomically into
+pending. New 19-test source contract (CI 39061414150) passes.
+
+NEXT: real user workstation GUI click and ROCm Ultralytics YOLO11s
+smoke verification, while avoiding any claim of real precision
+metrics before training. SESSION_START.md is the current bounded
+snapshot. Other advertised model families remain future annotation
+and trainer integration gates.
