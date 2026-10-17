@@ -104,6 +104,24 @@ class Detectron2Trainer(BaseTrainer):
         unknown_ids = {annotation["image_id"] for annotation in annotations} - set(ids)
         if unknown_ids:
             raise ValueError(f"COCO annotations reference unknown image IDs: {sorted(unknown_ids)}")
+        # Mask R-CNN needs true instance masks. Detection boxes and synthetic
+        # refined polygons must not silently enter the segmentation trainer.
+        if not annotations:
+            raise ValueError("Detectron2 Mask R-CNN dataset has no annotations")
+        if coco_data.get("info", {}).get("segmentation_ground_truth") is False:
+            raise ValueError(
+                "This COCO export contains detection boxes only; Mask R-CNN "
+                "requires verified instance-segmentation ground truth"
+            )
+        for annotation in annotations:
+            if not annotation.get("segmentation"):
+                raise ValueError(
+                    f"Missing instance mask for COCO annotation {annotation.get('id')}"
+                )
+            attrs = annotation.get("attributes") or {}
+            if (attrs.get("source") == "yolo_conversion" and
+                    attrs.get("refinement_status") == "initial"):
+                raise ValueError("Synthetic bbox-derived polygons cannot train precision Mask R-CNN")
 
         seed = int(self.config.get("seed", 42))
         shuffled_ids = list(ids)
