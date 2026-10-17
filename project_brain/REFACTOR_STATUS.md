@@ -413,3 +413,12 @@ Implemented source routes:
 **Status: PARTIALLY VERIFIED SOURCE CONTRACT, workstation training PENDING.**
 Do not mark Phoenix's new YOLO11s trainer accepted for real ROCm
 until operator runtime/real checkpoint and evaluation logs are recorded.
+
+### Queue atomic-publish watcher follow-up — 2026-10-17
+
+Resolved existing Queue on_created-only watcher incompatibility
+with atomic staging-to-pending publication by adding directory
+on_moved handling. Dedicated Phoenix Dataset Handoff CI run
+39061414150 **PASSED 19 tests**. Current state:
+SOURCE/CI INTEGRATION VERIFIED; native Qt and GPU training
+NOT VERIFIED. No general model-accuracy acceptance.
