@@ -29,10 +29,7 @@ _CAPABILITIES = {
         "border_detection_2class", "YOLO11s Optimized", "yolo11s",
         "axis_aligned_bbox", ("outer_border", "graphic_border")
     ),
-    ("border_detection_single", "YOLO11s Optimized"): HandoffCapability(
-        "border_detection_single", "YOLO11s Optimized", "yolo11s",
-        "axis_aligned_bbox", ("outer_border",)
-    ),
+
 }
 
 
