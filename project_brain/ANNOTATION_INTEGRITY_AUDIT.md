@@ -721,3 +721,19 @@ not physical card-edge/corner accuracy, source-rotation angle, rotated
 quadrilateral, per-pixel segmentation, end-to-end GUI acceptance, or
 native GPU Mask R-CNN. The old 20-image fixture still lacks legitimate
 segmentation; do not train from it. See ADR 0008.
+
+### Dataset validator and export provenance follow-up — 2026-10-16
+
+Found and corrected two analogous truthfulness defects in the common
+dataset validator: YOLO bbox labels had been reported convertible to
+Mask R-CNN without masks; image-label matching used an unsafe substring
+test (Test1 could match Test10). Target Mask R-CNN now rejects YOLO
+bbox-only readiness; matching compares exact lowercase filename stems.
+Dual-border expected class naming matches outer_border/graphic_border.
+
+Manual export emitted a Guru dataset_exported event *before confirmation*,
+even for cancelled or failed writes. The event now follows confirmed
+positive exported count; failed/cancelled exports emit nothing. The test
+exercises the live AST entrypoint through cancel/success/writer failure.
+Latest Dataset Integrity run 38998658381 **PASSED 19 tests**.
+This is headless source-code evidence, NOT workstation GUI acceptance.
