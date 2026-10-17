@@ -390,3 +390,30 @@ def test_actual_export_button_success_wiring_uses_single_publisher(
         assert argv[2:] == ["--dataset", str(target)]
         assert "--auto-start" not in argv
         assert opts["cwd"] == str(launcher.parent)
+
+
+
+def test_queue_watcher_recognizes_atomic_move_into_pending(tmp_path):
+    """Linux inotify reports an atomic staging rename as a moved event."""
+    path = ROOT / "src/modules/phoenix_trainer/phoenix_training_queue_standalone.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    cls = copy.deepcopy(next(x for x in tree.body
+                             if isinstance(x, ast.ClassDef) and x.name == "DatasetWatcher"))
+    unit = ast.fix_missing_locations(ast.Module(body=[cls], type_ignores=[]))
+    class Logger:
+        def info(self, *args):
+            pass
+    space = {"FileSystemEventHandler": object, "Path": Path, "logger": Logger()}
+    exec(compile(unit, str(path), "exec"), space)
+    seen = []
+    watcher = space["DatasetWatcher"](seen.append)
+    target = tmp_path / "pending" / "complete_dataset"
+    watcher.on_moved(types.SimpleNamespace(
+        is_directory=True, src_path=str(tmp_path / "staging/source"),
+        dest_path=str(target)
+    ))
+    watcher.on_moved(types.SimpleNamespace(
+        is_directory=False, src_path="metadata.json",
+        dest_path=str(target / "metadata.json")
+    ))
+    assert seen == [target]
