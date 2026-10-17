@@ -98,3 +98,24 @@ Do not equate these source-method checks with workstation Qt GUI acceptance.
    acceptance before enabling precision Mask R-CNN training.
 4. Continue Phoenix with a real validated dataset plus ROCm training/evaluation
    and unattended multi-job Queue acceptance, not a fabricated 20-image fixture.
+
+
+## Follow-up implementation and verification
+
+Same-day audit of \`src/shared/dataset_tools/dataset_validator.py\` found
+unsafe Test1/Test10 substring label matching and a false success/info
+path describing YOLO bbox-only data as automatically convertible to
+Detectron2 Mask R-CNN. Exact stem matching and explicit unsupported
+bbox-to-instance-mask validation now reject both. Canonical class
+names are outer_border/graphic_border.
+
+In manual export the Guru dataset_exported event had originally fired
+before user confirmation or disk output. The event now follows successful
+nonzero file export and includes the actual destination/count; cancel
+and writer failures are not announced as success. Test suite exercises
+the exact active method bodies and image fixtures.
+
+Dataset Integrity CI run **38998658381 passed 19 tests**; prior
+Annotation Integrity and Phoenix Foundation checks passed as well.
+Production GUI and genuine segmentation annotation verification remain
+pending.
