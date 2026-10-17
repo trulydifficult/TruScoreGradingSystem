@@ -213,3 +213,22 @@ and isolated effective source-method tests. Workstation confirmation
 of the newly added in-progress indicator and duplicate-request handling
 remains pending. This does NOT unblock Detectron2/Mask R-CNN
 segmentation-ground-truth requirements.
+
+## Annotation Studio last-card completion slice — 2026-10-16
+
+User reported final-card Space saved then straightened the still-visible
+card, creating uncertainty about the exported orientation. Root cause
+was unconditional UI rotation reset before a no-op end-of-batch
+navigation. The active `src/` Space workflow now shows a completion
+summary once successful export writes have been confirmed. Nonfinal
+rotate/save/reset/next behavior preserved. Saved image indices determine
+truthful N/N count, including valid auto-saves via Previous/Next;
+failed final writes leave the last card editable and do not declare
+success. Repeated Space is harmless, and loading new cards resets state.
+
+Triple-export plugin now requires class 0+1 and all 3 datasets to
+succeed (including checking cv2.imwrite). See ADR 0007 and
+`project_brain/ANNOTATION_INTEGRITY_AUDIT.md`.
+Annotation Integrity CI 38985208841 PASS 38 tests with new completion
+and failure regression cases. End-to-end real GUI and new batch
+image/label fidelity acceptance NOT yet verified.
