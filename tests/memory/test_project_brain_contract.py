@@ -74,9 +74,7 @@ class ProjectMemoryContractTests(unittest.TestCase):
         )]
         self.assertTrue(markers)
         self.assertIn("SESSION_START.md", content[markers[-1]:])
-        self.assertIn("older October 15 marker", content.lower().replace(
-            "the older October 15", "older October 15"
-        ).replace("OLDER", "older"))
+        self.assertIn("older october 15 marker", content.lower())
 
     def test_truthfulness_notice_is_visible(self):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
