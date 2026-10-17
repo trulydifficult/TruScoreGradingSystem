@@ -311,3 +311,24 @@ Zero-file and empty requested photometric outputs fail explicitly.
 The 19-case Dataset Integrity suite covers canceled, successful and
 failed export event ordering in addition to conversion geometry.
 Run 38998658381 passed; native GUI/hardware acceptance is still pending.
+
+### Dataset Studio live Export/Analysis diagnostics — 2026-10-16
+
+User GUI evidence: Verification 7/7 images matched plausible boxes; the
+Export/Analysis tab showed 7 images, global 216 labels and zero coverage
+before manual Refresh, then 230 labels and 7/7 after Refresh.
+Pre-export frame displayed dark unreadable QLabel rows. This is a
+REAL workstation defect report, not a cosmetic preference.
+
+ADR 0009 implements a project-scoped analyzer and automatic recalculation
+on Export/Analysis tab activation. Source YOLO/COCO deduplication, exact
+stem matching, malformed label detection, class counts, distinct file-vs-
+instance metrics, quality-filter eligibility and a readable plain-text
+pre-export report are implemented. Prior hardcoded minimum of ten images
+no longer decides COCO bbox export readiness. Mask-RCNN mask readiness
+remains explicitly unverified.
+
+Headless test coverage added using six committed real card fixtures,
+source AST tab callback/report logic and invalid/mixed label cases.
+**User GUI acceptance of the replacement tab is pending.** Do not mark
+this whole subsystem VERIFIED or claim trained-model accuracy.
