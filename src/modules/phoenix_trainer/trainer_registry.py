@@ -16,6 +16,7 @@ class TrainerKind(str, Enum):
     DETECTRON2 = "detectron2"
     VIT = "vit"
     UNET = "unet"
+    YOLO11S = "yolo11s"
 
 
 class UnsupportedTrainingConfiguration(RuntimeError):
@@ -87,6 +88,12 @@ def resolve_trainer_kind(model_type: str, config: Dict[str, Any]) -> TrainerKind
 
     dataset_type = _text(config.get("dataset_type"))
     descriptor = _descriptor(model_type, config)
+
+    # Exact explicit detection option, never a generic YOLO fallback.
+    if config.get("pipeline") == "YOLO11s Optimized" and model_type == "YOLO11s Optimized":
+        from shared.dataset_tools.phoenix_contract import resolve_handoff
+        resolve_handoff(config)
+        return TrainerKind.YOLO11S
 
     if dataset_type in _UNSUPPORTED_DATASET_TYPES:
         raise UnsupportedTrainingConfiguration(
@@ -171,6 +178,10 @@ def create_trainer(model_type: str, config: Dict[str, Any]):
         if dataset_type == "corner_quality_classification":
             trainer_config.setdefault("num_classes", 4)
         return ViTTrainer(trainer_config)
+
+    if kind is TrainerKind.YOLO11S:
+        from .trainers.yolo11_detection_trainer import YOLO11DetectionTrainer
+        return YOLO11DetectionTrainer(trainer_config)
 
     if kind is TrainerKind.UNET:
         from .trainers.unet_trainer import UNetTrainer
