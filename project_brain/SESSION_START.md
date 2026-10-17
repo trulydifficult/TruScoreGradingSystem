@@ -6,6 +6,43 @@ Authoritative repo: trulydifficult/TruScoreGradingSystem
 Commit policy: resolve HEAD fresh at session start; do NOT assume
 the SHA printed in a previous conversation remains HEAD.
 
+## CRITICAL REQUIREMENT CORRECTION — 2026-10-17
+
+The user explicitly corrected our proposed primary dual-border trainer:
+YOLO11s **bounding box** detection does NOT fulfill TruScore's
+precision 24-point centering system. Actual objective is to follow the
+physical card border and printed graphic border as two independent
+native-pixel **contours**, sampled at 5 top, 5 bottom, 7 left,
+7 right stations. Root 24pointside.jpg and 24pointside (1).jpg are
+the visual proofs. ADR 0012 overrides ADR 0011 **only** insofar as
+YOLO11s was wrongly made the main dual-border centering model.
+Existing YOLO11s handoff is an optional coarse-ROI detector, NOT
+the 24-point precision training route.
+
+New primary audit: DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md.
+Research shortlist: Detectron2 + PointRend boundary refinement
+(first comparative baseline), Mask2Former / high-res segmentation,
+SAM2/3 assisted HUMAN-REVIEWED contour labels, and optional
+explicitly box-supervised BoxInst/Box2Mask bootstrap (not accepted
+physical ground truth). No candidate is claimed best without a
+held-out contour/24-point error benchmark.
+
+Current `src/shared/truscore_system/twentyfour_centering.py`
+resamples each edge polygon into 48 points, then selects a single
+short segment for each side's 5/7 samples; missing ray intersections
+become zero and can yield a false 50:50. Winding, source-image
+rotation and metric calibration also require tests.
+Current prompt_segmentation_plugin.py produces STUB rectangle masks
+when inference is unavailable; never train from those.
+
+**IMMEDIATE NEXT TASK:** design/test genuine 2-contour annotation
+schema and corrected 24-station full-side sampling using real diagrams
+and synthetic skew/rotation cases, then benchmark trained mask/
+contour models on human-reviewed data. Do not run 7-image YOLO11s
+bbox training as proof of 24-point centering, and do not claim that
+YOLO→COCO boxes give Mask R-CNN mask ground truth.
+No production app code changed in this requirement correction.
+
 ## First action for an incoming assistant
 
 Read PROJECT_BOOTSTRAP.md and PROJECT_MEMORY_INDEX.md, this file,
