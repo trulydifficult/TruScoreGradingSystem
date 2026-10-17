@@ -3705,21 +3705,6 @@ Path: {label_info['path']}
                 )
                 return
 
-            # GURU ABSORPTION: Dataset Export Event
-            self.guru.absorb_dataset_event('dataset_exported', {
-                'export_formats': selected_formats,
-                'image_count': len(self.images) if hasattr(self, 'images') else 0,
-                'label_count': len(self.imported_labels) if hasattr(self, 'imported_labels') else 0,
-                'dataset_name': getattr(self.current_config, 'name', 'Unknown'),
-                'dataset_type': getattr(self.current_config, 'type', 'Unknown'),
-                'metadata': {
-                    'export_destination': 'file_system',
-                    'selected_formats': selected_formats,
-                    'user_workflow': 'dataset_studio→export',
-                    'export_method': 'manual_export'
-                }
-            })
-            
             # Get export options
             include_images = self.include_images_cb.isChecked()
             quality_filter = self.quality_filter_cb.isChecked()
@@ -3800,6 +3785,33 @@ Proceed with export?
                         photometric_count = self._generate_photometric_data(images_to_export, dataset_export_dir)
                         self.logger.info(f"Generated photometric data for {photometric_count} images")
                     
+                    if exported_count <= 0:
+                        raise RuntimeError("Export produced zero files; refusing a success report")
+                    if generate_photometric and photometric_count <= 0:
+                        raise RuntimeError("Photometric export requested but no data was produced")
+
+                    # Publish only after output writers reported successful completion.
+                    try:
+                        if getattr(self, "guru", None) is not None:
+                            self.guru.absorb_dataset_event("dataset_exported", {
+                                "export_formats": selected_formats,
+                                "image_count": len(images_to_export),
+                                "label_count": len(self.imported_labels),
+                                "dataset_name": dataset_name,
+                                "dataset_type": self.current_config.get("type", "Unknown")
+                                    if isinstance(getattr(self, "current_config", None), dict)
+                                    else getattr(self.current_config, "type", "Unknown"),
+                                "metadata": {
+                                    "export_destination": str(dataset_export_dir),
+                                    "files_written": exported_count,
+                                    "selected_formats": selected_formats,
+                                    "user_workflow": "dataset_studio→export",
+                                    "export_method": "manual_export"
+                                }
+                            })
+                    except Exception:
+                        self.logger.exception("Guru event logging failed after successful dataset write")
+
                     # Show real success message
                     photometric_msg = f"\n\nPhotometric Data: {photometric_count} images processed" if generate_photometric else ""
                     QMessageBox.information(
