@@ -129,3 +129,17 @@ or another training launcher.
 
 No source changes were made by this audit. No new training job was
 created or launched.
+
+
+## Update: actual seven-card export independently verified
+
+The earlier "local output not accessible" statement describes the state
+of the initial audit. The user subsequently committed the export in
+8eee8ff. GitHub source/file audit and Dataset Integrity CI run
+39002287868 verify **7 JPEGs + 14 exact source-equivalent COCO
+bounding boxes**, and no instance segmentation. See
+DATASET_SEVEN_CARD_EXPORT_AUDIT.md.
+
+The two Trainer/Queue buttons remain disconnected/partially wired as
+detailed above; do not confuse acceptance of the manual COCO detection
+export with acceptance of automatic Mask R-CNN training.
