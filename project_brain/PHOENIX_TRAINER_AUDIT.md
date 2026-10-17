@@ -698,3 +698,32 @@ regression testing. The existing green CI suites are NOT evidence of
 that new path's completeness. Do not tell the operator to export-to-
 queue or train the new type until integration, tests and local ROCm
 acceptance are completed.
+
+## 2026-10-17 source-verified YOLO11s dataset and Queue handoff
+
+After original native ViT ROCm smoke evidence, the first explicitly
+selected **detection** route is
+border_detection_2class + YOLO11s Optimized (ADR 0011).
+The current 24 dataset types and 15 pipeline labels are inventoried
+in MODEL_CAPABILITY_MATRIX.md. No other pairing gains support merely
+because its menu label exists.
+
+The source now includes actual Ultralytics YOLO11s optimizer/epoch
+callbacks, deterministic source-equivalent 7-card COCO-to-YOLO
+train/val labeling, GPU hint honoring, no CPU substitution for an
+unavailable GPU, real checkpoint-file checks, and strict unsupported
+feature rejection. The Dataset Studio buttons publish through the
+same atomic validator and the actual current Trainer path; Queue
+uses the existing pending/watcher/worker architecture, not a new Queue.
+
+Found an integration bug in existing Queue: DatasetWatcher only
+handled on_created, whereas staging->pending os.replace emits
+on_moved under Linux. on_moved now notifies the existing Queue UI
+event handler. Dedicated source regression checks cover this.
+
+**Evidence:** Phoenix Dataset Handoff workflow 39061414150,
+19 tests PASSED on f61ab486. Previous Source/Annotation/Dataset
+Integrity workflows continued to pass; no native GPU training was
+executed in GitHub CI. Full Qt operator acceptance and actual ROCm
+Ultralytics model training/checkpoint verification remain PENDING.
+There are NO measured YOLO precision/recall or performance numbers.
