@@ -11309,3 +11309,200 @@ RuntimeError: Error in dlopen: libcaffe2_nvrtc.so: cannot open shared object fil
 2026-10-16 18:22:49,449 | INFO     | border_detection_plugin - ✅ Exported Graphic border only: image004F.jpg
 2026-10-16 18:22:49,460 | INFO     | border_detection_plugin - ✅ Exported Both borders: image004F.jpg
 2026-10-16 18:22:49,460 | INFO     | border_detection_plugin - 🎉 Successfully exported 3 formats to /home/dewster/Vanguard/src/shared/annotations
+2026-10-16 18:58:47,045 | INFO     | modular_annotation_studio - Launching TruScore Modular Annotation Studio...
+2026-10-16 18:58:47,139 | INFO     | modular_annotation_studio - Modular Annotation Studio launched successfully
+2026-10-16 18:58:53,920 | INFO     | border_detection_plugin - BorderDetectionPlugin initialized
+2026-10-16 18:58:53,920 | INFO     | border_detection_plugin - BorderDetectionPlugin activated
+2026-10-16 18:59:05,481 | INFO     | border_detection_plugin - Loaded real two-class YOLO checkpoint: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:05,488 | INFO     | border_detection_plugin - BorderDetectionSettingsWidget initialized
+2026-10-16 18:59:05,488 | DEBUG    | border_detection_plugin - Main plugin reference set: <class 'modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin'>
+2026-10-16 18:59:05,488 | WARNING  | border_detection_plugin - Parent does not have image_label - coordinate conversion may fail
+2026-10-16 18:59:05,488 | DEBUG    | border_detection_plugin - UI updated to show main plugin model loaded
+2026-10-16 18:59:05,488 | INFO     | border_detection_plugin - Studio canvas reference set - size: PyQt6.QtCore.QSize(782, 979)
+2026-10-16 18:59:05,488 | INFO     | border_detection_plugin - ✅ Found studio at parent level 4: ModularAnnotationStudio
+2026-10-16 18:59:05,488 | INFO     | border_detection_plugin - Coordinate conversion should now work correctly
+2026-10-16 18:59:05,982 | INFO     | border_detection_plugin - Attempting to load model from: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:05,982 | INFO     | border_detection_plugin - Model file exists: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:05,982 | INFO     | border_detection_plugin - Loading YOLO model: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:05,982 | INFO     | border_detection_plugin - Reusing the already-loaded two-class detector
+2026-10-16 18:59:05,983 | INFO     | border_detection_plugin - ✅ Border detection model successfully loaded from: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:08,432 | INFO     | border_detection_plugin - BorderDetectionPlugin initialized
+2026-10-16 18:59:08,433 | INFO     | border_detection_plugin - BorderDetectionPlugin activated
+2026-10-16 18:59:08,594 | INFO     | border_detection_plugin - Loaded real two-class YOLO checkpoint: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:08,600 | INFO     | border_detection_plugin - BorderDetectionSettingsWidget initialized
+2026-10-16 18:59:08,600 | DEBUG    | border_detection_plugin - Main plugin reference set: <class 'modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin'>
+2026-10-16 18:59:08,600 | WARNING  | border_detection_plugin - Parent does not have image_label - coordinate conversion may fail
+2026-10-16 18:59:08,600 | DEBUG    | border_detection_plugin - UI updated to show main plugin model loaded
+2026-10-16 18:59:08,601 | INFO     | border_detection_plugin - Studio canvas reference set - size: PyQt6.QtCore.QSize(782, 979)
+2026-10-16 18:59:08,601 | INFO     | border_detection_plugin - ✅ Found studio at parent level 4: ModularAnnotationStudio
+2026-10-16 18:59:08,601 | INFO     | border_detection_plugin - Coordinate conversion should now work correctly
+2026-10-16 18:59:09,095 | INFO     | border_detection_plugin - Attempting to load model from: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:09,095 | INFO     | border_detection_plugin - Model file exists: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:09,095 | INFO     | border_detection_plugin - Loading YOLO model: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:09,095 | INFO     | border_detection_plugin - Reusing the already-loaded two-class detector
+2026-10-16 18:59:09,096 | INFO     | border_detection_plugin - ✅ Border detection model successfully loaded from: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 18:59:25,342 | INFO     | border_detection_plugin - on_image_changed called with image: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image092F.jpg
+2026-10-16 18:59:25,342 | INFO     | border_detection_plugin - Image set: (2291, 1640, 3)
+2026-10-16 18:59:25,343 | INFO     | border_detection_plugin - Settings widget: image set, auto-detection handled by main plugin
+2026-10-16 18:59:25,843 | INFO     | border_detection_plugin - YOLO auto detection starting: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image092F.jpg
+2026-10-16 18:59:25,852 | DEBUG    | border_detection_plugin - Using model from settings widget
+2026-10-16 18:59:25,852 | INFO     | border_detection_plugin - YOLO auto source image size 1640x2291; model controls its own preprocessing
+2026-10-16 18:59:27,387 | INFO     | border_detection_plugin - YOLO inference returned 1 result batches for /home/dewster/Pictures/Sports Cards/7-24-25/front2/image092F.jpg
+2026-10-16 18:59:27,388 | INFO     | border_detection_plugin - Two-class YOLO prediction count: outer=1, graphic=1; image=/home/dewster/Pictures/Sports Cards/7-24-25/front2/image092F.jpg
+2026-10-16 18:59:27,464 | DEBUG    | border_detection_plugin - Statistics updated: Found: 1 outer, 1 graphic borders
+2026-10-16 18:59:27,469 | INFO     | border_detection_plugin - YOLO auto detection returned 2 boxes: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image092F.jpg
+2026-10-16 18:59:27,469 | INFO     | border_detection_plugin - YOLO auto request duration 1.627s: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image092F.jpg
+2026-10-16 19:00:29,696 | INFO     | border_detection_plugin - DEBUG: Looking for class_id 1
+2026-10-16 19:00:29,696 | INFO     | border_detection_plugin - DEBUG: Annotation 0: class_id=0, label=outer_border
+2026-10-16 19:00:29,696 | INFO     | border_detection_plugin - DEBUG: Annotation 1: class_id=1, label=inner_border
+2026-10-16 19:00:29,696 | INFO     | border_detection_plugin - ✅ Selected graphic border - triggering redraw
+2026-10-16 19:00:29,700 | INFO     | border_detection_plugin - Tab pressed: Outer → Graphic
+2026-10-16 19:00:46,824 | INFO     | border_detection_plugin - 🚀 auto_create_training_labels() called - 2 annotations
+2026-10-16 19:00:46,824 | INFO     | border_detection_plugin - ✅ Got image path from studio: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image092F.jpg
+2026-10-16 19:00:46,836 | INFO     | border_detection_plugin - ✅ Exported Outer border only: image092F.jpg
+2026-10-16 19:00:46,847 | INFO     | border_detection_plugin - ✅ Exported Graphic border only: image092F.jpg
+2026-10-16 19:00:46,860 | INFO     | border_detection_plugin - ✅ Exported Both borders: image092F.jpg
+2026-10-16 19:00:46,860 | INFO     | border_detection_plugin - 🎉 Successfully exported 3 formats to /home/dewster/Vanguard/src/shared/annotations
+2026-10-16 19:00:46,896 | INFO     | border_detection_plugin - on_image_changed called with image: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image093F.jpg
+2026-10-16 19:00:46,896 | INFO     | border_detection_plugin - Image set: (2291, 1640, 3)
+2026-10-16 19:00:46,897 | INFO     | border_detection_plugin - Settings widget: image set, auto-detection handled by main plugin
+2026-10-16 19:00:47,401 | INFO     | border_detection_plugin - YOLO auto detection starting: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image093F.jpg
+2026-10-16 19:00:47,408 | DEBUG    | border_detection_plugin - Using model from settings widget
+2026-10-16 19:00:47,408 | INFO     | border_detection_plugin - YOLO auto source image size 1640x2291; model controls its own preprocessing
+2026-10-16 19:00:47,438 | INFO     | border_detection_plugin - YOLO inference returned 1 result batches for /home/dewster/Pictures/Sports Cards/7-24-25/front2/image093F.jpg
+2026-10-16 19:00:47,439 | INFO     | border_detection_plugin - Two-class YOLO prediction count: outer=1, graphic=1; image=/home/dewster/Pictures/Sports Cards/7-24-25/front2/image093F.jpg
+2026-10-16 19:00:47,444 | DEBUG    | border_detection_plugin - Statistics updated: Found: 1 outer, 1 graphic borders
+2026-10-16 19:00:47,449 | INFO     | border_detection_plugin - YOLO auto detection returned 2 boxes: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image093F.jpg
+2026-10-16 19:00:47,449 | INFO     | border_detection_plugin - YOLO auto request duration 0.048s: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image093F.jpg
+2026-10-16 19:01:00,603 | DEBUG    | border_detection_plugin - 🎯 Border move started
+2026-10-16 19:01:03,411 | DEBUG    | border_detection_plugin - 🎯 Border move started
+2026-10-16 19:01:16,711 | INFO     | border_detection_plugin - DEBUG: Looking for class_id 1
+2026-10-16 19:01:16,711 | INFO     | border_detection_plugin - DEBUG: Annotation 0: class_id=0, label=outer_border
+2026-10-16 19:01:16,711 | INFO     | border_detection_plugin - DEBUG: Annotation 1: class_id=1, label=inner_border
+2026-10-16 19:01:16,711 | INFO     | border_detection_plugin - ✅ Selected graphic border - triggering redraw
+2026-10-16 19:01:16,715 | INFO     | border_detection_plugin - Tab pressed: Outer → Graphic
+2026-10-16 19:01:31,501 | INFO     | border_detection_plugin - 🚀 auto_create_training_labels() called - 2 annotations
+2026-10-16 19:01:31,501 | INFO     | border_detection_plugin - ✅ Got image path from studio: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image093F.jpg
+2026-10-16 19:01:31,510 | INFO     | border_detection_plugin - ✅ Exported Outer border only: image093F.jpg
+2026-10-16 19:01:31,519 | INFO     | border_detection_plugin - ✅ Exported Graphic border only: image093F.jpg
+2026-10-16 19:01:31,527 | INFO     | border_detection_plugin - ✅ Exported Both borders: image093F.jpg
+2026-10-16 19:01:31,527 | INFO     | border_detection_plugin - 🎉 Successfully exported 3 formats to /home/dewster/Vanguard/src/shared/annotations
+2026-10-16 19:01:31,570 | INFO     | border_detection_plugin - on_image_changed called with image: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image094F.jpg
+2026-10-16 19:01:31,570 | INFO     | border_detection_plugin - Image set: (2291, 1640, 3)
+2026-10-16 19:01:31,571 | INFO     | border_detection_plugin - Settings widget: image set, auto-detection handled by main plugin
+2026-10-16 19:01:32,072 | INFO     | border_detection_plugin - YOLO auto detection starting: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image094F.jpg
+2026-10-16 19:01:32,079 | DEBUG    | border_detection_plugin - Using model from settings widget
+2026-10-16 19:01:32,079 | INFO     | border_detection_plugin - YOLO auto source image size 1640x2291; model controls its own preprocessing
+2026-10-16 19:01:32,094 | INFO     | border_detection_plugin - YOLO inference returned 1 result batches for /home/dewster/Pictures/Sports Cards/7-24-25/front2/image094F.jpg
+2026-10-16 19:01:32,095 | INFO     | border_detection_plugin - Two-class YOLO prediction count: outer=1, graphic=1; image=/home/dewster/Pictures/Sports Cards/7-24-25/front2/image094F.jpg
+2026-10-16 19:01:32,102 | DEBUG    | border_detection_plugin - Statistics updated: Found: 1 outer, 1 graphic borders
+2026-10-16 19:01:32,107 | INFO     | border_detection_plugin - YOLO auto detection returned 2 boxes: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image094F.jpg
+2026-10-16 19:01:32,107 | INFO     | border_detection_plugin - YOLO auto request duration 0.035s: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image094F.jpg
+2026-10-16 19:01:38,731 | INFO     | border_detection_plugin - Corner handle grabbed: top_right
+2026-10-16 19:01:44,135 | INFO     | border_detection_plugin - DEBUG: Looking for class_id 1
+2026-10-16 19:01:44,135 | INFO     | border_detection_plugin - DEBUG: Annotation 0: class_id=0, label=outer_border
+2026-10-16 19:01:44,135 | INFO     | border_detection_plugin - DEBUG: Annotation 1: class_id=1, label=inner_border
+2026-10-16 19:01:44,135 | INFO     | border_detection_plugin - ✅ Selected graphic border - triggering redraw
+2026-10-16 19:01:44,139 | INFO     | border_detection_plugin - Tab pressed: Outer → Graphic
+2026-10-16 19:01:56,667 | INFO     | border_detection_plugin - 🚀 auto_create_training_labels() called - 2 annotations
+2026-10-16 19:01:56,667 | INFO     | border_detection_plugin - ✅ Got image path from studio: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image094F.jpg
+2026-10-16 19:01:56,677 | INFO     | border_detection_plugin - ✅ Exported Outer border only: image094F.jpg
+2026-10-16 19:01:56,686 | INFO     | border_detection_plugin - ✅ Exported Graphic border only: image094F.jpg
+2026-10-16 19:01:56,698 | INFO     | border_detection_plugin - ✅ Exported Both borders: image094F.jpg
+2026-10-16 19:01:56,698 | INFO     | border_detection_plugin - 🎉 Successfully exported 3 formats to /home/dewster/Vanguard/src/shared/annotations
+2026-10-16 19:02:06,456 | INFO     | border_detection_plugin - 🚀 auto_create_training_labels() called - 2 annotations
+2026-10-16 19:02:06,456 | INFO     | border_detection_plugin - ✅ Got image path from studio: /home/dewster/Pictures/Sports Cards/7-24-25/front2/image094F.jpg
+2026-10-16 19:02:06,466 | INFO     | border_detection_plugin - ✅ Exported Outer border only: image094F.jpg
+2026-10-16 19:02:06,476 | INFO     | border_detection_plugin - ✅ Exported Graphic border only: image094F.jpg
+2026-10-16 19:02:06,488 | INFO     | border_detection_plugin - ✅ Exported Both borders: image094F.jpg
+2026-10-16 19:02:06,488 | INFO     | border_detection_plugin - 🎉 Successfully exported 3 formats to /home/dewster/Vanguard/src/shared/annotations
+2026-10-16 19:18:51,116 | INFO     | modular_annotation_studio - Launching TruScore Modular Annotation Studio...
+2026-10-16 19:18:51,231 | INFO     | modular_annotation_studio - Modular Annotation Studio launched successfully
+2026-10-16 19:18:56,039 | INFO     | border_detection_plugin - BorderDetectionPlugin initialized
+2026-10-16 19:18:56,039 | INFO     | border_detection_plugin - BorderDetectionPlugin activated
+2026-10-16 19:19:05,767 | INFO     | border_detection_plugin - Loaded real two-class YOLO checkpoint: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 19:19:05,774 | INFO     | border_detection_plugin - BorderDetectionSettingsWidget initialized
+2026-10-16 19:19:05,774 | DEBUG    | border_detection_plugin - Main plugin reference set: <class 'modules.annotation_studio.plugins.border_detection_plugin.BorderDetectionPlugin'>
+2026-10-16 19:19:05,774 | WARNING  | border_detection_plugin - Parent does not have image_label - coordinate conversion may fail
+2026-10-16 19:19:05,774 | DEBUG    | border_detection_plugin - UI updated to show main plugin model loaded
+2026-10-16 19:19:05,774 | INFO     | border_detection_plugin - Studio canvas reference set - size: PyQt6.QtCore.QSize(782, 979)
+2026-10-16 19:19:05,774 | INFO     | border_detection_plugin - ✅ Found studio at parent level 4: ModularAnnotationStudio
+2026-10-16 19:19:05,775 | INFO     | border_detection_plugin - Coordinate conversion should now work correctly
+2026-10-16 19:19:06,269 | INFO     | border_detection_plugin - Attempting to load model from: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 19:19:06,269 | INFO     | border_detection_plugin - Model file exists: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 19:19:06,269 | INFO     | border_detection_plugin - Loading YOLO model: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 19:19:06,269 | INFO     | border_detection_plugin - Reusing the already-loaded two-class detector
+2026-10-16 19:19:06,270 | INFO     | border_detection_plugin - ✅ Border detection model successfully loaded from: /home/dewster/Vanguard/src/models/revolutionary_border_detector.pt
+2026-10-16 19:19:18,353 | INFO     | border_detection_plugin - on_image_changed called with image: /home/dewster/Pictures/Sports Cards/6-15-25/front/card094.jpg
+2026-10-16 19:19:18,353 | INFO     | border_detection_plugin - Image set: (2174, 1571, 3)
+2026-10-16 19:19:18,354 | INFO     | border_detection_plugin - Settings widget: image set, auto-detection handled by main plugin
+2026-10-16 19:19:18,856 | INFO     | border_detection_plugin - YOLO auto detection starting: /home/dewster/Pictures/Sports Cards/6-15-25/front/card094.jpg
+2026-10-16 19:19:18,863 | DEBUG    | border_detection_plugin - Using model from settings widget
+2026-10-16 19:19:18,863 | INFO     | border_detection_plugin - YOLO auto source image size 1571x2174; model controls its own preprocessing
+2026-10-16 19:19:20,232 | INFO     | border_detection_plugin - YOLO inference returned 1 result batches for /home/dewster/Pictures/Sports Cards/6-15-25/front/card094.jpg
+2026-10-16 19:19:20,234 | INFO     | border_detection_plugin - Two-class YOLO prediction count: outer=1, graphic=1; image=/home/dewster/Pictures/Sports Cards/6-15-25/front/card094.jpg
+2026-10-16 19:19:20,343 | DEBUG    | border_detection_plugin - Statistics updated: Found: 1 outer, 1 graphic borders
+2026-10-16 19:19:20,348 | INFO     | border_detection_plugin - YOLO auto detection returned 2 boxes: /home/dewster/Pictures/Sports Cards/6-15-25/front/card094.jpg
+2026-10-16 19:19:20,348 | INFO     | border_detection_plugin - YOLO auto request duration 1.492s: /home/dewster/Pictures/Sports Cards/6-15-25/front/card094.jpg
+2026-10-16 19:19:33,563 | INFO     | border_detection_plugin - DEBUG: Looking for class_id 1
+2026-10-16 19:19:33,563 | INFO     | border_detection_plugin - DEBUG: Annotation 0: class_id=0, label=outer_border
+2026-10-16 19:19:33,563 | INFO     | border_detection_plugin - DEBUG: Annotation 1: class_id=1, label=inner_border
+2026-10-16 19:19:33,563 | INFO     | border_detection_plugin - ✅ Selected graphic border - triggering redraw
+2026-10-16 19:19:33,567 | INFO     | border_detection_plugin - Tab pressed: Outer → Graphic
+2026-10-16 19:19:47,571 | INFO     | border_detection_plugin - 🚀 auto_create_training_labels() called - 2 annotations
+2026-10-16 19:19:47,571 | INFO     | border_detection_plugin - ✅ Got image path from studio: /home/dewster/Pictures/Sports Cards/6-15-25/front/card094.jpg
+2026-10-16 19:19:47,582 | INFO     | border_detection_plugin - ✅ Exported Outer border only: card094.jpg
+2026-10-16 19:19:47,593 | INFO     | border_detection_plugin - ✅ Exported Graphic border only: card094.jpg
+2026-10-16 19:19:47,604 | INFO     | border_detection_plugin - ✅ Exported Both borders: card094.jpg
+2026-10-16 19:19:47,604 | INFO     | border_detection_plugin - Exported all 3 image/label datasets to /home/dewster/Vanguard/src/shared/annotations
+2026-10-16 19:19:47,620 | INFO     | border_detection_plugin - on_image_changed called with image: /home/dewster/Pictures/Sports Cards/6-15-25/front/card095.jpg
+2026-10-16 19:19:47,620 | INFO     | border_detection_plugin - Image set: (2174, 1589, 3)
+2026-10-16 19:19:47,620 | INFO     | border_detection_plugin - Settings widget: image set, auto-detection handled by main plugin
+2026-10-16 19:19:48,121 | INFO     | border_detection_plugin - YOLO auto detection starting: /home/dewster/Pictures/Sports Cards/6-15-25/front/card095.jpg
+2026-10-16 19:19:48,128 | DEBUG    | border_detection_plugin - Using model from settings widget
+2026-10-16 19:19:48,128 | INFO     | border_detection_plugin - YOLO auto source image size 1589x2174; model controls its own preprocessing
+2026-10-16 19:19:48,140 | INFO     | border_detection_plugin - YOLO inference returned 1 result batches for /home/dewster/Pictures/Sports Cards/6-15-25/front/card095.jpg
+2026-10-16 19:19:48,140 | INFO     | border_detection_plugin - Two-class YOLO prediction count: outer=1, graphic=1; image=/home/dewster/Pictures/Sports Cards/6-15-25/front/card095.jpg
+2026-10-16 19:19:48,144 | DEBUG    | border_detection_plugin - Statistics updated: Found: 1 outer, 1 graphic borders
+2026-10-16 19:19:48,149 | INFO     | border_detection_plugin - YOLO auto detection returned 2 boxes: /home/dewster/Pictures/Sports Cards/6-15-25/front/card095.jpg
+2026-10-16 19:19:48,149 | INFO     | border_detection_plugin - YOLO auto request duration 0.028s: /home/dewster/Pictures/Sports Cards/6-15-25/front/card095.jpg
+2026-10-16 19:19:55,975 | INFO     | border_detection_plugin - DEBUG: Looking for class_id 1
+2026-10-16 19:19:55,975 | INFO     | border_detection_plugin - DEBUG: Annotation 0: class_id=0, label=outer_border
+2026-10-16 19:19:55,975 | INFO     | border_detection_plugin - DEBUG: Annotation 1: class_id=1, label=inner_border
+2026-10-16 19:19:55,975 | INFO     | border_detection_plugin - ✅ Selected graphic border - triggering redraw
+2026-10-16 19:19:55,979 | INFO     | border_detection_plugin - Tab pressed: Outer → Graphic
+2026-10-16 19:20:22,223 | INFO     | border_detection_plugin - DEBUG: Looking for class_id 0
+2026-10-16 19:20:22,223 | INFO     | border_detection_plugin - DEBUG: Annotation 0: class_id=0, label=outer_border
+2026-10-16 19:20:22,223 | INFO     | border_detection_plugin - DEBUG: Annotation 1: class_id=1, label=inner_border
+2026-10-16 19:20:22,223 | INFO     | border_detection_plugin - ✅ Selected outer border - triggering redraw
+2026-10-16 19:20:22,226 | INFO     | border_detection_plugin - Tab pressed: Graphic → Outer
+2026-10-16 19:20:30,203 | INFO     | border_detection_plugin - 🚀 auto_create_training_labels() called - 2 annotations
+2026-10-16 19:20:30,203 | INFO     | border_detection_plugin - ✅ Got image path from studio: /home/dewster/Pictures/Sports Cards/6-15-25/front/card095.jpg
+2026-10-16 19:20:30,212 | INFO     | border_detection_plugin - ✅ Exported Outer border only: card095.jpg
+2026-10-16 19:20:30,220 | INFO     | border_detection_plugin - ✅ Exported Graphic border only: card095.jpg
+2026-10-16 19:20:30,229 | INFO     | border_detection_plugin - ✅ Exported Both borders: card095.jpg
+2026-10-16 19:20:30,229 | INFO     | border_detection_plugin - Exported all 3 image/label datasets to /home/dewster/Vanguard/src/shared/annotations
+2026-10-16 19:20:30,247 | INFO     | border_detection_plugin - on_image_changed called with image: /home/dewster/Pictures/Sports Cards/6-15-25/front/card096.jpg
+2026-10-16 19:20:30,247 | INFO     | border_detection_plugin - Image set: (2188, 1580, 3)
+2026-10-16 19:20:30,248 | INFO     | border_detection_plugin - Settings widget: image set, auto-detection handled by main plugin
+2026-10-16 19:20:30,748 | INFO     | border_detection_plugin - YOLO auto detection starting: /home/dewster/Pictures/Sports Cards/6-15-25/front/card096.jpg
+2026-10-16 19:20:30,754 | DEBUG    | border_detection_plugin - Using model from settings widget
+2026-10-16 19:20:30,754 | INFO     | border_detection_plugin - YOLO auto source image size 1580x2188; model controls its own preprocessing
+2026-10-16 19:20:30,766 | INFO     | border_detection_plugin - YOLO inference returned 1 result batches for /home/dewster/Pictures/Sports Cards/6-15-25/front/card096.jpg
+2026-10-16 19:20:30,766 | INFO     | border_detection_plugin - Two-class YOLO prediction count: outer=1, graphic=1; image=/home/dewster/Pictures/Sports Cards/6-15-25/front/card096.jpg
+2026-10-16 19:20:30,770 | DEBUG    | border_detection_plugin - Statistics updated: Found: 1 outer, 1 graphic borders
+2026-10-16 19:20:30,775 | INFO     | border_detection_plugin - YOLO auto detection returned 2 boxes: /home/dewster/Pictures/Sports Cards/6-15-25/front/card096.jpg
+2026-10-16 19:20:30,775 | INFO     | border_detection_plugin - YOLO auto request duration 0.026s: /home/dewster/Pictures/Sports Cards/6-15-25/front/card096.jpg
+2026-10-16 19:20:47,322 | INFO     | border_detection_plugin - DEBUG: Looking for class_id 1
+2026-10-16 19:20:47,322 | INFO     | border_detection_plugin - DEBUG: Annotation 0: class_id=0, label=outer_border
+2026-10-16 19:20:47,322 | INFO     | border_detection_plugin - DEBUG: Annotation 1: class_id=1, label=inner_border
+2026-10-16 19:20:47,322 | INFO     | border_detection_plugin - ✅ Selected graphic border - triggering redraw
+2026-10-16 19:20:47,326 | INFO     | border_detection_plugin - Tab pressed: Outer → Graphic
+2026-10-16 19:20:55,578 | DEBUG    | border_detection_plugin - 🎯 Border move started
+2026-10-16 19:20:56,498 | DEBUG    | border_detection_plugin - 🎯 Border move started
+2026-10-16 19:21:12,275 | INFO     | border_detection_plugin - 🚀 auto_create_training_labels() called - 2 annotations
+2026-10-16 19:21:12,275 | INFO     | border_detection_plugin - ✅ Got image path from studio: /home/dewster/Pictures/Sports Cards/6-15-25/front/card096.jpg
+2026-10-16 19:21:12,284 | INFO     | border_detection_plugin - ✅ Exported Outer border only: card096.jpg
+2026-10-16 19:21:12,293 | INFO     | border_detection_plugin - ✅ Exported Graphic border only: card096.jpg
+2026-10-16 19:21:12,301 | INFO     | border_detection_plugin - ✅ Exported Both borders: card096.jpg
+2026-10-16 19:21:12,301 | INFO     | border_detection_plugin - Exported all 3 image/label datasets to /home/dewster/Vanguard/src/shared/annotations
