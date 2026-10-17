@@ -385,3 +385,31 @@ Dataset Studio overall remains IN PROGRESS: actual precision corners/
 segmentation ground truth, both Trainer/Queue export button integration
 and Mask R-CNN compatibility remain separate gates. Current COCO is
 detection-only; do not claim segmentation readiness or model quality.
+
+## Explicit YOLO11s / Dataset Studio handoff slice — 2026-10-17
+
+ADR 0011 establishes a central exact dataset+pipeline capability
+contract; MODEL_CAPABILITY_MATRIX.md inventories the 24 Dataset Studio
+types and 15 named pipelines. The only new bridge is
+border_detection_2class + explicitly selected YOLO11s Optimized.
+Mask R-CNN remains blocked for bbox-only data; no fallback algorithm.
+
+Implemented source routes:
+- Single staged and validated COCO+JPEG+config publisher into real
+  Queue pending, atomic publish and no source-project data_path mutation.
+- Direct Trainer launching actual standalone Phoenix worker GUI with
+  stable published directory, not deprecated src/ui/training stub.
+- Deterministic COCO detection -> YOLO normalized labels, 5/2 split for
+  7-image source fixture, class 0=outer, 1=graphic.
+- Real Ultralytics training adapter wired into central registry with
+  hardware policy, checkpoint presence and explicit unsupported-feature
+  guards. Actual model weights and GPU training still unverified.
+- UI selection of YOLO11s added to dual-border project choices; user
+  must select it. Remaining menu entries remain future/unsupported.
+- Dedicated source-level handoff CI tests (real image fixture,
+  malformed labels, unsupported pairings, atomic publication,
+  launcher/button negative path, missing checkpoint and GPU failure).
+
+**Status: PARTIALLY VERIFIED SOURCE CONTRACT, workstation training PENDING.**
+Do not mark Phoenix's new YOLO11s trainer accepted for real ROCm
+until operator runtime/real checkpoint and evaluation logs are recorded.
