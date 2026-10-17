@@ -347,3 +347,19 @@ Detectron2/Mask R-CNN config is invalid for detection-only boxes. The
 existing Phoenix Queue/Trainer machinery has separate real GPU smoke
 acceptance and should be reused. No code changes in this audit.
 See `DATASET_TO_PHOENIX_HANDOFF_AUDIT.md`.
+
+
+## Real seven-card manual COCO export accepted — 2026-10-17 UTC
+
+Operator pushed real export commit 8eee8ff; verified 7 exported JPEGs,
+native 1632x2284/1640x2291 dimensions, source-identical JPEG Git
+blobs and SHA256, 14 exact YOLO→COCO pixel bbox transforms, correct
+two-class mapping, unique IDs and accurate bbox-only mask provenance.
+Dataset Integrity run 39002287868 passed 43 tests. This closes the
+manual COCO detection file-integrity acceptance gate; see
+DATASET_SEVEN_CARD_EXPORT_AUDIT.md.
+
+Dataset Studio overall remains IN PROGRESS: actual precision corners/
+segmentation ground truth, both Trainer/Queue export button integration
+and Mask R-CNN compatibility remain separate gates. Current COCO is
+detection-only; do not claim segmentation readiness or model quality.
