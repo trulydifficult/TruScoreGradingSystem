@@ -1062,3 +1062,49 @@ then deliberate manual Run Detection and Space→next behavior.
 Inspect new log source tags if unexpected duplicates persist.
 Historical code outside src is reference only. Mask R-CNN dataset
 geometry remains separate blocked gate.
+
+## Final Space-bar card completion — 2026-10-16
+
+User observed that pressing Space on the final (third) card returned
+the displayed image to unrotated state rather than advancing, and asked
+for a visible success summary. In the previous active code, save of
+rotated pixels and annotation export occurred BEFORE unconditional
+`reset_rotation()`; `_advance_to_next_image` then returned on last
+card, leaving the last card displayed straightened. This is a screen
+state defect; it is NOT evidence that the rotated export itself was
+saved straightened. The actual latest 3-card user exports have NOT yet
+been inspected, so actual image/label integrity of that batch remains
+unverified.
+
+Implemented in authoritative `src/`:
+- `ModularAnnotationStudio.save_and_next_image` confirms successful
+  rotated source image write (when applicable) and three-target export
+  before crediting a saved card; failed save stays on current card.
+- `auto_save_current_annotations()` returns an explicit boolean;
+  border settings widget requires both classes and checks all three
+  output image writes and all label exports before success.
+- Track successfully saved current-batch indices through Space and
+  normal Previous/Next saved navigation; loading new image batch
+  resets count and completion state.
+- On final Space after a successful export, leave rotation UNCHANGED
+  until the card is cleared and replace canvas pixmap with centered
+  `Annotation complete!\nN/N successfully annotated`. If earlier
+  saves were missing, show truthful partial progress instead.
+  Clear magnifier/current image/target widget path, disable navigation,
+  and ignore repeated Space on the completed batch.
+- Non-final save, reset-rotation, next image and single-model auto
+  detection behavior remain intact.
+
+Tests: `tests/annotation/test_annotation_session_completion.py`
+checks last rotated card save before completion, no visible straighten,
+false-save handling, repeated Space, partial counts, nonfinal
+navigation and fresh-batch resets. Export contract tests cover missing
+graphic class and imwrite failures. Annotation Integrity GitHub Actions
+38985208841 passed 38 tests, including current real four-card export
+fixture checks. Decision in `project_brain/decisions/0007-annotation-session-completion-and-save-integrity.md`.
+
+NEXT: user pull the latest branch, test 3-card workflow through
+`run_truscore.py` under ROCm-clean library environment, slight fine
+rotation on final, Space → canvas completion summary. Examine the
+actual new three-card saved image/labels to confirm physical alignment.
+Other historical archive scripts remain reference only.
