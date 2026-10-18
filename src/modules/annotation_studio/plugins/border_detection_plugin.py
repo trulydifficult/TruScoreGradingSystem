@@ -310,7 +310,7 @@ class BorderAnnotation:
         }
 
 
-class BorderDetectionSettingsWidget(QWidget):class BorderDetectionSettingsWidget(QWidget):
+class BorderDetectionSettingsWidget(QWidget):
     """
     Enterprise-grade settings widget with complete border_calibration.py functionality
     """
