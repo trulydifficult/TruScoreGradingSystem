@@ -1614,6 +1614,10 @@ class ModularAnnotationStudio(QMainWindow):
     
     def auto_save_current_annotations(self):
         """Export the active plugin's annotations and report its actual outcome."""
+        if (getattr(self, "_existing_label_mode", False)
+                and getattr(self, "_existing_batch_state", None) is None):
+            self.logger.warning("Choose matching images before exporting existing labels")
+            return False
         try:
             if self.current_plugin:
                 if hasattr(self.current_plugin, "auto_create_training_labels"):
