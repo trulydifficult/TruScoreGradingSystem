@@ -1,5 +1,25 @@
 # NEW SESSION START HERE — TruScore active project state
 
+## Operator-confirmed rotation/export behavior — 2026-10-18
+
+The operator confirmed that the Annotation Studio image-rotation mismatch
+was previously corrected: exporting the edited two-box YOLO annotations
+also exports the correspondingly rotated image, so labels align in the
+exported image coordinate frame. This is operator-reported workstation
+behavior, **not independently re-tested in this source-only update**.
+Do not spend the next implementation slice re-debugging solved rotation,
+or ask for reannotation of approximately 550 cards solely for that
+earlier issue.
+
+Those approximately 550 source images + two-class YOLO bounding-box
+labels may be reused as **coarse detection labels / contour initialization**,
+provided a small paired-image alignment QA sample and import/transform
+provenance checks pass. They are **not** native-pixel true contour masks.
+To train the required 24-station dual-contour model, add model-independent
+human-editable polygon/side-arc ground truth alongside the existing box
+workflow, not a new round of rotated bounding boxes.
+
+
 ## 2026-10-18 active focus: dual-contour ground truth → Dataset Studio → Phoenix
 
 The operator clarified the parallel-development strategy: make the model

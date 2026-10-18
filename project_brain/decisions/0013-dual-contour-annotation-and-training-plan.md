@@ -204,3 +204,21 @@ by recording this proposed implementation plan.
 - Boundary IoU vs mask IoU: https://openaccess.thecvf.com/content/CVPR2021/html/Cheng_Boundary_IoU_Improving_Object-Centric_Image_Segmentation_Evaluation_CVPR_2021_paper.html
 - AMD ROCm/Radeon framework support requires version-specific verification:
   https://rocm.docs.amd.com/projects/radeon-ryzen/en/latest/docs/compatibility/compatibilityrad/native_linux/native_linux_compatibility.html
+
+## Existing 550-image rotation/export clarification — 2026-10-18
+
+Operator report: an earlier Annotation Studio defect was **already fixed**.
+When the user rotates a card image to align with the current axis-aligned
+YOLO outer/graphic bounding boxes, the exported image receives the same
+rotation. Thus the rotated image and five-column labels now align by
+design; do not propose rediscovering or rewriting that rotation path
+without contrary direct evidence.
+
+Approximately 550 annotated images may be imported/reused as an existing
+coarse-detection corpus and as initialization for future contour tracing.
+A small set should be checked for pixel/box pairing, image dimensions
+and acquisition leakage before training. **No bbox-only file gains genuine
+outer/graphic contour ground truth from rotation or format conversion.**
+Contoured paths and full-side station semantics still require new
+human-editable annotation support. The existing bbox plugin is a proven
+starting point, not sufficient unchanged for true contour training.
