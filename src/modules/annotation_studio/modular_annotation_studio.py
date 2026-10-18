@@ -1729,12 +1729,21 @@ class ModularAnnotationStudio(QMainWindow):
                     else:
                         color = (255, 255, 255)  # White default
                     
-                    # Draw rectangle outline ONLY (no handles!)
-                    if mag_border_x2 > mag_border_x1 and mag_border_y2 > mag_border_y1:
-                        cv2.rectangle(magnified_image, 
-                                    (mag_border_x1, mag_border_y1),
-                                    (mag_border_x2, mag_border_y2),
-                                    color, 2)
+                    # Draw exact quad in the existing Studio magnifier.
+                    if getattr(annotation, 'vertices', None):
+                        import numpy as np
+                        points = np.asarray([
+                            ((x - offset_x) * zoom, (y - offset_y) * zoom)
+                            for x, y in annotation.vertices
+                        ], dtype=np.float32)
+                        cv2.polylines(magnified_image,
+                                      [np.rint(points).astype(np.int32)],
+                                      True, color, 2)
+                    elif mag_border_x2 > mag_border_x1 and mag_border_y2 > mag_border_y1:
+                        cv2.rectangle(magnified_image,
+                                      (mag_border_x1, mag_border_y1),
+                                      (mag_border_x2, mag_border_y2),
+                                      color, 2)
             
             return magnified_image
             

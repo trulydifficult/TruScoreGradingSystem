@@ -44,6 +44,11 @@ from typing import Optional, List, Dict, Any, Tuple, Union
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from collections import defaultdict
+from shared.dataset_tools.border_quad import (
+    validate_quad, rect_to_quad, quad_bounds, side_midpoint,
+    nearest_corner, nearest_side_handle, quad_contains,
+    moved_corner, moved_side, moved_quad, quad_inside_image,
+)
 
 # Import base plugin interface
 try:
@@ -161,286 +166,151 @@ class AnnotationResult:
 
 @dataclass
 class BorderAnnotation:
-    """
-    Professional border annotation with complete functionality.
-    EXACT port from border_calibration.py lines 150-287
-    """
+    """Independent TL/TR/BR/BL polygon, plus legacy enclosing detection bbox."""
     x1: float
     y1: float
     x2: float
     y2: float
-    class_id: int  # 0 = outside border, 1 = graphic border
+    class_id: int
     confidence: float
     label: str = ""
     human_corrected: bool = False
     correction_timestamp: Optional[datetime] = None
-    detection_method: str = "AI"  # "AI", "Manual", "Hybrid"
+    detection_method: str = "AI"
     metadata: Dict[str, Any] = field(default_factory=dict)
+    vertices: Optional[List[Tuple[float, float]]] = None
+    human_reviewed: bool = False
 
     def __post_init__(self):
-        """Initialize derived properties"""
         if not self.label:
             self.label = "Outside Border" if self.class_id == 0 else "Graphic Border"
+        self._set_vertices(rect_to_quad(self.x1, self.y1, self.x2, self.y2)
+                           if self.vertices is None else validate_quad(self.vertices))
 
-        # Ensure proper coordinate ordering
-        if self.x1 > self.x2:
-            self.x1, self.x2 = self.x2, self.x1
-        if self.y1 > self.y2:
-            self.y1, self.y2 = self.y2, self.y1
+    def _set_vertices(self, vertices):
+        self.vertices = [tuple(p) for p in validate_quad(vertices)]
+        self.x1, self.y1, self.x2, self.y2 = quad_bounds(validate_quad(self.vertices))
+
+    def _mark_corrected(self):
+        self.human_corrected = True
+        self.correction_timestamp = datetime.now()
+        # A manual edit is not independent segmentation-GT approval.
+        self.human_reviewed = False
 
     @property
     def width(self) -> float:
-        """Border width"""
-        return abs(self.x2 - self.x1)
+        return self.x2 - self.x1
 
     @property
     def height(self) -> float:
-        """Border height"""
-        return abs(self.y2 - self.y1)
+        return self.y2 - self.y1
 
     @property
     def center_x(self) -> float:
-        """Border center X coordinate"""
-        return (self.x1 + self.x2) / 2
+        return (self.x1 + self.x2) / 2.0
 
     @property
     def center_y(self) -> float:
-        """Border center Y coordinate"""
-        return (self.y1 + self.y2) / 2
+        return (self.y1 + self.y2) / 2.0
 
     @property
     def area(self) -> float:
-        """Border area"""
-        return self.width * self.height
-
-    #def get_corner_handles(self, handle_size: int = 8) -> List[QRect]:
-        """Get corner handle rectangles for editing"""
-     #   corners = [
-     #       QRect(int(self.x1 - handle_size//2), int(self.y1 - handle_size//2), handle_size, handle_size),  # top-left
-     #       QRect(int(self.x2 - handle_size//2), int(self.y1 - handle_size//2), handle_size, handle_size),  # top-right
-      #      QRect(int(self.x1 - handle_size//2), int(self.y2 - handle_size//2), handle_size, handle_size),  # bottom-left
-      #      QRect(int(self.x2 - handle_size//2), int(self.y2 - handle_size//2), handle_size, handle_size),  # bottom-right
-      #  ]
-       # return corners
-
-    # def get_side_handles(self, handle_size: int = 6) -> List[QRect]:
-        """Get side handle rectangles for editing"""
-      #  mid_x = (self.x1 + self.x2) / 2
-      #  mid_y = (self.y1 + self.y2) / 2
-
-      #  sides = [
-      #      QRect(int(mid_x - handle_size//2), int(self.y1 - handle_size//2), handle_size, handle_size),  # top
-      #      QRect(int(mid_x - handle_size//2), int(self.y2 - handle_size//2), handle_size, handle_size),  # bottom
-      #      QRect(int(self.x1 - handle_size//2), int(mid_y - handle_size//2), handle_size, handle_size),  # left
-       #     QRect(int(self.x2 - handle_size//2), int(mid_y - handle_size//2), handle_size, handle_size),  # right
-      #  ]
-      #  return sides
+        return self.width * self.height  # Legacy enclosing AABB, not polygon area.
 
     def get_corner_handle(self, x: float, y: float, handle_size: float = 25) -> Optional[str]:
-        """Detect corner handle clicks with generous hit zones - EXACT from border_calibration.py"""
-        left = min(self.x1, self.x2)
-        right = max(self.x1, self.x2)
-        top = min(self.y1, self.y2)
-        bottom = max(self.y1, self.y2)
-
-        corners = {
-            'top_left': (left, top),
-            'top_right': (right, top),
-            'bottom_left': (left, bottom),
-            'bottom_right': (right, bottom)
-        }
-
-        for corner_name, (cx, cy) in corners.items():
-            distance = ((x - cx)**2 + (y - cy)**2)**0.5
-            if distance <= handle_size:
-                return corner_name
-        return None
+        return nearest_corner(validate_quad(self.vertices), x, y, handle_size)
 
     def get_side_handle(self, x: float, y: float, handle_size: float = 15) -> Optional[str]:
-        """Detect clicks on side handles (edges) with generous hit zones - EXACT from border_calibration.py"""
-        left = min(self.x1, self.x2)
-        right = max(self.x1, self.x2)
-        top = min(self.y1, self.y2)
-        bottom = max(self.y1, self.y2)
-
-        # Calculate side midpoints
-        sides = {
-            'top': (left + (right - left) / 2, top),
-            'bottom': (left + (right - left) / 2, bottom),
-            'left': (left, top + (bottom - top) / 2),
-            'right': (right, top + (bottom - top) / 2)
-        }
-
-        # Check each side with generous hit zones
-        for side_name, (side_x, side_y) in sides.items():
-            if side_name in ['top', 'bottom']:
-                # Horizontal sides - wider horizontal zone, taller vertical zone
-                if (abs(x - side_x) <= handle_size and
-                    abs(y - side_y) <= handle_size):
-                    return side_name
-            else:  # left, right
-                # Vertical sides - taller vertical zone, wider horizontal zone
-                if (abs(x - side_x) <= handle_size and
-                    abs(y - side_y) <= handle_size):
-                    return side_name
-
-        return None
+        return nearest_side_handle(validate_quad(self.vertices), x, y, handle_size)
 
     def contains_point(self, x: float, y: float) -> bool:
-        """Check if point is within annotation bounds"""
-        margin = 5
-        left = min(self.x1, self.x2) - margin
-        right = max(self.x1, self.x2) + margin
-        top = min(self.y1, self.y2) - margin
-        bottom = max(self.y1, self.y2) + margin
-        return left <= x <= right and top <= y <= bottom
+        return quad_contains(validate_quad(self.vertices), x, y, margin=5)
 
-    def move_side(self, side: str, new_x: float, new_y: float):
-        """Move a single side of the border"""
-        if side == 'top':
-            # Move top edge
-            if self.y1 < self.y2:
-                self.y1 = new_y
-            else:
-                self.y2 = new_y
-        elif side == 'bottom':
-            # Move bottom edge
-            if self.y1 > self.y2:
-                self.y1 = new_y
-            else:
-                self.y2 = new_y
-        elif side == 'left':
-            # Move left edge
-            if self.x1 < self.x2:
-                self.x1 = new_x
-            else:
-                self.x2 = new_x
-        elif side == 'right':
-            # Move right edge
-            if self.x1 > self.x2:
-                self.x1 = new_x
-            else:
-                self.x2 = new_x
+    def move_corner(self, corner: str, new_x: float, new_y: float) -> bool:
+        try:
+            self._set_vertices(moved_corner(validate_quad(self.vertices), corner, new_x, new_y))
+        except ValueError:
+            return False
+        self._mark_corrected()
+        return True
 
-        self.corrected_by_human = True
-        self.correction_timestamp = datetime.now().isoformat()
+    def move_side(self, side: str, new_x: float, new_y: float) -> bool:
+        try:
+            self._set_vertices(moved_side(validate_quad(self.vertices), side, new_x, new_y))
+        except ValueError:
+            return False
+        self._mark_corrected()
+        return True
 
-    def move_corner(self, corner: str, new_x: float, new_y: float):
-        if corner == 'top_left':
-            self.x1, self.y1 = new_x, new_y
-        elif corner == 'top_right':
-            self.x2, self.y1 = new_x, new_y
-        elif corner == 'bottom_left':
-            self.x1, self.y2 = new_x, new_y
-        elif corner == 'bottom_right':
-            self.x2, self.y2 = new_x, new_y
-
-        self.corrected_by_human = True
-        self.correction_timestamp = datetime.now().isoformat()
-
-    def move_border(self, dx: float, dy: float):
-        """Move entire border by offset"""
-        self.x1 += dx
-        self.y1 += dy
-        self.x2 += dx
-        self.y2 += dy
-        self.corrected_by_human = True
-        self.correction_timestamp = datetime.now().isoformat()
+    def move_border(self, dx: float, dy: float) -> bool:
+        try:
+            self._set_vertices(moved_quad(validate_quad(self.vertices), dx, dy))
+        except ValueError:
+            return False
+        self._mark_corrected()
+        return True
 
     def _ensure_proper_ordering(self):
-        """Ensure x1,y1 is top-left and x2,y2 is bottom-right"""
-        if self.x1 > self.x2:
-            self.x1, self.x2 = self.x2, self.x1
-        if self.y1 > self.y2:
-            self.y1, self.y2 = self.y2, self.y1
+        self._set_vertices(self.vertices)  # Never sort points by their bounding box.
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'BorderAnnotation':
-        """Create from dictionary"""
-        correction_timestamp = None
-        if data.get('correction_timestamp'):
-            correction_timestamp = datetime.fromisoformat(data['correction_timestamp'])
-
+        when = data.get('correction_timestamp')
+        if isinstance(when, str) and when:
+            when = datetime.fromisoformat(when)
         return cls(
-            x1=float(data['x1']),
-            y1=float(data['y1']),
-            x2=float(data['x2']),
-            y2=float(data['y2']),
-            class_id=int(data['class_id']),
-            confidence=float(data['confidence']),
+            x1=float(data['x1']), y1=float(data['y1']),
+            x2=float(data['x2']), y2=float(data['y2']),
+            class_id=int(data['class_id']), confidence=float(data.get('confidence', 1.0)),
             label=data.get('label', ''),
-            human_corrected=data.get('human_corrected', False),
-            correction_timestamp=correction_timestamp,
+            human_corrected=bool(data.get('human_corrected', False)),
+            correction_timestamp=when,
             detection_method=data.get('detection_method', 'AI'),
-            metadata=data.get('metadata', {})
+            metadata=data.get('metadata', {}),
+            vertices=data.get('vertices'),
+            human_reviewed=bool(data.get('human_reviewed', False)),
         )
 
     @classmethod
-    def from_yolo(cls, yolo_line: str, img_width: int, img_height: int, class_names: List[str]) -> 'BorderAnnotation':
-        """Create BorderAnnotation from YOLO format"""
-        parts = yolo_line.strip().split()
-        if len(parts) != 5:
-            raise ValueError(f"Invalid YOLO format: {yolo_line}")
-
-        class_id = int(parts[0])
-        center_x = float(parts[1]) * img_width
-        center_y = float(parts[2]) * img_height
-        width = float(parts[3]) * img_width
-        height = float(parts[4]) * img_height
-
-        x1 = center_x - width / 2
-        y1 = center_y - height / 2
-        x2 = center_x + width / 2
-        y2 = center_y + height / 2
-
-        label = class_names[class_id] if class_id < len(class_names) else f"class_{class_id}"
-
+    def from_yolo(cls, yolo_line: str, img_width: int, img_height: int,
+                  class_names: List[str]) -> 'BorderAnnotation':
+        tokens = yolo_line.strip().split()
+        if len(tokens) != 5:
+            raise ValueError(f"Invalid YOLO detection row: {yolo_line}")
+        class_id = int(tokens[0])
+        cx, cy, bw, bh = map(float, tokens[1:])
+        cx, bw = cx * img_width, bw * img_width
+        cy, bh = cy * img_height, bh * img_height
+        label = class_names[class_id] if 0 <= class_id < len(class_names) else f"class_{class_id}"
         return cls(
-            x1=x1, y1=y1, x2=x2, y2=y2,
-            class_id=class_id,
-            confidence=1.0,  # Default confidence for manual annotations
-            label=label,
-            human_corrected=False,
-            correction_timestamp=None,
+            x1=cx - bw/2, y1=cy - bh/2, x2=cx + bw/2, y2=cy + bh/2,
+            class_id=class_id, confidence=1.0, label=label,
             detection_method="Manual",
-            metadata={}
         )
 
     def to_yolo_format(self, img_width: int, img_height: int) -> Tuple[int, float, float, float, float]:
-        """Convert to YOLO format (class, x_center, y_center, width, height) - normalized"""
-        x_center = ((self.x1 + self.x2) / 2) / img_width
-        y_center = ((self.y1 + self.y2) / 2) / img_height
-        width = (self.x2 - self.x1) / img_width
-        height = (self.y2 - self.y1) / img_height
-
-        return self.class_id, x_center, y_center, width, height
+        """Five-value detection row enclosing edited polygon; NOT segmentation."""
+        if img_width <= 0 or img_height <= 0:
+            raise ValueError("Positive image dimensions required")
+        return (self.class_id, self.center_x/img_width, self.center_y/img_height,
+                self.width/img_width, self.height/img_height)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for export"""
         return {
-            'x1': float(self.x1),
-            'y1': float(self.y1),
-            'x2': float(self.x2),
-            'y2': float(self.y2),
-            'class_id': int(self.class_id),
-            'confidence': float(self.confidence),
-            'label': self.label,
-            'human_corrected': self.human_corrected,
-            'correction_timestamp': self.correction_timestamp.isoformat() if self.correction_timestamp else None,
-            'detection_method': self.detection_method,
-            'metadata': self.metadata
+            'x1': self.x1, 'y1': self.y1, 'x2': self.x2, 'y2': self.y2,
+            'class_id': self.class_id, 'confidence': self.confidence,
+            'label': self.label, 'human_corrected': self.human_corrected,
+            'correction_timestamp': self.correction_timestamp.isoformat()
+                if self.correction_timestamp else None,
+            'detection_method': self.detection_method, 'metadata': self.metadata,
+            'geometry_format': 'quad_v1',
+            'vertices': [[float(x), float(y)] for x, y in self.vertices],
+            'human_reviewed': self.human_reviewed,
+            'segmentation_ground_truth': False,
         }
 
 
-# =============================================================================
-# INTERACTIVE CANVAS - PORTED FROM BORDER_CALIBRATION.PY
-# =============================================================================
-
-# =============================================================================
-# BORDER DETECTION SETTINGS WIDGET - COMPLETE FUNCTIONALITY
-# =============================================================================
-
-class BorderDetectionSettingsWidget(QWidget):
+class BorderDetectionSettingsWidget(QWidget):class BorderDetectionSettingsWidget(QWidget):
     """
     Enterprise-grade settings widget with complete border_calibration.py functionality
     """
@@ -700,14 +570,22 @@ class BorderDetectionSettingsWidget(QWidget):
                 # Determine if this is the selected annotation
                 is_selected = (self.selected_annotation == annotation)
                 
-                # Draw main border rectangle (calibration.py lines 2177-2179)
                 thickness = 3 if is_selected else 2
-                cv2.rectangle(annotated_image, (left, top), (right, bottom), color_bgr, thickness)
-                
-                # Draw corner handles for selected annotation (calibration.py lines 2181-2184)
-                if is_selected:
-                    self.draw_corner_handles(annotated_image, left, top, right, bottom, color_bgr)
-                    self.draw_side_handles(annotated_image, left, top, right, bottom, color_bgr)
+                if getattr(annotation, 'vertices', None):
+                    cv2.polylines(
+                        annotated_image,
+                        [np.rint(np.asarray(annotation.vertices)).astype(np.int32)],
+                        True, color_bgr, thickness,
+                    )
+                    if is_selected:
+                        self.draw_quad_corner_handles(annotated_image, annotation.vertices, color_bgr)
+                        self.draw_quad_side_handles(annotated_image, annotation.vertices, color_bgr)
+                else:
+                    # Compatibility with historical/simple rectangle annotations.
+                    cv2.rectangle(annotated_image, (left, top), (right, bottom), color_bgr, thickness)
+                    if is_selected:
+                        self.draw_corner_handles(annotated_image, left, top, right, bottom, color_bgr)
+                        self.draw_side_handles(annotated_image, left, top, right, bottom, color_bgr)
                 
                 # Draw class label (calibration.py lines 2186-2206)
                 label_text = f"{annotation.label}"
@@ -916,6 +794,24 @@ class BorderDetectionSettingsWidget(QWidget):
     def has_annotations(self) -> bool:
         """Check if there are annotations - Interface contract method"""
         return len(self.annotations) > 0
+
+    def draw_quad_corner_handles(self, image, vertices, color):
+        for x, y in vertices:
+            cx, cy = round(x), round(y)
+            points = np.asarray([
+                [cx, cy - 15], [cx + 15, cy],
+                [cx, cy + 15], [cx - 15, cy],
+            ], dtype=np.int32)
+            cv2.fillPoly(image, [points], color)
+            cv2.polylines(image, [points], True, (255, 255, 255), 2)
+
+    def draw_quad_side_handles(self, image, vertices, color):
+        quad = validate_quad(vertices)
+        for side in ('top', 'right', 'bottom', 'left'):
+            x, y = side_midpoint(quad, side)
+            cx, cy = round(x), round(y)
+            cv2.rectangle(image, (cx - 10, cy - 10), (cx + 10, cy + 10), color, -1)
+            cv2.rectangle(image, (cx - 10, cy - 10), (cx + 10, cy + 10), (255, 255, 255), 2)
 
     def draw_corner_handles(self, image, left, top, right, bottom, color):
         """Draw corner handles for precise editing - BIG ENOUGH TO ACTUALLY GRAB"""
@@ -1613,7 +1509,8 @@ class BorderDetectionSettingsWidget(QWidget):
             return False
 
         if self.dragging_corner:
-            self.selected_annotation.move_corner(self.dragging_corner, image_x, image_y)
+            if not self.selected_annotation.move_corner(self.dragging_corner, image_x, image_y):
+                return False
             self._bump_annotation_version()
             # Throttle display updates for BUTTERY SMOOTH performance at 165fps
             if not hasattr(self, '_drag_update_timer') or not self._drag_update_timer.isActive():
@@ -1624,7 +1521,8 @@ class BorderDetectionSettingsWidget(QWidget):
             return True
             
         elif self.dragging_side:
-            self.selected_annotation.move_side(self.dragging_side, image_x, image_y)
+            if not self.selected_annotation.move_side(self.dragging_side, image_x, image_y):
+                return False
             self._bump_annotation_version()
             if not hasattr(self, '_drag_update_timer') or not self._drag_update_timer.isActive():
                 self._drag_update_timer = QTimer()
@@ -1636,7 +1534,8 @@ class BorderDetectionSettingsWidget(QWidget):
         elif self.dragging_border:
             dx = image_x - self.last_mouse_x
             dy = image_y - self.last_mouse_y
-            self.selected_annotation.move_border(dx, dy)
+            if not self.selected_annotation.move_border(dx, dy):
+                return False
             self.last_mouse_x = image_x
             self.last_mouse_y = image_y
             self._bump_annotation_version()
@@ -1914,6 +1813,35 @@ class BorderDetectionSettingsWidget(QWidget):
                 self.logger.info(f"✅ Exported {export['description']}: {img_save_path.name}")
             
             if exported_count == len(exports):
+                # Additional quad proposal only; detection labels remain unchanged.
+                if all(hasattr(ann, 'to_dict') and getattr(ann, 'vertices', None)
+                       for ann in self.annotations):
+                    import hashlib
+                    import os
+                    if not all(quad_inside_image(validate_quad(ann.vertices), w, h)
+                               for ann in self.annotations):
+                        self.logger.error("Quad vertices out of bounds; save rejected")
+                        return False
+                    directory = base_dir / "dual_contour_proposals"
+                    directory.mkdir(parents=True, exist_ok=True)
+                    combined_photo = base_dir / "combined_dual_class" / "images" / f"{img_name}{img_ext}"
+                    record = {
+                        "schema": "dual_contour_proposal_v1",
+                        "image_file": combined_photo.name,
+                        "image_width": int(w), "image_height": int(h),
+                        "image_sha256": hashlib.sha256(combined_photo.read_bytes()).hexdigest(),
+                        "coordinate_frame": "exported_rotated_image_pixels",
+                        "rotation_degrees": float(getattr(studio, 'rotation_angle', 0.0)),
+                        "segmentation_ground_truth": False,
+                        "annotations": [ann.to_dict() for ann in self.annotations],
+                    }
+                    output = directory / f"{img_name}.json"
+                    temp = output.with_suffix(".json.tmp")
+                    try:
+                        temp.write_text(json.dumps(record, indent=2), encoding="utf-8")
+                        os.replace(temp, output)
+                    finally:
+                        temp.unlink(missing_ok=True)
                 self.logger.info("Exported all %d image/label datasets to %s",
                                  exported_count, base_dir)
                 return True
@@ -2796,7 +2724,9 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
                         human_corrected=ann.get('human_corrected', ann.get('corrected_by_human', False)),
                         correction_timestamp=None,
                         detection_method=ann.get('detection_method', 'AI'),
-                        metadata=ann.get('metadata', {})
+                        metadata=ann.get('metadata', {}),
+                        vertices=ann.get('vertices'),
+                        human_reviewed=ann.get('human_reviewed', False),
                     )
                     border_annotations.append(border_ann)
                 else:
