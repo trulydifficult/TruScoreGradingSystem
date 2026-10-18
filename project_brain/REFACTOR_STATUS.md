@@ -495,3 +495,21 @@ run 39156894354: **PASS**. Pixel-accurate visual
 border alignment is **NOT VERIFIED**; proposal labels remain NOT
 segmentation-GT. Existing-label import remains missing from the
 active Modular Studio; continue archaeological recovery next.
+
+
+## Existing YOLO labels / resume — 2026-10-18
+
+Status: IMPLEMENTED SOURCE / PARTIAL CI VERIFICATION; NO NATIVE GUI TEST YET.
+New label-first group in active ModularAnnotationStudio;
+strict two-class YOLO file-pairing through
+`existing_label_sessions.py`, no automatic AI inference during imported
+annotation, proper class-0-first quad editing, durable record of
+successful batch exports, explicit Resume with first unsaved index.
+Confirmed progress is stored atomically OUTSIDE the repository under
+XDG state. This does not capture unsaved current-card drags and does
+not create approved segmentation supervision. Verified headless
+source regressions including 550-card / 100-saved restart case in
+Annotation Integrity run 39159287317 (79 tests PASSED).
+Later source refinements need final CI status before claiming full source gate.
+Operator GUI acceptance on safely copied previously annotated cards is next.
+See ADR 0014.

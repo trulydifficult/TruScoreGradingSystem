@@ -343,3 +343,23 @@ specific old methods do not independently prove a working paired
 YOLO image+label import in the active modular plugin. Search the
 remaining related historical routines before salvaging it. Candidate
 status: REFERENCE / NEEDS COMPLETE AUDIT, not VERIFIED working code.
+
+
+## Existing-label input and session resume archaeology — 2026-10-18
+
+Read `src/revolutionary_border_calibration.py` historical
+`save_session_data`, `load_session`, `import_predictions_from_dataset_studio`
+and old file-load methods. Historic session stored current image index and
+paths but did not confirm export success per image, and the duplicated
+Dataset Studio import methods load JSON predictions, not necessarily
+paired YOLO image+label sets. Historical classification: REFERENCE
+for UX and continuity, not direct reusable implementation.
+
+Current `src/modules/annotation_studio/modular_annotation_studio.py`
+still owns card file multi-select, UI and coordinate transforms.
+Current plugin's `BorderAnnotation.from_yolo` was reused to seed
+independent quads; the existing single inference request lifecycle was
+protected by explicit import mode rather than another detector.
+Pure exact-file pairing/checkpoint ownership is now one module:
+`src/modules/annotation_studio/existing_label_sessions.py`.
+See ADR 0014 for limitations and verified acceptance tiers.

@@ -1,5 +1,43 @@
 # NEW SESSION START HERE — TruScore active project state
 
+## 2026-10-18 source/CI milestone: imported YOLO labels and durable batch resume
+
+**Operator intent:** recover the old fast workflow: choose combined 2-class
+YOLO labels FIRST; choose individual matching photos SECOND; create editable
+outer-first / graphic-second quads with automatic YOLO inference DISABLED;
+Tab switches borders, Space exports and advances. Work through ~550
+previously labeled cards without losing place after interruption.
+
+Implemented:
+- Separate `Previously Annotated Cards` group in Modular Studio:
+  `1. Select YOLO Label Files`, `2. Select Matching Images`,
+  `Resume Interrupted Batch`, and a confirmed-save count.
+- `src/modules/annotation_studio/existing_label_sessions.py`:
+  strict case-insensitive basename matching but duplicate-stem rejection,
+  required 5-column YOLO detection classes 0 and 1, explicit missing/invalid
+  input failures; local atomic checkpoint in XDG state (NOT Git).
+- Active border plugin imports both labels into independently adjustable
+  four-point quads and selects class 0. Suppresses delayed/manual AI
+  inference and deferred YOLO model loading for this mode; legacy
+  fresh YOLO Load Cards path remains separate.
+- Only successfully written three-target exports advance persistent
+  progress. Crash after 100 confirmed exports from 550 resumes on card
+  101 (first unconfirmed) without guessing. Unsaved current-card edits
+  are NOT guaranteed restored.
+
+Tests: Headless Annotation Integrity run 39159287317 PASSED 79 tests
+at 60b735b, including simulated 550/100 resume. Further source guard
+changes on active branch await final CI confirmation. **Actual live PyQt
+file-picker, card import, edit/export and restart/resume acceptance pending**.
+No claim of verified image-level segmentation masks or physical edge
+accuracy. First try two or three *copied* cards, not the full 550.
+
+See decisions/0014-existing-annotations-and-batch-resume.md.
+Next acceptance: small operator import/Space/restart/Resume test; then
+repair any live UI issues; then teach Dataset Studio to consume explicitly
+reviewed quad/contour truth, without corrupting old YOLO data.
+
+
 ## 2026-10-18 VERIFIED real quad export fixture — cards 065/066/067
 
 Operator tested actual Studio dragging and exported three cards on the

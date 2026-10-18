@@ -165,3 +165,7 @@ For each substantive development slice:
 No false "VERIFIED" when only partial/CI-only evidence exists.
 The accuracy of a serialized bbox, geometric correctness of actual
 card edges, and actual trained-model performance are separate claims.
+
+- [ADR 0014 — Existing YOLO labels and durable batch resume](decisions/0014-existing-annotations-and-batch-resume.md):
+  source-implemented label-first Studio mode and explicit first-unsaved-card
+  recovery, pending workstation GUI acceptance.
