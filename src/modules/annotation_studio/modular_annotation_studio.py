@@ -966,27 +966,36 @@ class ModularAnnotationStudio(QMainWindow):
             # Display image
             self.display_current_image()
             
-            # CRITICAL FIX: Notify plugin AFTER image loads (like calibration.py lines 1240-1242)
-            self.logger.debug(f"DEBUG: hasattr current_plugin: {hasattr(self, 'current_plugin')}")
-            self.logger.debug(f"DEBUG: current_plugin value: {getattr(self, 'current_plugin', None)}")
-            
-            if hasattr(self, 'current_plugin') and self.current_plugin:
-                self.logger.debug(f"DEBUG: Plugin has on_image_changed: {hasattr(self.current_plugin, 'on_image_changed')}")
-                if hasattr(self.current_plugin, 'on_image_changed'):
-                    self.logger.info("Notifying plugin of image change")
-                    self.current_plugin.on_image_changed(str(image_path), self.original_image)
-                else:
-                    self.logger.warning("Plugin exists but no on_image_changed method!")
+            if getattr(self, "_existing_label_mode", False):
+                # Studio owns paired-file input, Plugin owns annotation creation.
+                # Never invoke on_image_changed (which queues YOLO inference).
+                widget = getattr(self, "current_plugin_widget", None)
+                if widget is not None and hasattr(widget, "set_current_image"):
+                    widget.set_current_image(self.original_image)
+                if not self._load_existing_card_labels():
+                    raise AnnotationBatchError("Imported annotations were not applied")
             else:
-                self.logger.warning("No current_plugin set!")
-            
-            # Also update settings widget directly
-            if hasattr(self, 'current_plugin_widget') and self.current_plugin_widget:
-                if hasattr(self.current_plugin_widget, 'set_current_image'):
-                    self.current_plugin_widget.set_current_image(self.original_image)
+                # Preserve the tested fresh YOLO inference lifecycle unchanged.
+                self.logger.debug(f"DEBUG: hasattr current_plugin: {hasattr(self, 'current_plugin')}")
+                self.logger.debug(f"DEBUG: current_plugin value: {getattr(self, 'current_plugin', None)}")
+                if hasattr(self, 'current_plugin') and self.current_plugin:
+                    self.logger.debug(
+                        f"DEBUG: Plugin has on_image_changed: "
+                        f"{hasattr(self.current_plugin, 'on_image_changed')}"
+                    )
+                    if hasattr(self.current_plugin, 'on_image_changed'):
+                        self.logger.info("Notifying plugin of image change")
+                        self.current_plugin.on_image_changed(str(image_path), self.original_image)
+                    else:
+                        self.logger.warning("Plugin exists but no on_image_changed method!")
                 else:
-                    self.logger.warning("Plugin widget exists but no set_current_image method!")
-            
+                    self.logger.warning("No current_plugin set!")
+                if hasattr(self, 'current_plugin_widget') and self.current_plugin_widget:
+                    if hasattr(self.current_plugin_widget, 'set_current_image'):
+                        self.current_plugin_widget.set_current_image(self.original_image)
+                    else:
+                        self.logger.warning("Plugin widget exists but no set_current_image method!")
+
             self.logger.info(f"✅ Loaded image: {image_path.name}")
             return True
             
@@ -1503,7 +1512,11 @@ class ModularAnnotationStudio(QMainWindow):
         try:
             # Preserve existing Previous navigation; track genuine successes.
             if self.auto_save_current_annotations() is True:
+                if not self._record_existing_export():
+                    return
                 self._successfully_saved_indices.add(self.current_index)
+            elif getattr(self, "_existing_label_mode", False):
+                return  # A failed imported export cannot advance.
 
             # Move to previous image
             self.current_index -= 1
@@ -1534,8 +1547,13 @@ class ModularAnnotationStudio(QMainWindow):
 
         try:
             # Auto-save current annotations
-            if save_current and self.auto_save_current_annotations() is True:
-                self._successfully_saved_indices.add(self.current_index)
+            if save_current:
+                if self.auto_save_current_annotations() is True:
+                    if not self._record_existing_export():
+                        return
+                    self._successfully_saved_indices.add(self.current_index)
+                elif getattr(self, "_existing_label_mode", False):
+                    return  # Preserve card after failed export.
 
             # Move to next image
             self.current_index += 1
@@ -1678,6 +1696,8 @@ class ModularAnnotationStudio(QMainWindow):
                 self.logger.error("Card export failed; keeping editor open for retry")
                 return False
 
+            if not self._record_existing_export():
+                return False
             self._successfully_saved_indices.add(self.current_index)
             if self.current_index == len(self.image_files) - 1:
                 self._show_annotation_complete()
@@ -2296,7 +2316,9 @@ class ModularAnnotationStudio(QMainWindow):
                     if hasattr(self.current_plugin_widget, 'set_current_image'):
                         self.current_plugin_widget.set_current_image(self.current_image)
                         self.logger.debug(f"Forwarded current image to plugin settings widget: {plugin_name}")
-                    if hasattr(self.current_plugin, 'on_image_changed') and self.current_image_path:
+                    if getattr(self, "_existing_label_mode", False):
+                        self._load_existing_card_labels()
+                    elif hasattr(self.current_plugin, 'on_image_changed') and self.current_image_path:
                         self.current_plugin.on_image_changed(
                             str(self.current_image_path), self.original_image
                         )
@@ -2450,7 +2472,11 @@ class ModularAnnotationStudio(QMainWindow):
                             "Border plugin activated with existing card: %s; scheduling first detection",
                             loaded_path,
                         )
-                        self.current_plugin.on_image_changed(str(loaded_path), loaded_image)
+                        if getattr(self, "_existing_label_mode", False):
+                            if getattr(self, "_existing_batch_state", None):
+                                self._load_existing_card_labels()
+                        else:
+                            self.current_plugin.on_image_changed(str(loaded_path), loaded_image)
 
                 self.logger.info(f"✅ Plugin {plugin_filename} loaded and settings panel created")
                 self.logger.info(f"✅ current_plugin set to: {self.current_plugin}")
