@@ -33,7 +33,8 @@ def extract_method(file, owner, name, scope=None):
                 if isinstance(x, ast.FunctionDef) and x.name == name)
     module = ast.Module(body=[node], type_ignores=[])
     ast.fix_missing_locations(module)
-    environment = dict(scope or {})
+    environment = {"np": SimpleNamespace(ndarray=object)}
+    environment.update(scope or {})
     exec(compile(module, str(file), "exec"), environment)
     return environment[name]
 
