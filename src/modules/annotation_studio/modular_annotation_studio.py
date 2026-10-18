@@ -16,12 +16,17 @@ from typing import Optional, List, Dict, Any
 
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
-    QFrame, QLabel, QPushButton, QApplication, QSlider, QSizePolicy, QComboBox, QGroupBox
+    QFrame, QLabel, QPushButton, QApplication, QSlider, QSizePolicy, QComboBox, QGroupBox,
+    QFileDialog, QMessageBox
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject
 from PyQt6.QtGui import QKeySequence, QFont, QShortcut, QImage, QPixmap
 
 from modules.annotation_studio.static_background import StaticBackgroundImage
+from modules.annotation_studio.existing_label_sessions import (
+    AnnotationBatchError, build_session, read_session, save_session,
+    record_completed, next_pending,
+)
 try:
     from . import annotation_logger as logger
 except ImportError:  # Fallback for direct execution
@@ -165,6 +170,10 @@ class ModularAnnotationStudio(QMainWindow):
         self.current_index = 0
         self._successfully_saved_indices = set()
         self._annotation_complete = False
+        self._existing_label_mode = False
+        self._pending_label_sources = []
+        self._existing_batch_state = None
+        self._choose_for_labels = False
         self.rotation_angle = 0.0  # For our beautiful rotation controls
         
         # Magnifier settings - DEFAULT TO 2X
@@ -649,7 +658,28 @@ class ModularAnnotationStudio(QMainWindow):
         load_layout.addWidget(self.card_counter)
         
         controls_layout.addWidget(load_group)
-        
+
+        # Explicit label-first workflow; never repurpose the normal Load Cards.
+        prior_group = QGroupBox("Previously Annotated Cards")
+        prior_group.setStyleSheet(load_group.styleSheet())
+        prior_layout = QVBoxLayout(prior_group)
+        self.label_files_button = QPushButton("1. Select YOLO Label Files")
+        self.label_files_button.clicked.connect(self.select_existing_labels)
+        prior_layout.addWidget(self.label_files_button)
+        self.label_images_button = QPushButton("2. Select Matching Images")
+        self.label_images_button.clicked.connect(self.select_existing_images)
+        prior_layout.addWidget(self.label_images_button)
+        self.resume_session_button = QPushButton("Resume Interrupted Batch")
+        self.resume_session_button.clicked.connect(self.resume_existing_batch)
+        prior_layout.addWidget(self.resume_session_button)
+        self.existing_label_progress = QLabel("Select labels to correct an existing dataset")
+        self.existing_label_progress.setWordWrap(True)
+        self.existing_label_progress.setStyleSheet(
+            f"color: {TruScoreTheme.GHOST_WHITE}; font-size: 9px;"
+        )
+        prior_layout.addWidget(self.existing_label_progress)
+        controls_layout.addWidget(prior_group)
+
         # ZOOM CONTROLS SECTION
         zoom_group = QGroupBox("Zoom Controls")
         zoom_group.setStyleSheet(f"""
@@ -720,6 +750,16 @@ class ModularAnnotationStudio(QMainWindow):
                 file_paths = browser.selected_files
                 
                 if file_paths:
+                    if getattr(self, "_choose_for_labels", False):
+                        self._begin_existing_batch(file_paths)
+                        return
+                    self._existing_label_mode = False
+                    self._existing_batch_state = None
+                    widget = getattr(self, "current_plugin_widget", None)
+                    if widget is not None:
+                        widget.external_label_mode = False
+                        if hasattr(widget, "run_detection_btn"):
+                            widget.run_detection_btn.setEnabled(True)
                     # CRITICAL: Store files exactly like working border_calibration.py
                     self.image_files = file_paths
                     self.current_index = 0
@@ -742,6 +782,155 @@ class ModularAnnotationStudio(QMainWindow):
                         
         except Exception as e:
             self.logger.error(f"Card loading failed: {e}")
+
+    def _update_existing_progress(self):
+        label = getattr(self, "existing_label_progress", None)
+        if label is None:
+            return
+        state = getattr(self, "_existing_batch_state", None)
+        if state is None:
+            files = getattr(self, "_pending_label_sources", [])
+            label.setText(f"{len(files)} labels selected; choose images"
+                          if files else "Select labels to correct an existing dataset")
+            return
+        count = len(state["completed"])
+        total = len(state["image_files"])
+        upcoming = next_pending(state)
+        label.setText(f"{count}/{total} confirmed saved; "
+                      + (f"resume at card {upcoming + 1}" if upcoming is not None
+                         else "all cards saved"))
+
+    def select_existing_labels(self):
+        files, _ = QFileDialog.getOpenFileNames(
+            self, "Select Combined Outer/Graphic YOLO Labels",
+            str(Path.home()), "YOLO labels (*.txt)"
+        )
+        if not files:
+            return
+        self._pending_label_sources = files
+        self._existing_label_mode = True
+        widget = getattr(self, "current_plugin_widget", None)
+        if widget is not None:
+            widget.external_label_mode = True
+            widget._auto_request_token = getattr(widget, "_auto_request_token", 0) + 1
+            if hasattr(widget, "run_detection_btn"):
+                widget.run_detection_btn.setEnabled(False)
+        self._update_existing_progress()
+
+    def select_existing_images(self):
+        if not getattr(self, "_pending_label_sources", None):
+            QMessageBox.warning(self, "Select Labels First",
+                                "Select your combined dual-class YOLO labels before images.")
+            return False
+        self._choose_for_labels = True
+        try:
+            return self.load_images_placeholder()
+        finally:
+            self._choose_for_labels = False
+
+    def _ensure_existing_label_plugin(self):
+        if hasattr(getattr(self, "current_plugin", None), "load_existing_labels"):
+            return
+        if not self.load_plugin_from_file("border_detection_plugin"):
+            raise AnnotationBatchError("Border Detection plugin could not be activated")
+        if not hasattr(getattr(self, "current_plugin", None), "load_existing_labels"):
+            raise AnnotationBatchError("Current plugin cannot load existing borders")
+
+    def _begin_existing_batch(self, images):
+        try:
+            state = build_session(images, self._pending_label_sources)
+            try:
+                previous = read_session()
+            except AnnotationBatchError:
+                previous = None
+            if previous and next_pending(previous) is not None:
+                reply = QMessageBox.question(
+                    self, "Unfinished Annotation Session",
+                    f"{len(previous['completed'])}/{len(previous['image_files'])} "
+                    "cards are already saved. Replace that recovery checkpoint?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No
+                )
+                if reply != QMessageBox.StandardButton.Yes:
+                    return False
+            self._existing_label_mode = True
+            self._ensure_existing_label_plugin()
+            save_session(state)
+            self._existing_batch_state = state
+            self.image_files = state["image_files"]
+            self.current_index = 0
+            self._successfully_saved_indices = set()
+            self._annotation_complete = False
+            if not self.load_current_image():
+                raise AnnotationBatchError("First image could not load its matched label")
+            self.update_image_counter()
+            self.update_navigation_buttons()
+            self._update_existing_progress()
+            return True
+        except (AnnotationBatchError, ValueError, OSError) as error:
+            self.logger.error("Existing labels rejected: %s", error)
+            QMessageBox.warning(self, "Existing Label Import Failed", str(error))
+            return False
+
+    def resume_existing_batch(self):
+        try:
+            state = read_session()
+            index = next_pending(state)
+            if index is None:
+                QMessageBox.information(self, "Batch Complete", "All saved cards are recorded.")
+                return False
+            self._existing_label_mode = True
+            self._pending_label_sources = list(state["labels"].values())
+            self._ensure_existing_label_plugin()
+            self._existing_batch_state = state
+            self.image_files = state["image_files"]
+            self.current_index = index
+            self._successfully_saved_indices = set(state["completed"])
+            self._annotation_complete = False
+            if not self.load_current_image():
+                raise AnnotationBatchError(f"Cannot resume image {index + 1}")
+            self.update_image_counter()
+            self.update_navigation_buttons()
+            self._update_existing_progress()
+            return True
+        except (AnnotationBatchError, ValueError, OSError) as error:
+            self.logger.error("Resume failed: %s", error)
+            QMessageBox.warning(self, "Resume Failed", str(error))
+            return False
+
+    def _load_existing_card_labels(self):
+        session = getattr(self, "_existing_batch_state", None)
+        plugin = getattr(self, "current_plugin", None)
+        if not session or not hasattr(plugin, "load_existing_labels"):
+            raise AnnotationBatchError("Existing labels require the Border Detection plugin")
+        image = str(Path(self.current_image_path).resolve())
+        label = session["labels"].get(image)
+        if not label:
+            raise AnnotationBatchError(f"Missing selected label for {Path(image).name}")
+        proposal = None
+        if self.current_index in session["completed"]:
+            candidate = (Path(__file__).resolve().parents[2] / "shared" /
+                         "annotations" / "dual_contour_proposals" /
+                         f"{Path(image).stem}.json")
+            if candidate.is_file():
+                proposal = candidate
+        return plugin.load_existing_labels(image, self.original_image, label, proposal)
+
+    def _record_existing_export(self):
+        if not getattr(self, "_existing_label_mode", False):
+            return True
+        state = getattr(self, "_existing_batch_state", None)
+        if state is None:
+            self.logger.error("Cannot record progress: no active saved batch")
+            return False
+        try:
+            record_completed(state, self.current_index)
+            self._update_existing_progress()
+            return True
+        except (OSError, ValueError) as error:
+            self.logger.error("Export exists but checkpoint write failed: %s", error)
+            self.update_status("Export saved but progress checkpoint failed; retry Space")
+            return False
 
     def load_current_image(self):
         """Load current image and notify plugin - EXACT from calibration.py lines 709-788"""
