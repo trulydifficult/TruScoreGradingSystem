@@ -7192,3 +7192,129 @@
 2026-10-15 17:39:27,226 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
 2026-10-15 17:39:27,226 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.497582 0.502349 0.933556 0.923645
 2026-10-15 17:39:27,226 | DEBUG    | yolo_to_maskrcnn_converter - Converted Test020.jpg: 2 annotations
+2026-10-16 22:32:50,137 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image001F.jpg
+2026-10-16 22:32:50,137 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 22:32:50,137 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.493599 0.476696 0.924609 0.918834', '1 0.499289 0.475506 0.827881 0.856163']
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.493599 0.476696 0.924609 0.918834
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Converted image001F.jpg: 2 annotations
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image002F.jpg
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.498578 0.481778 0.920341 0.918834', '1 0.495733 0.480254 0.829303 0.864965']
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.498578 0.481778 0.920341 0.918834
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Converted image002F.jpg: 2 annotations
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image003F.jpg
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.506401 0.483303 0.921764 0.919851', '1 0.505690 0.473647 0.812233 0.831423']
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.506401 0.483303 0.921764 0.919851
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Converted image003F.jpg: 2 annotations
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image004F.jpg
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.492888 0.497024 0.920341 0.918834', '1 0.499289 0.490926 0.839260 0.855817']
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.492888 0.497024 0.920341 0.918834
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Converted image004F.jpg: 2 annotations
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image092F.jpg
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.513475 0.484337 0.916312 0.921967', '1 0.514461 0.476214 0.810483 0.848860']
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.513475 0.484337 0.916312 0.921967
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Converted image092F.jpg: 2 annotations
+2026-10-16 22:32:50,138 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image093F.jpg
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.501638 0.498045 0.917291 0.920952', '1 0.496454 0.492460 0.800000 0.836675']
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.501638 0.498045 0.917291 0.920952
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter - Converted image093F.jpg: 2 annotations
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image094F.jpg
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.492555 0.508978 0.912761 0.916418', '1 0.488907 0.506676 0.800909 0.836675']
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.492555 0.508978 0.912761 0.916418
+2026-10-16 22:32:50,139 | DEBUG    | yolo_to_maskrcnn_converter - Converted image094F.jpg: 2 annotations
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image001F.jpg
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.493599 0.476696 0.924609 0.918834', '1 0.499289 0.475506 0.827881 0.856163']
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.493599 0.476696 0.924609 0.918834
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter - Converted image001F.jpg: 2 annotations
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image002F.jpg
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.498578 0.481778 0.920341 0.918834', '1 0.495733 0.480254 0.829303 0.864965']
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:01:22,613 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.498578 0.481778 0.920341 0.918834
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Converted image002F.jpg: 2 annotations
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image003F.jpg
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.506401 0.483303 0.921764 0.919851', '1 0.505690 0.473647 0.812233 0.831423']
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.506401 0.483303 0.921764 0.919851
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Converted image003F.jpg: 2 annotations
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image004F.jpg
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.492888 0.497024 0.920341 0.918834', '1 0.499289 0.490926 0.839260 0.855817']
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.492888 0.497024 0.920341 0.918834
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Converted image004F.jpg: 2 annotations
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image092F.jpg
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.513475 0.484337 0.916312 0.921967', '1 0.514461 0.476214 0.810483 0.848860']
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.513475 0.484337 0.916312 0.921967
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Converted image092F.jpg: 2 annotations
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image093F.jpg
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.501638 0.498045 0.917291 0.920952', '1 0.496454 0.492460 0.800000 0.836675']
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.501638 0.498045 0.917291 0.920952
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Converted image093F.jpg: 2 annotations
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image094F.jpg
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.492555 0.508978 0.912761 0.916418', '1 0.488907 0.506676 0.800909 0.836675']
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.492555 0.508978 0.912761 0.916418
+2026-10-16 23:01:22,614 | DEBUG    | yolo_to_maskrcnn_converter - Converted image094F.jpg: 2 annotations
+2026-10-16 23:07:34,641 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image001F.jpg
+2026-10-16 23:07:34,641 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:07:34,641 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.493599 0.476696 0.924609 0.918834', '1 0.499289 0.475506 0.827881 0.856163']
+2026-10-16 23:07:34,641 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:07:34,641 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.493599 0.476696 0.924609 0.918834
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Converted image001F.jpg: 2 annotations
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image002F.jpg
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.498578 0.481778 0.920341 0.918834', '1 0.495733 0.480254 0.829303 0.864965']
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.498578 0.481778 0.920341 0.918834
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Converted image002F.jpg: 2 annotations
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image003F.jpg
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.506401 0.483303 0.921764 0.919851', '1 0.505690 0.473647 0.812233 0.831423']
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.506401 0.483303 0.921764 0.919851
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Converted image003F.jpg: 2 annotations
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image004F.jpg
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.492888 0.497024 0.920341 0.918834', '1 0.499289 0.490926 0.839260 0.855817']
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.492888 0.497024 0.920341 0.918834
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Converted image004F.jpg: 2 annotations
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image092F.jpg
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.513475 0.484337 0.916312 0.921967', '1 0.514461 0.476214 0.810483 0.848860']
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.513475 0.484337 0.916312 0.921967
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Converted image092F.jpg: 2 annotations
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image093F.jpg
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.501638 0.498045 0.917291 0.920952', '1 0.496454 0.492460 0.800000 0.836675']
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.501638 0.498045 0.917291 0.920952
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Converted image093F.jpg: 2 annotations
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Parsing labels for image094F.jpg
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data type: <class 'list'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    Label data: ['0 0.492555 0.508978 0.912761 0.916418', '1 0.488907 0.506676 0.800909 0.836675']
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item type: <class 'str'>
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter -    First item: 0 0.492555 0.508978 0.912761 0.916418
+2026-10-16 23:07:34,642 | DEBUG    | yolo_to_maskrcnn_converter - Converted image094F.jpg: 2 annotations

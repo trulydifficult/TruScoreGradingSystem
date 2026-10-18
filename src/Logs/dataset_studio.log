@@ -16656,3 +16656,549 @@ TypeError: GuruEventDispatcher.absorb_dataset_event() missing 1 required positio
 2026-10-16 19:18:48,231 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
 2026-10-16 19:18:48,232 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
 2026-10-16 19:18:48,232 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,149 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,154 | DEBUG    | enterprise_glassmorphism - Applied subtle glassmorphism style
+2026-10-16 22:29:11,432 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,436 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,437 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,438 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,439 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,440 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,441 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:29:11,441 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 22:30:38,667 | INFO     | enterprise_dataset_studio - Dataset Studio main() function called - subprocess launch
+2026-10-16 22:30:38,672 | INFO     | enterprise_dataset_studio - Dataset Studio: Guru integration initialized
+2026-10-16 22:30:38,734 | INFO     | enterprise_dataset_studio - Dashboard view initialized successfully
+2026-10-16 22:30:38,770 | INFO     | professional_dataset_selector - Loaded 18 dataset types across 7 categories
+2026-10-16 22:30:38,773 | INFO     | professional_dataset_selector - Dataset list populated with proper hierarchy
+2026-10-16 22:30:38,778 | INFO     | professional_dataset_selector - Professional dataset selector UI initialized
+2026-10-16 22:30:38,779 | INFO     | pipeline_compatibility_engine - Loaded 12 pipeline definitions
+2026-10-16 22:30:38,781 | INFO     | pipeline_compatibility_engine - Smart pipeline selector UI initialized
+2026-10-16 22:30:38,788 | INFO     | enterprise_dataset_studio - Project Manager view initialized successfully
+2026-10-16 22:30:38,788 | INFO     | enterprise_dataset_studio - Project Manager view initialized successfully
+2026-10-16 22:30:38,795 | INFO     | enterprise_dataset_studio - Main UI setup completed
+2026-10-16 22:30:38,795 | INFO     | enterprise_dataset_studio - Main UI setup completed
+2026-10-16 22:30:57,440 | INFO     | enterprise_dataset_studio - Creating new project: test1
+2026-10-16 22:30:57,440 | INFO     | enterprise_dataset_studio - Creating new project: test1
+2026-10-16 22:30:57,440 | INFO     | enterprise_dataset_studio - Transitioning to project manager view for project: test1
+2026-10-16 22:30:57,440 | INFO     | enterprise_dataset_studio - Transitioning to project manager view for project: test1
+2026-10-16 22:30:57,440 | INFO     | enterprise_dataset_studio - Project name set to: test1
+2026-10-16 22:30:57,440 | INFO     | enterprise_dataset_studio - Project name set to: test1
+2026-10-16 22:31:02,527 | INFO     | enterprise_dataset_studio - Dataset type selected: Border Detection (2-Class)
+2026-10-16 22:31:02,527 | INFO     | enterprise_dataset_studio - Dataset type selected: Border Detection (2-Class)
+2026-10-16 22:31:07,601 | INFO     | enterprise_dataset_studio - Pipeline selected: Detectron2 (Mask R-CNN + RPN) - Professional
+2026-10-16 22:31:07,601 | INFO     | enterprise_dataset_studio - Pipeline selected: Detectron2 (Mask R-CNN + RPN) - Professional
+2026-10-16 22:31:12,877 | INFO     | enterprise_dataset_studio - Creating new enterprise project with smart configuration
+2026-10-16 22:31:12,877 | INFO     | enterprise_dataset_studio - Creating new enterprise project with smart configuration
+2026-10-16 22:31:12,877 | INFO     | enterprise_dataset_studio - Created project: test1
+2026-10-16 22:31:12,877 | INFO     | enterprise_dataset_studio - Created project: test1
+2026-10-16 22:31:12,877 | INFO     | enterprise_dataset_studio - Architecture: Mask R-CNN + ResNet-101 + Feature Pyramid Network (FPN)
+2026-10-16 22:31:12,877 | INFO     | enterprise_dataset_studio - Architecture: Mask R-CNN + ResNet-101 + Feature Pyramid Network (FPN)
+2026-10-16 22:31:12,877 | INFO     | enterprise_dataset_studio - Transitioning to dataset studio for project: test1
+2026-10-16 22:31:12,877 | INFO     | enterprise_dataset_studio - Transitioning to dataset studio for project: test1
+2026-10-16 22:31:12,881 | INFO     | enterprise_dataset_studio - Project saved: projects/test1/test1.json
+2026-10-16 22:31:12,881 | INFO     | enterprise_dataset_studio - Project saved: projects/test1/test1.json
+2026-10-16 22:31:12,975 | INFO     | enterprise_dataset_studio - Creating TruScoreDatasetFrame...
+2026-10-16 22:31:12,975 | INFO     | enterprise_dataset_studio - Creating TruScoreDatasetFrame...
+2026-10-16 22:31:12,975 | INFO     | dataset_studio - TruScore Dataset Frame: Guru integration initialized
+2026-10-16 22:31:12,975 | INFO     | dataset_studio - TruScore Dataset Frame: Guru integration initialized
+2026-10-16 22:31:13,011 | INFO     | dataset_studio - Quality analysis: 0/0 high quality images
+2026-10-16 22:31:13,011 | INFO     | dataset_studio - Quality analysis: 0/0 high quality images
+2026-10-16 22:31:13,016 | INFO     | enterprise_dataset_studio - TruScoreDatasetFrame created successfully
+2026-10-16 22:31:13,016 | INFO     | enterprise_dataset_studio - TruScoreDatasetFrame created successfully
+2026-10-16 22:31:13,021 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test1/test1.json
+2026-10-16 22:31:13,021 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test1/test1.json
+2026-10-16 22:31:13,021 | INFO     | enterprise_dataset_studio - Dataset Studio view initialized for project: test1
+2026-10-16 22:31:13,021 | INFO     | enterprise_dataset_studio - Dataset Studio view initialized for project: test1
+2026-10-16 22:31:16,451 | INFO     | dataset_studio - Opening Modern File Browser for images
+2026-10-16 22:31:16,451 | INFO     | dataset_studio - Opening Modern File Browser for images
+2026-10-16 22:32:02,613 | INFO     | dataset_studio - Set data_path to: /home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images
+2026-10-16 22:32:02,613 | INFO     | dataset_studio - Set data_path to: /home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images
+2026-10-16 22:32:02,613 | INFO     | dataset_studio - Starting image loading: 7 images queued
+2026-10-16 22:32:02,613 | INFO     | dataset_studio - Starting image loading: 7 images queued
+2026-10-16 22:32:02,613 | DEBUG    | dataset_studio - First 3 image paths: [PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg'), PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image002F.jpg'), PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image003F.jpg')]
+2026-10-16 22:32:02,613 | DEBUG    | dataset_studio - First 3 image paths: [PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg'), PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image002F.jpg'), PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image003F.jpg')]
+2026-10-16 22:32:02,620 | INFO     | dataset_studio - Progressive loading timer started
+2026-10-16 22:32:02,620 | INFO     | dataset_studio - Progressive loading timer started
+2026-10-16 22:32:02,626 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test1/test1.json
+2026-10-16 22:32:02,626 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test1/test1.json
+2026-10-16 22:32:02,626 | INFO     | dataset_studio - Selected 7 images
+2026-10-16 22:32:02,626 | INFO     | dataset_studio - Selected 7 images
+2026-10-16 22:32:03,450 | INFO     | dataset_studio - Image loading complete: 7 images loaded successfully
+2026-10-16 22:32:03,450 | INFO     | dataset_studio - Image loading complete: 7 images loaded successfully
+2026-10-16 22:32:03,451 | INFO     | dataset_studio - Quality analysis: 7/7 high quality images
+2026-10-16 22:32:03,451 | INFO     | dataset_studio - Quality analysis: 7/7 high quality images
+2026-10-16 22:32:03,456 | INFO     | dataset_studio - Analysis dashboard updated after image loading complete
+2026-10-16 22:32:03,456 | INFO     | dataset_studio - Analysis dashboard updated after image loading complete
+2026-10-16 22:32:44,436 | INFO     | dataset_studio - Processing 7 label files
+2026-10-16 22:32:44,436 | INFO     | dataset_studio - Processing 7 label files
+2026-10-16 22:32:44,436 | DEBUG    | dataset_studio - First 3 label paths: ['/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image001F.txt', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image002F.txt', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image003F.txt']
+2026-10-16 22:32:44,436 | DEBUG    | dataset_studio - First 3 label paths: ['/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image001F.txt', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image002F.txt', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image003F.txt']
+2026-10-16 22:32:44,438 | INFO     | dataset_studio - Label-pipeline compatibility checker loaded
+2026-10-16 22:32:44,438 | INFO     | dataset_studio - Label-pipeline compatibility checker loaded
+2026-10-16 22:32:44,438 | DEBUG    | dataset_studio - Processing label file: image001F.txt (format: .txt)
+2026-10-16 22:32:44,438 | DEBUG    | dataset_studio - Processing label file: image001F.txt (format: .txt)
+2026-10-16 22:32:44,438 | DEBUG    | dataset_studio - Label analysis result for image001F.txt: TXT
+2026-10-16 22:32:44,438 | DEBUG    | dataset_studio - Label analysis result for image001F.txt: TXT
+2026-10-16 22:32:44,438 | WARNING  | dataset_studio - image001F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,438 | WARNING  | dataset_studio - image001F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,439 | DEBUG    | dataset_studio - Processing label file: image002F.txt (format: .txt)
+2026-10-16 22:32:44,439 | DEBUG    | dataset_studio - Processing label file: image002F.txt (format: .txt)
+2026-10-16 22:32:44,439 | DEBUG    | dataset_studio - Label analysis result for image002F.txt: TXT
+2026-10-16 22:32:44,439 | DEBUG    | dataset_studio - Label analysis result for image002F.txt: TXT
+2026-10-16 22:32:44,439 | WARNING  | dataset_studio - image002F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,439 | WARNING  | dataset_studio - image002F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,439 | DEBUG    | dataset_studio - Processing label file: image003F.txt (format: .txt)
+2026-10-16 22:32:44,439 | DEBUG    | dataset_studio - Processing label file: image003F.txt (format: .txt)
+2026-10-16 22:32:44,439 | DEBUG    | dataset_studio - Label analysis result for image003F.txt: TXT
+2026-10-16 22:32:44,439 | DEBUG    | dataset_studio - Label analysis result for image003F.txt: TXT
+2026-10-16 22:32:44,439 | WARNING  | dataset_studio - image003F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,439 | WARNING  | dataset_studio - image003F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,440 | DEBUG    | dataset_studio - Processing label file: image004F.txt (format: .txt)
+2026-10-16 22:32:44,440 | DEBUG    | dataset_studio - Processing label file: image004F.txt (format: .txt)
+2026-10-16 22:32:44,440 | DEBUG    | dataset_studio - Label analysis result for image004F.txt: TXT
+2026-10-16 22:32:44,440 | DEBUG    | dataset_studio - Label analysis result for image004F.txt: TXT
+2026-10-16 22:32:44,440 | WARNING  | dataset_studio - image004F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,440 | WARNING  | dataset_studio - image004F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,440 | DEBUG    | dataset_studio - Processing label file: image092F.txt (format: .txt)
+2026-10-16 22:32:44,440 | DEBUG    | dataset_studio - Processing label file: image092F.txt (format: .txt)
+2026-10-16 22:32:44,441 | DEBUG    | dataset_studio - Label analysis result for image092F.txt: TXT
+2026-10-16 22:32:44,441 | DEBUG    | dataset_studio - Label analysis result for image092F.txt: TXT
+2026-10-16 22:32:44,441 | WARNING  | dataset_studio - image092F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,441 | WARNING  | dataset_studio - image092F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,441 | DEBUG    | dataset_studio - Processing label file: image093F.txt (format: .txt)
+2026-10-16 22:32:44,441 | DEBUG    | dataset_studio - Processing label file: image093F.txt (format: .txt)
+2026-10-16 22:32:44,441 | DEBUG    | dataset_studio - Label analysis result for image093F.txt: TXT
+2026-10-16 22:32:44,441 | DEBUG    | dataset_studio - Label analysis result for image093F.txt: TXT
+2026-10-16 22:32:44,441 | WARNING  | dataset_studio - image093F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,441 | WARNING  | dataset_studio - image093F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,442 | DEBUG    | dataset_studio - Processing label file: image094F.txt (format: .txt)
+2026-10-16 22:32:44,442 | DEBUG    | dataset_studio - Processing label file: image094F.txt (format: .txt)
+2026-10-16 22:32:44,442 | DEBUG    | dataset_studio - Label analysis result for image094F.txt: TXT
+2026-10-16 22:32:44,442 | DEBUG    | dataset_studio - Label analysis result for image094F.txt: TXT
+2026-10-16 22:32:44,442 | WARNING  | dataset_studio - image094F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,442 | WARNING  | dataset_studio - image094F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 22:32:44,442 | INFO     | dataset_studio - Label processing complete: 7 files imported (0 compatible, 7 incompatible)
+2026-10-16 22:32:44,442 | INFO     | dataset_studio - Label processing complete: 7 files imported (0 compatible, 7 incompatible)
+2026-10-16 22:32:50,116 | INFO     | dataset_studio - Starting YOLO to COCO conversion for pipeline: Detectron2 (Mask R-CNN + RPN) - Professional
+2026-10-16 22:32:50,116 | INFO     | dataset_studio - Starting YOLO to COCO conversion for pipeline: Detectron2 (Mask R-CNN + RPN) - Professional
+2026-10-16 22:32:50,136 | INFO     | dataset_studio - Converting 7 images with 7 label files
+2026-10-16 22:32:50,136 | INFO     | dataset_studio - Converting 7 images with 7 label files
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Images sorted by filename. First 3: ['image001F.jpg', 'image002F.jpg', 'image003F.jpg']
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Images sorted by filename. First 3: ['image001F.jpg', 'image002F.jpg', 'image003F.jpg']
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image001F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image001F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image002F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image002F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image003F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image003F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image004F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image004F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image092F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image092F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image093F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image093F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image094F: 2 annotation lines
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Label file image094F: 2 annotation lines
+2026-10-16 22:32:50,136 | INFO     | dataset_studio - Built label lookup with 7 entries
+2026-10-16 22:32:50,136 | INFO     | dataset_studio - Built label lookup with 7 entries
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image001F.jpg -> image001F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image001F.jpg -> image001F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image002F.jpg -> image002F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image002F.jpg -> image002F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image003F.jpg -> image003F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image003F.jpg -> image003F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image004F.jpg -> image004F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image004F.jpg -> image004F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image092F.jpg -> image092F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image092F.jpg -> image092F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image093F.jpg -> image093F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image093F.jpg -> image093F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image094F.jpg -> image094F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Mapped image094F.jpg -> image094F.txt
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Total images: 7, Mapped labels: 7
+2026-10-16 22:32:50,136 | DEBUG    | dataset_studio - Total images: 7, Mapped labels: 7
+2026-10-16 22:32:50,137 | INFO     | dataset_studio - Starting YOLO to COCO conversion process...
+2026-10-16 22:32:50,137 | INFO     | dataset_studio - Starting YOLO to COCO conversion process...
+2026-10-16 22:32:50,137 | INFO     | dataset_studio - DEBUG: Converting 7 images with 7 label entries
+2026-10-16 22:32:50,137 | INFO     | dataset_studio - DEBUG: Converting 7 images with 7 label entries
+2026-10-16 22:32:50,137 | INFO     | dataset_studio - DEBUG: First image: /home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg
+2026-10-16 22:32:50,137 | INFO     | dataset_studio - DEBUG: First image: /home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg
+2026-10-16 22:32:50,137 | INFO     | dataset_studio - DEBUG: labels_data keys: ['/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image002F.jpg', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image003F.jpg']
+2026-10-16 22:32:50,137 | INFO     | dataset_studio - DEBUG: labels_data keys: ['/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image002F.jpg', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image003F.jpg']
+2026-10-16 22:32:50,139 | INFO     | dataset_studio - Conversion process completed, starting file save...
+2026-10-16 22:32:50,139 | INFO     | dataset_studio - Conversion process completed, starting file save...
+2026-10-16 22:32:50,139 | INFO     | dataset_studio - DEBUG: Conversion result has 7 images and 14 annotations
+2026-10-16 22:32:50,139 | INFO     | dataset_studio - DEBUG: Conversion result has 7 images and 14 annotations
+2026-10-16 22:32:50,139 | INFO     | dataset_studio - Starting JSON file write...
+2026-10-16 22:32:50,139 | INFO     | dataset_studio - Starting JSON file write...
+2026-10-16 22:32:50,140 | INFO     | dataset_studio - JSON file write completed!
+2026-10-16 22:32:50,140 | INFO     | dataset_studio - JSON file write completed!
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test1/test1.json
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test1/test1.json
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Project progress auto-saved after label import
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Project progress auto-saved after label import
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Imported 7 label files
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Imported 7 label files
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - ==================================================
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - ==================================================
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - CONVERSION COMPLETED CALLBACK TRIGGERED
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - CONVERSION COMPLETED CALLBACK TRIGGERED
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - result_data keys: ['output_path', 'total_images', 'labeled_images', 'coco_data', 'conversion_stats', 'success']
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - result_data keys: ['output_path', 'total_images', 'labeled_images', 'coco_data', 'conversion_stats', 'success']
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Total images: 7
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Total images: 7
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Labeled images: 7
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Labeled images: 7
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Output path: /home/dewster/Vanguard/src/modules/dataset_studio/converted_datasets/test1_coco.json
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Output path: /home/dewster/Vanguard/src/modules/dataset_studio/converted_datasets/test1_coco.json
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Has coco_data: True
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Has coco_data: True
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Updating COCO labels tab...
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Updating COCO labels tab...
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Using coco_data from result_data
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Using coco_data from result_data
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Updating COCO labels tab with conversion results
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - Updating COCO labels tab with conversion results
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - COCO data stored: 7 images, 14 annotations
+2026-10-16 22:32:50,143 | INFO     | dataset_studio - COCO data stored: 7 images, 14 annotations
+2026-10-16 22:32:50,144 | INFO     | dataset_studio - Switching to COCO Labels tab...
+2026-10-16 22:32:50,144 | INFO     | dataset_studio - Switching to COCO Labels tab...
+2026-10-16 22:32:50,145 | DEBUG    | dataset_studio - Tab switched, showing message...
+2026-10-16 22:32:50,145 | DEBUG    | dataset_studio - Tab switched, showing message...
+2026-10-16 22:33:00,484 | DEBUG    | dataset_studio - Callback completed successfully!
+2026-10-16 22:33:00,484 | DEBUG    | dataset_studio - Callback completed successfully!
+2026-10-16 22:33:00,490 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test1/test1.json
+2026-10-16 22:33:00,490 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test1/test1.json
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Verification tab clicked (index 3)
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Verification tab clicked (index 3)
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Has images: True | Count: 7
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Has images: True | Count: 7
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Has imported_labels: True | Count: 7
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Has imported_labels: True | Count: 7
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Already populated: False
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Already populated: False
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - All conditions met - Loading verification data...
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - All conditions met - Loading verification data...
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - populate_verification_tab() called
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - populate_verification_tab() called
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - self.images exists: True
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - self.images exists: True
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - self.images count: 7
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - self.images count: 7
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Clearing 0 existing verification widgets
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Clearing 0 existing verification widgets
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Starting progressive loading of 7 images
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Starting progressive loading of 7 images
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Timer started - batch loading will begin
+2026-10-16 22:33:08,120 | INFO     | dataset_studio - Timer started - batch loading will begin
+2026-10-16 22:33:08,158 | INFO     | dataset_studio - Loading batch of 7 images, 0 remaining
+2026-10-16 22:33:08,158 | INFO     | dataset_studio - Loading batch of 7 images, 0 remaining
+2026-10-16 22:33:08,158 | INFO     | dataset_studio - Image: image001F.jpg | Has label: True
+2026-10-16 22:33:08,158 | INFO     | dataset_studio - Image: image001F.jpg | Has label: True
+2026-10-16 22:33:08,180 | INFO     | dataset_studio - Image: image002F.jpg | Has label: True
+2026-10-16 22:33:08,180 | INFO     | dataset_studio - Image: image002F.jpg | Has label: True
+2026-10-16 22:33:08,202 | INFO     | dataset_studio - Image: image003F.jpg | Has label: True
+2026-10-16 22:33:08,202 | INFO     | dataset_studio - Image: image003F.jpg | Has label: True
+2026-10-16 22:33:08,222 | INFO     | dataset_studio - Image: image004F.jpg | Has label: True
+2026-10-16 22:33:08,222 | INFO     | dataset_studio - Image: image004F.jpg | Has label: True
+2026-10-16 22:33:08,243 | INFO     | dataset_studio - Image: image092F.jpg | Has label: True
+2026-10-16 22:33:08,243 | INFO     | dataset_studio - Image: image092F.jpg | Has label: True
+2026-10-16 22:33:08,265 | INFO     | dataset_studio - Image: image093F.jpg | Has label: True
+2026-10-16 22:33:08,265 | INFO     | dataset_studio - Image: image093F.jpg | Has label: True
+2026-10-16 22:33:08,286 | INFO     | dataset_studio - Image: image094F.jpg | Has label: True
+2026-10-16 22:33:08,286 | INFO     | dataset_studio - Image: image094F.jpg | Has label: True
+2026-10-16 22:33:08,309 | INFO     | dataset_studio - Verification tab loaded 7 images progressively - 7 have labels
+2026-10-16 22:33:08,309 | INFO     | dataset_studio - Verification tab loaded 7 images progressively - 7 have labels
+2026-10-16 22:33:16,501 | INFO     | dataset_studio - Found 2 COCO annotations for image094F.jpg
+2026-10-16 22:33:16,501 | INFO     | dataset_studio - Found 2 COCO annotations for image094F.jpg
+2026-10-16 22:33:19,643 | INFO     | dataset_studio - Found 2 COCO annotations for image093F.jpg
+2026-10-16 22:33:19,643 | INFO     | dataset_studio - Found 2 COCO annotations for image093F.jpg
+2026-10-16 22:33:21,629 | INFO     | dataset_studio - Found 2 COCO annotations for image092F.jpg
+2026-10-16 22:33:21,629 | INFO     | dataset_studio - Found 2 COCO annotations for image092F.jpg
+2026-10-16 22:33:24,355 | INFO     | dataset_studio - Found 2 COCO annotations for image004F.jpg
+2026-10-16 22:33:24,355 | INFO     | dataset_studio - Found 2 COCO annotations for image004F.jpg
+2026-10-16 22:33:29,419 | INFO     | dataset_studio - Found 2 COCO annotations for image003F.jpg
+2026-10-16 22:33:29,419 | INFO     | dataset_studio - Found 2 COCO annotations for image003F.jpg
+2026-10-16 22:33:32,044 | INFO     | dataset_studio - Found 2 COCO annotations for image002F.jpg
+2026-10-16 22:33:32,044 | INFO     | dataset_studio - Found 2 COCO annotations for image002F.jpg
+2026-10-16 22:33:36,364 | INFO     | dataset_studio - Found 2 COCO annotations for image001F.jpg
+2026-10-16 22:33:36,364 | INFO     | dataset_studio - Found 2 COCO annotations for image001F.jpg
+2026-10-16 22:35:41,951 | INFO     | dataset_studio - Verification tab clicked (index 3)
+2026-10-16 22:35:41,951 | INFO     | dataset_studio - Verification tab clicked (index 3)
+2026-10-16 22:35:41,951 | INFO     | dataset_studio - Has images: True | Count: 7
+2026-10-16 22:35:41,951 | INFO     | dataset_studio - Has images: True | Count: 7
+2026-10-16 22:35:41,951 | INFO     | dataset_studio - Has imported_labels: True | Count: 7
+2026-10-16 22:35:41,951 | INFO     | dataset_studio - Has imported_labels: True | Count: 7
+2026-10-16 22:35:41,951 | INFO     | dataset_studio - Already populated: True
+2026-10-16 22:35:41,951 | INFO     | dataset_studio - Already populated: True
+2026-10-16 22:35:41,951 | WARNING  | dataset_studio - Conditions NOT met - cannot populate verification tab
+2026-10-16 22:35:41,951 | WARNING  | dataset_studio - Conditions NOT met - cannot populate verification tab
+2026-10-16 22:35:41,951 | WARNING  | dataset_studio -   → Already populated
+2026-10-16 22:35:41,951 | WARNING  | dataset_studio -   → Already populated
+2026-10-16 22:39:09,045 | INFO     | dataset_studio - Quality analysis: 7/7 high quality images
+2026-10-16 22:39:09,045 | INFO     | dataset_studio - Quality analysis: 7/7 high quality images
+2026-10-16 22:39:16,765 | INFO     | dataset_studio - Quality analysis: 7/7 high quality images
+2026-10-16 22:39:16,765 | INFO     | dataset_studio - Quality analysis: 7/7 high quality images
+2026-10-16 23:00:04,494 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:04,496 | DEBUG    | enterprise_glassmorphism - Applied subtle glassmorphism style
+2026-10-16 23:00:04,650 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:04,654 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:04,656 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:04,656 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:04,657 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:04,658 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:04,659 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:04,659 | DEBUG    | enterprise_glassmorphism - Applied medium glassmorphism style
+2026-10-16 23:00:08,973 | INFO     | enterprise_dataset_studio - Dataset Studio main() function called - subprocess launch
+2026-10-16 23:00:08,978 | INFO     | enterprise_dataset_studio - Dataset Studio: Guru integration initialized
+2026-10-16 23:00:09,039 | INFO     | enterprise_dataset_studio - Dashboard view initialized successfully
+2026-10-16 23:00:09,080 | INFO     | professional_dataset_selector - Loaded 18 dataset types across 7 categories
+2026-10-16 23:00:09,082 | INFO     | professional_dataset_selector - Dataset list populated with proper hierarchy
+2026-10-16 23:00:09,088 | INFO     | professional_dataset_selector - Professional dataset selector UI initialized
+2026-10-16 23:00:09,089 | INFO     | pipeline_compatibility_engine - Loaded 12 pipeline definitions
+2026-10-16 23:00:09,092 | INFO     | pipeline_compatibility_engine - Smart pipeline selector UI initialized
+2026-10-16 23:00:09,099 | INFO     | enterprise_dataset_studio - Project Manager view initialized successfully
+2026-10-16 23:00:09,099 | INFO     | enterprise_dataset_studio - Project Manager view initialized successfully
+2026-10-16 23:00:09,107 | INFO     | enterprise_dataset_studio - Main UI setup completed
+2026-10-16 23:00:09,107 | INFO     | enterprise_dataset_studio - Main UI setup completed
+2026-10-16 23:00:19,521 | INFO     | enterprise_dataset_studio - Creating new project: test2
+2026-10-16 23:00:19,521 | INFO     | enterprise_dataset_studio - Creating new project: test2
+2026-10-16 23:00:19,521 | INFO     | enterprise_dataset_studio - Transitioning to project manager view for project: test2
+2026-10-16 23:00:19,521 | INFO     | enterprise_dataset_studio - Transitioning to project manager view for project: test2
+2026-10-16 23:00:19,521 | INFO     | enterprise_dataset_studio - Project name set to: test2
+2026-10-16 23:00:19,521 | INFO     | enterprise_dataset_studio - Project name set to: test2
+2026-10-16 23:00:22,895 | INFO     | enterprise_dataset_studio - Dataset type selected: Border Detection (2-Class)
+2026-10-16 23:00:22,895 | INFO     | enterprise_dataset_studio - Dataset type selected: Border Detection (2-Class)
+2026-10-16 23:00:24,958 | INFO     | enterprise_dataset_studio - Pipeline selected: Detectron2 (Mask R-CNN + RPN) - Professional
+2026-10-16 23:00:24,958 | INFO     | enterprise_dataset_studio - Pipeline selected: Detectron2 (Mask R-CNN + RPN) - Professional
+2026-10-16 23:00:27,399 | INFO     | enterprise_dataset_studio - Creating new enterprise project with smart configuration
+2026-10-16 23:00:27,399 | INFO     | enterprise_dataset_studio - Creating new enterprise project with smart configuration
+2026-10-16 23:00:27,399 | INFO     | enterprise_dataset_studio - Created project: test2
+2026-10-16 23:00:27,399 | INFO     | enterprise_dataset_studio - Created project: test2
+2026-10-16 23:00:27,399 | INFO     | enterprise_dataset_studio - Architecture: Mask R-CNN + ResNet-101 + Feature Pyramid Network (FPN)
+2026-10-16 23:00:27,399 | INFO     | enterprise_dataset_studio - Architecture: Mask R-CNN + ResNet-101 + Feature Pyramid Network (FPN)
+2026-10-16 23:00:27,399 | INFO     | enterprise_dataset_studio - Transitioning to dataset studio for project: test2
+2026-10-16 23:00:27,399 | INFO     | enterprise_dataset_studio - Transitioning to dataset studio for project: test2
+2026-10-16 23:00:27,400 | INFO     | enterprise_dataset_studio - Project saved: projects/test2/test2.json
+2026-10-16 23:00:27,400 | INFO     | enterprise_dataset_studio - Project saved: projects/test2/test2.json
+2026-10-16 23:00:27,503 | INFO     | enterprise_dataset_studio - Creating TruScoreDatasetFrame...
+2026-10-16 23:00:27,503 | INFO     | enterprise_dataset_studio - Creating TruScoreDatasetFrame...
+2026-10-16 23:00:27,503 | INFO     | dataset_studio - TruScore Dataset Frame: Guru integration initialized
+2026-10-16 23:00:27,503 | INFO     | dataset_studio - TruScore Dataset Frame: Guru integration initialized
+2026-10-16 23:00:27,541 | INFO     | dataset_studio - Project analysis: 0/0 labeled, 0 annotations, 0 problems
+2026-10-16 23:00:27,541 | INFO     | dataset_studio - Project analysis: 0/0 labeled, 0 annotations, 0 problems
+2026-10-16 23:00:27,543 | INFO     | enterprise_dataset_studio - TruScoreDatasetFrame created successfully
+2026-10-16 23:00:27,543 | INFO     | enterprise_dataset_studio - TruScoreDatasetFrame created successfully
+2026-10-16 23:00:27,548 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test2/test2.json
+2026-10-16 23:00:27,548 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test2/test2.json
+2026-10-16 23:00:27,548 | INFO     | enterprise_dataset_studio - Dataset Studio view initialized for project: test2
+2026-10-16 23:00:27,548 | INFO     | enterprise_dataset_studio - Dataset Studio view initialized for project: test2
+2026-10-16 23:00:29,164 | INFO     | dataset_studio - Opening Modern File Browser for images
+2026-10-16 23:00:29,164 | INFO     | dataset_studio - Opening Modern File Browser for images
+2026-10-16 23:00:55,065 | INFO     | dataset_studio - Set data_path to: /home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images
+2026-10-16 23:00:55,065 | INFO     | dataset_studio - Set data_path to: /home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images
+2026-10-16 23:00:55,065 | INFO     | dataset_studio - Starting image loading: 7 images queued
+2026-10-16 23:00:55,065 | INFO     | dataset_studio - Starting image loading: 7 images queued
+2026-10-16 23:00:55,065 | DEBUG    | dataset_studio - First 3 image paths: [PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg'), PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image002F.jpg'), PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image003F.jpg')]
+2026-10-16 23:00:55,065 | DEBUG    | dataset_studio - First 3 image paths: [PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg'), PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image002F.jpg'), PosixPath('/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image003F.jpg')]
+2026-10-16 23:00:55,070 | INFO     | dataset_studio - Progressive loading timer started
+2026-10-16 23:00:55,070 | INFO     | dataset_studio - Progressive loading timer started
+2026-10-16 23:00:55,075 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test2/test2.json
+2026-10-16 23:00:55,075 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test2/test2.json
+2026-10-16 23:00:55,075 | INFO     | dataset_studio - Selected 7 images
+2026-10-16 23:00:55,075 | INFO     | dataset_studio - Selected 7 images
+2026-10-16 23:00:55,803 | INFO     | dataset_studio - Image loading complete: 7 images loaded successfully
+2026-10-16 23:00:55,803 | INFO     | dataset_studio - Image loading complete: 7 images loaded successfully
+2026-10-16 23:00:55,805 | INFO     | dataset_studio - Project analysis: 0/7 labeled, 0 annotations, 7 problems
+2026-10-16 23:00:55,805 | INFO     | dataset_studio - Project analysis: 0/7 labeled, 0 annotations, 7 problems
+2026-10-16 23:00:55,805 | INFO     | dataset_studio - Analysis dashboard updated after image loading complete
+2026-10-16 23:00:55,805 | INFO     | dataset_studio - Analysis dashboard updated after image loading complete
+2026-10-16 23:01:20,734 | INFO     | dataset_studio - Processing 7 label files
+2026-10-16 23:01:20,734 | INFO     | dataset_studio - Processing 7 label files
+2026-10-16 23:01:20,734 | DEBUG    | dataset_studio - First 3 label paths: ['/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image001F.txt', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image002F.txt', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image003F.txt']
+2026-10-16 23:01:20,734 | DEBUG    | dataset_studio - First 3 label paths: ['/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image001F.txt', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image002F.txt', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/labels/image003F.txt']
+2026-10-16 23:01:20,738 | INFO     | dataset_studio - Label-pipeline compatibility checker loaded
+2026-10-16 23:01:20,738 | INFO     | dataset_studio - Label-pipeline compatibility checker loaded
+2026-10-16 23:01:20,738 | DEBUG    | dataset_studio - Processing label file: image001F.txt (format: .txt)
+2026-10-16 23:01:20,738 | DEBUG    | dataset_studio - Processing label file: image001F.txt (format: .txt)
+2026-10-16 23:01:20,739 | DEBUG    | dataset_studio - Label analysis result for image001F.txt: TXT
+2026-10-16 23:01:20,739 | DEBUG    | dataset_studio - Label analysis result for image001F.txt: TXT
+2026-10-16 23:01:20,739 | WARNING  | dataset_studio - image001F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,739 | WARNING  | dataset_studio - image001F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,739 | DEBUG    | dataset_studio - Processing label file: image002F.txt (format: .txt)
+2026-10-16 23:01:20,739 | DEBUG    | dataset_studio - Processing label file: image002F.txt (format: .txt)
+2026-10-16 23:01:20,739 | DEBUG    | dataset_studio - Label analysis result for image002F.txt: TXT
+2026-10-16 23:01:20,739 | DEBUG    | dataset_studio - Label analysis result for image002F.txt: TXT
+2026-10-16 23:01:20,739 | WARNING  | dataset_studio - image002F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,739 | WARNING  | dataset_studio - image002F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,740 | DEBUG    | dataset_studio - Processing label file: image003F.txt (format: .txt)
+2026-10-16 23:01:20,740 | DEBUG    | dataset_studio - Processing label file: image003F.txt (format: .txt)
+2026-10-16 23:01:20,740 | DEBUG    | dataset_studio - Label analysis result for image003F.txt: TXT
+2026-10-16 23:01:20,740 | DEBUG    | dataset_studio - Label analysis result for image003F.txt: TXT
+2026-10-16 23:01:20,740 | WARNING  | dataset_studio - image003F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,740 | WARNING  | dataset_studio - image003F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,740 | DEBUG    | dataset_studio - Processing label file: image004F.txt (format: .txt)
+2026-10-16 23:01:20,740 | DEBUG    | dataset_studio - Processing label file: image004F.txt (format: .txt)
+2026-10-16 23:01:20,741 | DEBUG    | dataset_studio - Label analysis result for image004F.txt: TXT
+2026-10-16 23:01:20,741 | DEBUG    | dataset_studio - Label analysis result for image004F.txt: TXT
+2026-10-16 23:01:20,741 | WARNING  | dataset_studio - image004F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,741 | WARNING  | dataset_studio - image004F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,741 | DEBUG    | dataset_studio - Processing label file: image092F.txt (format: .txt)
+2026-10-16 23:01:20,741 | DEBUG    | dataset_studio - Processing label file: image092F.txt (format: .txt)
+2026-10-16 23:01:20,741 | DEBUG    | dataset_studio - Label analysis result for image092F.txt: TXT
+2026-10-16 23:01:20,741 | DEBUG    | dataset_studio - Label analysis result for image092F.txt: TXT
+2026-10-16 23:01:20,741 | WARNING  | dataset_studio - image092F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,741 | WARNING  | dataset_studio - image092F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,742 | DEBUG    | dataset_studio - Processing label file: image093F.txt (format: .txt)
+2026-10-16 23:01:20,742 | DEBUG    | dataset_studio - Processing label file: image093F.txt (format: .txt)
+2026-10-16 23:01:20,742 | DEBUG    | dataset_studio - Label analysis result for image093F.txt: TXT
+2026-10-16 23:01:20,742 | DEBUG    | dataset_studio - Label analysis result for image093F.txt: TXT
+2026-10-16 23:01:20,742 | WARNING  | dataset_studio - image093F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,742 | WARNING  | dataset_studio - image093F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,742 | DEBUG    | dataset_studio - Processing label file: image094F.txt (format: .txt)
+2026-10-16 23:01:20,742 | DEBUG    | dataset_studio - Processing label file: image094F.txt (format: .txt)
+2026-10-16 23:01:20,742 | DEBUG    | dataset_studio - Label analysis result for image094F.txt: TXT
+2026-10-16 23:01:20,742 | DEBUG    | dataset_studio - Label analysis result for image094F.txt: TXT
+2026-10-16 23:01:20,742 | WARNING  | dataset_studio - image094F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,742 | WARNING  | dataset_studio - image094F.txt is NOT compatible with Detectron2 (Mask R-CNN + RPN) - Professional: File extension .txt not compatible. Required: .json, .png
+2026-10-16 23:01:20,743 | INFO     | dataset_studio - Label processing complete: 7 files imported (0 compatible, 7 incompatible)
+2026-10-16 23:01:20,743 | INFO     | dataset_studio - Label processing complete: 7 files imported (0 compatible, 7 incompatible)
+2026-10-16 23:01:22,558 | INFO     | dataset_studio - Starting YOLO to COCO conversion for pipeline: Detectron2 (Mask R-CNN + RPN) - Professional
+2026-10-16 23:01:22,558 | INFO     | dataset_studio - Starting YOLO to COCO conversion for pipeline: Detectron2 (Mask R-CNN + RPN) - Professional
+2026-10-16 23:01:22,612 | INFO     | dataset_studio - Converting 7 images with 7 label files
+2026-10-16 23:01:22,612 | INFO     | dataset_studio - Converting 7 images with 7 label files
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Images sorted by filename. First 3: ['image001F.jpg', 'image002F.jpg', 'image003F.jpg']
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Images sorted by filename. First 3: ['image001F.jpg', 'image002F.jpg', 'image003F.jpg']
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image001F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image001F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image002F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image002F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image003F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image003F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image004F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image004F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image092F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image092F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image093F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image093F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image094F: 2 annotation lines
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Label file image094F: 2 annotation lines
+2026-10-16 23:01:22,612 | INFO     | dataset_studio - Built label lookup with 7 entries
+2026-10-16 23:01:22,612 | INFO     | dataset_studio - Built label lookup with 7 entries
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image001F.jpg -> image001F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image001F.jpg -> image001F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image002F.jpg -> image002F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image002F.jpg -> image002F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image003F.jpg -> image003F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image003F.jpg -> image003F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image004F.jpg -> image004F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image004F.jpg -> image004F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image092F.jpg -> image092F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image092F.jpg -> image092F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image093F.jpg -> image093F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image093F.jpg -> image093F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image094F.jpg -> image094F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Mapped image094F.jpg -> image094F.txt
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Total images: 7, Mapped labels: 7
+2026-10-16 23:01:22,612 | DEBUG    | dataset_studio - Total images: 7, Mapped labels: 7
+2026-10-16 23:01:22,613 | INFO     | dataset_studio - Starting YOLO to COCO conversion process...
+2026-10-16 23:01:22,613 | INFO     | dataset_studio - Starting YOLO to COCO conversion process...
+2026-10-16 23:01:22,613 | INFO     | dataset_studio - DEBUG: Converting 7 images with 7 label entries
+2026-10-16 23:01:22,613 | INFO     | dataset_studio - DEBUG: Converting 7 images with 7 label entries
+2026-10-16 23:01:22,613 | INFO     | dataset_studio - DEBUG: First image: /home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg
+2026-10-16 23:01:22,613 | INFO     | dataset_studio - DEBUG: First image: /home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg
+2026-10-16 23:01:22,613 | INFO     | dataset_studio - DEBUG: labels_data keys: ['/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image002F.jpg', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image003F.jpg']
+2026-10-16 23:01:22,613 | INFO     | dataset_studio - DEBUG: labels_data keys: ['/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image001F.jpg', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image002F.jpg', '/home/dewster/Vanguard/src/shared/annotations/combined_dual_class/images/image003F.jpg']
+2026-10-16 23:01:22,614 | INFO     | dataset_studio - Conversion process completed, starting file save...
+2026-10-16 23:01:22,614 | INFO     | dataset_studio - Conversion process completed, starting file save...
+2026-10-16 23:01:22,614 | INFO     | dataset_studio - DEBUG: Conversion result has 7 images and 14 annotations
+2026-10-16 23:01:22,614 | INFO     | dataset_studio - DEBUG: Conversion result has 7 images and 14 annotations
+2026-10-16 23:01:22,614 | INFO     | dataset_studio - Starting JSON file write...
+2026-10-16 23:01:22,614 | INFO     | dataset_studio - Starting JSON file write...
+2026-10-16 23:01:22,615 | INFO     | dataset_studio - JSON file write completed!
+2026-10-16 23:01:22,615 | INFO     | dataset_studio - JSON file write completed!
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test2/test2.json
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test2/test2.json
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Project progress auto-saved after label import
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Project progress auto-saved after label import
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Imported 7 label files
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Imported 7 label files
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - ==================================================
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - ==================================================
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - CONVERSION COMPLETED CALLBACK TRIGGERED
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - CONVERSION COMPLETED CALLBACK TRIGGERED
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - result_data keys: ['output_path', 'total_images', 'labeled_images', 'coco_data', 'conversion_stats', 'success']
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - result_data keys: ['output_path', 'total_images', 'labeled_images', 'coco_data', 'conversion_stats', 'success']
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Total images: 7
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Total images: 7
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Labeled images: 7
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Labeled images: 7
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Output path: /home/dewster/Vanguard/src/modules/dataset_studio/converted_datasets/test2_coco.json
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Output path: /home/dewster/Vanguard/src/modules/dataset_studio/converted_datasets/test2_coco.json
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Has coco_data: True
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Has coco_data: True
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Updating COCO labels tab...
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Updating COCO labels tab...
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Using coco_data from result_data
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Using coco_data from result_data
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Updating COCO labels tab with conversion results
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - Updating COCO labels tab with conversion results
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - COCO data stored: 7 images, 14 annotations
+2026-10-16 23:01:22,619 | INFO     | dataset_studio - COCO data stored: 7 images, 14 annotations
+2026-10-16 23:01:22,620 | INFO     | dataset_studio - Switching to COCO Labels tab...
+2026-10-16 23:01:22,620 | INFO     | dataset_studio - Switching to COCO Labels tab...
+2026-10-16 23:01:22,621 | DEBUG    | dataset_studio - Tab switched, showing message...
+2026-10-16 23:01:22,621 | DEBUG    | dataset_studio - Tab switched, showing message...
+2026-10-16 23:01:24,150 | DEBUG    | dataset_studio - Callback completed successfully!
+2026-10-16 23:01:24,150 | DEBUG    | dataset_studio - Callback completed successfully!
+2026-10-16 23:01:24,158 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test2/test2.json
+2026-10-16 23:01:24,158 | INFO     | dataset_studio - Project progress saved: /home/dewster/Vanguard/src/modules/dataset_studio/projects/test2/test2.json
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Verification tab clicked (index 3)
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Verification tab clicked (index 3)
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Has images: True | Count: 7
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Has images: True | Count: 7
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Has imported_labels: True | Count: 7
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Has imported_labels: True | Count: 7
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Already populated: False
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Already populated: False
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - All conditions met - Loading verification data...
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - All conditions met - Loading verification data...
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - populate_verification_tab() called
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - populate_verification_tab() called
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - self.images exists: True
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - self.images exists: True
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - self.images count: 7
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - self.images count: 7
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Clearing 0 existing verification widgets
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Clearing 0 existing verification widgets
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Starting progressive loading of 7 images
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Starting progressive loading of 7 images
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Timer started - batch loading will begin
+2026-10-16 23:01:25,562 | INFO     | dataset_studio - Timer started - batch loading will begin
+2026-10-16 23:01:25,602 | INFO     | dataset_studio - Loading batch of 7 images, 0 remaining
+2026-10-16 23:01:25,602 | INFO     | dataset_studio - Loading batch of 7 images, 0 remaining
+2026-10-16 23:01:25,603 | INFO     | dataset_studio - Image: image001F.jpg | Has label: True
+2026-10-16 23:01:25,603 | INFO     | dataset_studio - Image: image001F.jpg | Has label: True
+2026-10-16 23:01:25,625 | INFO     | dataset_studio - Image: image002F.jpg | Has label: True
+2026-10-16 23:01:25,625 | INFO     | dataset_studio - Image: image002F.jpg | Has label: True
+2026-10-16 23:01:25,647 | INFO     | dataset_studio - Image: image003F.jpg | Has label: True
+2026-10-16 23:01:25,647 | INFO     | dataset_studio - Image: image003F.jpg | Has label: True
+2026-10-16 23:01:25,668 | INFO     | dataset_studio - Image: image004F.jpg | Has label: True
+2026-10-16 23:01:25,668 | INFO     | dataset_studio - Image: image004F.jpg | Has label: True
+2026-10-16 23:01:25,689 | INFO     | dataset_studio - Image: image092F.jpg | Has label: True
+2026-10-16 23:01:25,689 | INFO     | dataset_studio - Image: image092F.jpg | Has label: True
+2026-10-16 23:01:25,712 | INFO     | dataset_studio - Image: image093F.jpg | Has label: True
+2026-10-16 23:01:25,712 | INFO     | dataset_studio - Image: image093F.jpg | Has label: True
+2026-10-16 23:01:25,733 | INFO     | dataset_studio - Image: image094F.jpg | Has label: True
+2026-10-16 23:01:25,733 | INFO     | dataset_studio - Image: image094F.jpg | Has label: True
+2026-10-16 23:01:25,756 | INFO     | dataset_studio - Verification tab loaded 7 images progressively - 7 have labels
+2026-10-16 23:01:25,756 | INFO     | dataset_studio - Verification tab loaded 7 images progressively - 7 have labels
+2026-10-16 23:01:28,728 | INFO     | dataset_studio - Found 2 COCO annotations for image094F.jpg
+2026-10-16 23:01:28,728 | INFO     | dataset_studio - Found 2 COCO annotations for image094F.jpg
+2026-10-16 23:01:31,118 | INFO     | dataset_studio - Found 2 COCO annotations for image093F.jpg
+2026-10-16 23:01:31,118 | INFO     | dataset_studio - Found 2 COCO annotations for image093F.jpg
+2026-10-16 23:01:41,051 | INFO     | dataset_studio - Project analysis: 7/7 labeled, 14 annotations, 0 problems
+2026-10-16 23:01:41,051 | INFO     | dataset_studio - Project analysis: 7/7 labeled, 14 annotations, 0 problems
+2026-10-16 23:07:34,649 | INFO     | dataset_studio - COCO bbox export completed: 7 images, 14 boxes (no segmentation masks)
+2026-10-16 23:07:34,649 | INFO     | dataset_studio - COCO bbox export completed: 7 images, 14 boxes (no segmentation masks)

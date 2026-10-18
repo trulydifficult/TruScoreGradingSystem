@@ -1,0 +1,9 @@
+{
+  "environment": "/home/dewster/Vanguard/models/trained/phoenix_smoke_vit/phoenix_smoke_vit_20261015_145149__20261015_145327_849462/environment.json",
+  "log": "/home/dewster/Vanguard/models/trained/phoenix_smoke_vit/phoenix_smoke_vit_20261015_145149__20261015_145327_849462/run.log",
+  "metrics": "/home/dewster/Vanguard/models/trained/phoenix_smoke_vit/phoenix_smoke_vit_20261015_145149__20261015_145327_849462/metrics.jsonl",
+  "run_dir": "/home/dewster/Vanguard/models/trained/phoenix_smoke_vit/phoenix_smoke_vit_20261015_145149__20261015_145327_849462",
+  "run_id": "phoenix_smoke_vit_20261015_145149__20261015_145327_849462",
+  "run_manifest": "/home/dewster/Vanguard/models/trained/phoenix_smoke_vit/phoenix_smoke_vit_20261015_145149__20261015_145327_849462/run.json",
+  "training_config": "/home/dewster/Vanguard/models/trained/phoenix_smoke_vit/phoenix_smoke_vit_20261015_145149__20261015_145327_849462/training_config.json"
+}

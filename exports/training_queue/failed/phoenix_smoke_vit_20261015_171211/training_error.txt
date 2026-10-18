@@ -1,0 +1,2 @@
+Training failed at 2026-10-15T17:12:59.136599
+Error: RNG state must be a torch.ByteTensor

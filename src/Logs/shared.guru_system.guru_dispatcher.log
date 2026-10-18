@@ -620,3 +620,36 @@
 2026-10-16 19:18:48,204 | INFO     | guru_dispatcher - Guru Event Dispatcher: User-configurable learning controls loaded
 2026-10-16 19:18:48,205 | INFO     | guru_dispatcher - Guru database initialized successfully
 2026-10-16 19:18:48,205 | INFO     | guru_dispatcher - Guru Event Dispatcher: Ready for knowledge absorption
+2026-10-16 22:29:11,414 | INFO     | guru_dispatcher - Guru Event Dispatcher: Initializing central intelligence hub
+2026-10-16 22:29:11,415 | INFO     | guru_dispatcher - Guru Event Dispatcher: User-configurable learning controls loaded
+2026-10-16 22:29:11,415 | INFO     | guru_dispatcher - Guru database initialized successfully
+2026-10-16 22:29:11,415 | INFO     | guru_dispatcher - Guru Event Dispatcher: Ready for knowledge absorption
+2026-10-16 22:30:38,672 | INFO     | guru_dispatcher - Guru Event Dispatcher: Initializing central intelligence hub
+2026-10-16 22:30:38,672 | INFO     | guru_dispatcher - Guru Event Dispatcher: User-configurable learning controls loaded
+2026-10-16 22:30:38,672 | INFO     | guru_dispatcher - Guru database initialized successfully
+2026-10-16 22:30:38,672 | INFO     | guru_dispatcher - Guru Event Dispatcher: Ready for knowledge absorption
+2026-10-16 22:31:02,527 | DEBUG    | guru_dispatcher - Guru absorbed dataset_type_selected from dataset_studio
+2026-10-16 22:31:07,601 | DEBUG    | guru_dispatcher - Guru absorbed pipeline_selected from dataset_studio
+2026-10-16 22:31:12,886 | DEBUG    | guru_dispatcher - Guru absorbed project_created from dataset_studio
+2026-10-16 22:31:13,021 | DEBUG    | guru_dispatcher - Guru absorbed project_progress_saved from dataset_studio
+2026-10-16 22:32:02,620 | DEBUG    | guru_dispatcher - Guru absorbed images_imported from dataset_studio
+2026-10-16 22:32:02,626 | DEBUG    | guru_dispatcher - Guru absorbed project_progress_saved from dataset_studio
+2026-10-16 22:32:50,143 | DEBUG    | guru_dispatcher - Guru absorbed project_progress_saved from dataset_studio
+2026-10-16 22:33:00,490 | DEBUG    | guru_dispatcher - Guru absorbed project_progress_saved from dataset_studio
+2026-10-16 23:00:04,632 | INFO     | guru_dispatcher - Guru Event Dispatcher: Initializing central intelligence hub
+2026-10-16 23:00:04,632 | INFO     | guru_dispatcher - Guru Event Dispatcher: User-configurable learning controls loaded
+2026-10-16 23:00:04,633 | INFO     | guru_dispatcher - Guru database initialized successfully
+2026-10-16 23:00:04,633 | INFO     | guru_dispatcher - Guru Event Dispatcher: Ready for knowledge absorption
+2026-10-16 23:00:08,977 | INFO     | guru_dispatcher - Guru Event Dispatcher: Initializing central intelligence hub
+2026-10-16 23:00:08,977 | INFO     | guru_dispatcher - Guru Event Dispatcher: User-configurable learning controls loaded
+2026-10-16 23:00:08,978 | INFO     | guru_dispatcher - Guru database initialized successfully
+2026-10-16 23:00:08,978 | INFO     | guru_dispatcher - Guru Event Dispatcher: Ready for knowledge absorption
+2026-10-16 23:00:22,895 | DEBUG    | guru_dispatcher - Guru absorbed dataset_type_selected from dataset_studio
+2026-10-16 23:00:24,958 | DEBUG    | guru_dispatcher - Guru absorbed pipeline_selected from dataset_studio
+2026-10-16 23:00:27,404 | DEBUG    | guru_dispatcher - Guru absorbed project_created from dataset_studio
+2026-10-16 23:00:27,548 | DEBUG    | guru_dispatcher - Guru absorbed project_progress_saved from dataset_studio
+2026-10-16 23:00:55,070 | DEBUG    | guru_dispatcher - Guru absorbed images_imported from dataset_studio
+2026-10-16 23:00:55,075 | DEBUG    | guru_dispatcher - Guru absorbed project_progress_saved from dataset_studio
+2026-10-16 23:01:22,619 | DEBUG    | guru_dispatcher - Guru absorbed project_progress_saved from dataset_studio
+2026-10-16 23:01:24,158 | DEBUG    | guru_dispatcher - Guru absorbed project_progress_saved from dataset_studio
+2026-10-16 23:07:34,653 | DEBUG    | guru_dispatcher - Guru absorbed dataset_exported from dataset_studio

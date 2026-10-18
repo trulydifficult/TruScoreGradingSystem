@@ -711,3 +711,13 @@
 2026-10-16 19:18:48,205 | INFO     | card_manager - All grading engines imported successfully
 2026-10-16 19:18:48,219 | INFO     | card_manager - Card Manager initialized
 2026-10-16 19:18:48,219 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-16 22:29:11,415 | INFO     | card_manager - Attempting to import grading engines
+2026-10-16 22:29:11,416 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-16 22:29:11,416 | INFO     | card_manager - All grading engines imported successfully
+2026-10-16 22:29:11,429 | INFO     | card_manager - Card Manager initialized
+2026-10-16 22:29:11,429 | INFO     | card_manager - Ready to be the heart of the system
+2026-10-16 23:00:04,633 | INFO     | card_manager - Attempting to import grading engines
+2026-10-16 23:00:04,633 | INFO     | card_manager - Using project root at: /home/dewster/Vanguard/src
+2026-10-16 23:00:04,633 | INFO     | card_manager - All grading engines imported successfully
+2026-10-16 23:00:04,647 | INFO     | card_manager - Card Manager initialized
+2026-10-16 23:00:04,647 | INFO     | card_manager - Ready to be the heart of the system

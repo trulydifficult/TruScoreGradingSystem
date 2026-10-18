@@ -1,0 +1,11 @@
+{
+  "dataset_name": "phoenix_smoke_vit_20261015_152607",
+  "model_type": "Vision Transformer",
+  "timestamp": "2026-10-15T15:27:38.372173",
+  "token_id": "TWIN-phoenix_smoke_vit_20261015_152607-1792096058",
+  "nfc_uid": "NFC-PLACEHOLDER",
+  "tx_hash": "PENDING",
+  "confidence_fusion": 0.0,
+  "photometric_layers": [],
+  "uncertainty_enabled": false
+}

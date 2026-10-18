@@ -1,0 +1,22 @@
+{
+  "dataset_name": "phoenix_smoke_vit_20261014_152033",
+  "status": "completed",
+  "progress": 1.0,
+  "current_epoch": 1,
+  "total_epochs": 1,
+  "timestamp": "2026-10-14T15:55:14.546781",
+  "model_type": "Vision Transformer",
+  "priority": 1,
+  "hardware_hint": "gpu",
+  "uncertainty_enabled": false,
+  "active_learning": false,
+  "confidence_fusion": 0.5,
+  "photometric_layers": [],
+  "metrics": {
+    "train_loss": 1.8150205810864766,
+    "train_accuracy": 33.333333333333336,
+    "learning_rate": 0.0,
+    "val_loss": 1.3309029936790466,
+    "accuracy": 50.0
+  }
+}
