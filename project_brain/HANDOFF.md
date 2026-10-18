@@ -1511,3 +1511,28 @@ round-trip open/reopen and optional advanced edge vertices. The current
 four-point quad is an accurate editable quadrilateral, **not** by itself
 a densely sampled measured physical contour. True 24-station contour
 evaluation and Phoenix segmentation remain future gates.
+
+## 2026-10-18 — first 3 real independent-quad cards accepted at source/CI level
+
+User pushed `103bea7`: card065, card066, card067, 21 artifacts.
+Code review verified six 4-vertex border polygons, correct nesting,
+normalized bbox-legacy YOLO class mapping and no applied image
+rotation. Confirmed actual JPEG SHA256/dimensions and three-folder
+byte-identity through new regression test under `tests/annotation/`
+and GitHub Actions Annotation Integrity PASS at `9ef217f`,
+run 39156894354. The tests use *actual committed JPEG bytes*, not
+generated mock images. All six quads are explicitly unreviewed
+segmentation proposals, despite human-correction flags. No automated
+pixel alignment judgment or physically measured 24-point accuracy
+has yet been performed; user visual acceptance is separate.
+
+**Immediate next work:** recover original-image + saved-label import
+(and eventually quad-proposal reopening), preserving auto inference,
+existing tools, Space/export and Studio’s transform ownership. Old
+`src/revolutionary_border_calibration.py` contains related import
+methods but must be compared thoroughly with current modular Studio
+and other historical versions before integration. User's ~550 old
+YOLO bbox labels are initialization/provenance assets, not reviewed
+precision masks. Plan to review final editable 4-point polygons
+and mark them approved via explicit workflow, rather than infer GT
+from the `human_corrected` flag.

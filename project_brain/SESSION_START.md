@@ -1,5 +1,48 @@
 # NEW SESSION START HERE — TruScore active project state
 
+## 2026-10-18 VERIFIED real quad export fixture — cards 065/066/067
+
+Operator tested actual Studio dragging and exported three cards on the
+workstation, then pushed commit `103bea7` with 21 files (3 cards ×
+three identical JPEG copies / YOLO targets + one quad proposal JSON).
+Operator confirmed all three worked through the annotation/export
+workflow; formal pixel-accuracy acceptance remains NOT YET DONE.
+
+Audited real `dual_contour_proposals/card065,066,067.json` and matching
+outer/graphic/combined five-field YOLO text data. Six actual polygons:
+four finite in-bounds, convex clockwise TL/TR/BR/BL vertices each,
+correct per-class identity, graphic quad contained within outer quad,
+source quad AABB matching legacy bbox, normalized five-field YOLO
+rows matching AABB, single-class remaps all correct. All records
+`rotation_degrees=0`, so user needed no legacy image rotation for
+these examples. Card065 inner top-right and top-left Y differ by 10.14
+pixels, demonstrating that genuine independent vertex geometry is
+persisted (not necessarily pixel-perfect boundary matching).
+All records deliberately say `human_reviewed=false` and
+`segmentation_ground_truth=false`; human editing flags alone are not
+the independent label-approval contract.
+
+New actual-byte regression suite:
+`tests/annotation/test_real_three_quad_exports.py`, with CI sparse
+checkout including `src/shared/annotations/dual_contour_proposals`,
+committed at `9ef217f`. GitHub Actions Annotation Integrity run
+`39156894354` PASSED compile + all annotation contract tests.
+This specifically verifies image JPEG format, exact dimensions and
+SHA-256 equality against JSON provenance and identity of the three
+JPEG copies for each card. All 21 artifacts verified by this CI.
+**Pixel-by-pixel assessment of where the outer and graphic lines are
+on the actual card images has NOT been completed by this source-only
+review**. No claims of model precision, accepted 24-point geometric
+accuracy, or trainable mask GT follow from the successful export.
+
+NEXT: accept visual overlay of the three source images with rendered
+quad lines (operator local Studio view or attached composites),
+and restore previously annotated image+label reopening in active
+modular Studio by researching `revolutionary_border_calibration.py`
+and earlier archive paths. Do not reannotate ~550 cards before durable
+polygon reopening and explicit manual review state are operational.
+
+
 ## 2026-10-18 IMPLEMENTED SLICE: independent four-corner border quads (CI tested)
 
 Completed on branch `refactor/phoenix-foundation`, starting after historical

@@ -480,3 +480,18 @@ PyQt/ROCm GUI verification remains REQUIRED before user reannotation of
 instance mask ground truth, model-training handoff or 24-point
 precision result has been added. Next: GUI acceptance, then archaeological
 recovery of image+previous-label reopening.
+
+## Three-card real quad dataset acceptance — 2026-10-18
+
+GitHub commit 103bea7 contains 21 files for card065/066/067:
+9 images, 9 five-field YOLO detection labels, 3 human-edited
+four-vertex proposal JSON. All 6 polygons are valid nested convex
+quads; each legacy label matches its polygon AABB. All 3 zero-rotation
+exports were reviewed at source-label level. A new real-file suite
+(`tests/annotation/test_real_three_quad_exports.py`) verifies JPEG
+dimensions, actual SHA-256 bytes, three-target identical copies, and
+geometry/provenance. Annotation Integrity CI on commit 9ef217f
+run 39156894354: **PASS**. Pixel-accurate visual
+border alignment is **NOT VERIFIED**; proposal labels remain NOT
+segmentation-GT. Existing-label import remains missing from the
+active Modular Studio; continue archaeological recovery next.

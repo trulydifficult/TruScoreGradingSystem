@@ -244,3 +244,15 @@ Headless Annotation Integrity CI PASS (56d83c6); GUI/ROCm
 mouse-drag/export acceptance pending, and GUI reopening of saved quad
 records is NOT implemented. Reannotation of the operator's ~550
 cards must wait until those gates are addressed.
+
+## Real three-card field evidence and provenance verification — 2026-10-18
+
+User-produced cards 065–067 demonstrate six genuine saved polygon
+shapes, correct bbox-derived YOLO detection exports, and no source
+rotation required (`rotation_degrees=0` on all). The image+label
+corpus was committed as 103bea7; checksum/size/geometry/source contract
+automated regression test in 9ef217f passed GitHub annotation workflow
+39156894354. Numeric validation confirms geometry source fidelity,
+NOT visual alignment to actual card-edge pixels. Retain the current
+provenance `segmentation_ground_truth=false`, since explicit
+source-image visual review and human approval are still missing.
