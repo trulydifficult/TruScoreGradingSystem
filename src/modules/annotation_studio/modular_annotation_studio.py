@@ -840,10 +840,9 @@ class ModularAnnotationStudio(QMainWindow):
     def _begin_existing_batch(self, images):
         try:
             state = build_session(images, self._pending_label_sources)
-            try:
-                previous = read_session()
-            except AnnotationBatchError:
-                previous = None
+            from modules.annotation_studio.existing_label_sessions import default_session_path
+            # A corrupt existing checkpoint must not be silently overwritten.
+            previous = read_session() if default_session_path().exists() else None
             if previous and next_pending(previous) is not None:
                 reply = QMessageBox.question(
                     self, "Unfinished Annotation Session",
