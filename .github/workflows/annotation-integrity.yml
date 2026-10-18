@@ -32,6 +32,7 @@ jobs:
             src/shared/annotations/combined_dual_class
             src/shared/annotations/graphic_border_model
             src/shared/annotations/outer_border_model
+            src/shared/annotations/dual_contour_proposals
             src/Logs/modular_annotation.log
             src/Logs/annotation_studio.log
           sparse-checkout-cone-mode: false
