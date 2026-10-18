@@ -12,22 +12,36 @@ Protocol: decisions/0010-authoritative-memory-and-session-recovery.md
 1. [AGENTS.md](../AGENTS.md) — high-level agent instructions.
 2. [PROJECT_BOOTSTRAP.md](PROJECT_BOOTSTRAP.md) — authority, workflow,
    archaeology and runtime-acceptance requirements.
-3. [SESSION_START.md](SESSION_START.md) — **the one current active snapshot**,
+3. [PROJECT_MISSION.md](PROJECT_MISSION.md) — unaltered operator vision,
+   purpose and finished-product expectations.
+4. [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md) — traceable capability
+   contracts, accuracy/quality acceptance tests and explicit open thresholds.
+5. [SESSION_START.md](SESSION_START.md) — **the one current active snapshot**,
    explicit verified/unverified claims, immediate next objective.
-4. [CURRENT_STATE.md](CURRENT_STATE.md) — current subsystem architecture
+6. [CURRENT_STATE.md](CURRENT_STATE.md) — current subsystem architecture
    and observed implementation, distinguishing acceptance scope.
-5. [REFACTOR_STATUS.md](REFACTOR_STATUS.md) — subsystem completion matrix,
+7. [REFACTOR_STATUS.md](REFACTOR_STATUS.md) — subsystem completion matrix,
    partial verification and open gates.
-6. Relevant decisions below and current subsystem audit(s).
-7. [HANDOFF.md](HANDOFF.md) — historical chronological account, including
+8. Relevant decisions below and current subsystem audit(s).
+9. [HANDOFF.md](HANDOFF.md) — historical chronological account, including
    superseded interim next steps; consult the current tail and relevant
    earlier evidence, not its initial 2026-09-28 paragraph as current state.
-8. Current actual source, tests, CI results, Checkplz/backups/old names
+10. Current actual source, tests, CI results, Checkplz/backups/old names
    and Git history before changing implementation.
 
 **Current code is authoritative over documentation implementation claims.**
 Source behavior, user GUI acceptance and GitHub CI may disagree; surface
 the conflict instead of merging claims silently.
+
+## Product mission and measurable requirements
+
+- [PROJECT_MISSION.md](PROJECT_MISSION.md): the operator's statement,
+  preserved unchanged. Authority for **why** TruScore exists.
+- [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md): requirements IDs,
+  input/output expectations, downstream consumers, metrics and acceptance.
+  Requirements are targets, not proof of implemented functionality.
+- A functioning model/handoff that misses the needed output (e.g.,
+  bounding boxes instead of true contours) is a requirement gap.
 
 ## Architectural baseline (intent, NOT full implemented structure)
 
@@ -135,6 +149,7 @@ preserve historical context but **must not override GitHub HEAD**.
 ## Maintenance contract
 
 For each substantive development slice:
+- mission/feature acceptance trace -> PROJECT_MISSION and PROJECT_REQUIREMENTS;
 - source/architecture decisions -> relevant ADR and owner audit;
 - newly recovered historical code -> CODE_ARCHAEOLOGY;
 - verification evidence (actual files/CI/real GUI/ROCm) -> owner audit

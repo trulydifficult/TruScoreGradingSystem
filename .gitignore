@@ -177,3 +177,19 @@ CLAUDE.md
 .mcp.json
 .agentsroom/handoff-transcript-*.txt
 .agentsroom/handoff-summary-*.md
+
+# TruScore local trained models, Queue run state and external repo checkout
+/models/trained/
+/tensorzero/
+/exports/training_queue/completed/
+/exports/training_queue/failed/
+/exports/training_queue/monitor/
+/exports/training_queue/pending/
+/exports/training_queue/queue_state.json
+
+# Operator-generated data: previously tracked files still require local
+# git rm --cached to become untracked, without deleting their contents.
+/src/Logs/
+/src/modules/dataset_studio/converted_datasets/
+/src/modules/dataset_studio/projects/
+/src/shared/guru_system/guru_data/*.db

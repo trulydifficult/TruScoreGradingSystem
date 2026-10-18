@@ -26,7 +26,17 @@ The `src/` directory represents the current working application as it exists tod
 
 Current source code and verified runtime behavior take precedence over documentation claims about implementation status.
 
-### 2. Target Enterprise Architecture
+### 2. Product Mission and Acceptance Requirements
+
+[PROJECT_MISSION.md](PROJECT_MISSION.md) preserves the operator's original
+product purpose in their own words: **why** each capability exists.
+[PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md) specifies traceable
+outputs, consumers, verification and open performance criteria: **what**
+must be achieved. Do not mistake a working training job or successful
+export for satisfying its product requirement. Unset accuracy thresholds
+must remain TBD. Verified source/runtime still determines what exists.
+
+### 3. Target Enterprise Architecture
 
 `project_brain/`
 
@@ -43,7 +53,7 @@ It contains:
 
 The project brain describes the desired architecture. It does not imply that the current `src/` tree already conforms to that architecture.
 
-### 3. Code Archaeology Sources
+### 4. Code Archaeology Sources
 
 Potentially valuable previous implementations exist throughout the repository.
 
@@ -67,7 +77,7 @@ Historical code must therefore be inspected before equivalent functionality is r
 
 Absence of functionality from the current `src/` implementation does NOT prove that the functionality was never implemented elsewhere in the repository.
 
-### 4. Research and Future Design
+### 5. Research and Future Design
 
 `src/Docs/`
 
@@ -96,7 +106,8 @@ when newer evidence is recorded in SESSION_START.md.
 
 Before substantial development work:
 
-1. Read this file, `PROJECT_MEMORY_INDEX.md`, and `SESSION_START.md`.
+1. Read this file, `PROJECT_MISSION.md`, `PROJECT_REQUIREMENTS.md`,
+   `PROJECT_MEMORY_INDEX.md`, and `SESSION_START.md`.
 2. Read `CURRENT_STATE.md`.
 3. Read `REFACTOR_STATUS.md`.
 4. Consult `HANDOFF.md` as dated history; `SESSION_START.md` owns the current active objective. The latest `NEW SESSION START HERE` marker in `HANDOFF.md` points back to that snapshot. Earlier dated instructions are historical.
@@ -112,6 +123,7 @@ Before substantial development work:
 
 ## Development Rules
 
+- Trace model/feature work to PROJECT_REQUIREMENTS.md and its acceptance evidence.
 - Preserve verified working functionality unless a deliberate architectural decision changes it.
 - Refactor toward the architecture defined in `project_brain/`.
 - Do not casually rewrite working algorithms merely because cleaner code can be written.

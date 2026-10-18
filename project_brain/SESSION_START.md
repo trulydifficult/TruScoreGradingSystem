@@ -1,5 +1,24 @@
 # NEW SESSION START HERE — TruScore active project state
 
+## 2026-10-18 product mission and repository synchronization
+
+Read PROJECT_MISSION.md (the operator's original statement, unmodified)
+and PROJECT_REQUIREMENTS.md (structured traceable acceptance contracts)
+before deciding model architecture or declaring a feature complete.
+Successful training, CI or dataset export is not evidence of measured
+consumer-grade accuracy. ADR 0012's precision contours remain the
+corrected main border requirement.
+
+Accidental sync commit 0465a0b included locally valuable Phoenix
+checkpoint/model artifacts, Queue runtime data and embedded tensorzero.
+The matching .gitignore rules have been updated, but tracked artifacts
+must be removed from the local Git *index* with `git rm --cached`
+before committing their untracking. Do not delete local files or use
+a remote-only deletion followed by a normal pull; that can delete a
+local trained model or break a local environment. Cleanup is NOT
+asserted complete by these documentation changes.
+
+
 Snapshot reviewed: 2026-10-16 (CDT), with GitHub CI events 2026-10-17 UTC
 Active development branch: refactor/phoenix-foundation
 Authoritative repo: trulydifficult/TruScoreGradingSystem
