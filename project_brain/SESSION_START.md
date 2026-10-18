@@ -1,5 +1,30 @@
 # NEW SESSION START HERE — TruScore active project state
 
+## 2026-10-18 active focus: dual-contour ground truth → Dataset Studio → Phoenix
+
+The operator clarified the parallel-development strategy: make the model
+factory (Annotation Studio, Dataset Studio, Phoenix Trainer) genuinely
+usable for collecting many task-correct datasets while the larger
+enterprise refactor continues. The current YOLO dual-class outer/graphic
+boxes are coarse annotation seeds, not full border geometry. Most other
+annotation plugins and their training routes are incomplete.
+
+Read proposed ADR 0013 before implementation: canonical
+`dual_contour_v1` human-reviewed outer + graphic paths with named
+corners and complete side arcs, model-independent source coordinates,
+mask/COCO adapters, explicit high-resolution RGB baseline and
+Detectron2+PointRend comparative benchmark; 24-station validity/error
+tests. Preserve existing working YOLO bbox path and ROCm trainer/queue.
+
+**IMMEDIATE NEXT ENGINEERING TASK (proposal not yet implemented):**
+audit historical contour editing/geometry code and build an isolated,
+tested versioned dual-contour schema/validator plus deterministic
+full-side geometry test harness. Then wire real edit UI, exports and
+explicit Phoenix model support in separate verified slices.
+Do not train bbox-derived polygons as masks or claim GPU acceptance.
+No production source changes in this proposal record.
+
+
 ## 2026-10-18 product mission and repository synchronization
 
 Read PROJECT_MISSION.md (the operator's original statement, unmodified)

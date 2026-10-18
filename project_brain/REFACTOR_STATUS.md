@@ -446,3 +446,16 @@ geometry correctness and boundary-model research/benchmark before
 a precision training claim. See
 DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md and ADR 0012.
 No production code changes in this correction.
+
+## Proposed dual-contour model-factory integration (2026-10-18)
+
+Status: DESIGN PROPOSAL; **NO SOURCE IMPLEMENTATION OR RUNTIME ACCEPTANCE**.
+See ADR 0013. The operator confirmed the intended model-factory-first
+strategy to collect correct data during enterprise refactoring.
+Preserve existing real 2-class YOLO rectangle editing as initialization;
+add reviewed outer/graphic polygons with corner/side semantics and native
+source provenance before genuine mask exports. Current photometric 6-channel
+U-Net and Mask R-CNN routes are not accepted dual-contour training paths.
+An independent RGB baseline and Detectron2 PointRend are proposed for
+controlled comparison. Geometric full-side 24-station testing and
+held-out error—not a checkpoint—determine acceptance.

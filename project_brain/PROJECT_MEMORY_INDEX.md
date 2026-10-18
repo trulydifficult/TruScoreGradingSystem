@@ -116,6 +116,10 @@ the conflict instead of merging claims silently.
 - [0012 — Dual-border precision contours](decisions/0012-dual-border-precision-contour-contract.md):
   supersedes YOLO11s-as-primary implication; 24-point true contour
   measurements require separately reviewed geometric ground truth.
+- [0013 — Dual-contour source contract and staged training](decisions/0013-dual-contour-annotation-and-training-plan.md):
+  **proposed** model-independent two-contour labels, separate COCO/mask
+  export adapters, baseline/PointRend benchmark and quality acceptance.
+  Not a claim that any new plugin or trainer has been implemented.
 
 ## Other repository documentation: classify before using
 

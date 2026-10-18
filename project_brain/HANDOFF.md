@@ -1452,3 +1452,22 @@ has been trained. Current Detectron2 Mask R-CNN needs genuine
 segmentation labels; simply serializing boxes as COCO does not
 create them. Do not silently substitute YOLO detection again.
 No application source code was changed in the research audit.
+
+
+## 2026-10-18 — operator restated model-factory priority and precision requirement
+
+Reconfirmed product priority: build *usable* Annotation Studio →
+Dataset Studio → Phoenix dataset/training loops while independently
+refactoring the app's overgrown, duplicated grading pipelines. The
+currently proven annotation workflow is YOLO 2-class outer/graphic
+rectangle prediction plus manual editing; other annotation plugin
+paths do not yet provide accepted task-correct labels. Detection-box
+COCO conversion is legitimate for detection, not 24-station geometry.
+
+Source review and proposed implementation/benchmark sequencing recorded
+in decisions/0013-dual-contour-annotation-and-training-plan.md. Proposed
+`dual_contour_v1` reviewed source contours, canonical full-side arcs,
+separate mask/COCO exports, native PyTorch high-res RGB baseline and
+Detectron2+PointRend comparison. The next task is **schema/geometry
+tests** before disruptive UI/trainer changes. No production code change,
+new model support, or accuracy acceptance is asserted here.
