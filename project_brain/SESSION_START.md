@@ -1,5 +1,66 @@
 # NEW SESSION START HERE — TruScore active project state
 
+## 2026-10-18 IMPLEMENTED SLICE: independent four-corner border quads (CI tested)
+
+Completed on branch `refactor/phoenix-foundation`, starting after historical
+rewrite at `c7bccb8`. Check branch HEAD fresh before local pull.
+
+Current `src/modules/annotation_studio/plugins/border_detection_plugin.py`
+now represents each outer/graphic annotation as four independent ordered
+TL/TR/BR/BL vertices, with a derived enclosing YOLO bbox. Corner dragging
+moves one vertex, edge dragging moves only two adjacent vertices, and whole
+border dragging preserves shape. Convex/nondegenerate geometry rejects
+folding. Existing real model inference, Tab switching, Space save/next,
+Studio mouse coordinate conversion and three YOLO detection exports were
+preserved. `modular_annotation_studio.py` magnifier displays polygons;
+the plugin magnifier matches. The pure geometry module is
+`src/shared/dataset_tools/border_quad.py`.
+
+Space export still creates the same three 5-column YOLO detection
+datasets and **also** stores a separate
+`src/shared/annotations/dual_contour_proposals/<stem>.json` record
+with edited quad vertices in the exact rotated-export image pixel frame,
+image hash, dimensions and rotation angle. All such records explicitly
+set `segmentation_ground_truth=false` and `human_reviewed=false`.
+They are proposals, NOT approved COCO instance masks or accurate 24-point
+contours. Old YOLO bbox and rectangle-only JSON read formats remain
+backwards compatible. Polygon JSON **reloading in the active Studio GUI
+is not yet implemented**; do not imply saving a proposal means the
+operator can currently reopen it through a UI.
+
+Verified: the Annotation Integrity GitHub CI workflow passed at
+`56d83c6` including active Studio/plugin py_compile, the preexisting
+spacebar/export tests and new
+`tests/annotation/test_border_quad_geometry.py` and
+`test_border_quad_plugin_contract.py`. Native user's PyQt6/ROCm
+workstation drag, magnifier, rotation, export and persisted-polygon
+reopen have not yet received interactive acceptance. The first
+integration commit briefly failed compile CI from a duplicated class
+header; corrected and CI GREEN. No model has been retrained.
+
+**NEXT ACTION:** user-run GUI acceptance: launch through normal
+`run_truscore.py`, load a safe/test card; verify auto-inferred two
+borders, independent upper-right dragging, other 3 vertices fixed, side
+handle translates only its two vertices, Tab still switches, Space
+exports identical rotated JPEGs and legacy bbox labels, plus a
+proposal JSON with exact saved vertices. Use disposable test images to
+avoid overwriting valuable existing 550-card sources. Verify failure
+behavior for invalid/edge-crossing drags. Report any UI regressions;
+do not claim workstation acceptance from CI alone.
+
+**THEN** recover user-requested ability to load previously annotated
+images and existing YOLO labels in the *modular* Studio. User remembers
+this workflow in `src/revolutionary_border_calibration.py`. An initial
+source check found repeated `import_predictions_from_dataset_studio`
+implementations around lines 790 and 1470 (imports JSON predictions),
+and older add/load image dialogs. These are archaeological references,
+not proof of a working image+label pair import. Audit all historical
+import implementations, preserve Studio plugin ownership and model
+detection lifecycle, and distinguish imported annotations from fresh
+auto-inference. This is explicitly deferred until after quad GUI
+acceptance.
+
+
 ## Operator-confirmed rotation/export behavior — 2026-10-18
 
 The operator confirmed that the Annotation Studio image-rotation mismatch

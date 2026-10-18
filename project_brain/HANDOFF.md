@@ -1471,3 +1471,43 @@ separate mask/COCO exports, native PyTorch high-res RGB baseline and
 Detectron2+PointRend comparison. The next task is **schema/geometry
 tests** before disruptive UI/trainer changes. No production code change,
 new model support, or accuracy acceptance is asserted here.
+
+## 2026-10-18 — Quad editing implemented, CI verified; GUI acceptance pending
+
+**Operator request:** independently drag a graphic-border upper-right
+corner without changing top-left or bottom corners, preserving model
+inference, Tab/Space, old YOLO exports and the modular Studio boundary.
+
+Commits on refactor/phoenix-foundation:
+- 2856a27: new `shared/dataset_tools/border_quad.py` plus pure geometry tests;
+- db81572: quad-aware `BorderAnnotation`, actual widget drag and overlay
+  integration, same Studio controls, Studio magnifier and distinct proposal
+  JSON export;
+- 6247d71: isolated plugin class/IO tests and annotation CI sparse-checkout;
+- 5043205: repaired accidental duplicate class-header syntax, discovered
+  promptly by CI compile stage;
+- 56d83c6: plugin magnifier consistency and preflight quad image bounds.
+
+Annotation Integrity workflow PASSED at 56d83c6 (compile + contract
+tests). Existing YOLO three-dataset output remains detection bounding
+boxes computed from the quadrilateral's AABB. New
+`src/shared/annotations/dual_contour_proposals/<stem>.json`
+records edited quad geometry, image hash and applied rotation, and is
+intentionally marked unreviewed/not segmentation-GT. No new trained
+model or verified 24-point quality. **Do not instruct bulk reannotation
+of ~550 cards until real GUI acceptance.** Changes are committed to
+GitHub only; operator still needs to pull and run workstation checks.
+
+Next queued feature after GUI acceptance: restore importing existing
+images WITH their annotations into active modular Studio so editing
+does not get overwritten by automatic new YOLO inference. Inspect
+old `src/revolutionary_border_calibration.py` and all related archived
+implementations; source check found repeated Dataset Studio JSON
+prediction import methods (approx. 790,1470), not yet proved as the
+actual paired-image/YOLO-label import. Compare before reusing.
+
+Continue Gate 1/2 of ADR 0013 by defining verified review/approval,
+round-trip open/reopen and optional advanced edge vertices. The current
+four-point quad is an accurate editable quadrilateral, **not** by itself
+a densely sampled measured physical contour. True 24-station contour
+evaluation and Phoenix segmentation remain future gates.

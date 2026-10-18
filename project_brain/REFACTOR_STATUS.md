@@ -459,3 +459,24 @@ U-Net and Mask R-CNN routes are not accepted dual-contour training paths.
 An independent RGB baseline and Detectron2 PointRend are proposed for
 controlled comparison. Geometric full-side 24-station testing and
 held-out error—not a checkpoint—determine acceptance.
+
+## Quad-backed border plugin — 2026-10-18 source/CI milestone
+
+Status: **PARTIAL VERIFICATION (headless CI only), native GUI acceptance pending**.
+The shared `border_quad.py` handles independent convex quad corners,
+edge midpoints, point hit testing and validation; the active
+`BorderAnnotation` now stores TL/TR/BR/BL vertices while retaining
+derived bbox fields for the current detection task. The Plugin settings
+widget redraws the quad and its eight existing handles, and the Studio
+magnifier was minimally updated without modifying the main coordinate
+transform, navigation or inference contracts. Legacy three-target YOLO
+Space export is preserved; independent proposal JSON is emitted with
+false segmentation-GT/review status. Separate test files cover the real
+plugin class and actual export method via AST isolation (not GUI).
+
+Headless Annotation Integrity CI: PASS at 56d83c6. Real workstation
+PyQt/ROCm GUI verification remains REQUIRED before user reannotation of
+~550 existing cards. No verified polygon re-import capability, COCO
+instance mask ground truth, model-training handoff or 24-point
+precision result has been added. Next: GUI acceptance, then archaeological
+recovery of image+previous-label reopening.

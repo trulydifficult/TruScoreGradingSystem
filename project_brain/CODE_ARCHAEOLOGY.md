@@ -316,3 +316,30 @@ User's root diagrams 24pointside.jpg and 24pointside (1).jpg prove their objecti
 Inspected src/modules/annotation_studio/plugins/prompt_segmentation_plugin.py: some nominal SAM/FusionSAM branches are stub implementations that produce centrally placed rectangular masks and hard-coded confidence on absent/failing inference. Classification: UNSAFE PLACEHOLDER, not training-mask ground truth; do not promote or silently fallback. Relevant historical implementations to compare before replacing geometry: src/revolutionary_border_calibration.py (multiple repeated legacy UI/edit routines), src/shared/truscore_system/truscore_border_detection.py and src/trugrade_border_detection.py, plus Checkplz prior code and Git history. These have NOT been completely function-by-function compared in this research pass, so no salvage/supersede classification has yet been claimed for their algorithms.
 
 Candidate genuine segmentation research: Detectron2 PointRend (edge refinement), Mask2Former/high-resolution semantic segmentation, optional SAM2/3-assisted corrected masks, box-supervised BoxInst/Box2Mask (weak supervision, not mask GT), and geometric edge refinement. Full source URLs/limitations and acceptance criteria in DUAL_BORDER_PRECISION_GEOMETRY_AUDIT.md and ADR 0012. Existing YOLO11s pilot is retained only for auxiliary coarse-region detection.
+
+## Quad border editing and missing annotated-set import — 2026-10-18
+
+Compared current `src/modules/annotation_studio/plugins/border_detection_plugin.py`
+rectangle-based `BorderAnnotation`, Studio input routing in
+`modular_annotation_studio.py`, `src/revolutionary_border_calibration.py`
+historic `BorderAnnotation` and repeated drag/UI methods,
+`src/shared/truscore_system/truscore_border_detection.pybackup`,
+`src/shared/dataset_tools/yolo_to_maskrcnn_converter.py`
+source polygon utilities, and related annotation contract tests.
+Existing rectangle corner/side editing was recovered as the same
+UI workflow atop the new pure validated quad geometry, **not** as a
+duplicate Canvas mouse-coordinate transform. The historic calibration
+class was also rectangle-based, so it could not supply actual
+independent 4-vertex editing directly. Polygon parsing utilities
+remain a future segmentation-converter reference, not GT generation.
+
+Import archaeology to continue after GUI acceptance: duplicated
+`import_predictions_from_dataset_studio()` in
+`src/revolutionary_border_calibration.py` around lines 790 and 1470
+reads `data/calibration_import/predictions_*.json` and replaces
+annotations; older image-load dialogs also exist. The user reports
+a formerly available image+existing-label import feature, but these
+specific old methods do not independently prove a working paired
+YOLO image+label import in the active modular plugin. Search the
+remaining related historical routines before salvaging it. Candidate
+status: REFERENCE / NEEDS COMPLETE AUDIT, not VERIFIED working code.

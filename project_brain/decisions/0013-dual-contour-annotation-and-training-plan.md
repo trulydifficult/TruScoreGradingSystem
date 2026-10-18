@@ -222,3 +222,25 @@ outer/graphic contour ground truth from rotation or format conversion.**
 Contoured paths and full-side station semantics still require new
 human-editable annotation support. The existing bbox plugin is a proven
 starting point, not sufficient unchanged for true contour training.
+
+## 2026-10-18 delivery checkpoint — quad editor first slice
+
+Active code now implements **independent quad editing** inside the
+existing border plugin. This is a delivered preparatory slice, not
+`dual_contour_v1` final GT schema acceptance. Existing YOLO boxes
+initialize four TL/TR/BR/BL vertices. Dragging a corner only updates
+that point; dragging a side translates its adjacent vertices. Invalid
+folding is rejected. Studio magnifier supports the polygon. Legacy
+bbox exporters still serialize the quad's enclosing AABB (task is
+COCO/YOLO detection), preserving 5-column labels.
+
+A separate rotated-pixel-coordinate `dual_contour_proposal_v1`
+JSON record captures all four vertices, hash, image dimensions,
+rotation and negative review/segmentation provenance. Neither edited
+quads nor their sidecars are accepted mask/contour supervision without
+a specific review workflow and richer contour evidence. Four points
+also may not resolve curved or irregular boundary deviations.
+Headless Annotation Integrity CI PASS (56d83c6); GUI/ROCm
+mouse-drag/export acceptance pending, and GUI reopening of saved quad
+records is NOT implemented. Reannotation of the operator's ~550
+cards must wait until those gates are addressed.
