@@ -113,7 +113,9 @@ def read_session(path=None):
     completed = state.get("completed")
     if not isinstance(images, list) or not isinstance(labels, dict) or not isinstance(completed, list):
         raise AnnotationBatchError("Incomplete session record.")
-    paired, mapping = pair_selected_files(images, [labels.get(item) for item in images])
+    if not all(isinstance(labels.get(item), str) and labels.get(item) for item in images):
+        raise AnnotationBatchError("Saved session is missing a label path")
+    paired, mapping = pair_selected_files(images, [labels[item] for item in images])
     if paired != images or mapping != labels:
         raise AnnotationBatchError("Saved session file pairing has changed.")
     if any(not isinstance(i, int) or isinstance(i, bool) or i < 0 or i >= len(images)

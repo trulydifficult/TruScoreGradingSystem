@@ -1512,7 +1512,8 @@ class ModularAnnotationStudio(QMainWindow):
         try:
             # Preserve existing Previous navigation; track genuine successes.
             if self.auto_save_current_annotations() is True:
-                if not self._record_existing_export():
+                if (getattr(self, "_existing_label_mode", False)
+                        and not self._record_existing_export()):
                     return
                 self._successfully_saved_indices.add(self.current_index)
             elif getattr(self, "_existing_label_mode", False):
@@ -1549,7 +1550,8 @@ class ModularAnnotationStudio(QMainWindow):
             # Auto-save current annotations
             if save_current:
                 if self.auto_save_current_annotations() is True:
-                    if not self._record_existing_export():
+                    if (getattr(self, "_existing_label_mode", False)
+                        and not self._record_existing_export()):
                         return
                     self._successfully_saved_indices.add(self.current_index)
                 elif getattr(self, "_existing_label_mode", False):
@@ -1696,7 +1698,8 @@ class ModularAnnotationStudio(QMainWindow):
                 self.logger.error("Card export failed; keeping editor open for retry")
                 return False
 
-            if not self._record_existing_export():
+            if (getattr(self, "_existing_label_mode", False)
+                        and not self._record_existing_export()):
                 return False
             self._successfully_saved_indices.add(self.current_index)
             if self.current_index == len(self.image_files) - 1:
