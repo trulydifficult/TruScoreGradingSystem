@@ -115,6 +115,9 @@ def test_imported_labels_populate_two_real_editable_quads_and_disable_inference(
     assert widget.annotations[1].move_corner("top_right", 430, 60) is True
     assert widget.annotations[1].vertices[0] == (75, 70)
     assert widget.external_label_mode is True
+    assert all(a.confidence == 0.0 for a in widget.annotations)
+    assert all(a.metadata["confidence_source"] == "unavailable"
+               for a in widget.annotations)
     assert button.enabled is False
     assert signal.sent[0] is widget.annotations
     assert "YOLO disabled" in status.text

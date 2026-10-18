@@ -808,6 +808,7 @@ class ModularAnnotationStudio(QMainWindow):
         if not files:
             return
         self._pending_label_sources = files
+        self._existing_batch_state = None
         self._existing_label_mode = True
         widget = getattr(self, "current_plugin_widget", None)
         if widget is not None:
@@ -854,6 +855,7 @@ class ModularAnnotationStudio(QMainWindow):
                 if reply != QMessageBox.StandardButton.Yes:
                     return False
             self._existing_label_mode = True
+            self._existing_batch_state = None
             self._ensure_existing_label_plugin()
             save_session(state)
             self._existing_batch_state = state
@@ -881,6 +883,7 @@ class ModularAnnotationStudio(QMainWindow):
                 return False
             self._existing_label_mode = True
             self._pending_label_sources = list(state["labels"].values())
+            self._existing_batch_state = None
             self._ensure_existing_label_plugin()
             self._existing_batch_state = state
             self.image_files = state["image_files"]
@@ -2320,7 +2323,8 @@ class ModularAnnotationStudio(QMainWindow):
                         self.current_plugin_widget.set_current_image(self.current_image)
                         self.logger.debug(f"Forwarded current image to plugin settings widget: {plugin_name}")
                     if getattr(self, "_existing_label_mode", False):
-                        self._load_existing_card_labels()
+                        if getattr(self, "_existing_batch_state", None):
+                            self._load_existing_card_labels()
                     elif hasattr(self.current_plugin, 'on_image_changed') and self.current_image_path:
                         self.current_plugin.on_image_changed(
                             str(self.current_image_path), self.original_image

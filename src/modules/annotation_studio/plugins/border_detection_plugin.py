@@ -589,7 +589,8 @@ class BorderDetectionSettingsWidget(QWidget):
                 
                 # Draw class label (calibration.py lines 2186-2206)
                 label_text = f"{annotation.label}"
-                if hasattr(annotation, 'confidence'):
+                if (hasattr(annotation, 'confidence')
+                        and getattr(annotation, 'metadata', {}).get("confidence_source") != "unavailable"):
                     label_text += f" {annotation.confidence:.2f}"
                 
                 # Label background
@@ -2358,6 +2359,8 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         ]
         for ann in selected:
             ann.detection_method = "Imported YOLO"
+            ann.confidence = 0.0  # Imported YOLO labels have no confidence score.
+            ann.metadata["confidence_source"] = "unavailable"
 
         if proposal_path is not None:
             record = json.loads(Path(proposal_path).read_text(encoding="utf-8"))
@@ -2427,8 +2430,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
     def run_detection(self) -> bool:
         """Run detection - Interface contract method"""
         if self.settings_widget:
-            self.settings_widget.run_detection()
-            return True
+            return self.settings_widget.run_detection(source="manual") is True
         return False
     
     def cycle_selection(self):
