@@ -6,6 +6,7 @@ on:
       - "refactor/phoenix-foundation"
     paths:
       - "src/modules/annotation_studio/**"
+      - "src/shared/dataset_tools/border_quad.py"
       - "tests/annotation/**"
       - "src/shared/annotations/**"
       - ".github/workflows/annotation-integrity.yml"
@@ -27,6 +28,7 @@ jobs:
             src/modules/annotation_studio/modular_annotation_studio.py
             src/modules/annotation_studio/plugins/border_detection_plugin.py
             tests/annotation
+            src/shared/dataset_tools/border_quad.py
             src/shared/annotations/combined_dual_class
             src/shared/annotations/graphic_border_model
             src/shared/annotations/outer_border_model
