@@ -711,10 +711,14 @@ class BorderDetectionSettingsWidget(QWidget):
             else:
                 color = (255, 0, 255)  # Magenta for graphic
             
-            # Draw ONLY the border rectangle - NO handles
+            # Draw the same actual quad as the Studio canvas when available.
             is_selected = (self.selected_annotation == annotation)
             thickness = 3 if is_selected else 2
-            cv2.rectangle(image, (x1, y1), (x2, y2), color, thickness)
+            if getattr(annotation, 'vertices', None):
+                poly = np.rint(np.asarray(annotation.vertices) * zoom_factor).astype(np.int32)
+                cv2.polylines(image, [poly], True, color, thickness)
+            else:
+                cv2.rectangle(image, (x1, y1), (x2, y2), color, thickness)
         
         return image
     
@@ -1754,6 +1758,13 @@ class BorderDetectionSettingsWidget(QWidget):
             
             # Image dimensions (from rotated image)
             h, w = rotated_image.shape[:2]
+            # Validate source-quad pixel coordinates BEFORE writing the
+            # three established detection datasets; avoid partial invalid exports.
+            if all(getattr(ann, 'vertices', None) for ann in self.annotations):
+                if not all(quad_inside_image(validate_quad(ann.vertices), w, h)
+                           for ann in self.annotations):
+                    self.logger.error("Quad vertex outside rotated output image; export aborted")
+                    return False
             
             # Image filename
             img_name = Path(image_path).stem
