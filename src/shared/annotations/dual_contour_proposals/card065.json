@@ -1,0 +1,80 @@
+{
+  "schema": "dual_contour_proposal_v1",
+  "image_file": "card065.jpg",
+  "image_width": 1569,
+  "image_height": 2187,
+  "image_sha256": "3f25639b67d352a2de0520edd650719daec41c28fe2ef8b1fbedeaff2c6bbbb8",
+  "coordinate_frame": "exported_rotated_image_pixels",
+  "rotation_degrees": 0.0,
+  "segmentation_ground_truth": false,
+  "annotations": [
+    {
+      "x1": 24.643979057591626,
+      "y1": 35.596858638743456,
+      "x2": 1536.1413612565445,
+      "y2": 2144.0261780104715,
+      "class_id": 0,
+      "confidence": 0.9700546860694885,
+      "label": "outer_border",
+      "human_corrected": true,
+      "correction_timestamp": "2026-10-18T13:32:17.748702",
+      "detection_method": "AI",
+      "metadata": {},
+      "geometry_format": "quad_v1",
+      "vertices": [
+        [
+          24.643979057591626,
+          38.33507853403142
+        ],
+        [
+          1536.1413612565445,
+          35.596858638743456
+        ],
+        [
+          1536.1413612565445,
+          2144.0261780104715
+        ],
+        [
+          32.8586387434555,
+          2138.5497382198955
+        ]
+      ],
+      "human_reviewed": false,
+      "segmentation_ground_truth": false
+    },
+    {
+      "x1": 106.79057591623037,
+      "y1": 101.31413612565457,
+      "x2": 1456.7329842931938,
+      "y2": 2072.8324607329846,
+      "class_id": 1,
+      "confidence": 0.9662995934486389,
+      "label": "inner_border",
+      "human_corrected": true,
+      "correction_timestamp": "2026-10-18T13:36:00.131191",
+      "detection_method": "AI",
+      "metadata": {},
+      "geometry_format": "quad_v1",
+      "vertices": [
+        [
+          110.52019624560282,
+          111.45182408837125
+        ],
+        [
+          1452.625654450262,
+          101.31413612565457
+        ],
+        [
+          1456.7329842931938,
+          2072.8324607329846
+        ],
+        [
+          106.79057591623037,
+          2067.3560209424086
+        ]
+      ],
+      "human_reviewed": false,
+      "segmentation_ground_truth": false
+    }
+  ]
+}
