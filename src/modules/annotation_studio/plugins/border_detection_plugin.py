@@ -2003,6 +2003,10 @@ class BorderDetectionSettingsWidget(QWidget):
         """Run real YOLO once; expose request origin and busy state."""
         if source not in ("manual", "auto"):
             source = "manual"
+        if getattr(self, "external_label_mode", False):
+            if hasattr(self, "status_label"):
+                self.status_label.setText("Existing-label mode: YOLO inference disabled")
+            return False
         if getattr(self, "_detecting", False):
             self.logger.info("Skipped overlapping %s detection: %s",
                              source, getattr(self, "current_image_path", None))
@@ -2225,6 +2229,10 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
     def on_activate(self):
         """Called when plugin becomes active - Interface contract method"""
         self.logger.info("BorderDetectionPlugin activated")
+        studio = getattr(getattr(self, "studio_context", None), "_studio", None)
+        if getattr(studio, "_existing_label_mode", False):
+            self.logger.info("Existing labels selected: bypass YOLO model initialization")
+            return
         # Load model if not loaded
         if not hasattr(self, 'model_loaded') or not self.model_loaded:
             self._load_default_model()
@@ -2285,7 +2293,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         return False
     
     def on_image_changed(self, image_path: str, image_data: np.ndarray):
-        """Queue automatic inference once per card load, never over manual work."""
+        """Queue inference only for fresh-detection batches, not imported labels."""
         self.logger.info(f"on_image_changed called with image: {image_path}")
         self.current_image = image_data
         widget = self.settings_widget
@@ -2296,6 +2304,15 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         widget.current_image = image_data
         widget.current_image_path = image_path
         widget._auto_request_token = getattr(widget, "_auto_request_token", 0) + 1
+        studio = getattr(getattr(self, "studio_context", None), "_studio", None)
+        if getattr(studio, "_existing_label_mode", False):
+            widget.external_label_mode = True
+            if hasattr(widget, "run_detection_btn"):
+                widget.run_detection_btn.setEnabled(False)
+            return
+        widget.external_label_mode = False
+        if hasattr(widget, "run_detection_btn"):
+            widget.run_detection_btn.setEnabled(True)
         request_token = widget._auto_request_token
         if hasattr(widget, "status_label"):
             widget.status_label.setText("Detection queued (automatic)")
@@ -2308,10 +2325,66 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
                 target.run_detection(source="auto")
                 if (target.current_image_path == expected
                     and target._auto_request_token == token
-                    and getattr(target, "_completed_detection_token", None) != token)
+                    and getattr(target, "_completed_detection_token", None) != token
+                    and not getattr(target, "external_label_mode", False))
                 else None
             ),
         )
+
+    def load_existing_labels(self, image_path, image_data, label_path, proposal_path=None):
+        """Populate two REAL editable quads from existing YOLO labels, without AI."""
+        from modules.annotation_studio.existing_label_sessions import parse_combined_yolo
+        import hashlib
+
+        widget = self.settings_widget
+        if widget is None:
+            raise ValueError("Activate Border Detection plugin to import labels")
+        height, width = image_data.shape[:2]
+        rows = parse_combined_yolo(label_path, width, height)
+        selected = [
+            BorderAnnotation.from_yolo(rows[cls], width, height,
+                                       ["outer_border", "inner_border"])
+            for cls in (0, 1)
+        ]
+        for ann in selected:
+            ann.detection_method = "Imported YOLO"
+
+        if proposal_path is not None:
+            record = json.loads(Path(proposal_path).read_text(encoding="utf-8"))
+            actual_hash = hashlib.sha256(Path(image_path).read_bytes()).hexdigest()
+            if (record.get("schema") != "dual_contour_proposal_v1"
+                    or record.get("image_sha256") != actual_hash
+                    or record.get("image_width") != width
+                    or record.get("image_height") != height
+                    or record.get("coordinate_frame") != "exported_rotated_image_pixels"):
+                raise ValueError("Saved quad and selected image disagree; reimport aborted")
+            originals = record.get("annotations", [])
+            if len(originals) != 2 or [x.get("class_id") for x in originals] != [0, 1]:
+                raise ValueError("Saved quad does not contain exactly two border classes")
+            selected = [BorderAnnotation.from_dict(entry) for entry in originals]
+
+        widget._auto_request_token = getattr(widget, "_auto_request_token", 0) + 1
+        widget._completed_detection_token = widget._auto_request_token
+        widget.external_label_mode = True
+        self.current_image = image_data
+        widget.current_image = image_data
+        widget.current_image_path = str(image_path)
+        widget.annotations = selected
+        widget.selected_annotation = selected[0]  # Always outer first.
+        widget.dragging_corner = None
+        widget.dragging_side = None
+        widget.dragging_border = False
+        if hasattr(widget, "run_detection_btn"):
+            widget.run_detection_btn.setEnabled(False)
+        if hasattr(widget, "status_label"):
+            widget.status_label.setText(
+                "Existing labels loaded: outer + graphic (YOLO disabled)"
+            )
+        widget._bump_annotation_version()
+        widget.update_visualization()
+        widget.update_statistics()
+        widget.detection_completed.emit(selected)
+        return True
 
     def on_image_rotated(self, rotation_angle: float):
         """Notification that Studio rotated image - Interface contract method"""
