@@ -1240,8 +1240,16 @@ class BorderDetectionSettingsWidget(QWidget):
             self.logger.error(f"Set current image failed: {e}")
 
     def load_model(self):
-        """Load AI model for detection"""
+        """Load AI model for detection only for fresh-inference mode."""
         try:
+            studio = getattr(
+                getattr(getattr(self, "main_plugin", None), "studio_context", None),
+                "_studio", None
+            )
+            if getattr(self, "external_label_mode", False) or getattr(studio, "_existing_label_mode", False):
+                if hasattr(self, "model_status_label"):
+                    self.model_status_label.setText("Model: Disabled (existing labels)")
+                return False
             model_path = self.settings.get('model_path', str(_default_border_model_path()))
             self.logger.info(f"Attempting to load model from: {model_path}")
 
@@ -1366,8 +1374,10 @@ class BorderDetectionSettingsWidget(QWidget):
 
 
     def run_actual_detection(self):
-        """Run actual YOLO detection - EXACT from border_calibration.py"""
+        """Legacy entrypoint; never overwrite imported labels."""
         try:
+            if getattr(self, "external_label_mode", False):
+                return False
             if self.current_image is None or self.model is None:
                 self.logger.warning("No image or model available for detection")
                 return
@@ -2455,8 +2465,10 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             self.logger.error(f"Failed to set image: {e}")
 
     def auto_run_detection(self):
-        """Auto-run detection when card loads and auto-save results"""
+        """Auto-run only when using new, unannotated images."""
         try:
+            if getattr(self, "external_label_mode", False):
+                return False
             # Prevent multiple detection runs
             if hasattr(self, '_detection_running') and self._detection_running:
                 return
