@@ -50,7 +50,7 @@ def make_event(x, y, *, pressed=False, release=False):
     )
 
 
-def test_precision_view_repaints_changed_geometry_before_release_and_stays_anchored():
+def test_precision_view_is_stable_during_drag_then_follows_cursor_after_release():
     target = [32.0, 42.0]
     events = []
     plugin = SimpleNamespace(
@@ -67,7 +67,7 @@ def test_precision_view_repaints_changed_geometry_before_release_and_stays_ancho
         current_plugin=plugin, current_image=object(),
         canvas_to_image_coords=lambda x, y: (x, y),
         display_current_image=lambda: events.append("redraw-main"),
-        update_magnifier=lambda *args: events.append(("magnifier", tuple(target))),
+        update_magnifier=lambda *args: events.append(("magnifier", tuple(target), args)),
         _keep_precision_target_visible=lambda: None,
         _magnifier_locked_center=None,
         _mouse_pressed=False,
@@ -79,19 +79,21 @@ def test_precision_view_repaints_changed_geometry_before_release_and_stays_ancho
 
     method("on_image_mouse_move")(studio, make_event(35, 46, pressed=True))
     assert events == [
-        ("drag", 35, 46), "redraw-main", ("magnifier", (35, 46))
+        ("drag", 35, 46), "redraw-main", ("magnifier", (35, 46), (35, 46))
     ]
     events.clear()
 
     method("on_image_mouse_release")(studio, make_event(35, 46, release=True))
+    # The final frame is painted in the locked pixel frame BEFORE
+    # unlocking; the next hover moves the viewport, not the quad.
     assert events == [("release", 35, 46), "redraw-main",
-                      ("magnifier", (35, 46))]
-    assert studio._magnifier_locked_center == (32.0, 42.0)
+                      ("magnifier", (35, 46), ())]
+    assert studio._magnifier_locked_center is None
     events.clear()
 
     method("on_image_mouse_move")(studio, make_event(99, 100))
-    assert events == [("magnifier", (35, 46))]
-    assert studio._magnifier_locked_center == (32.0, 42.0)
+    assert events == [("magnifier", (35, 46), (99, 100))]
+    assert studio._magnifier_locked_center is None
     assert studio.logger.errors == []
 
 
@@ -180,3 +182,63 @@ def test_magnifier_renders_raw_source_pixels_and_exact_quad_overlay(monkeypatch)
     # The actual outer-border corner maps to screen pixel (200, 200).
     assert images[-1][200, 200].tolist() == [255, 255, 0]
     assert studio.logger.errors == []
+
+
+def test_missed_release_unpins_magnifier_and_never_drags_again():
+    events = []
+    studio = SimpleNamespace(
+        _mouse_pressed=True,
+        _magnifier_locked_center=(30.0, 40.0),
+        current_image=object(),
+        current_plugin=SimpleNamespace(
+            handle_release=lambda x, y: events.append(("release", x, y)),
+            handle_drag=lambda x, y: events.append(("INCORRECT-DRAG", x, y)),
+        ),
+        update_magnifier=lambda *args: events.append(("zoom", args)),
+        logger=Log(),
+    )
+    method("on_image_mouse_move")(studio, make_event(80, 90))
+    assert studio._magnifier_locked_center is None
+    assert studio._mouse_pressed is False
+    assert events == [("release", -1, -1), ("zoom", (80, 90))]
+    events.clear()
+    method("on_image_mouse_move")(studio, make_event(84, 91))
+    assert events == [("zoom", (84, 91))]
+    assert studio.logger.errors == []
+
+
+def test_plugin_controls_fill_remaining_column_height_without_removing_scroll():
+    tree = ast.parse(STUDIO.read_text(encoding="utf-8"))
+    studio = next(n for n in tree.body if isinstance(n, ast.ClassDef)
+                  and n.name == "ModularAnnotationStudio")
+    creator = next(n for n in studio.body
+                   if isinstance(n, ast.FunctionDef) and n.name == "create_plugin_panel")
+    body = ast.unparse(creator)
+    assert "left_layout.addWidget(controls_frame, 1)" in body
+    assert "QSizePolicy.Policy.Expanding" in body
+    assert "left_layout.addStretch()" not in body
+    plugin_source = (ROOT / "src/modules/annotation_studio/plugins/"
+                     "border_detection_plugin.py").read_text(encoding="utf-8")
+    assert "scroll.setWidgetResizable(True)" in plugin_source
+    assert "scroll.setWidget(content)" in plugin_source
+
+
+def test_magnifier_overlay_is_twice_as_legible_without_changing_pixel_alignment():
+    import cv2
+    import numpy as np
+    frame = MagnifierViewport.centered(60, 60, 4)
+    ann = SimpleNamespace(class_id=1, vertices=[
+        (52.0, 60.0), (68.0, 60.0), (68.0, 82.0), (52.0, 82.0)
+    ])
+    studio = SimpleNamespace(
+        current_plugin=SimpleNamespace(settings_widget=SimpleNamespace(annotations=[ann]))
+    )
+    blank = np.zeros((400, 400, 3), dtype=np.uint8)
+    drawn = method("draw_borders_on_magnifier")(studio, blank, frame)
+    # All border pixels still originate from the exact four source vertices.
+    # The 2-pixel renderer keeps the centerline and its immediate neighbor
+    # visible even on high-DPI 2560x1440 workstations.
+    u, v = map(round, frame.project(60, 60))
+    assert tuple(drawn[v, u]) == (255, 0, 255)
+    assert tuple(drawn[v+1, u]) == (255, 0, 255)
+    assert tuple(drawn[v+5, u]) == (0, 0, 0)
