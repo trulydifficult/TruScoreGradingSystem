@@ -172,7 +172,8 @@ def test_studio_still_owns_mouse_transform_tab_space_and_completion():
     assert "self.canvas_to_image_coords(canvas_x, canvas_y)" in src
     assert "self.current_plugin.handle_drag(image_x, image_y)" in src
     assert "self.current_plugin.on_image_changed(str(image_path), self.original_image)" in src
-    assert "if getattr(annotation, 'vertices', None):" in src
+    assert "viewport.project(float(x), float(y)) for x, y in verts" in src
+    assert "magnified = self.draw_borders_on_magnifier(magnified, viewport)" in src
 
 
 class _DragTimer:
