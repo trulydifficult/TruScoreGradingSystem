@@ -1892,7 +1892,9 @@ class ModularAnnotationStudio(QMainWindow):
         self.current_magnification = level
         
         # CRITICAL FIX: Force magnifier update with current position
-        if hasattr(self, 'last_magnifier_x') and hasattr(self, 'last_magnifier_y'):
+        if getattr(self, "_magnifier_locked_center", None) is not None:
+            self.update_magnifier()
+        elif hasattr(self, 'last_magnifier_x') and hasattr(self, 'last_magnifier_y'):
             self.update_magnifier(self.last_magnifier_x, self.last_magnifier_y)
         
         self.logger.info(f"Magnification set to {level}x")
@@ -1901,7 +1903,7 @@ class ModularAnnotationStudio(QMainWindow):
         """Get CACHED rotated version of ORIGINAL image (no overlays/anchors)"""
         # CRITICAL OPTIMIZATION: Cache rotated image to avoid rotating on every mouse move!
         # Only re-rotate if angle changed
-        if hasattr(self, '_cached_rotation_angle') and hasattr(self, '_cached_rotated_image'):
+        if hasattr(self, '_cached_rotation_angle') and getattr(self, '_cached_rotated_image', None) is not None:
             if abs(self._cached_rotation_angle - self.rotation_angle) < 0.001:
                 # Angle unchanged - return cached image
                 return self._cached_rotated_image
@@ -2071,8 +2073,15 @@ class ModularAnnotationStudio(QMainWindow):
                 if hasattr(self.current_plugin, 'handle_click'):
                     handled = self.current_plugin.handle_click(image_x, image_y)
                     if handled:
-                        # Plugin handled it, refresh display
+                        target = (self.current_plugin.precision_target_point()
+                                  if hasattr(self.current_plugin, "precision_target_point")
+                                  else None)
+                        self._magnifier_locked_center = (
+                            tuple(target) if target is not None else (image_x, image_y)
+                        )
                         self.display_current_image()
+                        if getattr(self, "current_image", None) is not None:
+                            self.update_magnifier()
                 
                 # Fallback to old method for backward compatibility
                 elif hasattr(self.current_plugin, 'on_canvas_click'):
@@ -2094,10 +2103,7 @@ class ModularAnnotationStudio(QMainWindow):
             canvas_x = pos.x()
             canvas_y = pos.y()
             
-            # Update magnifier with current mouse position (uses canvas coords)
-            if self.current_image is not None:
-                self.update_magnifier(int(canvas_x), int(canvas_y))
-            
+            # Render the magnifier only after the plugin changes geometry.
             # Mouse tracking emits hover events. Recover from a missed
             # release without permitting another edit.
             if hasattr(event, "buttons") and not (event.buttons() & Qt.MouseButton.LeftButton):
@@ -2106,6 +2112,8 @@ class ModularAnnotationStudio(QMainWindow):
                     plugin = getattr(self, "current_plugin", None)
                     if plugin and hasattr(plugin, "handle_release"):
                         plugin.handle_release(-1, -1)
+                if getattr(self, "current_image", None) is not None:
+                    self.update_magnifier(canvas_x, canvas_y)
                 return
             if hasattr(self, 'current_plugin') and self.current_plugin:
                 if getattr(self, '_mouse_pressed', False):
@@ -2123,6 +2131,11 @@ class ModularAnnotationStudio(QMainWindow):
                         elif hasattr(self.current_plugin, 'on_canvas_drag'):
                             self.current_plugin.on_canvas_drag(canvas_x, canvas_y)
                         
+            if getattr(self, "current_image", None) is not None:
+                if getattr(self, "_mouse_pressed", False):
+                    self._keep_precision_target_visible()
+                self.update_magnifier(canvas_x, canvas_y)
+
         except Exception as e:
             self.logger.error(f"Mouse move handling failed: {e}")
 
@@ -2152,6 +2165,9 @@ class ModularAnnotationStudio(QMainWindow):
                         self.display_current_image()
                 elif hasattr(self.current_plugin, 'on_canvas_release'):
                     self.current_plugin.on_canvas_release(canvas_x, canvas_y)
+
+            if had_active_press and getattr(self, "current_image", None) is not None:
+                self.update_magnifier()
 
         except Exception as e:
             self.logger.error(f"Mouse release handling failed: {e}")
