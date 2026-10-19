@@ -931,31 +931,28 @@ class BorderDetectionSettingsWidget(QWidget):
             self.logger.error(f"Cycle selection failed: {e}")
 
     def setup_enterprise_ui(self):
-        """Create comprehensive enterprise UI"""
+        """Keep controls usable in a height-constrained plugin panel."""
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(10, 10, 10, 10)
-        main_layout.setSpacing(8)
-
-        # Plugin header
-        self.create_plugin_header(main_layout)
-
-        # Model management section
-        self.create_model_section(main_layout)
-
-        # Detection settings section
-        self.create_detection_section(main_layout)
-
-        # Export & batch section
-        self.create_export_section(main_layout)
-
-        # Action buttons section
-        self.create_action_buttons(main_layout)
-
-        # Statistics and status
-        self.create_status_section(main_layout)
-
-        # Add stretch to push content up
-        main_layout.addStretch()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        scroll = QScrollArea(self)
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
+        content = QWidget()
+        sections = QVBoxLayout(content)
+        sections.setContentsMargins(8, 6, 8, 6)
+        sections.setSpacing(5)
+        self.create_plugin_header(sections)
+        self.create_model_section(sections)
+        self.create_detection_section(sections)
+        self.create_export_section(sections)
+        self.create_action_buttons(sections)
+        self.create_status_section(sections)
+        sections.addStretch()
+        scroll.setWidget(content)
+        main_layout.addWidget(scroll)
 
     def create_plugin_header(self, layout):
         """Professional plugin header"""
@@ -1041,6 +1038,8 @@ class BorderDetectionSettingsWidget(QWidget):
             }}
         """)
         detection_layout = QVBoxLayout(detection_group)
+        detection_layout.setContentsMargins(8, 14, 8, 7)
+        detection_layout.setSpacing(4)
 
         # Detection mode
         mode_layout = QHBoxLayout()
@@ -1079,36 +1078,34 @@ class BorderDetectionSettingsWidget(QWidget):
         conf_layout.addWidget(self.confidence_display)
         detection_layout.addLayout(conf_layout)
 
-        # Border selection controls - EXACT from border_calibration.py
-        selection_layout = QHBoxLayout()
-        selection_layout.setSpacing(5)
-        select_label = QLabel("Select:")
-        select_label.setStyleSheet(f"background: none; border: none; color: {TruScoreTheme.GHOST_WHITE}; padding: 0px; margin: 0px;")
-        select_label.setFixedWidth(80)
-        selection_layout.addWidget(select_label)
+        # All four controls belong to one contained 2x2 grid.
+        controls = QGridLayout()
+        controls.setContentsMargins(0, 2, 0, 0)
+        controls.setHorizontalSpacing(8)
+        controls.setVerticalSpacing(5)
+        controls.setColumnStretch(0, 1)
+        controls.setColumnStretch(1, 1)
 
-        self.outer_border_btn = TruScoreButton("Outer Border", width=120, height=25, style_type="secondary")
+        self.outer_border_btn = TruScoreButton("Outer Border", style_type="secondary")
+        self.outer_border_btn.setFixedHeight(26)
         self.outer_border_btn.clicked.connect(lambda: self.select_border_by_class(0))
-        selection_layout.addWidget(self.outer_border_btn)
+        controls.addWidget(self.outer_border_btn, 0, 0)
 
-        self.graphic_border_btn = TruScoreButton("Graphic Border", width=130, height=25, style_type="secondary")
+        self.graphic_border_btn = TruScoreButton("Graphic Border", style_type="secondary")
+        self.graphic_border_btn.setFixedHeight(26)
         self.graphic_border_btn.clicked.connect(lambda: self.select_border_by_class(1))
-        selection_layout.addWidget(self.graphic_border_btn)
+        controls.addWidget(self.graphic_border_btn, 0, 1)
 
-        detection_layout.addLayout(selection_layout)
-
-        # Detection controls
-        detect_layout = QHBoxLayout()
-
-        self.run_detection_btn = TruScoreButton("Run Detection", width=120, height=30)
+        self.run_detection_btn = TruScoreButton("Run Detection")
+        self.run_detection_btn.setFixedHeight(26)
         self.run_detection_btn.clicked.connect(lambda: self.run_detection(source="manual"))
-        detect_layout.addWidget(self.run_detection_btn)
+        controls.addWidget(self.run_detection_btn, 1, 0)
 
-        self.clear_btn = TruScoreButton("Clear", width=70, height=30, style_type="secondary")
+        self.clear_btn = TruScoreButton("Clear", style_type="secondary")
+        self.clear_btn.setFixedHeight(26)
         self.clear_btn.clicked.connect(self.clear_annotations)
-        detect_layout.addWidget(self.clear_btn)
-
-        detection_layout.addLayout(detect_layout)
+        controls.addWidget(self.clear_btn, 1, 1)
+        detection_layout.addLayout(controls)
         layout.addWidget(detection_group)
 
     def create_export_section(self, layout):
