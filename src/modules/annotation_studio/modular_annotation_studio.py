@@ -429,8 +429,14 @@ class ModularAnnotationStudio(QMainWindow):
             self.plugin_settings_container = controls_frame
             self.plugin_settings_layout = controls_layout
             
-            left_layout.addWidget(controls_frame)
-            left_layout.addStretch()  # Push content to top
+            # Let the plugin frame use ALL remaining vertical space in
+            # the left column, matching the nearly full-height image and
+            # magnifier panels. The plugin's own QScrollArea remains a
+            # fallback if the operator makes the window smaller.
+            controls_frame.setSizePolicy(
+                QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding
+            )
+            left_layout.addWidget(controls_frame, 1)
             
             left_panel.setMinimumWidth(300)  # Substantial width for functions
             return left_panel
@@ -1957,7 +1963,7 @@ class ModularAnnotationStudio(QMainWindow):
             color = ((255, 255, 0) if ann.class_id == 0
                      else (255, 0, 255) if ann.class_id == 1
                      else (255, 255, 255))
-            cv2.polylines(magnified_image, [coords], True, color, 1)
+            cv2.polylines(magnified_image, [coords], True, color, 2)
         return magnified_image
 
     def update_magnifier(self, canvas_x=None, canvas_y=None):
@@ -2115,6 +2121,9 @@ class ModularAnnotationStudio(QMainWindow):
                     plugin = getattr(self, "current_plugin", None)
                     if plugin and hasattr(plugin, "handle_release"):
                         plugin.handle_release(-1, -1)
+                    # A lost release is still a release. End the
+                    # handle-anchored crop before processing this hover.
+                    self._magnifier_locked_center = None
                 if getattr(self, "current_image", None) is not None:
                     self.update_magnifier(canvas_x, canvas_y)
                 return
@@ -2169,8 +2178,14 @@ class ModularAnnotationStudio(QMainWindow):
                 elif hasattr(self.current_plugin, 'on_canvas_release'):
                     self.current_plugin.on_canvas_release(canvas_x, canvas_y)
 
-            if had_active_press and getattr(self, "current_image", None) is not None:
-                self.update_magnifier()
+            if had_active_press:
+                # First paint the final saved line against the exact
+                # locked source pixels (no release-position jump).
+                if getattr(self, "current_image", None) is not None:
+                    self.update_magnifier()
+                # Now restore ordinary hover-to-inspect. The next mouse
+                # movement pans the VIEW ONLY, never polygon vertices.
+                self._magnifier_locked_center = None
 
         except Exception as e:
             self.logger.error(f"Mouse release handling failed: {e}")
