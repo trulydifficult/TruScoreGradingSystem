@@ -596,13 +596,16 @@ class ModularAnnotationStudio(QMainWindow):
         
         mag_controls.addWidget(self.mag_2x_btn)
         mag_controls.addWidget(self.mag_4x_btn)
-        magnifier_layout.addLayout(mag_controls)
         self.magnifier_follow_btn = QPushButton("Follow Cursor")
         self.magnifier_follow_btn.setToolTip(
             "Unlock last edited area; click another handle to lock it again"
         )
+        self.magnifier_follow_btn.setStyleSheet(get_quantum_button_style())
         self.magnifier_follow_btn.clicked.connect(self.unlock_precision_magnifier)
-        magnifier_layout.addWidget(self.magnifier_follow_btn)
+        # No additional vertical row: preserve the existing 400px magnifier
+        # in the operator's height-constrained workstation window.
+        mag_controls.addWidget(self.magnifier_follow_btn)
+        magnifier_layout.addLayout(mag_controls)
         
         layout.addWidget(magnifier_frame, 1)  # Magnifier at bottom
         layout.addStretch(0)  # No bottom space
