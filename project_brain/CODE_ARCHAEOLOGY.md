@@ -397,3 +397,20 @@ moved. Added one pure source-pixel viewport implementation rather
 than copying the Studio coordinate mapping into plugin. Kept plugin
 as owner of selected corner/edge; did not duplicate annotator
 algorithms. See ADR 0016; CI 97 PASS, actual GUI QA pending.
+
+## 2026-10-19 — Refinement of precision UI after real operator trial
+
+The operator verified that the new true-pixel magnifier did NOT
+misreport line placement or drift after release. Their preferred
+work pattern is to remain locked only while dragging, then roam
+over the card with NO button held to audit full printed border.
+Old pinned-after-release behavior was intentional but impeded
+that workflow; decision amended in ADR 0016 instead of creating
+duplicate viewport or drag code. Screenshot demonstrated that
+the fallback Studio `create_plugin_panel` contained a
+`left_layout.addStretch()` BELOW `controls_frame`, rather
+than allowing the expanding panel to fill the column. We
+changed only that layout stretch/size policy, preserved the
+border settings' scrollable child, and changed magnifier overlay
+stroke width in the authoritative Studio renderer. No training,
+converter, annotation schema or geometric model changes.

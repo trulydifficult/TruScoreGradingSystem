@@ -1707,3 +1707,48 @@ magnifier shifts or geometry lags, request screenshot/video and
 actual runtime details. Do NOT start bulk 550 reannotation until
 this precision GUI gate passes. See ADR 0016.
 
+
+## 2026-10-19 — User GUI feedback: free-follow after release and taller plugin frame
+
+Operator tested the ADR 0016 magnifier on workstation and confirmed its
+live border-line coordinates were accurate and did not shift after
+release. But pinning the viewport AFTER release impeded inspecting
+other portions of the printed graphic boundary. Operator supplied a
+second Studio screenshot (window on 2560×1440 display) showing the left
+plugin controls frame stopped well above the bottom of its column.
+Also requested slightly stronger, but still precise, zoom-overlay lines.
+
+Changes to active Studio `src/modules/annotation_studio/modular_annotation_studio.py`:
+- The fallback modular left plugin panel gives its `controls_frame`
+  all remaining VERTICAL layout stretch (1) and expanding size policy,
+  instead of reserving a large empty `left_layout.addStretch()` region.
+  The plugin's own independent scroll area is retained and used only
+  when window height requires overflow. Other plugins' code unchanged.
+- Corner/side dragging keeps the shared source-pixel magnifier viewport
+  anchored and repainting AFTER each geometry modification, as
+  previously implemented. On genuine release, redraw final geometry
+  in the anchored view BEFORE unpinning the viewport. The very next
+  mouse hover follows the cursor via the Studio canonical transform,
+  without editing vertices or invoking border drag. Missed-release
+  recovery also unlocks the magnifier. This reconciles live fine
+  positioning with freedom to audit the entire graphic line.
+- Magnifier border `cv2.polylines` thickness increased from **1 to 2
+  output pixels** at 2× and 4×; source coordinates, polygon centerline,
+  raw image pixels, and YOLO/quad labels remain untouched.
+- `Follow Cursor` remains available as an explicit manual unlock
+  while working, but is no longer required after mouse release.
+
+Verification: GitHub Annotation Integrity workflow run
+`39230520209` on commit `86c44e2`, **100 passed**.
+New tests assert real-method release→hover cursor-follow behavior,
+missed mouse-release recovery, absence of stale drag mutations,
+tall plugin frame plus scroll fallback, and 2-pixel OpenCV overlay
+legibility without changing source-geometry alignment. Also
+preserved older inference, real export, Tab/Space and paired import/
+Resume tests. CI is NOT a GUI size/Wayland pointer-interaction claim.
+Operator acceptance pending: pull, use a disposable card, grab/edit
+at 4×, release, move pointer around image *without pressing* and
+confirm view tracks card while polygon remains fixed; try 2×; check
+left plugin frame reaches lower window boundary and shows all
+controls without scroll at 2560×1440, scroll still works when small.
+

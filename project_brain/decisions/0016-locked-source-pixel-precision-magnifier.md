@@ -79,3 +79,36 @@ motion. The viewport traveled with hover after release.
   from correct raster display geometry and remain separate
   ground-truth/benchmark gates.
 
+
+## 2026-10-19 refinement — operator-verified accuracy, release-to-follow UX
+
+After pulling the prior implementation, operator confirmed the
+magnifier correctly displayed the placed lines and did not allow
+post-release vertex drift. They requested that the viewport unlock
+automatically AFTER release, because their primary verification is
+scanning the graphic boundary at 4× without clicking anywhere.
+The ADR's previous permanent lock-after-release policy is therefore
+**superseded** by this newer approved interaction contract:
+
+1. During press/drag, anchor the viewport to the selected real
+   source-image handle. Render edited geometry after drag events.
+2. On release, first repaint the finalized line in the anchored
+   crop. THEN set `_magnifier_locked_center=None`. Subsequent
+   button-free mouse motion follows the cursor via the canonical
+   Studio transform; no border coordinates change without a new
+   explicit handle press/drag.
+3. Cancel lost releases similarly, including the anchor.
+4. Magnified quad strokes are 2 OUTPUT pixels thick (previously 1)
+   but vertices are NOT moved, rounded earlier or thickened in source
+   image/exports. The exact image sampling remains nearest-neighbor.
+5. On a 2560×1440 workstation, allow plugin settings to fill
+   unused left-column height. The Studio fallback
+   `controls_frame` is now vertical-expanding with layout
+   stretch 1, rather than an empty stretch below. Retain the
+   inner scroll area for small windows and other plugins.
+
+Verified headless: Annotation Integrity run 39230520209,
+100 PASS, commit 86c44e2, including direct press→drag→release
+→hover and lost-release tests, 2px OpenCV overlays and plugin
+layout ownership. The user still needs to accept the resulting
+GUI feel and exact frame height on their desktop.
