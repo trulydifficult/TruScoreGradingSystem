@@ -16,7 +16,7 @@ from typing import Optional, List, Dict, Any, Tuple
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 from shared.dataset_tools.border_quad import (  # noqa: E402
-    validate_quad, rect_to_quad, quad_bounds, side_midpoint,
+    validate_quad, rect_to_quad, quad_bounds, side_midpoint, CORNER_NAMES,
     nearest_corner, nearest_side_handle, quad_contains,
     moved_corner, moved_side, moved_quad, quad_inside_image,
 )
@@ -173,3 +173,137 @@ def test_studio_still_owns_mouse_transform_tab_space_and_completion():
     assert "self.current_plugin.handle_drag(image_x, image_y)" in src
     assert "self.current_plugin.on_image_changed(str(image_path), self.original_image)" in src
     assert "if getattr(annotation, 'vertices', None):" in src
+
+
+class _DragTimer:
+    """Record pending-throttle cancellation without a Qt event loop."""
+    def __init__(self):
+        self.timeout = SimpleNamespace(connect=lambda f: None)
+        self.active = False
+        self.was_stopped = False
+    def isActive(self):
+        return self.active
+    def setSingleShot(self, value):
+        pass
+    def start(self, milliseconds):
+        self.active = True
+    def stop(self):
+        self.was_stopped = True
+        self.active = False
+
+
+def _drag_fixture():
+    BorderAnnotation = _annotation_class()
+    ann = BorderAnnotation(10, 20, 110, 220, 1, .9)
+    obj = SimpleNamespace(
+        selected_annotation=ann, current_image=SimpleNamespace(shape=(300, 200, 3)),
+        dragging_corner=None, dragging_side=None, dragging_border=False,
+        mouse_pressed=False, _dragging=False, logger=_Logger(),
+        _bump_annotation_version=lambda: None, update_visualization=lambda: None,
+        update_display_after_drag=lambda: None,
+    )
+    grab = _source_method("BorderDetectionSettingsWidget", "on_canvas_click",
+                          {"CORNER_NAMES": CORNER_NAMES, "side_midpoint": side_midpoint,
+                           "validate_quad": validate_quad})
+    drag = _source_method("BorderDetectionSettingsWidget", "handle_drag",
+                          {"QTimer": _DragTimer})
+    release = _source_method("BorderDetectionSettingsWidget", "handle_release")
+    return ann, obj, grab, drag, release
+
+
+def test_hover_after_release_cannot_move_corner_or_restart_drag_timer():
+    ann, obj, grab, drag, release = _drag_fixture()
+    assert grab(obj, 113, 22) is True
+    assert obj.dragging_corner == "top_right"
+    assert obj._drag_grab_offset == (3, 2)
+    assert drag(obj, 113, 22) is True
+    assert ann.vertices[1] == (110, 20)  # Grabbing within hit zone must not jump.
+    assert drag(obj, 123, 12) is True
+    assert ann.vertices[1] == (120, 10)
+    saved = [tuple(p) for p in ann.vertices]
+    timer = obj._drag_update_timer
+    assert release(obj, -1, -1) is True  # Outside-image release is legal.
+    assert obj.mouse_pressed is False
+    assert obj.dragging_corner is None
+    assert obj._drag_grab_offset == (0, 0)
+    assert timer.was_stopped
+    assert drag(obj, 135, 35) is False  # Hover cannot change exported coordinates.
+    assert ann.vertices == saved
+    assert release(obj, 140, 40) is False
+
+
+def test_side_grab_offset_and_release_preserve_only_expected_vertices():
+    ann, obj, grab, drag, release = _drag_fixture()
+    assert grab(obj, 63, 21) is True  # Near top midpoint at (60, 20).
+    assert obj.dragging_side == "top"
+    assert drag(obj, 63, 21) is True
+    assert ann.vertices == [(10, 20), (110, 20), (110, 220), (10, 220)]
+    assert drag(obj, 73, 11) is True
+    assert ann.vertices[:2] == [(20, 10), (120, 10)]
+    assert release(obj, 9999, 9999) is True
+    after = list(ann.vertices)
+    assert drag(obj, 500, 250) is False
+    assert ann.vertices == after
+
+
+def _studio_event_method(name):
+    module = ast.parse(STUDIO.read_text(encoding="utf-8"))
+    owner = next(node for node in module.body
+                 if isinstance(node, ast.ClassDef) and node.name == "ModularAnnotationStudio")
+    method = next(node for node in owner.body
+                  if isinstance(node, ast.FunctionDef) and node.name == name)
+    isolated = ast.Module(body=[method], type_ignores=[])
+    ast.fix_missing_locations(isolated)
+    values = {"Qt": SimpleNamespace(MouseButton=SimpleNamespace(LeftButton=1))}
+    exec(compile(isolated, str(STUDIO), "exec"), values)
+    return values[name]
+
+
+def test_studio_delivers_release_even_outside_image_bounds():
+    calls = []
+    plugin = SimpleNamespace(handle_release=lambda x, y: calls.append((x, y)) or True)
+    event = SimpleNamespace(
+        position=lambda: SimpleNamespace(x=lambda: 30, y=lambda: 40),
+    )
+    studio = SimpleNamespace(
+        _mouse_pressed=True, current_plugin=plugin,
+        canvas_to_image_coords=lambda x, y: (-1, -1),
+        display_current_image=lambda: calls.append("redraw"),
+        logger=_Logger(),
+    )
+    _studio_event_method("on_image_mouse_release")(studio, event)
+    assert studio._mouse_pressed is False
+    assert calls == [(-1, -1), "redraw"]
+
+
+def test_studio_hover_recovers_from_missed_mouse_release():
+    calls = []
+    event = SimpleNamespace(
+        position=lambda: SimpleNamespace(x=lambda: 30, y=lambda: 40),
+        buttons=lambda: 0,
+    )
+    studio = SimpleNamespace(
+        _mouse_pressed=True, current_plugin=SimpleNamespace(
+            handle_release=lambda x, y: calls.append((x, y)),
+            handle_drag=lambda x, y: calls.append("incorrect drag"),
+        ),
+        current_image=None, logger=_Logger(),
+    )
+    _studio_event_method("on_image_mouse_move")(studio, event)
+    assert studio._mouse_pressed is False
+    assert calls == [(-1, -1)]
+
+
+def test_detection_controls_stay_inside_scrollable_plugin_settings():
+    source = SOURCE.read_text(encoding="utf-8")
+    assert "scroll.setWidgetResizable(True)" in source
+    assert "scroll.setHorizontalScrollBarPolicy(" in source
+    assert "detection_layout.addLayout(controls)" in source
+    for attr, position in (
+        ("outer_border_btn", "0, 0"),
+        ("graphic_border_btn", "0, 1"),
+        ("run_detection_btn", "1, 0"),
+        ("clear_btn", "1, 1"),
+    ):
+        assert f"controls.addWidget(self.{attr}, {position})" in source
+    assert "self.confidence_slider.setValue(25)" in source
