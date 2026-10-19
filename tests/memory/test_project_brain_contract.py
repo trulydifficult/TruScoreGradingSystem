@@ -76,6 +76,18 @@ class ProjectMemoryContractTests(unittest.TestCase):
         self.assertIn("SESSION_START.md", content[markers[-1]:])
         self.assertIn("older october 15 marker", content.lower())
 
+    def test_active_snapshot_stays_bounded_with_archived_history(self):
+        """A live entrypoint must not become another append-only timeline."""
+        current = (BRAIN / "SESSION_START.md").read_text(encoding="utf-8")
+        self.assertLessEqual(len(current.splitlines()), 185)
+        self.assertIn("history/SESSION_START_ARCHIVE_THROUGH_2026-10-19.md", current)
+        self.assertIn("card094", current)
+        self.assertIn("segmentation_ground_truth=false", current)
+        self.assertIn("20b5df6", current)
+        self.assertIn("NEXT tasks", current)
+        archive = BRAIN / "history" / "SESSION_START_ARCHIVE_THROUGH_2026-10-19.md"
+        self.assertTrue(archive.is_file())
+
     def test_truthfulness_notice_is_visible(self):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertIn("unverified targets", readme)

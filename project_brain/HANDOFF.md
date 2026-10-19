@@ -1752,3 +1752,46 @@ confirm view tracks card while polygon remains fixed; try 2×; check
 left plugin frame reaches lower window boundary and shows all
 controls without scroll at 2560×1440, scroll still works when small.
 
+
+## 2026-10-19 — Durable handoff after operator accepted precision annotation
+
+The operator expressed renewed confidence in ongoing TruScore development
+and explicitly requested accurate new-session reconstruction so they
+do not need to re-explain previous work. Reviewed latest branch HEAD
+20b5df6, active Studio/plugin source ownership, ADRs 0012–0016,
+five workflow statuses, actual card094 quad/YOLO rows and prior 3-card
+regression fixtures. Source and CI results agree: accepted GUI
+annotation controls; no accepted true-contour segmentation training.
+
+New data commit 20b5df6:
+`src/shared/annotations/dual_contour_proposals/card094.json`
+with 1571×2174 zero-rotation image, two corrected convex TL/TR/BR/BL
+quads and legacy enclosing YOLO rows, plus 3 images and 3 YOLO
+labels. Outer and graphic corners differ independently; combined
+bboxes equal quad AABBs. JSON approval fields remain FALSE.
+There is no source-backed measured per-pixel border accuracy or
+actual ROI benchmark for this card. Same image Git blob SHA in all
+3 exports; independent JPEG/JSON SHA256 check still to be made
+for this card. Commit 20b5df6 CI: Annotation Integrity (100 tests),
+Dataset Integrity, Phoenix Dataset Handoff, Phoenix Foundation,
+Project Memory Integrity all PASS.
+
+Operator's newest plan: current randomly sampled card outputs
+are trials; clear trial annotations/labels when ready to start
+formal dataset work, but first use a bulk renamer to assign
+unique 8-digit IDs with A/B for fronts/backs because source
+scan filenames may collide. This is an **unimplemented operator
+plan**, not approval to delete anything. Source current pairing
+rejects duplicate case-insensitive stems and saves absolute
+session paths. Do a dry-run, verify backups/manifest, preserve
+existing user GT, checkpoint and currently committed
+card065–067 export fixtures + card094 review evidence.
+The current 3-card real regression test would fail if its
+files are blindly erased. See ADR 0017.
+
+Continuity improvement: superseded 668-line SESSION_START
+moved verbatim into project_brain/history/, and the active
+snapshot reduced to one bounded page with reliable evidence
+tiers/next tasks. [SESSION_START.md](SESSION_START.md)
+is authoritative; this HANDOFF entry is chronological evidence.
+`;

@@ -6,6 +6,32 @@ Last substantive status review: 2026-10-16 (CDT) / 2026-10-17 (UTC)
 > The matrix below is a subsystem-level overview; individual passed
 > source tests and GUI/GPU smoke checks are described in dated sections.
 
+## 2026-10-19 — Most recent audited active focus (supersedes older priorities)
+
+- **Annotation Studio: PARTIAL VERIFICATION, a successful operator GUI
+  feature slice.** User verified independent outer/graphic quads,
+  label-first existing-YOLO loading, Space/Tab, quit/resume, accurate
+  pixel-space magnifier, free follow after release, 2px overlay and
+  expanding left plugin frame. No assertion of full application or
+  550-card dataset acceptance.
+- `20b5df6` added card094 image+labels+unapproved 4-vertex
+  proposal; source check finds correct class mapping, normalized
+  bbox-to-quad containment and 1571×2174 source dimensions, 0°
+  output rotation. Human visually accepted editor behavior,
+  not pixel-level ground-truth labels as an evaluated sample.
+- Five CI families all PASS on card094 commit `20b5df6`;
+  Annotation Integrity **100 tests** run 39232250637.
+- **Next highest priority:** stable eight-digit+A/B card identity
+  and reversible operator-approved cleanup of randomly chosen
+  trial exports **without removing committed QA fixtures**;
+  then explicit human-reviewed dual-contour/mask labels, Dataset
+  Studio segmentation adapter and Phoenix real training + 24-point
+  geometry acceptance. See latest [SESSION_START.md](SESSION_START.md)
+  and [ADR 0017](decisions/0017-card-identity-and-safe-corpus-reset.md).
+- No production segmentation trainer or measured 24-station grading
+  model quality has been verified. Historical "Next" tasks
+  further down this file may be superseded.
+
 ## Status Legend
 
 - NOT STARTED — no complete audit performed

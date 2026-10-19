@@ -1,9 +1,18 @@
 # TruScore Project Memory — Document Index and Authority Map
 
-Reviewed: 2026-10-16 (CDT)
+Reviewed: 2026-10-19 (source/CI/operator-GUI continuity)
 Repository: trulydifficult/TruScoreGradingSystem
 Active development branch: refactor/phoenix-foundation
 Protocol: decisions/0010-authoritative-memory-and-session-recovery.md
+
+## One active entrypoint
+
+[SESSION_START.md](SESSION_START.md) is kept intentionally bounded;
+dated formerly-active snapshots were archived under
+[history/SESSION_START_ARCHIVE_THROUGH_2026-10-19.md](history/SESSION_START_ARCHIVE_THROUGH_2026-10-19.md).
+`HANDOFF.md` is append-only chronology, **not** a second live
+backlog. Current operator's A/B naming and fixture-safe trial cleanup
+are **plans, not authorized changes**.
 
 ## Start here
 
@@ -178,3 +187,7 @@ card edges, and actual trained-model performance are separate claims.
   exactly aligned source-pixel crop and live-quad overlay,
   post-drag repaint, handle-anchored viewport, unlock behavior,
   headless CI verified / live GUI acceptance pending.
+
+- [ADR 0017 — Card/face identity and safe trial-corpus reset](decisions/0017-card-identity-and-safe-corpus-reset.md):
+  eight-digit+A/B operator intent, collision/paired-label safeguards,
+  QA fixture retention and open migration/cleanup questions.

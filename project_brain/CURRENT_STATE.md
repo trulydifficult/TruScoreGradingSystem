@@ -7,6 +7,26 @@ Latest continuity audit / dataset acceptance: 2026-10-16 CDT / 2026-10-17 UTC
 > [SESSION_START.md](SESSION_START.md). Older dated continuation paragraphs
 > further down are retained only as historical snapshots.
 
+## Latest verified Annotation Studio slice — 2026-10-19
+
+This is a short current addendum, **not a claim that older subsystems
+were completed**. The operator confirmed in the real Studio GUI:
+independent editable physical outer/printed graphic quad borders,
+label-first existing-YOLO import with disabled auto inference,
+5-card uninterrupted and another interrupted/resumed batch,
+stable accurate 2×/4× magnifier, free cursor inspection after
+release, comfortable 2px lines and expanded left plugin area.
+Branch `refactor/phoenix-foundation` commit `20b5df6` includes
+card094 unreviewed quad proposal plus three JPEG/YOLO exports;
+five relevant CI workflows PASS; Annotation Integrity 100 tests.
+`segmentation_ground_truth=false`, no accepted dense masks, no
+benchmarked ROCm precision contour model, and the 24-station
+geometry solver is unaccepted. Operator proposes 8-digit plus A/B
+unique future scan names and later *trial* export cleanup;
+no rename/deletion has happened. Read
+[SESSION_START.md](SESSION_START.md) for the **live** next work,
+not historical acceptance paragraphs below.
+
 ## Current accepted integration checkpoint
 
 - User accepted the seven-image Dataset Studio verification and improved
