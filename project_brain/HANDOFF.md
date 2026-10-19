@@ -5,12 +5,19 @@
 > [PROJECT_MEMORY_INDEX.md](PROJECT_MEMORY_INDEX.md), and
 > [PROJECT_BOOTSTRAP.md](PROJECT_BOOTSTRAP.md) before old dated entries.
 > This file preserves dated evidence and superseded next steps.
-> The active continuation is Dataset Studio → Phoenix's truthful
-> Trainer/Queue handoff, not the older 2026-10-15 queue task.
+> The active continuation is **only** in SESSION_START.md.
+> As of 2026-10-19, collision-safe card identity and preservation of
+> real annotation fixtures precede final dual-contour supervision,
+> Dataset Studio segmentation and Phoenix ROCm training. Older
+> Trainer/Queue paragraphs below are retained as dated evidence,
+> not necessarily still the next step.
 
-# TruScoreGradingSystem — Current Handoff
+# TruScoreGradingSystem — Historical handoff originally begun 2026-10-13
 
-Last updated: 2026-10-13
+> The following early "Current Objective" is historical. For current
+> status read [SESSION_START.md](SESSION_START.md) before proceeding.
+
+Historical initial entry: 2026-10-13
 
 ## Current Objective
 

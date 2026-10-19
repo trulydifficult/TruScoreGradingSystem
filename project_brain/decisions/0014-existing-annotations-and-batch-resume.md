@@ -1,7 +1,7 @@
 # ADR 0014 — Existing-label Annotation Studio mode and durable batch resume
 
 Date: 2026-10-18
-Status: IMPLEMENTED IN SOURCE, HEADLESS CI VERIFIED; LIVE WORKSTATION GUI ACCEPTANCE PENDING
+Status: OPERATOR-ACCEPTED REAL GUI IMPORT/EXPORT/QUIT-RESUME SMALL-BATCH WORKFLOW; full 550-card acceptance pending
 Scope: Modular Annotation Studio, existing two-class YOLO detection labels and independent four-point border plugin
 
 ## Operator-recovered workflow

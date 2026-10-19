@@ -1,7 +1,7 @@
 # ADR 0016 — Magnifier is the source of truth for border annotation
 
 Date: 2026-10-19
-Status: IMPLEMENTED, SOURCE-AND-RENDER CI VERIFIED; LIVE GUI ACCEPTANCE PENDING
+Status: OPERATOR-ACCEPTED REAL GUI MAGNIFIER PLACEMENT/FREE-FOLLOW; source-render CI PASS; physical GT/model accuracy not established
 
 ## Operator requirement
 

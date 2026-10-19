@@ -1,6 +1,7 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last substantive status review: 2026-10-16 (CDT) / 2026-10-17 (UTC)
+Last continuity update: 2026-10-19 (latest GUI acceptance and CI)
+Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
 
 > Current actionable handoff and evidence tiers: SESSION_START.md.
 > The matrix below is a subsystem-level overview; individual passed
@@ -60,7 +61,11 @@ Last substantive status review: 2026-10-16 (CDT) / 2026-10-17 (UTC)
 | CardSight Integration | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 | Market / Decision Pipeline | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED | NOT STARTED |
 
-## Highest-priority open gate — Dataset Studio → Phoenix
+## Historical 2026-10-16/17 open gate — Dataset Studio → Phoenix
+
+> The immediate data-identity and annotation-ground-truth prerequisites
+> are updated near the top. Do not treat this dated section as the
+> sole present next task.
 
 - Manual real seven-card **COCO detection** serialization and JPEG
   fidelity accepted: GitHub commit 8eee8ff, Dataset Integrity workflow

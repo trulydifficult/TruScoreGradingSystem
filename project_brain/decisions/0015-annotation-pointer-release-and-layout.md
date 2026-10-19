@@ -1,7 +1,7 @@
 # ADR 0015 — Stable pointer-release and responsive Detection controls
 
 Date: 2026-10-19
-Status: IMPLEMENTED; HEADLESS CI PASS; OPERATOR GUI ACCEPTANCE PENDING
+Status: OPERATOR-ACCEPTED REAL GUI DRAG STABILITY AND CONTROL LAYOUT; full-application acceptance pending
 Scope: Existing modular Studio mouse adapter and Border Detection plugin.
 
 ## Trigger and observed issue

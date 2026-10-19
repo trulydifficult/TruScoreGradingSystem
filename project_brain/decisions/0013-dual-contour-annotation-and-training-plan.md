@@ -1,7 +1,10 @@
 # ADR 0013 — Model-independent dual-contour labels and staged training delivery
 
 Date: 2026-10-18
-Status: DESIGN PROPOSAL / IMPLEMENTATION PENDING. Model selection NOT verified by measured error.
+Status: PARTIALLY DELIVERED (real editable `quad_v1` proposals,
+source-pixel magnifier, label import/resume); final reviewed
+`dual_contour_v1`, COCO/masks, ROCm segmentation training and
+model benchmarking STILL PENDING. No measured model acceptance.
 Follows: [ADR 0012](0012-dual-border-precision-contour-contract.md)
 Traceability: [PROJECT_REQUIREMENTS.md](../PROJECT_REQUIREMENTS.md) BORDER-01/02/03/04 and FACT-01/02/03/04
 

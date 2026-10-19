@@ -176,17 +176,17 @@ The accuracy of a serialized bbox, geometric correctness of actual
 card edges, and actual trained-model performance are separate claims.
 
 - [ADR 0014 — Existing YOLO labels and durable batch resume](decisions/0014-existing-annotations-and-batch-resume.md):
-  source-implemented label-first Studio mode and explicit first-unsaved-card
-  recovery, pending workstation GUI acceptance.
+  operator GUI tested label-first import, a five-card batch and
+  quit/resume on another batch; full-volume verification pending.
 
 - [ADR 0015 — Stable border mouse-release and responsive Detection controls](decisions/0015-annotation-pointer-release-and-layout.md):
-  scroll-contained plugin UI, 2×2 Detection controls, and safe pointer
-  press/drag/release ownership. CI verified; real GUI acceptance pending.
+  scroll-contained plugin UI, 2×2 Detection controls and press/drag/release
+  ownership; real operator GUI behavior accepted for sampled cards.
 
 - [ADR 0016 — Magnifier as precision annotation source of truth](decisions/0016-locked-source-pixel-precision-magnifier.md):
-  exactly aligned source-pixel crop and live-quad overlay,
-  post-drag repaint, handle-anchored viewport, unlock behavior,
-  headless CI verified / live GUI acceptance pending.
+  exact source-pixel crop and live quad, drag-time stability,
+  post-release cursor-follow inspection; GUI interaction operator-accepted
+  and source/CV rendering tested, NOT ground-truth model acceptance.
 
 - [ADR 0017 — Card/face identity and safe trial-corpus reset](decisions/0017-card-identity-and-safe-corpus-reset.md):
   eight-digit+A/B operator intent, collision/paired-label safeguards,
