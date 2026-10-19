@@ -1604,6 +1604,22 @@ class BorderDetectionSettingsWidget(QWidget):
             self.update_visualization()
         return was_dragging
 
+    def precision_target_point(self):
+        """Current image-pixel position of last grabbed polygon feature."""
+        target = getattr(self, "_precision_target", None)
+        if not target:
+            return None
+        ann, kind, name = target
+        if not any(item is ann for item in self.annotations):
+            return None
+        if kind == "corner":
+            return tuple(ann.vertices[CORNER_NAMES.index(name)])
+        if kind == "side":
+            return side_midpoint(validate_quad(ann.vertices), name)
+        if kind == "border":
+            return (ann.center_x, ann.center_y)
+        return None
+
     # Legacy method for backward compatibility
     def on_canvas_release(self, canvas_x, canvas_y):
         """Legacy method - delegates to handle_release"""
@@ -1637,6 +1653,7 @@ class BorderDetectionSettingsWidget(QWidget):
                 if corner:
                     hx, hy = self.selected_annotation.vertices[CORNER_NAMES.index(corner)]
                     self._drag_grab_offset = (img_x - hx, img_y - hy)
+                    self._precision_target = (self.selected_annotation, "corner", corner)
                     self.dragging_corner = corner
                     self.dragging_side = None
                     self.dragging_border = False
@@ -1651,6 +1668,7 @@ class BorderDetectionSettingsWidget(QWidget):
                 if side:
                     hx, hy = side_midpoint(validate_quad(self.selected_annotation.vertices), side)
                     self._drag_grab_offset = (img_x - hx, img_y - hy)
+                    self._precision_target = (self.selected_annotation, "side", side)
                     self.dragging_side = side
                     self.dragging_corner = None
                     self.dragging_border = False
@@ -1663,6 +1681,7 @@ class BorderDetectionSettingsWidget(QWidget):
                 # Check border selection (using x,y coords since second BorderAnnotation class is active)
                 if self.selected_annotation.contains_point(img_x, img_y):
                     self._drag_grab_offset = (0.0, 0.0)
+                    self._precision_target = (self.selected_annotation, "border", None)
                     self.dragging_border = True
                     self.mouse_pressed = True
                     self.last_mouse_x, self.last_mouse_y = img_x, img_y
@@ -1715,6 +1734,7 @@ class BorderDetectionSettingsWidget(QWidget):
             self.dragging_border = False
             self.mouse_pressed = False
             self._drag_grab_offset = (0.0, 0.0)
+            self._precision_target = None
 
             # Update display by notifying studio
             self.update_visualization()
@@ -2273,6 +2293,12 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             return self.settings_widget.handle_drag(image_x, image_y)
         return False
     
+    def precision_target_point(self):
+        """Forward actual edited source pixel coordinates to the Studio."""
+        if self.settings_widget:
+            return self.settings_widget.precision_target_point()
+        return None
+
     def handle_release(self, image_x: float, image_y: float) -> bool:
         """Delegate to settings widget - Interface contract method"""
         if self.settings_widget:
@@ -2391,6 +2417,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         widget.current_image = image_data
         widget.current_image_path = str(image_path)
         widget.annotations = selected
+        widget._precision_target = None
         widget.selected_annotation = selected[0]  # Always outer first.
         widget.dragging_corner = None
         widget.dragging_side = None
