@@ -2214,6 +2214,7 @@ class ModularAnnotationStudio(QMainWindow):
         Finalizes drag operations.
         """
         try:
+            had_active_press = getattr(self, "_mouse_pressed", False)
             self._mouse_pressed = False  # Clear mouse state
             
             # Extract canvas coordinates from event (PyQt6)
@@ -2224,7 +2225,7 @@ class ModularAnnotationStudio(QMainWindow):
             # MASTER COORDINATE TRANSFORM
             image_x, image_y = self.canvas_to_image_coords(canvas_x, canvas_y)
             
-            if hasattr(self, 'current_plugin') and self.current_plugin:
+            if had_active_press and hasattr(self, 'current_plugin') and self.current_plugin:
                 # Release clears the drag even when the pointer is outside.
                 if hasattr(self.current_plugin, 'handle_release'):
                     handled = self.current_plugin.handle_release(image_x, image_y)
