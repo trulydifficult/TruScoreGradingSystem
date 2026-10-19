@@ -23,6 +23,7 @@ from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject
 from PyQt6.QtGui import QKeySequence, QFont, QShortcut, QImage, QPixmap
 
 from modules.annotation_studio.static_background import StaticBackgroundImage
+from modules.annotation_studio.magnifier_geometry import MagnifierViewport
 from modules.annotation_studio.existing_label_sessions import (
     AnnotationBatchError, build_session, read_session, save_session,
     record_completed, next_pending,
@@ -178,6 +179,7 @@ class ModularAnnotationStudio(QMainWindow):
         
         # Magnifier settings - DEFAULT TO 2X
         self.current_magnification = 2
+        self._magnifier_locked_center = None
         
         # UI components (will be created in setup_ui)
         self.core_panel = None
@@ -595,6 +597,12 @@ class ModularAnnotationStudio(QMainWindow):
         mag_controls.addWidget(self.mag_2x_btn)
         mag_controls.addWidget(self.mag_4x_btn)
         magnifier_layout.addLayout(mag_controls)
+        self.magnifier_follow_btn = QPushButton("Follow Cursor")
+        self.magnifier_follow_btn.setToolTip(
+            "Unlock last edited area; click another handle to lock it again"
+        )
+        self.magnifier_follow_btn.clicked.connect(self.unlock_precision_magnifier)
+        magnifier_layout.addWidget(self.magnifier_follow_btn)
         
         layout.addWidget(magnifier_frame, 1)  # Magnifier at bottom
         layout.addStretch(0)  # No bottom space
@@ -957,6 +965,8 @@ class ModularAnnotationStudio(QMainWindow):
             # CRITICAL: Clear annotations for new image (like calibration.py)
             self.current_image = None
             self.current_image_path = image_path
+            self._magnifier_locked_center = None
+            self._cached_rotated_image = None
             
             # Reset rotation for new image (like calibration.py lines 1232-1235)
             self.rotation_angle = 0.0
@@ -1680,6 +1690,7 @@ class ModularAnnotationStudio(QMainWindow):
             message = f"Annotation session finished\n{completed}/{total} successfully saved"
         self.image_label.setText(message)
         self.card_counter.setText(f"{completed}/{total} saved")
+        self._magnifier_locked_center = None
         if hasattr(self, "magnifier_display"):
             self.magnifier_display.clear()
         self.update_navigation_buttons()
@@ -1843,6 +1854,34 @@ class ModularAnnotationStudio(QMainWindow):
         
         self.logger.debug("Rotation reset to 0.0°")
     
+    def unlock_precision_magnifier(self):
+        """Return to cursor-controlled browsing until the next grab."""
+        self._magnifier_locked_center = None
+        if hasattr(self, "last_magnifier_x"):
+            self.update_magnifier(self.last_magnifier_x, self.last_magnifier_y)
+
+    def _keep_precision_target_visible(self):
+        """Move the crop only when an actively dragged handle nears an edge."""
+        center = getattr(self, "_magnifier_locked_center", None)
+        plugin = getattr(self, "current_plugin", None)
+        if center is None or plugin is None or not hasattr(plugin, "precision_target_point"):
+            return
+        point = plugin.precision_target_point()
+        if point is None:
+            return
+        frame = MagnifierViewport.centered(
+            *center, getattr(self, "current_magnification", 2)
+        )
+        u, v = frame.project(*point)
+        margin = 32
+        target_u = max(margin, min(frame.output - margin, u))
+        target_v = max(margin, min(frame.output - margin, v))
+        if target_u != u or target_v != v:
+            self._magnifier_locked_center = (
+                center[0] + (u - target_u) / frame.scale,
+                center[1] + (v - target_v) / frame.scale,
+            )
+
     def set_magnification(self, level):
         """Set magnifier level (2x or 4x only) and force immediate update"""
         # Update button states
@@ -1886,228 +1925,108 @@ class ModularAnnotationStudio(QMainWindow):
         self._cached_rotated_image = rotated
         return rotated
     
-    def draw_borders_on_magnifier(self, magnified_image, center_x, center_y, crop_size):
-        """Draw border LINES (not anchors) on magnifier - ported from border_calibration.py"""
-        try:
-            import cv2
-            
-            # Ask plugin for annotations
-            if not hasattr(self, 'current_plugin') or not self.current_plugin:
-                return magnified_image
-            
-            # Get annotations from plugin
-            annotations = None
-            if hasattr(self.current_plugin, 'settings_widget') and self.current_plugin.settings_widget:
-                annotations = getattr(self.current_plugin.settings_widget, 'annotations', None)
-            elif hasattr(self.current_plugin, 'annotations'):
-                annotations = self.current_plugin.annotations
-            
-            if not annotations:
-                return magnified_image
-            
-            # Calculate magnification zoom (400x400 display / crop_size)
-            zoom = 400 / (crop_size * 2)  # crop_size is half-width
-            
-            # Calculate offset (top-left of crop region)
-            offset_x = center_x - crop_size
-            offset_y = center_y - crop_size
-            
-            # Draw each border that intersects magnifier region
-            for annotation in annotations:
-                # Border coordinates in image space
-                border_x1 = min(annotation.x1, annotation.x2)
-                border_y1 = min(annotation.y1, annotation.y2)
-                border_x2 = max(annotation.x1, annotation.x2)
-                border_y2 = max(annotation.y1, annotation.y2)
-                
-                # Check if border intersects with magnified region
-                mag_x1, mag_y1 = offset_x, offset_y
-                mag_x2, mag_y2 = offset_x + (crop_size * 2), offset_y + (crop_size * 2)
-                
-                if (border_x2 >= mag_x1 and border_x1 <= mag_x2 and
-                    border_y2 >= mag_y1 and border_y1 <= mag_y2):
-                    
-                    # Convert to magnifier coordinates
-                    mag_border_x1 = int((border_x1 - offset_x) * zoom)
-                    mag_border_y1 = int((border_y1 - offset_y) * zoom)
-                    mag_border_x2 = int((border_x2 - offset_x) * zoom)
-                    mag_border_y2 = int((border_y2 - offset_y) * zoom)
-                    
-                    # Clamp to magnifier bounds
-                    mag_border_x1 = max(0, min(400, mag_border_x1))
-                    mag_border_y1 = max(0, min(400, mag_border_y1))
-                    mag_border_x2 = max(0, min(400, mag_border_x2))
-                    mag_border_y2 = max(0, min(400, mag_border_y2))
-                    
-                    # Get color for this annotation class (match main display colors)
-                    if annotation.class_id == 0:
-                        color = (255, 255, 0)  # CYAN for outer border (BGR)
-                    elif annotation.class_id == 1:
-                        color = (255, 0, 255)  # MAGENTA for graphic border (BGR)
-                    else:
-                        color = (255, 255, 255)  # White default
-                    
-                    # Draw exact quad in the existing Studio magnifier.
-                    if getattr(annotation, 'vertices', None):
-                        import numpy as np
-                        points = np.asarray([
-                            ((x - offset_x) * zoom, (y - offset_y) * zoom)
-                            for x, y in annotation.vertices
-                        ], dtype=np.float32)
-                        cv2.polylines(magnified_image,
-                                      [np.rint(points).astype(np.int32)],
-                                      True, color, 2)
-                    elif mag_border_x2 > mag_border_x1 and mag_border_y2 > mag_border_y1:
-                        cv2.rectangle(magnified_image,
-                                      (mag_border_x1, mag_border_y1),
-                                      (mag_border_x2, mag_border_y2),
-                                      color, 2)
-            
+    def draw_borders_on_magnifier(self, magnified_image, viewport):
+        """Draw actual image-space polygons through the source photo's crop.
+
+        A single affine MagnifierViewport owns both transforms, avoiding
+        a different zoom or image origin for the overlay.
+        """
+        plugin = getattr(self, "current_plugin", None)
+        if plugin is None:
             return magnified_image
-            
-        except Exception as e:
-            self.logger.error(f"Draw borders on magnifier failed: {e}")
+        widget = getattr(plugin, "settings_widget", None)
+        annotations = (getattr(widget, "annotations", None)
+                       if widget is not None else getattr(plugin, "annotations", None))
+        if not annotations:
             return magnified_image
-    
+        import cv2
+        import numpy as np
+        for ann in annotations:
+            verts = (ann.vertices if getattr(ann, "vertices", None)
+                     else ((ann.x1, ann.y1), (ann.x2, ann.y1),
+                           (ann.x2, ann.y2), (ann.x1, ann.y2)))
+            coords = np.rint(np.asarray(
+                [viewport.project(float(x), float(y)) for x, y in verts],
+                dtype=np.float64
+            )).astype(np.int32)
+            color = ((255, 255, 0) if ann.class_id == 0
+                     else (255, 0, 255) if ann.class_id == 1
+                     else (255, 255, 255))
+            cv2.polylines(magnified_image, [coords], True, color, 1)
+        return magnified_image
+
     def update_magnifier(self, canvas_x=None, canvas_y=None):
-        """Update magnifier display with clean rotated image (NO overlays) around mouse position"""
+        """Magnify exact card pixels with currently edited polygons, not old ones."""
+        if getattr(self, "original_image", None) is None:
+            return
         try:
-            # Store last position for magnification toggle
-            if canvas_x is not None:
-                self.last_magnifier_x = canvas_x
-                self.last_magnifier_y = canvas_y
-            
-            if not hasattr(self, 'original_image') or self.original_image is None:
-                return
-            
             import cv2
             import numpy as np
             from PyQt6.QtGui import QImage, QPixmap
-            
-            # CRITICAL FIX: Use clean rotated original (NO overlays/anchors)
-            if hasattr(self, 'rotation_angle') and abs(self.rotation_angle) > 0.001:
-                # Create clean rotated image for magnifier
-                magnifier_image = self._get_clean_rotated_image()
-            else:
-                # Use original directly
-                magnifier_image = self.original_image.copy()
-            
-            # Convert canvas coordinates to image coordinates
+
             if canvas_x is not None and canvas_y is not None:
-                # Get the displayed pixmap size
-                if hasattr(self, 'image_label') and self.image_label.pixmap():
-                    pixmap = self.image_label.pixmap()
-                    display_w = pixmap.width()
-                    display_h = pixmap.height()
-                    
-                    # CRITICAL: Account for pixmap centering in label
-                    # If label is larger than pixmap, pixmap is centered
-                    label_w = self.image_label.width()
-                    label_h = self.image_label.height()
-                    
-                    # Calculate pixmap offset within label
-                    offset_x = (label_w - display_w) // 2 if label_w > display_w else 0
-                    offset_y = (label_h - display_h) // 2 if label_h > display_h else 0
-                    
-                    # Adjust canvas coords to pixmap coords
-                    pixmap_x = canvas_x - offset_x
-                    pixmap_y = canvas_y - offset_y
-                    
-                    # Get actual image size
-                    img_h, img_w = magnifier_image.shape[:2]
-                    
-                    # Calculate scale factor
-                    scale_x = img_w / display_w if display_w > 0 else 1
-                    scale_y = img_h / display_h if display_h > 0 else 1
-                    
-                    # Convert pixmap coords to image coords
-                    img_x = int(pixmap_x * scale_x)
-                    img_y = int(pixmap_y * scale_y)
-                    
-                    # CRITICAL FIX: Clamp magnifier center to stay within image bounds
-                    img_x = max(0, min(img_w - 1, img_x))
-                    img_y = max(0, min(img_h - 1, img_y))
-                else:
-                    img_x, img_y = int(canvas_x), int(canvas_y)
+                self.last_magnifier_x = canvas_x
+                self.last_magnifier_y = canvas_y
+
+            locked = getattr(self, "_magnifier_locked_center", None)
+            if locked is not None:
+                x, y = locked
+            elif canvas_x is not None and canvas_y is not None:
+                # The SAME canvas-to-image transform that moves quads.
+                x, y = self.canvas_to_image_coords(canvas_x, canvas_y)
+                if x < 0 or y < 0:
+                    return
             else:
-                # Default to center
-                img_h, img_w = magnifier_image.shape[:2]
-                img_x, img_y = img_w // 2, img_h // 2
-            
-            # Get magnification level (default 2x)
-            mag_level = getattr(self, 'current_magnification', 2)
-            
-            # Calculate crop region around mouse - EXACT from border_calibration.py
-            region_size = 400 // mag_level  # 2x = 200px region, 4x = 100px region
-            half_region = region_size // 2
-            
-            x1 = int(img_x - half_region)
-            y1 = int(img_y - half_region)
-            x2 = int(img_x + half_region)
-            y2 = int(img_y + half_region)
-            
-            # Handle edge cases by padding with zeros if needed
-            img_h, img_w = magnifier_image.shape[:2]
-            
-            # Create padded region for edge cases
-            pad_left = max(0, -x1)
-            pad_top = max(0, -y1)
-            pad_right = max(0, x2 - img_w)
-            pad_bottom = max(0, y2 - img_h)
-            
-            # Adjust bounds to valid image area
-            x1_clipped = max(0, x1)
-            y1_clipped = max(0, y1)
-            x2_clipped = min(img_w, x2)
-            y2_clipped = min(img_h, y2)
-            
-            # Extract valid region
-            crop = magnifier_image[y1_clipped:y2_clipped, x1_clipped:x2_clipped].copy()
-            
-            if crop.size == 0:
-                return
-            
-            # Pad if necessary to maintain proper size - EXACT from border_calibration.py
-            if pad_left > 0 or pad_top > 0 or pad_right > 0 or pad_bottom > 0:
-                if len(crop.shape) == 3:
-                    crop = np.pad(crop, ((pad_top, pad_bottom), (pad_left, pad_right), (0, 0)), 
-                                 'constant', constant_values=0)
-                else:
-                    crop = np.pad(crop, ((pad_top, pad_bottom), (pad_left, pad_right)), 
-                                 'constant', constant_values=0)
-            
-            # Resize to 400x400 magnifier (now won't stretch!)
-            magnified = cv2.resize(crop, (400, 400), interpolation=cv2.INTER_LINEAR)
-            
-            # CRITICAL: Draw border LINES (not anchors) on magnifier
-            magnified = self.draw_borders_on_magnifier(magnified, img_x, img_y, half_region)
-            
-            # Draw full crosshair lines at center to show mouse position
-            center_x, center_y = 200, 200  # Center of 400x400 window
-            crosshair_color = (0, 255, 255)  # Yellow in BGR
-            crosshair_thickness = 1  # Thin lines so they don't block view
-            
-            # Horizontal line - full width (left to right)
-            cv2.line(magnified, 
-                    (0, center_y), 
-                    (400, center_y), 
-                    crosshair_color, crosshair_thickness)
-            # Vertical line - full height (top to bottom)
-            cv2.line(magnified, 
-                    (center_x, 0), 
-                    (center_x, 400), 
-                    crosshair_color, crosshair_thickness)
-            
-            # Convert to QPixmap for display
-            h, w, ch = magnified.shape
-            bytes_per_line = ch * w
-            q_image = QImage(magnified.data, w, h, bytes_per_line, QImage.Format.Format_RGB888)
-            pixmap = QPixmap.fromImage(q_image.rgbSwapped())
-            
-            self.magnifier_display.setPixmap(pixmap)
-            
-        except Exception as e:
-            self.logger.error(f"Magnifier update failed: {e}")
+                h, w = self.original_image.shape[:2]
+                x, y = w / 2, h / 2
+
+            source = (self._get_clean_rotated_image()
+                      if abs(getattr(self, "rotation_angle", 0.0)) > 0.001
+                      else self.original_image)
+            h, w = source.shape[:2]
+            x = max(0, min(w - 1, float(x)))
+            y = max(0, min(h - 1, float(y)))
+            viewport = MagnifierViewport.centered(
+                x, y, getattr(self, "current_magnification", 2)
+            )
+            side, x0, y0 = viewport.side, viewport.left, viewport.top
+            crop = np.zeros((side, side, source.shape[2]), dtype=source.dtype)
+            sx0, sy0 = max(0, x0), max(0, y0)
+            sx1, sy1 = min(w, x0 + side), min(h, y0 + side)
+            if sx1 > sx0 and sy1 > sy0:
+                crop[sy0-y0:sy1-y0, sx0-x0:sx1-x0] = source[sy0:sy1, sx0:sx1]
+            # True original pixels (2x/4x blocks), without interpolation.
+            magnified = cv2.resize(
+                crop, (viewport.output, viewport.output),
+                interpolation=cv2.INTER_NEAREST,
+            )
+            magnified = self.draw_borders_on_magnifier(magnified, viewport)
+
+            # Crosshair follows the edited feature's LIVE geometry,
+            # not a mouse sample taken before the last drag movement.
+            plugin = getattr(self, "current_plugin", None)
+            target = None
+            if (locked is not None and plugin is not None
+                    and hasattr(plugin, "precision_target_point")):
+                target = plugin.precision_target_point()
+            ux, uy = viewport.project(*(target if target is not None else (x, y)))
+            cx, cy = round(ux), round(uy)
+            if 0 <= cx < viewport.output and 0 <= cy < viewport.output:
+                color = (0, 255, 255)
+                cv2.line(magnified, (cx - 12, cy), (cx - 3, cy), color, 1)
+                cv2.line(magnified, (cx + 3, cy), (cx + 12, cy), color, 1)
+                cv2.line(magnified, (cx, cy - 12), (cx, cy - 3), color, 1)
+                cv2.line(magnified, (cx, cy + 3), (cx, cy + 12), color, 1)
+
+            ih, iw, ch = magnified.shape
+            qimage = QImage(magnified.data, iw, ih, iw * ch,
+                            QImage.Format.Format_RGB888)
+            self.magnifier_display.setPixmap(
+                QPixmap.fromImage(qimage.rgbSwapped())
+            )
+            self._magnifier_viewport = viewport
+        except Exception as error:
+            self.logger.error("Precision magnifier rendering failed: %s", error)
 
     def apply_image_rotation(self, angle):
         """DEPRECATED - Rotation now applied during display_current_image()
