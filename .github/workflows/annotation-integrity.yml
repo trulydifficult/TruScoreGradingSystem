@@ -30,6 +30,7 @@ jobs:
             tests/annotation
             src/shared/dataset_tools/border_quad.py
             src/modules/annotation_studio/existing_label_sessions.py
+            src/modules/annotation_studio/magnifier_geometry.py
             src/shared/annotations/combined_dual_class
             src/shared/annotations/graphic_border_model
             src/shared/annotations/outer_border_model
