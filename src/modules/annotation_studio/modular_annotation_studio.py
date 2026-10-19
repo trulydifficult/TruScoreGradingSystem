@@ -2130,7 +2130,9 @@ class ModularAnnotationStudio(QMainWindow):
             5. Studio refreshes display if needed
         """
         try:
-            self._mouse_pressed = True  # Track mouse state for drag detection
+            if hasattr(event, "button") and event.button() != Qt.MouseButton.LeftButton:
+                return
+            self._mouse_pressed = False
             
             # Extract canvas coordinates from event (PyQt6)
             pos = event.position()
@@ -2143,6 +2145,7 @@ class ModularAnnotationStudio(QMainWindow):
             # Check if coordinates are valid
             if image_x < 0 or image_y < 0:
                 return  # Click outside image bounds
+            self._mouse_pressed = True
             
             if hasattr(self, 'current_plugin') and self.current_plugin:
                 # Try new interface method first (handle_click)
@@ -2176,10 +2179,17 @@ class ModularAnnotationStudio(QMainWindow):
             if self.current_image is not None:
                 self.update_magnifier(int(canvas_x), int(canvas_y))
             
-            # Forward to drag handler ONLY if dragging
+            # Mouse tracking emits hover events. Recover from a missed
+            # release without permitting another edit.
+            if hasattr(event, "buttons") and not (event.buttons() & Qt.MouseButton.LeftButton):
+                if getattr(self, "_mouse_pressed", False):
+                    self._mouse_pressed = False
+                    plugin = getattr(self, "current_plugin", None)
+                    if plugin and hasattr(plugin, "handle_release"):
+                        plugin.handle_release(-1, -1)
+                return
             if hasattr(self, 'current_plugin') and self.current_plugin:
-                # Only call drag if mouse is pressed (actual drag operation)
-                if hasattr(self, '_mouse_pressed') and self._mouse_pressed:
+                if getattr(self, '_mouse_pressed', False):
                     # MASTER COORDINATE TRANSFORM
                     image_x, image_y = self.canvas_to_image_coords(canvas_x, canvas_y)
                     
@@ -2215,17 +2225,14 @@ class ModularAnnotationStudio(QMainWindow):
             image_x, image_y = self.canvas_to_image_coords(canvas_x, canvas_y)
             
             if hasattr(self, 'current_plugin') and self.current_plugin:
-                if image_x >= 0 and image_y >= 0:  # Valid coordinates
-                    # Try new interface method first (handle_release)
-                    if hasattr(self.current_plugin, 'handle_release'):
-                        handled = self.current_plugin.handle_release(image_x, image_y)
-                        if handled:
-                            self.display_current_image()
-                    
-                    # Fallback to old method for backward compatibility
-                    elif hasattr(self.current_plugin, 'on_canvas_release'):
-                        self.current_plugin.on_canvas_release(canvas_x, canvas_y)
-                        
+                # Release clears the drag even when the pointer is outside.
+                if hasattr(self.current_plugin, 'handle_release'):
+                    handled = self.current_plugin.handle_release(image_x, image_y)
+                    if handled:
+                        self.display_current_image()
+                elif hasattr(self.current_plugin, 'on_canvas_release'):
+                    self.current_plugin.on_canvas_release(canvas_x, canvas_y)
+
         except Exception as e:
             self.logger.error(f"Mouse release handling failed: {e}")
 

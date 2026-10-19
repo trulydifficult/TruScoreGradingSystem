@@ -45,7 +45,7 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from collections import defaultdict
 from shared.dataset_tools.border_quad import (
-    validate_quad, rect_to_quad, quad_bounds, side_midpoint,
+    validate_quad, rect_to_quad, quad_bounds, side_midpoint, CORNER_NAMES,
     nearest_corner, nearest_side_handle, quad_contains,
     moved_corner, moved_side, moved_quad, quad_inside_image,
 )
@@ -343,6 +343,7 @@ class BorderDetectionSettingsWidget(QWidget):
         self.last_mouse_x = 0
         self.last_mouse_y = 0
         self.mouse_pressed = False
+        self._drag_grab_offset = (0.0, 0.0)
 
         # Annotation versioning (used by studio cache invalidation)
         self.annotation_version = 0
@@ -1513,15 +1514,15 @@ class BorderDetectionSettingsWidget(QWidget):
         Returns:
             True if drag was handled
         """
-        if not self.selected_annotation:
+        # An edit requires an active grab, never a hover event.
+        if not self.selected_annotation or not getattr(self, "mouse_pressed", False):
             return False
-
-        # Skip invalid coordinates
         if image_x < 0 or image_y < 0:
             return False
-
+        grab_dx, grab_dy = getattr(self, "_drag_grab_offset", (0.0, 0.0))
         if self.dragging_corner:
-            if not self.selected_annotation.move_corner(self.dragging_corner, image_x, image_y):
+            if not self.selected_annotation.move_corner(
+                    self.dragging_corner, image_x - grab_dx, image_y - grab_dy):
                 return False
             self._bump_annotation_version()
             # Throttle display updates for BUTTERY SMOOTH performance at 165fps
@@ -1533,7 +1534,8 @@ class BorderDetectionSettingsWidget(QWidget):
             return True
             
         elif self.dragging_side:
-            if not self.selected_annotation.move_side(self.dragging_side, image_x, image_y):
+            if not self.selected_annotation.move_side(
+                    self.dragging_side, image_x - grab_dx, image_y - grab_dy):
                 return False
             self._bump_annotation_version()
             if not hasattr(self, '_drag_update_timer') or not self._drag_update_timer.isActive():
@@ -1586,20 +1588,22 @@ class BorderDetectionSettingsWidget(QWidget):
                        self.dragging_side is not None or 
                        self.dragging_border)
         
-        # Clear all drag states
+        # Commit the last drag position and clear state regardless of
+        # whether release occurred inside the image bounds.
+        self.mouse_pressed = False
         self.dragging_corner = None
         self.dragging_side = None
         self.dragging_border = False
-        
-        # Clear dragging flag and trigger final update
-        if hasattr(self, '_dragging'):
-            self._dragging = False
-            self._drag_update_counter = 0  # Reset counter for next drag
-            # Final update after drag completes
+        self._drag_grab_offset = (0.0, 0.0)
+        self._dragging = False
+        self._drag_update_counter = 0
+        timer = getattr(self, "_drag_update_timer", None)
+        if timer is not None and timer.isActive():
+            timer.stop()
+        if was_dragging:
             self.update_visualization()
-        
         return was_dragging
-    
+
     # Legacy method for backward compatibility
     def on_canvas_release(self, canvas_x, canvas_y):
         """Legacy method - delegates to handle_release"""
@@ -1631,6 +1635,8 @@ class BorderDetectionSettingsWidget(QWidget):
                 # Check corner handles with MASSIVE hit zones for 2560x1440 monitor
                 corner = self.selected_annotation.get_corner_handle(img_x, img_y, handle_size=25)
                 if corner:
+                    hx, hy = self.selected_annotation.vertices[CORNER_NAMES.index(corner)]
+                    self._drag_grab_offset = (img_x - hx, img_y - hy)
                     self.dragging_corner = corner
                     self.dragging_side = None
                     self.dragging_border = False
@@ -1643,6 +1649,8 @@ class BorderDetectionSettingsWidget(QWidget):
                 # Check side handles with MASSIVE hit zones
                 side = self.selected_annotation.get_side_handle(img_x, img_y, handle_size=15)
                 if side:
+                    hx, hy = side_midpoint(validate_quad(self.selected_annotation.vertices), side)
+                    self._drag_grab_offset = (img_x - hx, img_y - hy)
                     self.dragging_side = side
                     self.dragging_corner = None
                     self.dragging_border = False
@@ -1654,6 +1662,7 @@ class BorderDetectionSettingsWidget(QWidget):
 
                 # Check border selection (using x,y coords since second BorderAnnotation class is active)
                 if self.selected_annotation.contains_point(img_x, img_y):
+                    self._drag_grab_offset = (0.0, 0.0)
                     self.dragging_border = True
                     self.mouse_pressed = True
                     self.last_mouse_x, self.last_mouse_y = img_x, img_y
@@ -1704,6 +1713,8 @@ class BorderDetectionSettingsWidget(QWidget):
             self.dragging_corner = None
             self.dragging_side = None
             self.dragging_border = False
+            self.mouse_pressed = False
+            self._drag_grab_offset = (0.0, 0.0)
 
             # Update display by notifying studio
             self.update_visualization()
