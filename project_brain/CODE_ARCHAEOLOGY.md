@@ -378,3 +378,22 @@ isolated to the Studio event adapter, existing border plugin, and
 existing pure quad source tests. A scroll viewport prevents group
 layout minimum sizes from overlapping under vertical pressure.
 See ADR 0015; runtime acceptance still pending.
+
+## Precision magnifier accuracy archaeology — 2026-10-19
+
+Compared current `modular_annotation_studio.py`
+`canvas_to_image_coords`, `display_current_image`,
+`_get_clean_rotated_image`, `update_magnifier`,
+`draw_borders_on_magnifier`, and
+`on_image_mouse_press/move/release`; current border plugin
+`BorderAnnotation`, edit and selected-handle methods;
+and original `src/revolutionary_border_calibration.py`
+Tk magnifier/canvas mechanisms. Legacy magnifier sampled
+current mouse coordinates but lacked the new independent-quad
+viewport synchronization. Critical source defect: magnifier paint
+preceded polygon drag mutation by one mouse event, so after release
+the enlarged line could be stale while the main source border had
+moved. Added one pure source-pixel viewport implementation rather
+than copying the Studio coordinate mapping into plugin. Kept plugin
+as owner of selected corner/edge; did not duplicate annotator
+algorithms. See ADR 0016; CI 97 PASS, actual GUI QA pending.

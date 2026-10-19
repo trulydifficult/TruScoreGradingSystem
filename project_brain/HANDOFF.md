@@ -1634,3 +1634,76 @@ group, with a scrollbar rather than overlap at smaller height.
 Confirm ordinary fresh YOLO detection and imported-label Tab/Space/
 Resume still operate. Only then resume bulk 550-card refinement.
 
+
+## 2026-10-19 PRECISION MAGNIFIER CORRECTION — 97 TESTS GREEN
+
+OPERATOR CLARIFICATION: Magnifier is the annotation source of truth;
+operator uses main image mostly to GRAB corner/side handles. Merely
+telling the operator that the zoom viewport moves is inadequate. User
+requires magnified edges to show EXACT currently placed quad geometry
+against the CORRESPONDING source image pixels, including after release.
+
+Confirmed prior defect in active `modular_annotation_studio.py`:
+`on_image_mouse_move` called `update_magnifier` BEFORE passing the
+new mouse coordinates through `current_plugin.handle_drag`, leaving
+magnifier rendered from one event behind the actual annotation. It
+also recomputed cursor-to-image geometry manually from the displayed
+pixmap instead of sharing the canonical Studio transform. Release
+did not always repaint the final annotation in magnifier. No
+evidence the old magnifier was a reliable frozen source of truth.
+
+CODE IMPLEMENTED on `refactor/phoenix-foundation`:
+- `src/modules/annotation_studio/magnifier_geometry.py` owns a pure
+  `MagnifierViewport` affine source-image crop and polygon projection
+  at exact original source-pixel scale 2× or 4×. Both the actual source
+  crop and quad overlay pass through the SAME viewport; no re-derived
+  zoom/origin from Qt's already-scaled pixmap.
+- `ModularAnnotationStudio.update_magnifier` uses the current source
+  pixels, shared Studio `canvas_to_image_coords`, exact crop padding,
+  `cv2.INTER_NEAREST` display of raw original pixels (not
+  interpolated fictional pixels), and thin live quads. A short yellow
+  crosshair shows the LIVE corner/side location. The same clean image
+  rotation transform is used as in the main display. The old
+  crosshair anchored to the mouse no longer obscures the whole view.
+- On click, the Studio locks the magnifier around the grabbed handle
+  returned by the existing border plugin's `precision_target_point`
+  method. During drag, geometry is modified FIRST, then the magnifier
+  repaints the edited polygon over the locked photo crop. Small
+  adjustments keep the viewport stationary; as a moved handle
+  approaches the crop edge, it pans only enough to keep it visible.
+  On release, a final repaint records the actual last position and
+  the view stays locked as the cursor moves elsewhere.
+- A small `Follow Cursor` button on the magnifier unlocks cursor
+  tracking for manual exploration. Clicking another handle relocks
+  around the new exact feature. Existing 2×/4× remain.
+- New card load / completed batch clears the anchor; source card
+  change clears cached rotated-image pixels (and the rotation cache
+  refuses None). The plugin controls which feature is edited; Studio
+  owns Qt events and image/magnifier coordinates.
+- Existing approved functionality: independent corner/side editing,
+  YOLO inference for fresh cards, imported-label disabled YOLO,
+  Tab/Space, three legacy YOLO exports, rotated image export,
+  quad-proposal JSON and confirmed-save Resume were not replaced.
+
+VERIFICATION: GitHub Actions Annotation Integrity run
+`39227192988` on commit `069c87c`: **97 tests PASS**.
+Tests include real numpy/OpenCV source-pixel-nearest rendering
+with a source-pixel signature, actual polygon overlay pixel
+coordinates, real extracted Studio press→drag→render→release
+ordering, retained lock across hover, pan guard, viewport affine
+round-trip, image-edge padding, and all prior label import/export
+contracts. IMPORTANT: This is headless source/runtime test of
+extracted methods, **not yet operator acceptance** in PyQt/Wayland
+workstation. Visual source-edge precision is bounded by scanned
+image resolution and operator labels, not measured model accuracy.
+
+NEXT: user pull branch and test with 2-3 disposable imported-label
+cards at 4×. Grab a graphic corner, adjust it while observing the
+magnifier, release and move mouse. Photo crop and border geometry
+should remain frozen and accurately aligned; crosshair marks the
+saved corner. Click another handle to recenter; click Follow Cursor
+to unlock. Test a second card and a rotation, plus 2×. If the
+magnifier shifts or geometry lags, request screenshot/video and
+actual runtime details. Do NOT start bulk 550 reannotation until
+this precision GUI gate passes. See ADR 0016.
+

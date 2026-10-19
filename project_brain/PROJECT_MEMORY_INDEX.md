@@ -173,3 +173,8 @@ card edges, and actual trained-model performance are separate claims.
 - [ADR 0015 — Stable border mouse-release and responsive Detection controls](decisions/0015-annotation-pointer-release-and-layout.md):
   scroll-contained plugin UI, 2×2 Detection controls, and safe pointer
   press/drag/release ownership. CI verified; real GUI acceptance pending.
+
+- [ADR 0016 — Magnifier as precision annotation source of truth](decisions/0016-locked-source-pixel-precision-magnifier.md):
+  exactly aligned source-pixel crop and live-quad overlay,
+  post-drag repaint, handle-anchored viewport, unlock behavior,
+  headless CI verified / live GUI acceptance pending.
