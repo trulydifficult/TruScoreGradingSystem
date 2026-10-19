@@ -40,3 +40,15 @@ Headless Annotation Integrity CI initially PASSED 79 tests at commit `60b735b` (
 Only then attempt the user's ~550 historical cards.
 
 No Detectron2/PointRend trainer was changed. No simulated training/performance metrics are accepted.
+
+## 2026-10-19 — Live workstation import/resume accepted
+
+Operator verified 5 imported cards continuously and separately
+quit/resumed a 5-card batch after one successful card. This upgrades
+the current imported-label workflow's basic import/save/resume gate to
+**operator workstation accepted**. Precision of saved physical-border
+geometry and future full-batch stability remain separate gates.
+
+See ADR 0015 for the subsequent release/overflow repairs and pending
+GUI acceptance; the new layout/drag changes have not yet been
+operator tested.

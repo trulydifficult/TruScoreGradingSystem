@@ -169,3 +169,7 @@ card edges, and actual trained-model performance are separate claims.
 - [ADR 0014 — Existing YOLO labels and durable batch resume](decisions/0014-existing-annotations-and-batch-resume.md):
   source-implemented label-first Studio mode and explicit first-unsaved-card
   recovery, pending workstation GUI acceptance.
+
+- [ADR 0015 — Stable border mouse-release and responsive Detection controls](decisions/0015-annotation-pointer-release-and-layout.md):
+  scroll-contained plugin UI, 2×2 Detection controls, and safe pointer
+  press/drag/release ownership. CI verified; real GUI acceptance pending.

@@ -363,3 +363,18 @@ protected by explicit import mode rather than another detector.
 Pure exact-file pairing/checkpoint ownership is now one module:
 `src/modules/annotation_studio/existing_label_sessions.py`.
 See ADR 0014 for limitations and verified acceptance tiers.
+
+## 2026-10-19 — Border pointer state + Detection panel archaeology
+
+Compared current Studio `InteractiveCanvas` press/move/release routing
+against `BorderDetectionSettingsWidget.handle_click/handle_drag/
+handle_release`, old Tk canvas release implementation in
+`src/revolutionary_border_calibration.py` (which reset all three
+drag flags), and other current corner, surface, and prompt plugins.
+The source defect was a forgotten widget `mouse_pressed` reset
+plus a Studio release-outside suppression; no old, working independent
+quad drag implementation was duplicated or replaced. Repairs are
+isolated to the Studio event adapter, existing border plugin, and
+existing pure quad source tests. A scroll viewport prevents group
+layout minimum sizes from overlapping under vertical pressure.
+See ADR 0015; runtime acceptance still pending.

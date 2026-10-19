@@ -513,3 +513,63 @@ Annotation Integrity run 39159287317 (79 tests PASSED).
 Later source refinements need final CI status before claiming full source gate.
 Operator GUI acceptance on safely copied previously annotated cards is next.
 See ADR 0014.
+
+## 2026-10-19 — Annotation Studio UI and pointer-release regression fix
+
+OPERATOR WORKSTATION ACCEPTANCE (preceded these UI fixes):
+The operator successfully corrected **5 imported-label cards uninterrupted**,
+then another 5-card batch with a deliberate quit after the first card and
+successful Resume at the next card. Thus paired import, Tab/Space and
+interrupted-batch recovery are now operator-verified working paths, not
+merely source/CI-only assertions. No claim of all 550 cards completed.
+
+Operator supplied screenshot (1485x1024). The Detection group visibly
+crowded its Run Detection and Clear controls into Export & Batch. The
+operator also reported the selected border would move after releasing
+the mouse and attempting to reposition the cursor, interfering with
+accurate corner and side editing.
+
+SOURCE CAUSE/REPAIR (branch commits eaef4d4, c8c3c6d, b48e676):
+- `BorderDetectionSettingsWidget` set `mouse_pressed=True` on handle
+  grab but `handle_release` did NOT reset that flag; the Studio also
+  skipped forwarding release when cursor coordinates were outside the
+  image and trusted its own stale `_mouse_pressed` marker during hover.
+- Plugin `handle_release` now resets both mouse and drag states,
+  cancels its pending throttle timer and leaves last edited vertices
+  unchanged. Corner/side drag requires an actual active grab.
+- Studio mouse motion checks Qt's physical left-button bit before
+  forwarding drag; a missed release is canceled on the next hover.
+  Valid active presses forward releases even when position is outside
+  the image. Pre-load/outside-image presses remain unable to trigger
+  release callbacks. Pointer-to-handle grab offsets eliminate snapping
+  when picking up handles within their interaction tolerance.
+- Existing plugin sections now live inside a vertically scrollable
+  `QScrollArea` so reduced height cannot crush groups into each
+  other. Detection's four buttons are a contained 2×2 `QGridLayout`.
+  Model and export settings, outer/graphic selection, Tab and Space
+  behavior were intentionally preserved.
+- Inference confidence stays 0.25 by default for unannotated fresh-YOLO
+  mode. Existing-label mode disables YOLO entirely; no claimed
+  empirically optimal confidence is inferred.
+
+VERIFIED: Annotation Integrity CI run 39220200300 at b48e676,
+**84 tests PASSED**, including actual extracted click/drag/release
+source methods, corner/side no-snap/grab-offset and hover-after-release
+immutability, edge-of-image release and no-image startup negative test,
+the original YOLO model/export/Studio tests, and source structure of
+scrollable Detection controls. Checked other annotation plugin sources
+for the same drag flags; this specific duplicated mouse_pressed defect
+was not found in the inspected corner/surface/prompt plugins.
+NOT VERIFIED: physical workstation GUI rendering at different window
+sizes or practical accuracy of drag/release fix. Need operator to pull
+and test on ~2 disposable cards in existing-label mode and one fresh
+AI-inferred card. The magnifier remains pointer-following by design;
+its changing viewport is not an edit to image-space vertices.
+
+Immediate next step: user-run GUI acceptance: drag outer/graphic
+corners/sides, release and move mouse without any actual card-overlay
+movement; ensure all 4 Detection buttons are visibly inside their
+group, with a scrollbar rather than overlap at smaller height.
+Confirm ordinary fresh YOLO detection and imported-label Tab/Space/
+Resume still operate. Only then resume bulk 550-card refinement.
+
