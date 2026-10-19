@@ -1,0 +1,80 @@
+{
+  "schema": "dual_contour_proposal_v1",
+  "image_file": "card094.jpg",
+  "image_width": 1571,
+  "image_height": 2174,
+  "image_sha256": "d4577c2380e982f9e43008931725ff7e58b750890d84a6e5d8f59035c87fc200",
+  "coordinate_frame": "exported_rotated_image_pixels",
+  "rotation_degrees": 0.0,
+  "segmentation_ground_truth": false,
+  "annotations": [
+    {
+      "x1": 28.35304069519043,
+      "y1": 25.605491485813094,
+      "x2": 1530.6846923828125,
+      "y2": 2134.0708336389866,
+      "class_id": 0,
+      "confidence": 0.9698041677474976,
+      "label": "outer_border",
+      "human_corrected": true,
+      "correction_timestamp": "2026-10-19T04:35:18.149472",
+      "detection_method": "AI",
+      "metadata": {},
+      "geometry_format": "quad_v1",
+      "vertices": [
+        [
+          33.14253341671876,
+          25.605491485813094
+        ],
+        [
+          1530.6846923828125,
+          25.67507249387404
+        ],
+        [
+          1528.2261634313259,
+          2131.6123046875
+        ],
+        [
+          28.35304069519043,
+          2134.0708336389866
+        ]
+      ],
+      "human_reviewed": false,
+      "segmentation_ground_truth": false
+    },
+    {
+      "x1": 122.69340047105004,
+      "y1": 110.14099242877512,
+      "x2": 1439.2539719654733,
+      "y2": 2049.3673330674146,
+      "class_id": 1,
+      "confidence": 0.9641087651252747,
+      "label": "inner_border",
+      "human_corrected": true,
+      "correction_timestamp": "2026-10-19T04:36:29.533965",
+      "detection_method": "AI",
+      "metadata": {},
+      "geometry_format": "quad_v1",
+      "vertices": [
+        [
+          130.06898732551014,
+          110.14099242877512
+        ],
+        [
+          1439.2539719654733,
+          112.59952138026182
+        ],
+        [
+          1431.8783851110134,
+          2049.3673330674146
+        ],
+        [
+          122.69340047105004,
+          2041.991746212955
+        ]
+      ],
+      "human_reviewed": false,
+      "segmentation_ground_truth": false
+    }
+  ]
+}
