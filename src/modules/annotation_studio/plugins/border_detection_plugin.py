@@ -1880,6 +1880,12 @@ class BorderDetectionSettingsWidget(QWidget):
                         "image_file": combined_photo.name,
                         "image_width": int(w), "image_height": int(h),
                         "image_sha256": hashlib.sha256(combined_photo.read_bytes()).hexdigest(),
+                        # Tie new exports to their incoming scan as well as the
+                        # encoded image on which the quad coordinates live.
+                        "source_image_sha256": (
+                            hashlib.sha256(Path(image_path).read_bytes()).hexdigest()
+                            if Path(image_path).is_file() else None
+                        ),
                         "coordinate_frame": "exported_rotated_image_pixels",
                         "rotation_degrees": float(getattr(studio, 'rotation_angle', 0.0)),
                         "segmentation_ground_truth": False,
