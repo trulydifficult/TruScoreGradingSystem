@@ -85,13 +85,13 @@ mobile services are longer-term systems, NOT all implemented today.
   ignore `src/shared/annotations/`. A blanket `git rm` / bulk
   deletion would break tests and destroy documented QA evidence.
 
-- **2026-10-20 Back GUI acceptance:** after additional annotations,
-  operator used Back one card and confirmed adjusted quads stayed
-  aligned and editable. This accepts the one-card revisit interaction,
-  not the full ~100-card corpus or all navigation paths. The earlier
-  exported-image/SHA repair and read-only quad audit passed 110
-  Annotation Integrity tests at 8ef770e1. Five-field YOLO boxes
-  remain axis-aligned envelopes, not tilted-quad visual proof.
+- **2026-10-20 workstation/CI:** operator accepted one-card Back
+  restoration with aligned editable quads; ~100-card corpus unaudited.
+  Dataset Studio now lists two dual-border research models under
+  2-class Border Detection. Native-quad JSON/image hash validation,
+  format distinction and true quad Verification overlay source-tested.
+  Model-specific exporters/ROCm trainers still NOT IMPLEMENTED;
+  Dataset Studio GUI model picker/quad preview user acceptance pending.
 
 **Still NOT verified or implemented:**
 - Quad proposals are explicitly `human_reviewed=false` and
@@ -131,9 +131,9 @@ mobile services are longer-term systems, NOT all implemented today.
   (single active local `$XDG_STATE_HOME/TruScore/annotation_batch_v1.json`,
   fallback `~/.local/state/TruScore/annotation_batch_v1.json`,
   outside Git; unsaved in-flight drags are NOT checkpointed)
-- Existing Dataset Studio/Queue and model contract:
-  `src/modules/dataset_studio/dataset_studio.py`,
-  `src/shared/dataset_tools/{phoenix_contract,phoenix_handoff}.py`,
+- Dataset Studio/Queue: `src/modules/dataset_studio/dataset_studio.py`,
+  `components/{professional_dataset_selector,pipeline_compatibility_engine}.py`,
+  `src/shared/dataset_tools/{dual_quad_dataset,phoenix_contract,phoenix_handoff}.py`,
   `src/modules/phoenix_trainer/trainer_registry.py`
 - Existing geometry `src/shared/truscore_system/twentyfour_centering.py`.
 
@@ -147,10 +147,10 @@ mobile services are longer-term systems, NOT all implemented today.
    labels/annotations before selectively cleaning trial outputs.
    Reset/migrate the local resume checkpoint knowingly. No destructive
    command or rename in this handoff.
-2. **Close card094 acceptance evidence:** optionally extend a
-   reproducible real-JPEG hash/quad fidelity regression (currently
-   only 065–067 fixtures), and user-reviewed overlay sample; don't
-   confuse this with measured ground truth.
+2. **Dataset Studio workstation acceptance:** create a 2-class border
+   project for each new model, load matching exported card094 JPEG and
+   `dual_contour_proposals/card094.json`, inspect both quad overlays,
+   reject a wrong image hash. No segmentation-training claim.
 3. **Human review/approval + true border supervision contract:**
    preserve the accepted fast quad editor; decide when 4 corners
    suffice and when editable extra side vertices/actual mask tracing
