@@ -71,6 +71,63 @@ class SmartPipelineSelector(QWidget):
     def setup_pipeline_definitions(self):
         """Define comprehensive pipeline information"""
         self.pipelines = {
+            # Native quad import/inspection routes; no unimplemented Phoenix
+            # segmentation trainer is advertised as operational.
+            'rgb_dual_contour': PipelineInfo(
+                key='rgb_dual_contour',
+                name='High-Resolution RGB Dual-Contour Segmentation',
+                description='Experimental PyTorch RGB boundary/region segmenter for independent physical and graphic borders. Dataset quad import/verification available; model-specific export and Phoenix training pending.',
+                category='Border Analysis (planned training)',
+                model_architecture='3-channel RGB high-resolution dual-boundary U-Net-style baseline (planned)',
+                backbone='To be benchmarked; not the existing photometric 6-channel U-Net',
+                framework='PyTorch / ROCm (training integration pending)',
+                head_architecture='Independent outer/graphic boundary and region heads (planned)',
+                output_type='Two native-image-coordinate contours and 24-station geometry (planned)',
+                batch_sizes=[1, 2, 4, 8],
+                recommended_batch=2,
+                training_time='Not measured',
+                accuracy='No measured accuracy; held-out contour benchmark required',
+                hardware_req='RX 7900 XTX ROCm verification pending for this model',
+                precision_level='Boundary error to be measured',
+                deployment='Dataset import/verification only; trainer unavailable',
+                required_label_formats=['TruScore Dual-Quad JSON (*.json) — review only'],
+                preferred_format='TruScore Dual-Quad JSON (*.json) — review only',
+                supports_conversion=False,
+                technical_details={
+                    'source': 'dual_contour_proposal_v1 imported with matching JPEG SHA',
+                    'training_labels': 'Human-approved dual_contour_v1, paired masks/edges (not implemented)',
+                    'status': 'Cannot export to Phoenix yet'
+                }
+            ),
+            'detectron2_pointrend_dual_contour': PipelineInfo(
+                key='detectron2_pointrend_dual_contour',
+                name='Detectron2 PointRend + Mask R-CNN',
+                description='Research priority for boundary-refined instance segmentation of physical and graphic borders. Quad previews available; true masks, PointRend integration and ROCm acceptance pending.',
+                category='Border Analysis (planned training)',
+                model_architecture='Detectron2 Mask R-CNN + PointRend refinement (planned)',
+                backbone='ResNet-FPN, configuration pending native benchmark',
+                framework='Detectron2 + PointRend, ROCm unverified',
+                head_architecture='Mask R-CNN instance head with PointRend boundary refinement (planned)',
+                output_type='Two predicted instance masks, ordered contours and centering stations (planned)',
+                batch_sizes=[1, 2, 4],
+                recommended_batch=2,
+                training_time='Not measured',
+                accuracy='No measured accuracy; held-out contour benchmark required',
+                hardware_req='AMD ROCm compiled Detectron2 ops compatibility pending',
+                precision_level='Boundary error to be measured',
+                deployment='Dataset import/verification only; trainer unavailable',
+                required_label_formats=[
+                    'TruScore Dual-Quad JSON (*.json) — review only',
+                    'COCO Instance Segmentation JSON (*.json) — future training adapter',
+                ],
+                preferred_format='TruScore Dual-Quad JSON (*.json) — review only',
+                supports_conversion=False,
+                technical_details={
+                    'source': 'Independent outer/graphic polygons; COCO instance masks later',
+                    'training_labels': 'True reviewed COCO instance masks required',
+                    'status': 'Cannot export to Phoenix yet'
+                }
+            ),
             # PROFESSIONAL TIER - DETECTRON2 FAMILY
             'detectron2_professional': PipelineInfo(
                 key='detectron2_professional',
