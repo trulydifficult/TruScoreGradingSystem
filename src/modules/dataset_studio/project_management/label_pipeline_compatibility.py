@@ -142,9 +142,10 @@ class LabelPipelineCompatibility:
                                   "Phoenix training/export blocked.")
                 if (kind == "coco_instance_segmentation"
                         and pipeline_name == "Detectron2 PointRend + Mask R-CNN"):
-                    return True, ("COCO instance-segmentation structure detected; "
-                                  "image/category/mask review and PointRend training adapter "
-                                  "remain pending. Not training-ready.")
+                    return False, ("Genuine COCO instance-segmentation structure detected, "
+                                   "but the PointRend COCO polygon/mask import and training "
+                                   "adapter have not been implemented. "
+                                   "Use matching TruScore quad JSON for preview today.")
                 return False, (
                     f"{kind}: not compatible with {pipeline_name}. "
                     "Detection-only COCO bounding boxes and arbitrary JSON "
