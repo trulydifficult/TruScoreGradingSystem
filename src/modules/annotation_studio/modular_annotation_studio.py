@@ -926,14 +926,15 @@ class ModularAnnotationStudio(QMainWindow):
         label = session["labels"].get(image)
         if not label:
             raise AnnotationBatchError(f"Missing selected label for {Path(image).name}")
-        proposal = None
-        if self.current_index in session["completed"]:
-            candidate = (Path(__file__).resolve().parents[2] / "shared" /
-                         "annotations" / "dual_contour_proposals" /
-                         f"{Path(image).stem}.json")
-            if candidate.is_file():
-                proposal = candidate
-        return plugin.load_existing_labels(image, self.original_image, label, proposal)
+        proposal = getattr(self, "_saved_quad_proposal_path", None)
+        saved_image = getattr(self, "_saved_quad_image_path", None)
+        # Completed quads are saved in exported-image pixel coordinates.
+        # Keep source image path for pairing/checkpoint identity but import
+        # polygon geometry against the exact exported JPEG it belongs to.
+        quad_image = str(saved_image) if proposal is not None else image
+        return plugin.load_existing_labels(
+            quad_image, self.original_image, label, proposal
+        )
 
     def _record_existing_export(self):
         if not getattr(self, "_existing_label_mode", False):
@@ -963,13 +964,40 @@ class ModularAnnotationStudio(QMainWindow):
             if isinstance(image_path, str):
                 image_path = Path(image_path)
             self.logger.info(f"Loading image: {image_path.name}")
-            
-            # Load with cv2 like working system 
+
+            # A completed card must reopen the exact saved JPEG, not the
+            # original input JPEG against which exported quads were never hashed.
+            saved_quad = None
+            active_image_path = image_path
+            session = getattr(self, "_existing_batch_state", None)
+            if (getattr(self, "_existing_label_mode", False)
+                    and session is not None
+                    and self.current_index in session["completed"]):
+                from modules.annotation_studio.existing_label_sessions import (
+                    resolve_completed_quad_source,
+                )
+                root = Path(__file__).resolve().parents[2] / "shared" / "annotations"
+                active_image_path, saved_quad = resolve_completed_quad_source(
+                    image_path, root
+                )
+
             import cv2
-            self.original_image = cv2.imread(str(image_path))
-            if self.original_image is None:
-                self.logger.error(f"Failed to load image: {image_path}")
+            loaded_image = cv2.imread(str(active_image_path))
+            if loaded_image is None:
+                self.logger.error(f"Failed to load image: {active_image_path}")
                 return False
+            if saved_quad is not None:
+                import json
+                metadata = json.loads(saved_quad.read_text(encoding="utf-8"))
+                height, width = loaded_image.shape[:2]
+                if (width, height) != (
+                        metadata["image_width"], metadata["image_height"]):
+                    raise AnnotationBatchError(
+                        f"Saved quad JPEG dimensions changed: {active_image_path}"
+                    )
+            self.original_image = loaded_image
+            self._saved_quad_image_path = active_image_path if saved_quad else None
+            self._saved_quad_proposal_path = saved_quad
                 
             # CRITICAL: Clear annotations for new image (like calibration.py)
             self.current_image = None
@@ -1540,11 +1568,23 @@ class ModularAnnotationStudio(QMainWindow):
             elif getattr(self, "_existing_label_mode", False):
                 return  # A failed imported export cannot advance.
 
-            # Move to previous image
+            # Restore current card if a saved quad cannot be reopened;
+            # never leave a different image displaying stale editable borders.
+            previous_index = self.current_index
             self.current_index -= 1
-            
-            # Load new image using proper method
             success = self.load_current_image()
+            if not success:
+                self.current_index = previous_index
+                self.load_current_image()
+                self.update_image_counter()
+                self.update_navigation_buttons()
+                QMessageBox.warning(
+                    self, "Previous Card Not Restored",
+                    "The previous card's exported image/quad pair failed "
+                    "validation. Navigation was cancelled to protect its annotations. "
+                    "Check the Annotation Studio log."
+                )
+                return
             if success:
                 self.update_image_counter()
                 self.update_navigation_buttons()
@@ -1578,11 +1618,21 @@ class ModularAnnotationStudio(QMainWindow):
                 elif getattr(self, "_existing_label_mode", False):
                     return  # Preserve card after failed export.
 
-            # Move to next image
+            # A bad completed-card restore must not leave a stale overlay.
+            previous_index = self.current_index
             self.current_index += 1
-            
-            # Load new image using proper method
             success = self.load_current_image()
+            if not success:
+                self.current_index = previous_index
+                self.load_current_image()
+                self.update_image_counter()
+                self.update_navigation_buttons()
+                QMessageBox.warning(
+                    self, "Next Card Not Restored",
+                    "The next card's exported image/quad pair failed validation. "
+                    "Navigation was cancelled; see the Annotation Studio log."
+                )
+                return
             if success:
                 self.update_image_counter()
                 self.update_navigation_buttons()
