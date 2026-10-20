@@ -1,11 +1,22 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last continuity update: 2026-10-19 (late annotation revisit repair; desktop QA pending)
+Last continuity update: 2026-10-20 (one-card Back GUI acceptance; bulk audit pending)
 Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
 
 > Current actionable handoff and evidence tiers: SESSION_START.md.
 > The matrix below is a subsystem-level overview; individual passed
 > source tests and GUI/GPU smoke checks are described in dated sections.
+
+## 2026-10-20 — Operator Back-navigation GUI acceptance
+
+- Operator annotated several more cards, then navigated Back one card:
+  saved outer/graphic quads retained their adjusted positions and were
+  still editable in the desktop UI.
+- Accepted scope: completed-card one-step Back and editability.
+  Not yet accepted: entire ~100-card corpus, all navigation sequences,
+  pixel-level GT accuracy, or Dataset Studio quad import.
+- Existing 110-test CI checkpoint covers source behavior only;
+  latest reported GUI behavior is independent workstation evidence.
 
 ## 2026-10-19 — Back navigation and annotation-audit repair
 
