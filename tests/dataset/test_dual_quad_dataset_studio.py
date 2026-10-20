@@ -169,7 +169,8 @@ def test_model_selections_and_verification_are_wired_to_live_ui_sources():
     assert 'find_quad_for_image(' in dataset
     assert 'painter.drawPolygon(QPolygonF([' in dataset
     assert 'load_dual_quad_label(quad_file, image_path)' in dataset
-    assert 'self.verification_preview_info.setText(message)' in dataset
+    assert 'self.verification_info_label.setText(message)' in dataset
+    assert 'self.verification_preview_label.setScaledContents(False)' in dataset
 
 
 def test_no_new_unverified_model_handoff_allowed():
