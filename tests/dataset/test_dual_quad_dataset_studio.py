@@ -90,8 +90,10 @@ def test_distinguish_coco_detection_from_true_segmentation(tmp_path):
     data["annotations"][0]["segmentation"] = [[1, 2, 4, 2, 4, 6, 1, 6]]
     box.write_text(json.dumps(data))
     assert json_label_kind(box) == "coco_instance_segmentation"
-    assert checker.validate_label_pipeline_compatibility(
-        box, "Detectron2 PointRend + Mask R-CNN")[0]
+    allowed, reason = checker.validate_label_pipeline_compatibility(
+        box, "Detectron2 PointRend + Mask R-CNN")
+    assert allowed is False
+    assert "COCO instance-segmentation structure detected" in reason
     assert not checker.validate_label_pipeline_compatibility(
         box, "High-Resolution RGB Dual-Contour Segmentation")[0]
 
