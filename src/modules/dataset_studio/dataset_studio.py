@@ -900,7 +900,7 @@ class TruScoreDatasetFrame(QFrame):
         left_layout.addWidget(title_label)
         
         # Format indicator
-        self.format_indicator_label = QLabel("Supports: YOLO (.txt), COCO (.json), Pascal VOC (.xml), Detectron2 (.json)")
+        self.format_indicator_label = QLabel("Supports: TruScore dual-quad (.json), YOLO (.txt), COCO (.json), Pascal VOC (.xml)")
         self.format_indicator_label.setFont(QFont("Arial", 10))
         self.format_indicator_label.setStyleSheet(f"color: {TruScoreTheme.GHOST_WHITE}; padding: 5px;")
         self.format_indicator_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1238,6 +1238,25 @@ class TruScoreDatasetFrame(QFrame):
         image_base_name = Path(image_path).stem
         image_base_lower = image_base_name.lower()
         
+        # Contour projects are verified against the exact saved image SHA and
+        # two independent source-pixel quads. Legacy COCO/bbox presence must
+        # never make a mismatched quad look verified.
+        from shared.dataset_tools.dual_quad_dataset import (
+            CONTOUR_PIPELINES, find_quad_for_image, load_dual_quad_label,
+            DualQuadDatasetError,
+        )
+        if getattr(self, "current_pipeline", None) in CONTOUR_PIPELINES:
+            try:
+                label = find_quad_for_image(
+                    image_path, getattr(self, "imported_labels", []))
+                if label is None:
+                    return False
+                load_dual_quad_label(label, image_path)
+                return True
+            except (DualQuadDatasetError, OSError) as error:
+                self.logger.warning("Dual-quad verification failed: %s", error)
+                return False
+
         # Only count labels explicitly imported/converted into this project.
         # Same-stem labels elsewhere in the global Studio workspace are not evidence.
         # 🚨 PRIORITY 1: Check COCO annotations (for loaded projects) even if imported_labels is empty
@@ -1290,9 +1309,57 @@ class TruScoreDatasetFrame(QFrame):
                 return
             
             # CRITICAL FIX: Get ORIGINAL image dimensions for accurate YOLO coordinates
-            original_width = pixmap.width()   # Your actual 1650x2100 dimensions
+            original_width = pixmap.width()   # Native saved-image pixel frame
             original_height = pixmap.height()
-            
+
+            from shared.dataset_tools.dual_quad_dataset import (
+                CONTOUR_PIPELINES, find_quad_for_image, load_dual_quad_label,
+                DualQuadDatasetError,
+            )
+            if getattr(self, "current_pipeline", None) in CONTOUR_PIPELINES:
+                try:
+                    quad_file = find_quad_for_image(
+                        image_path, getattr(self, "imported_labels", []))
+                    if quad_file is None:
+                        raise DualQuadDatasetError(
+                            "No imported matching TruScore quad JSON for this image"
+                        )
+                    record = load_dual_quad_label(quad_file, image_path)
+                    from PyQt6.QtCore import QPointF
+                    from PyQt6.QtGui import QPolygonF
+                    painter = QPainter(pixmap)
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+                    for vertices, color in (
+                            (record["outer"], QColor(0, 255, 0)),
+                            (record["graphic"], QColor(255, 60, 80))):
+                        pen = QPen(color)
+                        pen.setWidth(3)
+                        painter.setPen(pen)
+                        painter.drawPolygon(QPolygonF([
+                            QPointF(float(x), float(y)) for x, y in vertices
+                        ]))
+                    painter.end()
+                    message = (
+                        f"{Path(image_path).name}\n"
+                        "2 saved quads: physical outer (green), graphic inner (red)\n"
+                        "JPEG SHA-256 and native pixel coordinates verified.\n"
+                        "Quad proposals ONLY — not segmentation ground truth.\n"
+                        "Precision model training/export remains unavailable."
+                    )
+                except (DualQuadDatasetError, OSError, ValueError) as error:
+                    self.logger.warning("Dual-contour preview unavailable: %s", error)
+                    message = (
+                        f"{Path(image_path).name}\n"
+                        f"Quad verification FAILED: {error}\n"
+                        "No substitute YOLO boxes displayed."
+                    )
+                self.verification_preview_label.setPixmap(
+                    pixmap.scaled(
+                        300, 400, Qt.AspectRatioMode.KeepAspectRatio,
+                        Qt.TransformationMode.SmoothTransformation))
+                self.verification_preview_info.setText(message)
+                return
+
             # Find corresponding label data - check COCO first, then YOLO
             image_filename = Path(image_path).name
             image_base_name = Path(image_path).stem
@@ -2464,9 +2531,35 @@ class TruScoreDatasetFrame(QFrame):
                 self.logger.debug(f"Processing label file: {path.name} (format: {extension})")
                 
                 if extension in supported_formats:
-                    # Analyze the label file
+                    # Content-aware JSON classification; never identify a
+                    # quad-proposal as generic COCO by its .json extension.
                     label_info = self._analyze_label_file(path)
                     self.logger.debug(f"Label analysis result for {path.name}: {label_info.get('format', 'unknown')}")
+                    if label_info.get("type") == "TruScore dual-quad proposal":
+                        from shared.dataset_tools.dual_quad_dataset import (
+                            find_quad_for_image, load_dual_quad_label,
+                            DualQuadDatasetError,
+                        )
+                        paired_images = [
+                            candidate for candidate in getattr(self, "images", [])
+                            if Path(candidate).stem.casefold() == path.stem.casefold()
+                        ]
+                        if len(paired_images) == 1:
+                            try:
+                                verified = load_dual_quad_label(path, paired_images[0])
+                                label_info["quad_image_verified"] = True
+                                label_info["quad_training_ready"] = verified["training_ready"]
+                            except (DualQuadDatasetError, OSError) as error:
+                                label_info["quad_image_verified"] = False
+                                label_info["quad_error"] = str(error)
+                        elif len(paired_images) > 1:
+                            label_info["quad_image_verified"] = False
+                            label_info["quad_error"] = "Ambiguous duplicate image stems"
+                        else:
+                            label_info["quad_image_verified"] = None
+                            label_info["quad_error"] = (
+                                "Import matching exported JPEG to verify quad SHA-256"
+                            )
                     
                     # Check pipeline compatibility if available
                     if compatibility_available and self.current_pipeline and compatibility_checker:
@@ -2476,6 +2569,12 @@ class TruScoreDatasetFrame(QFrame):
                         label_info['pipeline_compatible'] = is_compatible
                         label_info['compatibility_message'] = message
                         
+                        if (label_info.get("quad_image_verified") is False
+                                and label_info.get("type") == "TruScore dual-quad proposal"):
+                            is_compatible = False
+                            message = label_info["quad_error"]
+                            label_info["pipeline_compatible"] = False
+                            label_info["compatibility_message"] = message
                         if is_compatible:
                             compatible_count += 1
                             self.logger.debug(f"{path.name} is compatible with {self.current_pipeline}")
@@ -2532,7 +2631,20 @@ class TruScoreDatasetFrame(QFrame):
             from PyQt6.QtWidgets import QMessageBox
             
             total_files = compatible_count + incompatible_count
-            
+            from shared.dataset_tools.dual_quad_dataset import CONTOUR_PIPELINES
+            if pipeline_name in CONTOUR_PIPELINES:
+                QMessageBox.information(
+                    self, "Dual-Contour Labels — Verification Only",
+                    f"Pipeline: {pipeline_name}\n\n"
+                    f"Recognized labels: {compatible_count}\n"
+                    f"Incompatible/invalid labels: {incompatible_count}\n\n"
+                    "Import the matching JPEGs and inspect the two real quads "
+                    "in the Verification tab. Recognized proposals are NOT "
+                    "certified segmentation ground truth. "
+                    "Phoenix export/training for these pipelines is not implemented."
+                )
+                return
+
             if incompatible_count == 0:
                 # All compatible - success
                 QMessageBox.information(
@@ -3087,8 +3199,16 @@ Path: {label_info['path']}
                     if isinstance(data, list):
                         content_type = "array/list format"
                     elif isinstance(data, dict):
-                        if 'annotations' in data or 'images' in data:
-                            content_type = "COCO/annotation format"
+                        if data.get("schema") == "dual_contour_proposal_v1":
+                            content_type = "TruScore dual-quad proposal"
+                        elif {"images", "annotations", "categories"} <= data.keys():
+                            content_type = ("COCO instance segmentation"
+                                            if data.get("annotations") and all(
+                                                isinstance(a, dict) and a.get("segmentation")
+                                                for a in data["annotations"])
+                                            else "COCO detection/annotation format")
+                        elif 'annotations' in data or 'images' in data:
+                            content_type = "Unrecognized JSON annotation format"
                         elif 'shapes' in data or 'imageData' in data:
                             content_type = "LabelMe format"
                         else:
