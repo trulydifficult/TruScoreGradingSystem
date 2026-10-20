@@ -82,3 +82,15 @@ Verification: GitHub Annotation Integrity on commit 8ef770e1,
 checkpoint. Actual operator GUI Back/Forward and approx. 100-card
 workspace audit are NOT verified; run those before continuing bulk
 corrections. This is not true-contour segmentation ground truth.
+
+## 2026-10-20 — Operator workstation Back-navigation acceptance
+
+After completing several additional annotations in the real desktop
+application, the operator navigated Back one card. The previously
+adjusted quad borders retained their placements and remained editable.
+This is direct GUI acceptance of **one completed-card Back restoration**
+following the exported-JPEG/quad fix. It is not evidence that all ~100
+saved cards were batch-audited, that Forward/quit-resume/re-save after
+Back were exhaustively tested, or that the contours are pixel-ground-truth
+approved. Preserve exported quad JSON/JPEG files and test a sampled
+audit before further dataset migration.
