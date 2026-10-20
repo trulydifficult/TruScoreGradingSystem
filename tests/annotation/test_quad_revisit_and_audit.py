@@ -33,7 +33,7 @@ def _method(name):
               and item.name == name)
     obj = ast.Module(body=[fn], type_ignores=[])
     ast.fix_missing_locations(obj)
-    scope = {"Path": Path, "AnnotationBatchError": AnnotationBatchError}
+    scope = {"Path": Path, "AnnotationBatchError": AnnotationBatchError, "__file__": str(STUDIO)}
     exec(compile(obj, str(STUDIO), "exec"), scope)
     return scope[name]
 
