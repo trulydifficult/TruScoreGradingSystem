@@ -7,6 +7,21 @@ Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
 > The matrix below is a subsystem-level overview; individual passed
 > source tests and GUI/GPU smoke checks are described in dated sections.
 
+## 2026-10-20 — Dataset Studio quad intake / research-model project picker
+
+- Under two-class border dataset type, the startup project selector
+  now includes named RGB dual-contour and Detectron2 PointRend paths
+  with explicit research/pending-training descriptions.
+- The Labels tab recognizes and validates `dual_contour_proposal_v1`
+  against matched exported JPEGs and separates these from COCO
+  annotation formats. Verification draws the two actual four-point
+  polygons, preserving aspect ratio, with provenance errors visible.
+- The existing YOLO detection dataset and supported Phoenix handoff
+  remain unchanged; neither added research pipeline can silently
+  launch a substituted trainer. True masks, COCO segmentation,
+  native ROCm training and real GUI acceptance still PENDING.
+- Source-level dataset tests cover real card094 quad/JPEG integrity.
+
 ## 2026-10-20 — Operator Back-navigation GUI acceptance
 
 - Operator annotated several more cards, then navigated Back one card:
