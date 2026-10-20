@@ -7,6 +7,21 @@ Latest continuity audit / dataset acceptance: 2026-10-16 CDT / 2026-10-17 UTC
 > [SESSION_START.md](SESSION_START.md). Older dated continuation paragraphs
 > further down are retained only as historical snapshots.
 
+## 2026-10-20 — Native Dataset Studio quad verification (source/CI slice)
+
+Enterprise project startup now lists High-Resolution RGB Dual-Contour
+Segmentation and Detectron2 PointRend + Mask R-CNN under Border
+Detection (2-Class), alongside prior choices. Labels import
+disambiguates saved dual-quad JSON from COCO/other JSON by schema;
+paired exported JPEGs must match the recorded SHA-256, dimensions,
+class ordering and polygons. Verification draws actual independent
+quads instead of axis-aligned YOLO AABBs, with a visible failure
+message and without falsifying mask ground truth. Selector metadata
+reports unmeasured accuracy and unimplemented model-specific trainer
+routes; Phoenix rejects those routes explicitly. Source tests
+include real card094. Native workstation GUI acceptance not yet done;
+COCO mask adapter, 3-channel RGB trainer and PointRend remain pending.
+
 ## 2026-10-19 late annotation revisit incident (source-level repaired)
 
 Operator has annotated roughly 100 cards with independent quads. In
