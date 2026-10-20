@@ -320,7 +320,11 @@ def test_all_picker_options_are_accounted_for_and_never_implicitly_trainable():
                 pipelines = set(ast.literal_eval(node.value))
     assert types is not None and pipelines is not None
     assert len(types) == 24
-    assert len(pipelines) == 15
+    assert len(pipelines) == 17  # 15 historical + 2 preview-only contour candidates
+    assert {
+        "High-Resolution RGB Dual-Contour Segmentation",
+        "Detectron2 PointRend + Mask R-CNN",
+    } <= pipelines
     supported = {(c.dataset_type, c.pipeline) for c in supported_handoffs()}
     assert supported <= {(kind, pipeline) for kind in types for pipeline in pipelines}
     for kind in types:
