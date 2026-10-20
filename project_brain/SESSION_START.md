@@ -85,13 +85,13 @@ mobile services are longer-term systems, NOT all implemented today.
   ignore `src/shared/annotations/`. A blanket `git rm` / bulk
   deletion would break tests and destroy documented QA evidence.
 
-- **2026-10-19 revisit/export incident:** operator reports ~100 new quad
-  annotations. Completed-card Back used the original JPEG against
-  the exported JPEG's SHA and could leave stale overlays. Source
-  repair + read-only quad PNG audit tool passed 110 Annotation
-  Integrity tests at 8ef770e1; desktop Back acceptance PENDING.
-  YOLO 5-field boxes remain axis-aligned quad envelopes; they do
-  not preserve tilt or constitute incorrect saved quad vertices.
+- **2026-10-20 Back GUI acceptance:** after additional annotations,
+  operator used Back one card and confirmed adjusted quads stayed
+  aligned and editable. This accepts the one-card revisit interaction,
+  not the full ~100-card corpus or all navigation paths. The earlier
+  exported-image/SHA repair and read-only quad audit passed 110
+  Annotation Integrity tests at 8ef770e1. Five-field YOLO boxes
+  remain axis-aligned envelopes, not tilted-quad visual proof.
 
 **Still NOT verified or implemented:**
 - Quad proposals are explicitly `human_reviewed=false` and
