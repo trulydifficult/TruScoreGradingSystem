@@ -7,6 +7,24 @@ Latest continuity audit / dataset acceptance: 2026-10-16 CDT / 2026-10-17 UTC
 > [SESSION_START.md](SESSION_START.md). Older dated continuation paragraphs
 > further down are retained only as historical snapshots.
 
+## 2026-10-19 late annotation revisit incident (source-level repaired)
+
+Operator has annotated roughly 100 cards with independent quads. In
+completed imported-label batch navigation, Studio formerly searched
+the original image but the sidecar SHA/coordinates represented the
+re-exported JPEG; a failure could leave stale annotation UI state.
+Current branch now validates the saved JPEG/quad pair, restores
+geometry on its true exported pixel frame and rolls back failed
+Back/Forward transitions. New exports additionally bind the source
+scan hash. tools/audit_dual_quad_exports.py checks the three exported
+JPEG+YOLO sets against quad JSON and optionally renders overlays.
+Annotation Integrity: 110 PASS at 8ef770e1; five workflow families
+PASS. Workstation revisit GUI acceptance and the user's ~100-card
+corpus audit remain PENDING. No operator data were renamed or deleted.
+Five-field YOLO labels are expected axis-aligned envelopes rather
+than faithful tilted quads; separate rectified detection export and
+Dataset Studio quad preview have NOT been implemented.
+
 ## Latest verified Annotation Studio slice — 2026-10-19
 
 This is a short current addendum, **not a claim that older subsystems
