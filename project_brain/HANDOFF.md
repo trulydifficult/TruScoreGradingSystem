@@ -1836,3 +1836,18 @@ copy/backup annotation outputs + batch checkpoint, run read-only quad
 audit and preview, then revisit a completed card using Back,
 adjust one vertex and save; verify the saved quad remains aligned and
 that next/back does not substitute coarse YOLO rectangles.
+
+## 2026-10-20 — Native Back-navigation accepted for one completed card
+
+The operator continued annotating, then navigated Back one card in
+the real desktop UI. Previously adjusted quadrilateral borders stayed
+in their correct positions and remained interactive/editable. This
+satisfies the immediate one-step Back-navigation acceptance for the
+2026-10-19 exported-JPEG/quad restore repair.
+
+Do not extrapolate to a full validation of roughly 100 saved cards,
+all Forward/Back/restart/re-save sequences, physical edge accuracy or
+mask supervision. Existing YOLO detection bboxes still do not preserve
+quad tilt. Next useful engineering work is Dataset Studio native-quad
+import/preview and an independently sampled read-only corpus audit;
+keep original scans, JSONs and export JPEGs intact.
