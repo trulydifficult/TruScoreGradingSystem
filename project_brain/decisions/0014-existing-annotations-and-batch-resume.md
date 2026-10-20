@@ -52,3 +52,33 @@ geometry and future full-batch stability remain separate gates.
 See ADR 0015 for the subsequent release/overflow repairs and pending
 GUI acceptance; the new layout/drag changes have not yet been
 operator tested.
+
+## 2026-10-19 — Completed-card Back restoration fix (source/CI verified)
+
+The operator reported that after an accidental Space, clicking Back
+produced uneditable or displaced borders. A completed entry's
+`dual_contour_proposal_v1.image_sha256` binds the **exported JPEG**,
+while the original implementation validated the JSON against the
+**unmodified source image**. Reencoding/rotation makes those bytes
+different and the source-level restore fails.
+
+Current correction reopens the validated combined-target exported
+JPEG and quad sidecar as a pair, while retaining the original source
+path for checkpoint/YOLO label mapping. Missing JSON, mismatched
+hash, invalid quad or image dimensions produce explicit failure
+rather than silently reverting to old axis-aligned bbox proposals.
+Failed Back/Forward navigation rolls the index back. New exports
+also record `source_image_sha256`; legacy records lacking that field
+can still reopen by matching stem and exported-image digest, but
+their original scan association cannot be cryptographically proven.
+
+Read-only `tools/audit_dual_quad_exports.py` checks pairwise JPEG
+copies, image hash, dimensions, saved quad validity and enclosing
+YOLO bboxes; `--preview-dir` renders overlaid true quadrilaterals.
+The utility does not write to or modify source annotations.
+
+Verification: GitHub Annotation Integrity on commit 8ef770e1,
+**110 tests PASS**. All five workflow families passed at this
+checkpoint. Actual operator GUI Back/Forward and approx. 100-card
+workspace audit are NOT verified; run those before continuing bulk
+corrections. This is not true-contour segmentation ground truth.
