@@ -1851,3 +1851,35 @@ mask supervision. Existing YOLO detection bboxes still do not preserve
 quad tilt. Next useful engineering work is Dataset Studio native-quad
 import/preview and an independently sampled read-only corpus audit;
 keep original scans, JSONs and export JPEGs intact.
+
+## 2026-10-20 — Dataset Studio enterprise project creation and native quad verification
+
+The operator shared the actual two-column Dataset Studio Project
+Configuration screenshot and explained the create/open/recent project
+flow plus five downstream tabs. Rather than create a parallel editor,
+we extended the existing Dataset Studio configuration selectors with
+two explicit under-`border_detection_2class` model candidates:
+`High-Resolution RGB Dual-Contour Segmentation` and
+`Detectron2 PointRend + Mask R-CNN`. They show honest NOT
+BENCHMARKED/RESEARCH status rather than fabricated accuracy figures.
+
+A pure shared dual-quad importer verifies the original
+`dual_contour_proposal_v1` against the exact exported JPEG and
+validates class 0 outer/class 1 graphic pixel quads. Import label
+classification distinguishes source quad JSON from COCO detection,
+COCO instance segmentation and arbitrary JSON. Dataset Studio
+Verification draws the actual quads with aspect preserved; unmatched
+hashes and geometry fail instead of showing YOLO boxes. The new
+pipeline format checker labels imports as inspection only, and
+rejects PointRend COCO masks until that distinct importer is built.
+
+Preserved existing YOLO bbox tools, other dataset/pipeline choices
+and sole currently supported YOLO11s Phoenix publication contract.
+No COCO masks were fabricated, no actual RGB/PointRend trainer built
+and no hardware acceptance claimed. Follow-up: operator must verify
+Create Project → Images → Labels (card094.json) → Verification
+for one real pair on the workstation. Next engineering gates:
+canonical human-approved contours, real model-specific mask/COCO
+export, separate trainer adapters/ROCm acceptance and shared 24
+station evaluation. Compare older source converters and Checkplz
+before touching existing export/architecture.
