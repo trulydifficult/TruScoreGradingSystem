@@ -1802,3 +1802,37 @@ snapshot reduced to one bounded page with reliable evidence
 tiers/next tasks. [SESSION_START.md](SESSION_START.md)
 is authoritative; this HANDOFF entry is chronological evidence.
 `;
+
+## 2026-10-19 — Late annotation session issue: ~100 saved quads, Back and bbox preview
+
+The operator reported approximately 100 quadrilateral annotations.
+An accidental Space followed by Back sometimes left borders
+uneditable or apparently shifted. Source inspection found the
+completed-card restore attempted to verify the JSON's exported-JPEG
+hash against the original input JPEG; it could return failure after
+partially loading another card. This is a real source defect;
+the exact GUI symptom still needs native acceptance.
+
+Changes on active refactor/phoenix-foundation: image+JSON sidecar
+resolver with SHA/dimension/quad checks, exported-image frame loading,
+original selected-label/checkpoint association preserved, explicit
+failure and Back/Forward rollback, source image hash on future exports.
+New read-only tools/audit_dual_quad_exports.py audits saved quads
+against the triple-export JPEG/YOLO rows and optionally renders PNG
+images with both actual polygons. No existing user files were mutated
+or deleted.
+
+Annotation Integrity **110 tests PASS** at commit 8ef770e1; all five
+CI families PASS. GUI acceptance PENDING. Old records without a
+source-image hash have weaker scan identity verification; confirm
+preview overlays before batch renaming or merging datasets.
+YOLO five-field AABB labels are necessarily axis-aligned on tilted
+cards and MUST NOT be used to judge quad vertex alignment.
+Straightened/rectified auxiliary detection exports and Dataset
+Studio true-quad loading remain pending separate, explicit designs.
+
+Immediate operator acceptance: pull branch after finished annotating,
+copy/backup annotation outputs + batch checkpoint, run read-only quad
+audit and preview, then revisit a completed card using Back,
+adjust one vertex and save; verify the saved quad remains aligned and
+that next/back does not substitute coarse YOLO rectangles.
