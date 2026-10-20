@@ -52,11 +52,13 @@ border plugin are not three independent supervision tasks. They share
 source JPEGs; the combined folder contains two-class YOLO boxes,
 and the single-class folders remap class IDs.
 
-## The 15 selectable named pipelines
+## The 17 named pipelines in the legacy creation catalog
 
 | Picker pipeline label | Phoenix reality |
 |---|---|
 | Detectron2 (Mask R-CNN + RPN) - Professional | Concrete Detectron2 trainer exists; genuine instance masks required; current border labels are boxes only |
+| **High-Resolution RGB Dual-Contour Segmentation** | **NEW 2026-10-20** project selector + strict JSON quad image matching and true-quad Verification preview; actual 3-channel mask exporter and trainer NOT implemented |
+| **Detectron2 PointRend + Mask R-CNN** | **NEW 2026-10-20** project selector + quad JSON preview; COCO mask import/trainer PointRend and ROCm acceptance NOT implemented |
 | Sub-Pixel Enhanced Detectron2 | Unimplemented architecture, explicit unsupported |
 | YOLOv10x Precision | Unimplemented concrete adapter; explicit unsupported |
 | YOLOv9 Gelan-base | Unimplemented concrete adapter; explicit unsupported |
@@ -89,10 +91,10 @@ separate.
 → real Ultralytics YOLO11s native training,
 pending workstation acceptance.
 
-**Other 359 theoretical dataset/pipeline combinations are not implied
+**Other 407 theoretical dataset/pipeline combinations are not implied
 compatible**: the picker limits displayed combinations, and the
 `phoenix_contract` registry accepts only the exact pair above.
-The 24×15 combinatorial sweep is a test of non-fallback behavior,
+The 24×17 combinatorial sweep is a test of non-fallback behavior,
 not an invitation to create invalid project combinations.
 
 ## Evidence and verification
@@ -119,6 +121,25 @@ establish scientific accuracy or generalization.
 When new Annotation Studio plugins are added, update this inventory
 and the central capability registry in the same reviewed change.
 
+
+## 2026-10-20 — Dual-contour Dataset Studio import/preview slice
+
+Two requested research pipelines are now explicit choices for the
+Border Detection (2-Class) startup project. The canonical import is
+`dual_contour_proposal_v1` JSON + the exact image whose bytes match the
+recorded JPEG SHA-256. JSON content is classified by schema (separate
+from COCO detection and real COCO instance-segmentation); mismatched
+image hashes, class IDs, invalid geometry and duplicate stems fail
+verification. Verification renders actual four-point polygons rather
+than old YOLO AABBs. Existing COCO/detection handoff remains separate.
+
+Import/overlay works as a headless source-tested slice, not yet native
+GUI accepted. Both new pipelines are intentionally preview-only:
+`phoenix_contract.resolve_handoff` rejects their training publication.
+No true contour approval/Mask R-CNN + PointRend/3-channel PyTorch
+segmentation export or ROCm training was added. The legacy creation
+dialog has 17 named pipelines (formerly 15); one exact YOLO11s
+bbox handoff remains registered. See ADR 0013.
 
 ## 2026-10-17 clarification — dual-border precision geometry
 
