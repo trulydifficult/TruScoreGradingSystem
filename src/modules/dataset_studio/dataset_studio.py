@@ -1353,11 +1353,15 @@ class TruScoreDatasetFrame(QFrame):
                         f"Quad verification FAILED: {error}\n"
                         "No substitute YOLO boxes displayed."
                     )
+                # Respect the source image aspect ratio in the actual
+                # 390x540 preview widget; stretching can make quads look
+                # displaced even when pixel coordinates are accurate.
+                self.verification_preview_label.setScaledContents(False)
                 self.verification_preview_label.setPixmap(
                     pixmap.scaled(
-                        300, 400, Qt.AspectRatioMode.KeepAspectRatio,
+                        390, 540, Qt.AspectRatioMode.KeepAspectRatio,
                         Qt.TransformationMode.SmoothTransformation))
-                self.verification_preview_info.setText(message)
+                self.verification_info_label.setText(message)
                 return
 
             # Find corresponding label data - check COCO first, then YOLO
