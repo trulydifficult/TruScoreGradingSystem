@@ -1359,7 +1359,7 @@ class TruScoreDatasetFrame(QFrame):
                 self.verification_preview_label.setScaledContents(False)
                 self.verification_preview_label.setPixmap(
                     pixmap.scaled(
-                        390, 540, Qt.AspectRatioMode.KeepAspectRatio,
+                        370, 520, Qt.AspectRatioMode.KeepAspectRatio,
                         Qt.TransformationMode.SmoothTransformation))
                 self.verification_info_label.setText(message)
                 return
