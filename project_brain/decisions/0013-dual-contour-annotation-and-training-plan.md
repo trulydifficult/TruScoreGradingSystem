@@ -259,3 +259,45 @@ automated regression test in 9ef217f passed GitHub annotation workflow
 NOT visual alignment to actual card-edge pixels. Retain the current
 provenance `segmentation_ground_truth=false`, since explicit
 source-image visual review and human approval are still missing.
+
+## 2026-10-20 — Stage gate: Dataset Studio quad import and picker models
+
+Operator supplied actual enterprise creation-screen screenshot and
+described the five-tab Images/Labels/Predictions/Verification/Export
+workflow. Two explicit research pipelines were added for
+`border_detection_2class` to both the actual enterprise selector
+components and the older creation catalog:
+
+- `High-Resolution RGB Dual-Contour Segmentation`
+- `Detectron2 PointRend + Mask R-CNN`
+
+Models display **no invented benchmark accuracy or training time** and
+clearly state that Phoenix trainers are not implemented for these
+specific architectures. The existing 15 pipelines remain available.
+`src/shared/dataset_tools/dual_quad_dataset.py` now provides a
+model-independent strict reader of saved `dual_contour_proposal_v1`,
+checks matching exported JPEG hash and dimensions, two independent
+ordered classes and convex in-image quads, and rejects ambiguous
+duplicate stems. It keeps explicit `training_ready=false`,
+`segmentation_ground_truth=false` for proposals.
+
+Dataset Studio's actual imported Labels tab now identifies quad
+proposals distinctly from COCO detection JSON, COCO mask JSON and
+ordinary files. The Verification tab draws real polygons for each
+matched image and reports mismatch/error without falling back to
+legacy bbox previews. Preview preserves image aspect ratio. The
+PointRend COCO segmentation import is correctly marked unsupported
+until a genuine COCO-polygon/mask adapter exists, rather than being
+misidentified as already verifiable.
+
+Phoenix's single explicit YOLO11s detection handoff is not changed.
+Both new contour choices remain explicitly unsupported by the
+training handoff registry; no masks are manufactured from YOLO
+boxes or unreviewed quads.
+
+Verification: real-card card094 dataset tests, source-level
+headless import and project-picker checks. Native operator
+creation/Label/Verification GUI acceptance is PENDING, as are the
+final reviewed `dual_contour_v1` contract, COCO/mask exporters,
+PointRend/ROCm integration, accurate 24-station measurement and
+held-out comparison.
