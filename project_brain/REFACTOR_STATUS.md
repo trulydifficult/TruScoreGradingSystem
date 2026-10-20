@@ -1,11 +1,27 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last continuity update: 2026-10-19 (latest GUI acceptance and CI)
+Last continuity update: 2026-10-19 (late annotation revisit repair; desktop QA pending)
 Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
 
 > Current actionable handoff and evidence tiers: SESSION_START.md.
 > The matrix below is a subsystem-level overview; individual passed
 > source tests and GUI/GPU smoke checks are described in dated sections.
+
+## 2026-10-19 — Back navigation and annotation-audit repair
+
+- Operator reports ~100 newly saved quad cards; bulk integrity unverified.
+- Source-level failure identified: saved-quad hash referred to exported
+  JPEG, while completed-card Back tried to load original source JPEG.
+  Imported geometry could fail to restore, leaving a mismatched overlay.
+- Repair uses validated exported image/sidecar pair and restores prior
+  navigation index on failure. New exports record source SHA-256.
+  Read-only tool checks quad/YOLO/JPEG fidelity and renders PNG overlays.
+- Annotation Integrity 110 PASS and all five CI workflow families PASS
+  on 8ef770e1. **Real GUI Back/Forward acceptance still PENDING.**
+- Standard YOLO 5-value detection boxes lose quad tilt by definition.
+  No new upright/rectified export or Dataset Studio quad importer yet.
+- Do not clear the unverified ~100 exports or mark full 550-card work
+  finished. Preserve previously committed QA fixtures.
 
 ## 2026-10-19 — Most recent audited active focus (supersedes older priorities)
 
