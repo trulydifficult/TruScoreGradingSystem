@@ -26,6 +26,14 @@ jobs:
         with:
           sparse-checkout: |
             src/modules/dataset_studio/dataset_studio.py
+            src/modules/dataset_studio/components/professional_dataset_selector.py
+            src/modules/dataset_studio/components/pipeline_compatibility_engine.py
+            src/modules/dataset_studio/project_management/project_creation_dialog.py
+            src/modules/dataset_studio/project_management/label_pipeline_compatibility.py
+            src/shared/dataset_tools/border_quad.py
+            src/shared/dataset_tools/dual_quad_dataset.py
+            src/shared/dataset_tools/phoenix_contract.py
+            src/shared/annotations/dual_contour_proposals/card094.json
             src/shared/dataset_tools/yolo_to_maskrcnn_converter.py
             src/shared/dataset_tools/annotation_formats.py
             src/shared/dataset_tools/dataset_validator.py
@@ -71,6 +79,11 @@ jobs:
           python -m py_compile \
             src/modules/dataset_studio/dataset_studio.py \
             src/shared/dataset_tools/yolo_to_maskrcnn_converter.py \
+            src/shared/dataset_tools/dual_quad_dataset.py \
+            src/modules/dataset_studio/components/professional_dataset_selector.py \
+            src/modules/dataset_studio/components/pipeline_compatibility_engine.py \
+            src/modules/dataset_studio/project_management/label_pipeline_compatibility.py \
+            src/modules/dataset_studio/project_management/project_creation_dialog.py \
             src/shared/dataset_tools/annotation_formats.py \
             src/shared/dataset_tools/dataset_validator.py \
             src/shared/dataset_tools/dataset_analysis.py \
