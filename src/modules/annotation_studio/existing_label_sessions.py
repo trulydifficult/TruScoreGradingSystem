@@ -161,6 +161,74 @@ def save_session(state, path=None):
             temporary.unlink(missing_ok=True)
 
 
+
+def resolve_completed_quad_source(source_image, annotation_root):
+    """Return the exact exported image/quad pair for a previously saved card.
+
+    The quad JSON uses exported JPEG pixel coordinates and SHA-256, NOT the
+    original input JPEG bytes. Never fall back to the old YOLO bounding boxes
+    after a completed-card quad cannot be restored.
+    """
+    import hashlib
+
+    source_image = Path(source_image).resolve()
+    root = Path(annotation_root)
+    proposal = root / "dual_contour_proposals" / (source_image.stem + ".json")
+    if not proposal.is_file():
+        raise AnnotationBatchError(
+            f"Saved quad missing for {source_image.name}. Original labels were "
+            "not substituted; your completed annotations need recovery."
+        )
+    try:
+        record = json.loads(proposal.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise AnnotationBatchError(f"Saved quad is unreadable: {proposal}") from exc
+
+    image_name = record.get("image_file")
+    if (record.get("schema") != "dual_contour_proposal_v1"
+            or record.get("coordinate_frame") != "exported_rotated_image_pixels"
+            or image_name != source_image.name):
+        raise AnnotationBatchError(
+            f"Saved quad identity or coordinate frame disagrees with {source_image.name}"
+        )
+    width, height = record.get("image_width"), record.get("image_height")
+    if (not isinstance(width, int) or isinstance(width, bool) or width <= 0
+            or not isinstance(height, int) or isinstance(height, bool) or height <= 0):
+        raise AnnotationBatchError(f"Invalid saved quad image dimensions: {proposal}")
+
+    from shared.dataset_tools.border_quad import validate_quad, quad_inside_image
+    annotations = record.get("annotations")
+    if (not isinstance(annotations, list) or len(annotations) != 2
+            or [ann.get("class_id") for ann in annotations if isinstance(ann, dict)] != [0, 1]):
+        raise AnnotationBatchError(f"Saved quad must contain outer and graphic borders: {proposal}")
+    try:
+        for ann in annotations:
+            quad = validate_quad(ann.get("vertices", ()))
+            if not quad_inside_image(quad, width, height):
+                raise ValueError("Vertices outside saved image")
+    except (ValueError, TypeError, KeyError) as exc:
+        raise AnnotationBatchError(f"Saved quad geometry is invalid: {proposal}: {exc}") from exc
+
+    exported = root / "combined_dual_class" / "images" / image_name
+    if not exported.is_file():
+        raise AnnotationBatchError(f"Saved quad JPEG missing: {exported}")
+    if hashlib.sha256(exported.read_bytes()).hexdigest() != record.get("image_sha256"):
+        raise AnnotationBatchError(
+            f"Saved quad JPEG hash mismatch for {source_image.name}; restore aborted"
+        )
+
+    # New exports carry source provenance; older records have only the
+    # stable source stem and exported-image digest and must be reviewed.
+    original_hash = record.get("source_image_sha256")
+    if original_hash is not None and (
+            not source_image.is_file()
+            or hashlib.sha256(source_image.read_bytes()).hexdigest() != original_hash):
+        raise AnnotationBatchError(
+            f"Original source image changed for {source_image.name}; restore aborted"
+        )
+    return exported, proposal
+
+
 def record_completed(state, index, path=None):
     """Persist success BEFORE updating the in-memory session."""
     if not isinstance(index, int) or index < 0 or index >= len(state["image_files"]):
