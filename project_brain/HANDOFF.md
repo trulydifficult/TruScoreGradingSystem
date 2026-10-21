@@ -1883,3 +1883,66 @@ canonical human-approved contours, real model-specific mask/COCO
 export, separate trainer adapters/ROCm acceptance and shared 24
 station evaluation. Compare older source converters and Checkplz
 before touching existing export/architecture.
+
+## 2026-10-20 evening — Six-card, BOTH contour model options accepted in real Dataset Studio GUI
+
+**Operator report (real workstation acceptance):** They used *both*
+new model/pipeline choices in Dataset Studio, imported six JPEG card
+images and their matching saved quadrilateral JSON labels, and saw
+the saved border outlines for all imported examples under both
+choices. Model choices:
+1. `High-Resolution RGB Dual-Contour Segmentation`.
+2. `Detectron2 PointRend + Mask R-CNN`.
+The five-tab Dataset Studio flow was previously described as Images,
+Labels, Predictions, Verification, Export/Analysis; this GUI acceptance
+covers model selection, image+quad import and visible border overlays,
+not testing Predictions inference or Export/Analysis handoff. It is
+a real-GUI acceptance upgrade beyond the source-only test assertions
+in the previous entry. Exact file names of the operator's six-image
+sample are unspecified; do not invent them or treat card094 as all six.
+
+**Source and CI checkpoint:** code/continuity snapshot before this
+report was commit `a02d0dfc471cc6c5d731da1b6873d3589a921854`
+on `refactor/phoenix-foundation`. All five workflow families PASSED;
+Dataset Integrity reported 55 passed. The native quad validator checks
+exported-image SHA, class order, pixel bounds and geometry, while the
+Verification view draws the true four-vertex outlines. The new model
+choices are *preview-only* and not registered as Phoenix training
+handoffs. No model results, genuine COCO masks or ROCm PointRend/U-Net
+training were produced. The recently reported one-card Annotation
+Studio Back/restoration also had operator GUI acceptance. Approximately
+100 newly edited local quads and approximately 550 coarse historic
+YOLO labels exist by report but have no completed bulk audit.
+
+**Authoritative follow-up in the next session** (read this and current
+SESSION_START.md, never follow stale dated backlog):
+1. Preserve operator data; no bulk rename/reset/delete of trial
+   annotations, checkpoints or required 065–067 regression fixtures.
+   Proposed unique eight-decimal-digit ID + A/B face mapping is not
+   yet approved; handle physical-card/face grouping, hashes/backups.
+2. Sample-audit visually precise outer/graphic quad placement and
+   exercise negative image-hash/mismatched JSON GUI behavior. Determine
+   whether four straight segments suffice or editable intermediate
+   contour vertices/mask tracing is necessary; distinguish
+   `human_corrected` from explicit `human_reviewed`/
+   `segmentation_ground_truth` approval.
+3. Build one approved model-neutral `dual_contour_v1` contract;
+   image+geometry validators and Dataset Studio verified export
+   adapters: (a) native-resolution two-class masks/edges for an RGB
+   boundary-aware network, (b) genuine COCO instance polygons/masks
+   for PointRend + Mask R-CNN. No conversion from unreviewed boxes
+   may be labeled real segmentation truth.
+4. Extend exact Dataset Studio → Phoenix capability registration,
+   preserving the existing bbox-only YOLO11s path; implement only
+   real model-specific trainers, check PointRend compiled ops on AMD
+   ROCm 7900 XTX and real train/validation/checkpoints.
+5. Compare both models on identical physical-card-held-out splits;
+   boundary distance and the correct **24 full-side centering stations**
+   (top5, bottom5, left7, right7), skew and failure handling matter
+   more than a fabricated accuracy percentage. Audit current
+   twentyfour_centering.py and historical/Checkplz code before fixes.
+
+No source files, user training samples or local project files were
+modified as part of recording this operator acceptance. Maintain
+`project_brain` as continuity source of truth; GitHub active
+development branch is `refactor/phoenix-foundation`, not main.
