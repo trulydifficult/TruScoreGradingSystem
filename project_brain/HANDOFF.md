@@ -1980,3 +1980,44 @@ otherwise advance human-reviewable contour approval and true mask adapters
 by reusing current `dual_quad_dataset` and model-specific training contracts.
 Preserve actual operator annotation work throughout. This was a source/CI
 slice only, not workstation execution or a certified precision baseline.
+
+
+## 2026-10-21 — Modular Studio-wide review receipts, border plugin opt-in
+
+Operator reiterated the crucial modular boundary: Studio-global options
+should be implemented once, not repeated within each plugin. Plugin-specific
+controls/data stay with their plugin, shared validators remain independent.
+
+Implemented:
+- `src/shared/dataset_tools/annotation_review.py`: plugin-neutral review
+  candidate registry/preflight using the existing dual-quad source validator,
+  explicit per-component reviewer confirmations, immutable
+  `annotation_review_v1` SHA-bound receipts outside the quad proposals.
+- `src/modules/annotation_studio/plugins/base_plugin.py`: optional
+  `get_review_candidate()` interface, returning None by default.
+- `src/modules/annotation_studio/plugins/border_detection_plugin.py`:
+  review-candidate adapter for exact saved rotated image + two-border JSON,
+  rejecting unsaved live vertex differences; no review dialog/file writing.
+- `src/modules/annotation_studio/modular_annotation_studio.py`: Studio-wide
+  Review Saved Annotation control with reviewer input and per-component
+  visual confirmation, cancellation, warnings and status. No plugin-specific
+  branching in the Studio UI.
+- New tests cover source changes, no-clobber, incomplete approval, source
+  pairing, plugin/studio split, cancellation and explicit negative GT flags.
+- `project_brain/decisions/0018-studio-plugin-review-ownership.md` adopted;
+  corresponding index entry and refactor status updated.
+
+Verification on code checkpoint `def63a5`: Annotation Integrity run
+39561074914 **120 passed**, all five workflow families PASS. CI is not
+operator GUI acceptance; no local corpus bulk audit or ROCm mask training.
+Actual saved quad proposal fields remain unreviewed/not segmentation-GT;
+the separate receipt explicitly says `training_ready=false` and must never
+be treated as a mask or human-measured accuracy.
+
+Next: operator spot-check new Studio review button on an already-saved
+card; approve only when four straight segments visually fit the true
+outer and printed border. No need to stop concurrent annotation.
+Engineering: define/load/validate `dual_contour_v1` using attested source
+identity and explicit full-boundary adequacy, including intermediate
+vertices where four points are insufficient. Then Dataset Studio adapters
+and real Phoenix segmentation, grouped evaluation and 24-station geometry.
