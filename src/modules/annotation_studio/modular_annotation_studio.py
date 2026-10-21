@@ -17,7 +17,7 @@ from typing import Optional, List, Dict, Any
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
     QFrame, QLabel, QPushButton, QApplication, QSlider, QSizePolicy, QComboBox, QGroupBox,
-    QFileDialog, QMessageBox
+    QFileDialog, QMessageBox, QInputDialog
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject
 from PyQt6.QtGui import QKeySequence, QFont, QShortcut, QImage, QPixmap
@@ -697,6 +697,17 @@ class ModularAnnotationStudio(QMainWindow):
         prior_layout.addWidget(self.existing_label_progress)
         controls_layout.addWidget(prior_group)
 
+        # Studio-wide review, NOT a border-plugin preference. A plugin may
+        # opt in by providing a saved review candidate; all confirmation,
+        # validation and review persistence use one shared implementation.
+        self.review_saved_button = QPushButton("Review Saved Annotation")
+        self.review_saved_button.setToolTip(
+            "Visually review saved annotation fidelity; creates a source-bound "
+            "receipt, not segmentation masks or training-ready labels"
+        )
+        self.review_saved_button.clicked.connect(self.review_saved_annotation)
+        controls_layout.addWidget(self.review_saved_button)
+
         # ZOOM CONTROLS SECTION
         zoom_group = QGroupBox("Zoom Controls")
         zoom_group.setStyleSheet(f"""
@@ -750,6 +761,72 @@ class ModularAnnotationStudio(QMainWindow):
         self.zoom_level = 0.5
         self.fit_mode = True
     
+    def review_saved_annotation(self):
+        """Generic Studio approval UI for any plugin with a review candidate.
+
+        No border-specific class logic or geometry rules belong here. The
+        active plugin identifies only its *saved* artifact; the shared
+        validator registry provides component names and checks provenance.
+        """
+        from shared.dataset_tools.annotation_review import (
+            AnnotationReviewError, inspect_candidate, save_attestation,
+        )
+        plugin = getattr(self, "current_plugin", None)
+        if plugin is None or not hasattr(plugin, "get_review_candidate"):
+            QMessageBox.warning(self, "Annotation Review",
+                                "Choose a plugin and load a saved annotation first.")
+            return False
+        try:
+            candidate = plugin.get_review_candidate()
+            if candidate is None:
+                raise AnnotationReviewError(
+                    "This plugin does not currently support saved-annotation review"
+                )
+            spec = inspect_candidate(candidate)
+        except (AnnotationReviewError, OSError, ValueError, TypeError, KeyError) as exc:
+            QMessageBox.warning(self, "Annotation Review Unavailable", str(exc))
+            return False
+
+        reviewer, accepted = QInputDialog.getText(
+            self, "Review Saved Annotation",
+            "Reviewer name or identifier (required):"
+        )
+        if not accepted:
+            return False
+        if not reviewer.strip():
+            QMessageBox.warning(self, "Annotation Review",
+                                "A reviewer identifier is required.")
+            return False
+
+        checked = []
+        for component in spec["components"]:
+            outcome = QMessageBox.question(
+                self, "Verify Saved Contour: " + component,
+                f"Inspect {component.replace('_', ' ')} on the CURRENT saved card.\n\n"
+                "Confirm that you personally examined the visible boundary "
+                "and that its saved geometry follows the true boundary "
+                "closely enough for your intended supervision.\n\n"
+                "If four vertices omit curvature or damage, select No. "
+                "Do not approve an uninspected or merely AI-suggested contour.",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if outcome != QMessageBox.StandardButton.Yes:
+                return False
+            checked.append(component)
+        try:
+            receipt = save_attestation(candidate, reviewer, checked)
+        except (AnnotationReviewError, OSError, ValueError, TypeError) as exc:
+            QMessageBox.warning(self, "Annotation Review Not Saved", str(exc))
+            return False
+        QMessageBox.information(
+            self, "Annotation Review Recorded",
+            f"Source-bound review receipt saved:\n{receipt}\n\n"
+            "The existing annotation remains unchanged. This receipt is "
+            "NOT yet a segmentation-training mask or model accuracy proof.",
+        )
+        return True
+
     # Placeholder methods for buttons (will be replaced with full implementation)
     def load_images_placeholder(self):
         """FIXED: Card loading using modern file browser - COPIED PATTERNS FROM WORKING BORDER_CALIBRATION.PY"""
