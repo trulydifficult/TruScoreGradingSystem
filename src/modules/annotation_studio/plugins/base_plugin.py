@@ -495,6 +495,18 @@ class BaseAnnotationPlugin(ABC):
         """
         pass
     
+    # ==================== OPTIONAL HUMAN REVIEW ====================
+    
+    def get_review_candidate(self):
+        """Optional source-bound saved-annotation review capability.
+
+        Return {'kind': schema, 'annotation_path': path, 'image_path': path}
+        only for a saved, unchanged artifact. Studio owns the universal
+        review UI and receipt I/O; the shared review registry validates
+        geometry and provenance. Plugins without this capability return None.
+        """
+        return None
+
     # ==================== OPTIONAL DETECTION ====================
     
     def supports_detection(self) -> bool:
