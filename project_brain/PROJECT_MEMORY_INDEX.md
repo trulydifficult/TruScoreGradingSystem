@@ -1,6 +1,6 @@
 # TruScore Project Memory — Document Index and Authority Map
 
-Reviewed: 2026-10-19 (source/CI/operator-GUI continuity)
+Reviewed: 2026-10-20 (six-image dual-contour Dataset Studio GUI acceptance)
 Repository: trulydifficult/TruScoreGradingSystem
 Active development branch: refactor/phoenix-foundation
 Protocol: decisions/0010-authoritative-memory-and-session-recovery.md
@@ -11,7 +11,10 @@ Protocol: decisions/0010-authoritative-memory-and-session-recovery.md
 dated formerly-active snapshots were archived under
 [history/SESSION_START_ARCHIVE_THROUGH_2026-10-19.md](history/SESSION_START_ARCHIVE_THROUGH_2026-10-19.md).
 `HANDOFF.md` is append-only chronology, **not** a second live
-backlog. Current operator's A/B naming and fixture-safe trial cleanup
+backlog. The 2026-10-20 evening entry records operator-GUI acceptance
+of **both new contour pipeline choices with six image/quad-label pairs**.
+This is a preview/import milestone, NOT mask-GT or trainer acceptance.
+Current operator's A/B naming and fixture-safe trial cleanup
 are **plans, not authorized changes**.
 
 ## Start here
