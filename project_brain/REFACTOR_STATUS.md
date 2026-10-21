@@ -1,11 +1,32 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last continuity update: 2026-10-20 (one-card Back GUI acceptance; bulk audit pending)
+Last continuity update: 2026-10-20 (both contour pickers + six-image GUI verification accepted)
 Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
 
 > Current actionable handoff and evidence tiers: SESSION_START.md.
 > The matrix below is a subsystem-level overview; individual passed
 > source tests and GUI/GPU smoke checks are described in dated sections.
+
+## 2026-10-20 — Dataset Studio six-image operator GUI acceptance
+
+- Operator successfully created/used the two new two-class border
+  model choices in the real Dataset Studio UI: RGB Dual-Contour and
+  Detectron2 PointRend + Mask R-CNN.
+- For **both** pipeline selections, the operator imported six images
+  and their quad JSON labels and confirmed the outer/graphic borders
+  appeared in Verification. Model names/label import/visible outlines
+  are operator-GUI ACCEPTED for this six-image batch.
+- Do not infer a visual pixel-level tracing audit, bulk ~100-card
+  fidelity check, human-reviewed ground truth, or actual segmentation
+  training from this pass. Other historical annotation types/pipeline
+  routes do not become verified through this test.
+- Five CI families PASS at code commit a02d0df (Dataset Integrity
+  55 tests). Real training/export and queue adapters for either new
+  contour pipeline remain unavailable, explicitly rejected.
+- Next: define approval/precision gate and canonical training labels,
+  implement real COCO instance masks + RGB two-channel mask/edge
+  exporters from approved source, register real trainers and validate
+  on AMD ROCm. Hold out physical-card groups and evaluate 24 stations.
 
 ## 2026-10-20 — Dataset Studio quad intake / research-model project picker
 
