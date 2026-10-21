@@ -93,18 +93,7 @@ mobile services are longer-term systems, NOT all implemented today.
   Model-specific masks/export/ROCm trainers still NOT IMPLEMENTED;
   this is import/preview acceptance, not pixel-level ground truth.
 
-**Parallel operator annotation / variable training-set size (2026-10-20):**
-- Operator will continue annotating cards while engineering work proceeds
-  on the contour-label contract, Dataset Studio and Phoenix trainers.
-- When a real model-training test is ready, construct its dataset from
-  the **actual eligible, reviewed annotated cards available at that
-  moment**, rather than waiting for a fixed 100-, 550-, or other-card
-  milestone. The number of cards is dynamic; report actual available,
-  accepted, excluded, training, validation and test counts for each run.
-- Validation, provenance, physical-card grouping and held-out splits
-  still apply. Coarse YOLO boxes or unreviewed quad proposals must not
-  be silently promoted to segmentation ground truth; do not claim model
-  quality solely from a successful variable-size smoke training run.
+**Parallel annotation / dynamic datasets:** Operator continues annotation while engineering proceeds. Real training tests use the *actual reviewed, eligible* card count then available (no fixed 550 target); report accepted/excluded/train/validation/test counts with physical-card grouping. Unreviewed quads/YOLO boxes are not mask GT; successful smoke training does not certify model quality.
 
 **Still NOT verified or implemented:**
 - Quad proposals are explicitly `human_reviewed=false` and
