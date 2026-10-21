@@ -38,8 +38,8 @@ quads instead of axis-aligned YOLO AABBs, with a visible failure
 message and without falsifying mask ground truth. Selector metadata
 reports unmeasured accuracy and unimplemented model-specific trainer
 routes; Phoenix rejects those routes explicitly. Source tests
-include real card094. Native workstation GUI acceptance not yet done;
-COCO mask adapter, 3-channel RGB trainer and PointRend remain pending.
+include real card094. Six-image GUI acceptance for both choices is
+recorded above; COCO mask adapter, RGB trainer and PointRend pending.
 
 ## 2026-10-19 late annotation revisit incident (source-level repaired)
 
