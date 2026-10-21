@@ -39,8 +39,8 @@ Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
   polygons, preserving aspect ratio, with provenance errors visible.
 - The existing YOLO detection dataset and supported Phoenix handoff
   remain unchanged; neither added research pipeline can silently
-  launch a substituted trainer. True masks, COCO segmentation,
-  native ROCm training and real GUI acceptance still PENDING.
+  launch a substituted trainer. Six-image operator GUI acceptance
+  is recorded above; true masks/COCO export and ROCm training PENDING.
 - Source-level dataset tests cover real card094 quad/JPEG integrity.
 
 ## 2026-10-20 — Operator Back-navigation GUI acceptance
