@@ -133,8 +133,13 @@ image hashes, class IDs, invalid geometry and duplicate stems fail
 verification. Verification renders actual four-point polygons rather
 than old YOLO AABBs. Existing COCO/detection handoff remains separate.
 
-Import/overlay works as a headless source-tested slice, not yet native
-GUI accepted. Both new pipelines are intentionally preview-only:
+**Operator GUI ACCEPTED 2026-10-20:** Both new pipelines were
+opened in Dataset Studio with six images and corresponding quad labels;
+all saved outer/graphic borders appeared for both choices. Source
+validation remains separately backed by the real card094 CI tests.
+This proves import/overlay behavior for six user-tested pairs, not
+pixel-level ground truth or the entire dataset. Both new pipelines
+remain intentionally preview-only:
 `phoenix_contract.resolve_handoff` rejects their training publication.
 No true contour approval/Mask R-CNN + PointRend/3-channel PyTorch
 segmentation export or ROCm training was added. The legacy creation
