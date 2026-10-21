@@ -1997,7 +1997,8 @@ Implemented:
   `get_review_candidate()` interface, returning None by default.
 - `src/modules/annotation_studio/plugins/border_detection_plugin.py`:
   review-candidate adapter for exact saved rotated image + two-border JSON,
-  rejecting unsaved live vertex differences; no review dialog/file writing.
+  rejecting unsaved live vertices AND wrong original source-image hashes
+  (even when the filename matches); no review dialog/file writing.
 - `src/modules/annotation_studio/modular_annotation_studio.py`: Studio-wide
   Review Saved Annotation control with reviewer input and per-component
   visual confirmation, cancellation, warnings and status. No plugin-specific
