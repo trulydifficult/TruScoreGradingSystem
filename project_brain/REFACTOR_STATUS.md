@@ -10,7 +10,8 @@ Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
 ## 2026-10-21 — Reusable annotation review receipts (CI-only initial slice)
 
 - Added optional BaseAnnotationPlugin `get_review_candidate()`; border plugin
-  identifies the exact saved export and rejects mismatched unsaved vertices.
+  identifies the exact saved export, rejects unsaved vertices and verifies
+  source-scan SHA against the saved sidecar (strict legacy handling).
 - Added **one Studio-wide** Review Saved Annotation control. It does not
   belong to or duplicate a plugin's model/detection settings; future plugins
   opt in via a small capability and shared format registry.
