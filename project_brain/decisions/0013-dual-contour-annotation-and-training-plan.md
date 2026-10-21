@@ -301,3 +301,29 @@ creation/Label/Verification GUI acceptance is PENDING, as are the
 final reviewed `dual_contour_v1` contract, COCO/mask exporters,
 PointRend/ROCm integration, accurate 24-station measurement and
 held-out comparison.
+
+## 2026-10-20 — REAL workstation acceptance of the six-pair Dataset Studio slice
+
+**Operator acceptance confirmed:** Both new pipeline types were
+loadable from the real Dataset Studio. With each selected, the
+operator imported six card images and their matching label files and
+confirmed the saved border outlines appeared for both model choices.
+This upgrades the creation/catalog → Images → Labels → Verification
+slice from source/CI-only to **operator-GUI accepted for six card pairs**.
+The operator did NOT report an independently quantified edge-alignment
+error, approval/review status change in the JSON, negative/hash-failure
+GUI testing, full local corpus audit, export through the Export tab,
+model training, or benchmark results. Do not upgrade the evidence tier
+beyond import and visual overlay.
+
+**Next implementation boundary:** a single canonical reviewed contour
+supervision contract (with source identity and possible intermediate
+edge vertices) must feed *separate* validated training adapters:
+native RGB two-channel mask/edge targets and genuine COCO instance
+segmentation for Mask R-CNN + PointRend. Neither `dual_contour_proposal_v1`
+quads nor five-column YOLO axis-aligned boxes are automatically
+certified mask ground truth. Add explicit trainer registry/contracts,
+version-checked ROCm PointRend compatibility, deterministic same-card
+train/val/test group assignment, independent model benchmarks and
+physical+graphic 24-station geometry tests. Existing YOLO11s detection
+handoff remains separate. Do not create fake models/fallbacks.
