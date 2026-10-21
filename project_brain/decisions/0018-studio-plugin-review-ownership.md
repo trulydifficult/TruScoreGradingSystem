@@ -22,7 +22,10 @@ Both should use stable shared contracts, not call one another's UI internals.
 - **Individual plugin** owns only identifying its exact saved artifact
   and matching unsaved live geometry to that artifact. The border plugin
   currently supplies a `dual_contour_proposal_v1` pair after verifying
-  the displayed outer/graphic vertices match the saved JSON.
+  the displayed outer/graphic vertices match the saved JSON AND the
+  original scan SHA-256 matches recorded source provenance. For legacy
+  proposals without source SHA, source bytes must equal exported JPEG;
+  otherwise explicitly re-export rather than guessing scan identity.
 - **Shared dataset tools** (`annotation_review.py`) own one review-kind
   registry, source-image/annotation digest checks, explicit all-component
   approval, versioned receipt schema and non-overwriting storage.
