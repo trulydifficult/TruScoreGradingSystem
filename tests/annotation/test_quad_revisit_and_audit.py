@@ -82,7 +82,8 @@ def _saved_pair(tmp_path):
         "rotation_degrees": 1.35, "segmentation_ground_truth": False,
         "annotations": [
             {"class_id": cls, "geometry_format": "quad_v1",
-             "human_reviewed": False, "vertices": quad}
+             "human_reviewed": False, "segmentation_ground_truth": False,
+             "vertices": quad}
             for cls, quad in enumerate(quads)
         ],
     }
@@ -303,3 +304,178 @@ def test_inventory_report_is_explicit_no_clobber_and_never_inside_sources(tmp_pa
     assert tool.main(["--root", str(root), "--report-json",
                       str(root / "inventory.json")]) == 1
     assert not (root / "inventory.json").exists()
+
+
+def test_review_attestation_requires_every_component_and_never_certifies_gt(tmp_path):
+    _, root, proposal, exported = _saved_pair(tmp_path)
+    from shared.dataset_tools.annotation_review import (
+        AnnotationReviewError, inspect_candidate, create_attestation,
+        save_attestation, validate_attestation,
+    )
+    subject = {"kind": "dual_contour_proposal_v1",
+               "annotation_path": proposal, "image_path": exported}
+    spec = inspect_candidate(subject)
+    assert spec["components"] == ("outer_border", "graphic_border")
+    with pytest.raises(AnnotationReviewError, match="every component"):
+        create_attestation(spec, "operator", ["outer_border"])
+    with pytest.raises(AnnotationReviewError, match="Reviewer"):
+        create_attestation(spec, "", spec["components"])
+    receipt = save_attestation(subject, "operator", spec["components"])
+    assert receipt.parent.name == "dual_contour_proposal_v1"
+    assert receipt.parent.parent.name == "annotation_reviews"
+    assert receipt.exists() and proposal.exists() and exported.exists()
+    saved = json.loads(receipt.read_text())
+    assert validate_attestation(saved, subject)["components"] == spec["components"]
+    assert saved["training_ready"] is False
+    assert saved["segmentation_ground_truth"] is False
+    assert saved["source_kind"] == "dual_contour_proposal_v1"
+    assert json.loads(proposal.read_text())["segmentation_ground_truth"] is False
+    with pytest.raises(AnnotationReviewError, match="no overwrite"):
+        save_attestation(subject, "operator", spec["components"])
+
+
+def test_review_attestation_rejects_relabelled_geometry_or_image(tmp_path):
+    _, root, proposal, exported = _saved_pair(tmp_path)
+    from shared.dataset_tools.annotation_review import (
+        AnnotationReviewError, inspect_candidate, create_attestation,
+        save_attestation, validate_attestation,
+    )
+    subject = {"kind": "dual_contour_proposal_v1",
+               "annotation_path": proposal, "image_path": exported}
+    spec = inspect_candidate(subject)
+    receipt = save_attestation(subject, "operator", spec["components"])
+    review = json.loads(receipt.read_text())
+    # A review for an earlier file cannot be carried over to a new quad.
+    data = json.loads(proposal.read_text())
+    data["annotations"][1]["vertices"] = [
+        [16, 22], [84, 22], [84, 179], [16, 179],
+    ]
+    proposal.write_text(json.dumps(data))
+    with pytest.raises(AnnotationReviewError, match="stale field"):
+        validate_attestation(review, subject)
+    with pytest.raises(AnnotationReviewError, match="changed since inspection"):
+        create_attestation(spec, "operator", spec["components"])
+    # A new legitimate review can be added while the old receipt persists.
+    new_spec = inspect_candidate(subject)
+    second = save_attestation(subject, "operator", new_spec["components"])
+    assert second != receipt and receipt.exists()
+    exported.write_bytes(b"tampered export")
+    with pytest.raises(AnnotationReviewError):
+        validate_attestation(json.loads(second.read_text()), subject)
+
+
+def test_review_rejects_coarse_yolo_and_incompatible_proposal(tmp_path):
+    _, root, proposal, exported = _saved_pair(tmp_path)
+    from shared.dataset_tools.annotation_review import (
+        AnnotationReviewError, inspect_candidate,
+    )
+    with pytest.raises(AnnotationReviewError, match="Unsupported review format"):
+        inspect_candidate({"kind": "yolo_bbox_v1",
+                           "annotation_path": proposal, "image_path": exported})
+    with pytest.raises(AnnotationReviewError, match="preflight"):
+        inspect_candidate({"kind": "dual_contour_proposal_v1",
+                           "annotation_path": root / "combined_dual_class"
+                           / "labels" / "card001.txt", "image_path": exported})
+    data = json.loads(proposal.read_text())
+    data["segmentation_ground_truth"] = True
+    proposal.write_text(json.dumps(data))
+    with pytest.raises(AnnotationReviewError, match="preflight"):
+        inspect_candidate({"kind": "dual_contour_proposal_v1",
+                           "annotation_path": proposal, "image_path": exported})
+
+
+def test_border_review_candidate_requires_saved_matching_live_vertices(tmp_path):
+    import ast
+    from shared.dataset_tools.border_quad import validate_quad
+    _, root, proposal, exported = _saved_pair(tmp_path)
+    source = ROOT / "src/modules/annotation_studio/plugins/border_detection_plugin.py"
+    tree = ast.parse(source.read_text(encoding="utf-8"))
+    cls = next(x for x in tree.body if isinstance(x, ast.ClassDef)
+               and x.name == "BorderDetectionPlugin")
+    method = next(x for x in cls.body if isinstance(x, ast.FunctionDef)
+                  and x.name == "get_review_candidate")
+    code = ast.Module(body=[method], type_ignores=[])
+    ast.fix_missing_locations(code)
+    fake_module = tmp_path / "src/modules/annotation_studio/plugins/border_detection_plugin.py"
+    scope = {"Path": Path, "json": json, "validate_quad": validate_quad,
+             "__file__": str(fake_module)}
+    exec(compile(code, str(source), "exec"), scope)
+    original = tmp_path / "inputs/card001.jpg"
+    data = json.loads(proposal.read_text())
+    live = [SimpleNamespace(class_id=x["class_id"], vertices=x["vertices"])
+            for x in data["annotations"]]
+    plugin = SimpleNamespace(
+        studio_context=SimpleNamespace(_studio=SimpleNamespace(
+            current_image_path=original)),
+        settings_widget=SimpleNamespace(annotations=live))
+    candidate = scope["get_review_candidate"](plugin)
+    assert candidate["annotation_path"] == proposal
+    assert candidate["image_path"] == exported
+    live[0].vertices = [[8, 8], [95, 5], [95, 195], [5, 195]]
+    with pytest.raises(ValueError, match="Unsaved border changes"):
+        scope["get_review_candidate"](plugin)
+
+
+def test_studio_review_is_generic_and_requires_explicit_visual_confirmation(tmp_path):
+    import ast
+    _, root, proposal, exported = _saved_pair(tmp_path)
+    source = ROOT / "src/modules/annotation_studio/modular_annotation_studio.py"
+    tree = ast.parse(source.read_text(encoding="utf-8"))
+    cls = next(x for x in tree.body if isinstance(x, ast.ClassDef)
+               and x.name == "ModularAnnotationStudio")
+    method = next(x for x in cls.body if isinstance(x, ast.FunctionDef)
+                  and x.name == "review_saved_annotation")
+    code = ast.Module(body=[method], type_ignores=[])
+    ast.fix_missing_locations(code)
+    events = []
+    class Buttons:
+        Yes = 1
+        No = 2
+    class FakeBox:
+        StandardButton = Buttons
+        @staticmethod
+        def question(*args):
+            events.append("question")
+            return Buttons.Yes
+        @staticmethod
+        def warning(*args):
+            events.append("warning")
+        @staticmethod
+        def information(*args):
+            events.append("saved")
+    class FakeInput:
+        @staticmethod
+        def getText(*args):
+            return "reviewer", True
+    scope = {"QMessageBox": FakeBox, "QInputDialog": FakeInput}
+    exec(compile(code, str(source), "exec"), scope)
+    plugin = SimpleNamespace(get_review_candidate=lambda: {
+        "kind": "dual_contour_proposal_v1",
+        "annotation_path": proposal, "image_path": exported})
+    studio = SimpleNamespace(current_plugin=plugin)
+    assert scope["review_saved_annotation"](studio) is True
+    assert events == ["question", "question", "saved"]
+    assert len(list((root / "annotation_reviews").rglob("*.review.json"))) == 1
+
+    # No auto-approval after a cancelled or declined review.
+    class DenyBox(FakeBox):
+        @staticmethod
+        def question(*args):
+            return Buttons.No
+    scope["review_saved_annotation"].__globals__["QMessageBox"] = DenyBox
+    assert scope["review_saved_annotation"](studio) is False
+    assert len(list((root / "annotation_reviews").rglob("*.review.json"))) == 1
+
+
+def test_review_ui_controls_and_opt_in_hook_stay_separated():
+    base = (ROOT / "src/modules/annotation_studio/plugins/base_plugin.py").read_text()
+    studio = (ROOT / "src/modules/annotation_studio/modular_annotation_studio.py").read_text()
+    plugin = (ROOT / "src/modules/annotation_studio/plugins/border_detection_plugin.py").read_text()
+    assert "def get_review_candidate(self):" in base
+    assert "self.review_saved_button.clicked.connect(self.review_saved_annotation)" in studio
+    assert "spec = inspect_candidate(candidate)" in studio
+    assert "def get_review_candidate(self):" in plugin
+    # A review must not rewrite the three-export YOLO labels or proposal JSON.
+    service = (ROOT / "src/shared/dataset_tools/annotation_review.py").read_text()
+    assert 'output.open("xb")' in service
+    assert '"training_ready": False' in service
