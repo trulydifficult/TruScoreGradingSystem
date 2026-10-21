@@ -1,11 +1,32 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last continuity update: 2026-10-21 (read-only dual-quad corpus preflight; six-image GUI verification unchanged)
+Last continuity update: 2026-10-21 (reusable Studio/plugin review receipts; CI-only)
 Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
 
 > Current actionable handoff and evidence tiers: SESSION_START.md.
 > The matrix below is a subsystem-level overview; individual passed
 > source tests and GUI/GPU smoke checks are described in dated sections.
+
+## 2026-10-21 — Reusable annotation review receipts (CI-only initial slice)
+
+- Added optional BaseAnnotationPlugin `get_review_candidate()`; border plugin
+  identifies the exact saved export and rejects mismatched unsaved vertices.
+- Added **one Studio-wide** Review Saved Annotation control. It does not
+  belong to or duplicate a plugin's model/detection settings; future plugins
+  opt in via a small capability and shared format registry.
+- `src/shared/dataset_tools/annotation_review.py` validates saved native
+  JPEG + JSON through `dual_quad_dataset`, requires review of both contours,
+  binds exact SHA-256 digests, and writes immutable `annotation_review_v1`
+  receipts outside the proposal folder (exclusive create, no overwrites).
+- Source quad JSONs remain `segmentation_ground_truth=false`, and receipts
+  remain `training_ready=false`. No true dense masks, canonical
+  `dual_contour_v1`, ROCm training, dataset rename or deletion introduced.
+- Annotation Integrity workflow **39561074914: 120 tests PASSED**;
+  all five CI workflows passed on commit `def63a5`. Source-method tests
+  validate Studio/plugin split and cancellation, not real GUI user behavior.
+- Architecture decision: [ADR 0018](decisions/0018-studio-plugin-review-ownership.md).
+  Next: operator inspect review UI and accurate contour approval; then
+  full model-neutral training-label contract, Dataset Studio mask adapters.
 
 ## 2026-10-21 — Read-only quad corpus inventory (source/CI slice)
 
