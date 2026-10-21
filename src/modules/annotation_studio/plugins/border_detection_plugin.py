@@ -2382,6 +2382,50 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             ),
         )
 
+    def get_review_candidate(self):
+        """Identify the exact saved quad export; never approve live unsaved edits.
+
+        Review dialog, source hashing and writing the receipt are owned by
+        Studio/shared services. This plugin owns only its annotation geometry,
+        export location and comparison with the editor's current vertices.
+        """
+        studio = getattr(getattr(self, "studio_context", None), "_studio", None)
+        image = getattr(studio, "current_image_path", None)
+        widget = self.settings_widget
+        if image is None or widget is None:
+            raise ValueError("Load a saved card before reviewing annotations")
+        base = Path(__file__).resolve().parents[3] / "shared" / "annotations"
+        source = Path(image)
+        proposal = base / "dual_contour_proposals" / (source.stem + ".json")
+        exported = base / "combined_dual_class" / "images" / source.name
+        if not proposal.is_file() or not exported.is_file():
+            raise ValueError("Save this card with Space before reviewing its exported borders")
+        try:
+            record = json.loads(proposal.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ValueError("Saved quad proposal is unreadable") from exc
+        entries = record.get("annotations", ())
+        if (record.get("image_file") != source.name or len(entries) != 2
+                or [entry.get("class_id") for entry in entries] != [0, 1]):
+            raise ValueError("Saved quad does not match this card and border classes")
+        current = getattr(widget, "annotations", ())
+        if (len(current) != 2
+                or [ann.class_id for ann in current] != [0, 1]):
+            raise ValueError("Editor must display both outer and graphic borders")
+        for live, saved in zip(current, entries):
+            actual = validate_quad(live.vertices)
+            previous = validate_quad(saved["vertices"])
+            if any(abs(a - b) > 1e-5 for point, old in zip(actual, previous)
+                   for a, b in zip(point, old)):
+                raise ValueError(
+                    "Unsaved border changes: export the current card before review"
+                )
+        return {
+            "kind": "dual_contour_proposal_v1",
+            "annotation_path": proposal,
+            "image_path": exported,
+        }
+
     def load_existing_labels(self, image_path, image_data, label_path, proposal_path=None):
         """Populate two REAL editable quads from existing YOLO labels, without AI."""
         from modules.annotation_studio.existing_label_sessions import parse_combined_yolo
