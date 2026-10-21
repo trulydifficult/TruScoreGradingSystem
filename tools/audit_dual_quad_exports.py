@@ -119,6 +119,119 @@ def audit_card(root: Path, proposal: Path, preview_dir: Path | None = None):
     return sum(bool(a.get("human_reviewed")) for a in anns)
 
 
+def _stem_collisions(folder: Path, extensions: set[str]):
+    """Detect ambiguous case-insensitive stems without modifying input files."""
+    by_stem = {}
+    if not folder.is_dir():
+        return []
+    for path in sorted(folder.iterdir()):
+        if path.is_file() and path.suffix.lower() in extensions:
+            by_stem.setdefault(path.stem.casefold(), []).append(str(path))
+    return [paths for paths in by_stem.values() if len(paths) > 1]
+
+
+def build_inventory(root: Path, files: list[Path], preview_dir: Path | None = None):
+    """Read-only, full-set preflight for currently saved quad *proposals*.
+
+    Reuses audit_card for the three export targets; passing is NOT an
+    annotation-accuracy or segmentation training approval. Historical bbox
+    exports without proposal JSON remain visible as unpaired diagnostics.
+    """
+    proposal_stems = {p.stem.casefold() for p in files}
+    collisions = []
+    folders = [(root / "dual_contour_proposals", {".json"})]
+    for target in TARGETS:
+        folders += [
+            (root / target / "images", {".jpg", ".jpeg", ".png"}),
+            (root / target / "labels", {".txt"}),
+        ]
+    unpaired = {}
+    for folder, suffixes in folders:
+        collisions.extend({
+            "directory": str(folder), "paths": group,
+        } for group in _stem_collisions(folder, suffixes))
+        if folder.name != "dual_contour_proposals" and folder.is_dir():
+            others = sorted(str(p) for p in folder.iterdir()
+                            if p.is_file() and p.suffix.lower() in suffixes
+                            and p.stem.casefold() not in proposal_stems)
+            unpaired[str(folder)] = {
+                "count": len(others), "examples": others[:5],
+            }
+
+    entries = []
+    hashes = {}
+    for proposal in files:
+        entry = {"proposal_path": str(proposal), "stem": proposal.stem,
+                 "status": "FAIL", "training_ready": False}
+        try:
+            reviewed = audit_card(root, proposal, preview_dir)
+            record = json.loads(proposal.read_text(encoding="utf-8"))
+            # These are proposals, regardless of a human correction or review
+            # flag. Never promote them into dual_contour_v1 mask GT.
+            if (record.get("segmentation_ground_truth") is not False
+                    or any(a.get("segmentation_ground_truth") is not False
+                           for a in record["annotations"])):
+                raise ValueError("Proposal falsely claims segmentation ground truth")
+            if any(a.get("human_reviewed") not in (True, False)
+                   for a in record["annotations"]):
+                raise ValueError("Invalid contour review metadata")
+            entry.update({
+                "status": "PASS",
+                "image_path": str(root / "combined_dual_class" / "images"
+                                  / record["image_file"]),
+                "image_sha256_verified": record["image_sha256"],
+                "source_image_sha256_unverified": record.get("source_image_sha256"),
+                "width": record["image_width"], "height": record["image_height"],
+                "reviewed_contours": reviewed,
+                "source_schema": "dual_contour_proposal_v1",
+            })
+            hashes.setdefault(record["image_sha256"], []).append(proposal.stem)
+        except (OSError, ValueError, TypeError, KeyError,
+                json.JSONDecodeError) as exc:
+            entry["error"] = str(exc)
+        entries.append(entry)
+
+    duplicates = [{"image_sha256": digest, "stems": stems}
+                  for digest, stems in sorted(hashes.items())
+                  if len(stems) > 1]
+    passed = sum(e["status"] == "PASS" for e in entries)
+    return {
+        "schema": "dual_quad_inventory_v1",
+        "annotation_root": str(root.resolve()),
+        "counts": {
+            "proposals_checked": len(entries),
+            "valid_export_pairs": passed,
+            "failed_export_pairs": len(entries) - passed,
+            "explicitly_reviewed_contours": sum(
+                e.get("reviewed_contours", 0) for e in entries),
+            "segmentation_training_ready": 0,
+            "identity_collision_groups": len(collisions),
+            "possible_same_image_groups": len(duplicates),
+        },
+        "identity_collisions": collisions,
+        "same_exported_jpeg_sha256": duplicates,
+        "exports_without_quad_proposals": unpaired,
+        "records": entries,
+        "notes": [
+            "PASS proves export consistency, not physical edge accuracy.",
+            "Review flags do not promote proposal_v1 to segmentation ground truth.",
+            "Equal JPEG hashes suggest shared image bytes, not proven same physical card.",
+            "No card/face identity or train/validation/test split is inferred.",
+        ],
+    }
+
+
+def _write_report_exclusive(destination: Path, root: Path, report: dict):
+    """Explicit opt-in, no-clobber report outside the annotation source tree."""
+    target = destination.resolve()
+    source = root.resolve()
+    if target == source or source in target.parents:
+        raise ValueError("Refusing to write a report inside annotation sources")
+    with target.open("x", encoding="utf-8") as handle:
+        json.dump(report, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT / "src/shared/annotations",
@@ -126,27 +239,43 @@ def main(argv=None):
     parser.add_argument("--preview-dir", type=Path,
                         help="Optional destination for PNG image+quad previews")
     parser.add_argument("--card", help="Audit just one card stem, e.g. card094")
+    parser.add_argument("--report-json", type=Path,
+                        help="Create a new inventory report outside annotation sources (never overwrite)")
     args = parser.parse_args(argv)
     proposals = args.root / "dual_contour_proposals"
+    if args.card and (Path(args.card).name != args.card
+                      or args.card in (".", "..")):
+        parser.error("--card must be a single filename stem")
     files = ([proposals / (args.card + ".json")] if args.card
              else sorted(proposals.glob("*.json")))
     if not files:
         print(f"ERROR: no quad JSON proposals found in {proposals}")
         return 1
 
-    failed = 0
-    reviewed = 0
-    for file in files:
+    report = build_inventory(args.root, files, args.preview_dir)
+    for entry in report["records"]:
+        if entry["status"] == "PASS":
+            print(f"PASS {entry['stem']}: matching JPEGs, quads, YOLO; "
+                  "proposal only, not training-ready")
+        else:
+            print(f"FAIL {entry['stem']}: {entry['error']}", file=sys.stderr)
+    counts = report["counts"]
+    print(f"Audited {counts['proposals_checked']} proposals: "
+          f"{counts['valid_export_pairs']} valid, "
+          f"{counts['failed_export_pairs']} failed; "
+          f"{counts['identity_collision_groups']} case-insensitive collision group(s); "
+          f"{counts['possible_same_image_groups']} repeated JPEG hash group(s); "
+          f"{counts['explicitly_reviewed_contours']} human-reviewed contours. "
+          "Segmentation training-ready: 0 (proposals only).")
+    if args.report_json:
         try:
-            reviewed += audit_card(args.root, file, args.preview_dir)
-            print(f"PASS {file.stem}: matching JPEGs, quad vertices and YOLO envelopes")
-        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
-            failed += 1
-            print(f"FAIL {file.stem}: {exc}", file=sys.stderr)
-    print(f"Checked {len(files)} card(s); {failed} failed; "
-          f"{reviewed}/{2 * len(files)} contours explicitly human-reviewed. "
-          "PASS does not certify true physical borders or segmentation GT.")
-    return 1 if failed else 0
+            _write_report_exclusive(args.report_json, args.root, report)
+        except (OSError, ValueError) as exc:
+            print(f"ERROR: report not written: {exc}", file=sys.stderr)
+            return 1
+        print(f"Inventory report: {args.report_json}")
+    return int(bool(counts["failed_export_pairs"] or
+                    counts["identity_collision_groups"]))
 
 
 if __name__ == "__main__":
