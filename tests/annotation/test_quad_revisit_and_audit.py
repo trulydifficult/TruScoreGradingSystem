@@ -414,6 +414,12 @@ def test_border_review_candidate_requires_saved_matching_live_vertices(tmp_path)
     live[0].vertices = [[8, 8], [95, 5], [95, 195], [5, 195]]
     with pytest.raises(ValueError, match="Unsaved border changes"):
         scope["get_review_candidate"](plugin)
+    # Even identical basename/vertices must not authorize a different
+    # incoming physical scan with the same filename.
+    live[0].vertices = data["annotations"][0]["vertices"]
+    original.write_bytes(b"not-the-original-scan")
+    with pytest.raises(ValueError, match="Original scan hash"):
+        scope["get_review_candidate"](plugin)
 
 
 def test_studio_review_is_generic_and_requires_explicit_visual_confirmation(tmp_path):
