@@ -194,3 +194,7 @@ card edges, and actual trained-model performance are separate claims.
 - [ADR 0017 — Card/face identity and safe trial-corpus reset](decisions/0017-card-identity-and-safe-corpus-reset.md):
   eight-digit+A/B operator intent, collision/paired-label safeguards,
   QA fixture retention and open migration/cleanup questions.
+
+- [ADR 0018 — Modular Studio/plugin review ownership](decisions/0018-studio-plugin-review-ownership.md):
+  single shared review action with optional plugin capability, source-bound
+  attestation (not mask ground truth), CI verification and GUI gate.
