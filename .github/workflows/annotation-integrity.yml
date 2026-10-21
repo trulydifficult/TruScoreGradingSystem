@@ -28,6 +28,7 @@ jobs:
           sparse-checkout: |
             src/modules/annotation_studio/modular_annotation_studio.py
             src/modules/annotation_studio/plugins/border_detection_plugin.py
+            src/modules/annotation_studio/plugins/base_plugin.py
             tests/annotation
             src/shared/dataset_tools/border_quad.py
             src/shared/dataset_tools/annotation_review.py
