@@ -7,12 +7,16 @@ on:
     paths:
       - "src/modules/annotation_studio/**"
       - "src/shared/dataset_tools/border_quad.py"
+      - "src/shared/dataset_tools/annotation_review.py"
+      - "src/shared/dataset_tools/dual_quad_dataset.py"
       - "tools/audit_dual_quad_exports.py"
       - "tests/annotation/**"
       - "src/shared/annotations/**"
       - ".github/workflows/annotation-integrity.yml"
   pull_request:
     paths:
+      - "src/shared/dataset_tools/annotation_review.py"
+      - "src/shared/dataset_tools/dual_quad_dataset.py"
       - "src/modules/annotation_studio/**"
       - "tests/annotation/**"
       - ".github/workflows/annotation-integrity.yml"
