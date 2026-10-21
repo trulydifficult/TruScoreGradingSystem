@@ -2404,6 +2404,20 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             record = json.loads(proposal.read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             raise ValueError("Saved quad proposal is unreadable") from exc
+        # A duplicate filename does not prove physical-scan identity.
+        # Newer exports bind both the original scan and exported JPEG.
+        # Legacy sidecars lacking source SHA may be reviewed only when the
+        # current selected file is byte-identical to the exported image.
+        import hashlib
+        actual_source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
+        expected_source_sha = record.get("source_image_sha256")
+        if expected_source_sha is None:
+            expected_source_sha = record.get("image_sha256")
+        if actual_source_sha != expected_source_sha:
+            raise ValueError(
+                "Original scan hash differs from saved proposal; review aborted "
+                "(legacy exports may need a fresh save)"
+            )
         entries = record.get("annotations", ())
         if (record.get("image_file") != source.name or len(entries) != 2
                 or [entry.get("class_id") for entry in entries] != [0, 1]):
