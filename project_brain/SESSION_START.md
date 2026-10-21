@@ -88,7 +88,7 @@ mobile services are longer-term systems, NOT all implemented today.
   Model-specific masks/export/ROCm trainers still NOT IMPLEMENTED;
   this is import/preview acceptance, not pixel-level ground truth.
 
-**2026-10-21 review implementation (CI-only):** One Studio-wide review action, optional plugin candidate hook, and shared SHA-bound immutable `annotation_review_v1` receipts. Border plugin rejects unsaved geometry before review. Annotation Integrity **120 PASS**, all five workflows PASS on code commit `def63a5`. User GUI acceptance PENDING; no trainer-ready masks, approved `dual_contour_v1` or ROS/ROCm segmentation.
+**2026-10-21 review implementation (CI-only):** One Studio-wide review action, optional plugin candidate hook, and shared SHA-bound immutable `annotation_review_v1` receipts. Border plugin rejects unsaved geometry before review. Annotation Integrity **120 PASS**, all five workflows PASS on code commit `def63a5`. User GUI acceptance PENDING; no trainer-ready masks, approved `dual_contour_v1` or real ROCm segmentation.
 
 **Parallel annotation / dynamic datasets:** Operator annotates during engineering. Train using actual eligible reviewed cards when ready (not fixed 550); report accepted/excluded/train/validation/test counts grouped by physical card. Proposals and YOLO boxes are not GT.
 
