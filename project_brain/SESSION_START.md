@@ -1,6 +1,6 @@
 # NEW SESSION START HERE — TruScore active project state
 
-**Current as of 2026-10-20 | Branch `refactor/phoenix-foundation` | last
+**Current as of 2026-10-21 | Branch `refactor/phoenix-foundation` | last
 operator data commit `20b5df641200423a099e0fa22d8d45cbdb8dd69c`.**
 Always fetch the latest remote HEAD and CI results; this SHA identifies
 the evidence reviewed when this snapshot was written, not a permanent
@@ -68,14 +68,9 @@ mobile services are longer-term systems, NOT all implemented today.
   JPEG bytes in the fixed four-card regression test (only 065–067
   are covered); a visual pixel-by-pixel GT audit was not performed.
   Do not upgrade numeric agreement to measurement accuracy.
-- On the card094 source HEAD, **all five workflow families passed**:
-  Annotation Integrity, Dataset Integrity, Phoenix Dataset Handoff,
-  Phoenix Foundation and Project Memory Integrity. Annotation
-  Integrity: **100 tests PASS**, run
-  https://github.com/trulydifficult/TruScoreGradingSystem/actions/runs/39232250637 .
-  This does NOT constitute Detectron2/PointRend/ROCm model training,
-  user-approved segmentation masks, or the entire enterprise app
-  passing an end-to-end `run_truscore.py` acceptance session.
+- At the card094 checkpoint all five CI families passed; this
+  certified serialization and source behavior, not pixel GT, GUI or ROCm
+  segmentation. Current, more recent CI is recorded below.
 - The earlier cards 065–067 remain repo-backed **real export
   regression fixtures** at `src/shared/annotations/{outer_border_model,
   graphic_border_model,combined_dual_class,dual_contour_proposals}`;
@@ -93,7 +88,9 @@ mobile services are longer-term systems, NOT all implemented today.
   Model-specific masks/export/ROCm trainers still NOT IMPLEMENTED;
   this is import/preview acceptance, not pixel-level ground truth.
 
-**Parallel annotation / dynamic datasets:** Operator continues annotation while engineering proceeds. Real training tests use the *actual reviewed, eligible* card count then available (no fixed 550 target); report accepted/excluded/train/validation/test counts with physical-card grouping. Unreviewed quads/YOLO boxes are not mask GT; successful smoke training does not certify model quality.
+**2026-10-21 review implementation (CI-only):** One Studio-wide review action, optional plugin candidate hook, and shared SHA-bound immutable `annotation_review_v1` receipts. Border plugin rejects unsaved geometry before review. Annotation Integrity **120 PASS**, all five workflows PASS on code commit `def63a5`. User GUI acceptance PENDING; no trainer-ready masks, approved `dual_contour_v1` or ROS/ROCm segmentation.
+
+**Parallel annotation / dynamic datasets:** Operator annotates during engineering. Train using actual eligible reviewed cards when ready (not fixed 550); report accepted/excluded/train/validation/test counts grouped by physical card. Proposals and YOLO boxes are not GT.
 
 **Still NOT verified or implemented:**
 - Quad proposals are explicitly `human_reviewed=false` and
