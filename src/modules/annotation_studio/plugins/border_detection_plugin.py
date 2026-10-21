@@ -34,10 +34,21 @@ import logging
 import time
 import pickle
 from pathlib import Path
+
+def _default_border_model_path() -> Path:
+    """Bundled two-class YOLO model, independent of installation path or CWD."""
+    return Path(__file__).resolve().parents[3] / "models" / "revolutionary_border_detector.pt"
+
+
 from typing import Optional, List, Dict, Any, Tuple, Union
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from collections import defaultdict
+from shared.dataset_tools.border_quad import (
+    validate_quad, rect_to_quad, quad_bounds, side_midpoint, CORNER_NAMES,
+    nearest_corner, nearest_side_handle, quad_contains,
+    moved_corner, moved_side, moved_quad, quad_inside_image,
+)
 
 # Import base plugin interface
 try:
@@ -54,7 +65,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import (
     Qt, QTimer, pyqtSignal, QObject, QPoint, QRect, QSize,
-    QThread, QMutex, QMutexLocker, QPropertyAnimation, QEasingCurve
+    QThread, QMutex, QMutexLocker, QPropertyAnimation, QEasingCurve, QEventLoop
 )
 from PyQt6.QtGui import (
     QFont, QPixmap, QImage, QKeyEvent, QMouseEvent, QPainter, QPen,
@@ -155,284 +166,149 @@ class AnnotationResult:
 
 @dataclass
 class BorderAnnotation:
-    """
-    Professional border annotation with complete functionality.
-    EXACT port from border_calibration.py lines 150-287
-    """
+    """Independent TL/TR/BR/BL polygon, plus legacy enclosing detection bbox."""
     x1: float
     y1: float
     x2: float
     y2: float
-    class_id: int  # 0 = outside border, 1 = graphic border
+    class_id: int
     confidence: float
     label: str = ""
     human_corrected: bool = False
     correction_timestamp: Optional[datetime] = None
-    detection_method: str = "AI"  # "AI", "Manual", "Hybrid"
+    detection_method: str = "AI"
     metadata: Dict[str, Any] = field(default_factory=dict)
+    vertices: Optional[List[Tuple[float, float]]] = None
+    human_reviewed: bool = False
 
     def __post_init__(self):
-        """Initialize derived properties"""
         if not self.label:
             self.label = "Outside Border" if self.class_id == 0 else "Graphic Border"
+        self._set_vertices(rect_to_quad(self.x1, self.y1, self.x2, self.y2)
+                           if self.vertices is None else validate_quad(self.vertices))
 
-        # Ensure proper coordinate ordering
-        if self.x1 > self.x2:
-            self.x1, self.x2 = self.x2, self.x1
-        if self.y1 > self.y2:
-            self.y1, self.y2 = self.y2, self.y1
+    def _set_vertices(self, vertices):
+        self.vertices = [tuple(p) for p in validate_quad(vertices)]
+        self.x1, self.y1, self.x2, self.y2 = quad_bounds(validate_quad(self.vertices))
+
+    def _mark_corrected(self):
+        self.human_corrected = True
+        self.correction_timestamp = datetime.now()
+        # A manual edit is not independent segmentation-GT approval.
+        self.human_reviewed = False
 
     @property
     def width(self) -> float:
-        """Border width"""
-        return abs(self.x2 - self.x1)
+        return self.x2 - self.x1
 
     @property
     def height(self) -> float:
-        """Border height"""
-        return abs(self.y2 - self.y1)
+        return self.y2 - self.y1
 
     @property
     def center_x(self) -> float:
-        """Border center X coordinate"""
-        return (self.x1 + self.x2) / 2
+        return (self.x1 + self.x2) / 2.0
 
     @property
     def center_y(self) -> float:
-        """Border center Y coordinate"""
-        return (self.y1 + self.y2) / 2
+        return (self.y1 + self.y2) / 2.0
 
     @property
     def area(self) -> float:
-        """Border area"""
-        return self.width * self.height
-
-    #def get_corner_handles(self, handle_size: int = 8) -> List[QRect]:
-        """Get corner handle rectangles for editing"""
-     #   corners = [
-     #       QRect(int(self.x1 - handle_size//2), int(self.y1 - handle_size//2), handle_size, handle_size),  # top-left
-     #       QRect(int(self.x2 - handle_size//2), int(self.y1 - handle_size//2), handle_size, handle_size),  # top-right
-      #      QRect(int(self.x1 - handle_size//2), int(self.y2 - handle_size//2), handle_size, handle_size),  # bottom-left
-      #      QRect(int(self.x2 - handle_size//2), int(self.y2 - handle_size//2), handle_size, handle_size),  # bottom-right
-      #  ]
-       # return corners
-
-    # def get_side_handles(self, handle_size: int = 6) -> List[QRect]:
-        """Get side handle rectangles for editing"""
-      #  mid_x = (self.x1 + self.x2) / 2
-      #  mid_y = (self.y1 + self.y2) / 2
-
-      #  sides = [
-      #      QRect(int(mid_x - handle_size//2), int(self.y1 - handle_size//2), handle_size, handle_size),  # top
-      #      QRect(int(mid_x - handle_size//2), int(self.y2 - handle_size//2), handle_size, handle_size),  # bottom
-      #      QRect(int(self.x1 - handle_size//2), int(mid_y - handle_size//2), handle_size, handle_size),  # left
-       #     QRect(int(self.x2 - handle_size//2), int(mid_y - handle_size//2), handle_size, handle_size),  # right
-      #  ]
-      #  return sides
+        return self.width * self.height  # Legacy enclosing AABB, not polygon area.
 
     def get_corner_handle(self, x: float, y: float, handle_size: float = 25) -> Optional[str]:
-        """Detect corner handle clicks with generous hit zones - EXACT from border_calibration.py"""
-        left = min(self.x1, self.x2)
-        right = max(self.x1, self.x2)
-        top = min(self.y1, self.y2)
-        bottom = max(self.y1, self.y2)
-
-        corners = {
-            'top_left': (left, top),
-            'top_right': (right, top),
-            'bottom_left': (left, bottom),
-            'bottom_right': (right, bottom)
-        }
-
-        for corner_name, (cx, cy) in corners.items():
-            distance = ((x - cx)**2 + (y - cy)**2)**0.5
-            if distance <= handle_size:
-                return corner_name
-        return None
+        return nearest_corner(validate_quad(self.vertices), x, y, handle_size)
 
     def get_side_handle(self, x: float, y: float, handle_size: float = 15) -> Optional[str]:
-        """Detect clicks on side handles (edges) with generous hit zones - EXACT from border_calibration.py"""
-        left = min(self.x1, self.x2)
-        right = max(self.x1, self.x2)
-        top = min(self.y1, self.y2)
-        bottom = max(self.y1, self.y2)
-
-        # Calculate side midpoints
-        sides = {
-            'top': (left + (right - left) / 2, top),
-            'bottom': (left + (right - left) / 2, bottom),
-            'left': (left, top + (bottom - top) / 2),
-            'right': (right, top + (bottom - top) / 2)
-        }
-
-        # Check each side with generous hit zones
-        for side_name, (side_x, side_y) in sides.items():
-            if side_name in ['top', 'bottom']:
-                # Horizontal sides - wider horizontal zone, taller vertical zone
-                if (abs(x - side_x) <= handle_size and
-                    abs(y - side_y) <= handle_size):
-                    return side_name
-            else:  # left, right
-                # Vertical sides - taller vertical zone, wider horizontal zone
-                if (abs(x - side_x) <= handle_size and
-                    abs(y - side_y) <= handle_size):
-                    return side_name
-
-        return None
+        return nearest_side_handle(validate_quad(self.vertices), x, y, handle_size)
 
     def contains_point(self, x: float, y: float) -> bool:
-        """Check if point is within annotation bounds"""
-        margin = 5
-        left = min(self.x1, self.x2) - margin
-        right = max(self.x1, self.x2) + margin
-        top = min(self.y1, self.y2) - margin
-        bottom = max(self.y1, self.y2) + margin
-        return left <= x <= right and top <= y <= bottom
+        return quad_contains(validate_quad(self.vertices), x, y, margin=5)
 
-    def move_side(self, side: str, new_x: float, new_y: float):
-        """Move a single side of the border"""
-        if side == 'top':
-            # Move top edge
-            if self.y1 < self.y2:
-                self.y1 = new_y
-            else:
-                self.y2 = new_y
-        elif side == 'bottom':
-            # Move bottom edge
-            if self.y1 > self.y2:
-                self.y1 = new_y
-            else:
-                self.y2 = new_y
-        elif side == 'left':
-            # Move left edge
-            if self.x1 < self.x2:
-                self.x1 = new_x
-            else:
-                self.x2 = new_x
-        elif side == 'right':
-            # Move right edge
-            if self.x1 > self.x2:
-                self.x1 = new_x
-            else:
-                self.x2 = new_x
+    def move_corner(self, corner: str, new_x: float, new_y: float) -> bool:
+        try:
+            self._set_vertices(moved_corner(validate_quad(self.vertices), corner, new_x, new_y))
+        except ValueError:
+            return False
+        self._mark_corrected()
+        return True
 
-        self.corrected_by_human = True
-        self.correction_timestamp = datetime.now().isoformat()
+    def move_side(self, side: str, new_x: float, new_y: float) -> bool:
+        try:
+            self._set_vertices(moved_side(validate_quad(self.vertices), side, new_x, new_y))
+        except ValueError:
+            return False
+        self._mark_corrected()
+        return True
 
-    def move_corner(self, corner: str, new_x: float, new_y: float):
-        if corner == 'top_left':
-            self.x1, self.y1 = new_x, new_y
-        elif corner == 'top_right':
-            self.x2, self.y1 = new_x, new_y
-        elif corner == 'bottom_left':
-            self.x1, self.y2 = new_x, new_y
-        elif corner == 'bottom_right':
-            self.x2, self.y2 = new_x, new_y
-
-        self.corrected_by_human = True
-        self.correction_timestamp = datetime.now().isoformat()
-
-    def move_border(self, dx: float, dy: float):
-        """Move entire border by offset"""
-        self.x1 += dx
-        self.y1 += dy
-        self.x2 += dx
-        self.y2 += dy
-        self.corrected_by_human = True
-        self.correction_timestamp = datetime.now().isoformat()
+    def move_border(self, dx: float, dy: float) -> bool:
+        try:
+            self._set_vertices(moved_quad(validate_quad(self.vertices), dx, dy))
+        except ValueError:
+            return False
+        self._mark_corrected()
+        return True
 
     def _ensure_proper_ordering(self):
-        """Ensure x1,y1 is top-left and x2,y2 is bottom-right"""
-        if self.x1 > self.x2:
-            self.x1, self.x2 = self.x2, self.x1
-        if self.y1 > self.y2:
-            self.y1, self.y2 = self.y2, self.y1
+        self._set_vertices(self.vertices)  # Never sort points by their bounding box.
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'BorderAnnotation':
-        """Create from dictionary"""
-        correction_timestamp = None
-        if data.get('correction_timestamp'):
-            correction_timestamp = datetime.fromisoformat(data['correction_timestamp'])
-
+        when = data.get('correction_timestamp')
+        if isinstance(when, str) and when:
+            when = datetime.fromisoformat(when)
         return cls(
-            x1=float(data['x1']),
-            y1=float(data['y1']),
-            x2=float(data['x2']),
-            y2=float(data['y2']),
-            class_id=int(data['class_id']),
-            confidence=float(data['confidence']),
+            x1=float(data['x1']), y1=float(data['y1']),
+            x2=float(data['x2']), y2=float(data['y2']),
+            class_id=int(data['class_id']), confidence=float(data.get('confidence', 1.0)),
             label=data.get('label', ''),
-            human_corrected=data.get('human_corrected', False),
-            correction_timestamp=correction_timestamp,
+            human_corrected=bool(data.get('human_corrected', False)),
+            correction_timestamp=when,
             detection_method=data.get('detection_method', 'AI'),
-            metadata=data.get('metadata', {})
+            metadata=data.get('metadata', {}),
+            vertices=data.get('vertices'),
+            human_reviewed=bool(data.get('human_reviewed', False)),
         )
 
     @classmethod
-    def from_yolo(cls, yolo_line: str, img_width: int, img_height: int, class_names: List[str]) -> 'BorderAnnotation':
-        """Create BorderAnnotation from YOLO format"""
-        parts = yolo_line.strip().split()
-        if len(parts) != 5:
-            raise ValueError(f"Invalid YOLO format: {yolo_line}")
-
-        class_id = int(parts[0])
-        center_x = float(parts[1]) * img_width
-        center_y = float(parts[2]) * img_height
-        width = float(parts[3]) * img_width
-        height = float(parts[4]) * img_height
-
-        x1 = center_x - width / 2
-        y1 = center_y - height / 2
-        x2 = center_x + width / 2
-        y2 = center_y + height / 2
-
-        label = class_names[class_id] if class_id < len(class_names) else f"class_{class_id}"
-
+    def from_yolo(cls, yolo_line: str, img_width: int, img_height: int,
+                  class_names: List[str]) -> 'BorderAnnotation':
+        tokens = yolo_line.strip().split()
+        if len(tokens) != 5:
+            raise ValueError(f"Invalid YOLO detection row: {yolo_line}")
+        class_id = int(tokens[0])
+        cx, cy, bw, bh = map(float, tokens[1:])
+        cx, bw = cx * img_width, bw * img_width
+        cy, bh = cy * img_height, bh * img_height
+        label = class_names[class_id] if 0 <= class_id < len(class_names) else f"class_{class_id}"
         return cls(
-            x1=x1, y1=y1, x2=x2, y2=y2,
-            class_id=class_id,
-            confidence=1.0,  # Default confidence for manual annotations
-            label=label,
-            human_corrected=False,
-            correction_timestamp=None,
+            x1=cx - bw/2, y1=cy - bh/2, x2=cx + bw/2, y2=cy + bh/2,
+            class_id=class_id, confidence=1.0, label=label,
             detection_method="Manual",
-            metadata={}
         )
 
     def to_yolo_format(self, img_width: int, img_height: int) -> Tuple[int, float, float, float, float]:
-        """Convert to YOLO format (class, x_center, y_center, width, height) - normalized"""
-        x_center = ((self.x1 + self.x2) / 2) / img_width
-        y_center = ((self.y1 + self.y2) / 2) / img_height
-        width = (self.x2 - self.x1) / img_width
-        height = (self.y2 - self.y1) / img_height
-
-        return self.class_id, x_center, y_center, width, height
+        """Five-value detection row enclosing edited polygon; NOT segmentation."""
+        if img_width <= 0 or img_height <= 0:
+            raise ValueError("Positive image dimensions required")
+        return (self.class_id, self.center_x/img_width, self.center_y/img_height,
+                self.width/img_width, self.height/img_height)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for export"""
         return {
-            'x1': float(self.x1),
-            'y1': float(self.y1),
-            'x2': float(self.x2),
-            'y2': float(self.y2),
-            'class_id': int(self.class_id),
-            'confidence': float(self.confidence),
-            'label': self.label,
-            'human_corrected': self.human_corrected,
-            'correction_timestamp': self.correction_timestamp.isoformat() if self.correction_timestamp else None,
-            'detection_method': self.detection_method,
-            'metadata': self.metadata
+            'x1': self.x1, 'y1': self.y1, 'x2': self.x2, 'y2': self.y2,
+            'class_id': self.class_id, 'confidence': self.confidence,
+            'label': self.label, 'human_corrected': self.human_corrected,
+            'correction_timestamp': self.correction_timestamp.isoformat()
+                if self.correction_timestamp else None,
+            'detection_method': self.detection_method, 'metadata': self.metadata,
+            'geometry_format': 'quad_v1',
+            'vertices': [[float(x), float(y)] for x, y in self.vertices],
+            'human_reviewed': self.human_reviewed,
+            'segmentation_ground_truth': False,
         }
 
-
-# =============================================================================
-# INTERACTIVE CANVAS - PORTED FROM BORDER_CALIBRATION.PY
-# =============================================================================
-
-# =============================================================================
-# BORDER DETECTION SETTINGS WIDGET - COMPLETE FUNCTIONALITY
-# =============================================================================
 
 class BorderDetectionSettingsWidget(QWidget):
     """
@@ -467,6 +343,7 @@ class BorderDetectionSettingsWidget(QWidget):
         self.last_mouse_x = 0
         self.last_mouse_y = 0
         self.mouse_pressed = False
+        self._drag_grab_offset = (0.0, 0.0)
 
         # Annotation versioning (used by studio cache invalidation)
         self.annotation_version = 0
@@ -479,7 +356,7 @@ class BorderDetectionSettingsWidget(QWidget):
 
         # Enterprise settings with defaults from border_calibration.py
         self.settings = {
-            'model_path': '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt',
+            'model_path': str(_default_border_model_path()),
             'confidence_threshold': 0.25,
             'detection_mode': 'dual_class',  # dual_class, outside_only, graphic_only
             'export_format': 'yolo',
@@ -502,6 +379,8 @@ class BorderDetectionSettingsWidget(QWidget):
 
         # Detection state to prevent duplicates
         self._detecting = False
+        self._auto_request_token = 0
+        self._completed_detection_token = None
 
         # Session management
         self.session_file = None
@@ -524,6 +403,10 @@ class BorderDetectionSettingsWidget(QWidget):
     def set_main_plugin(self, main_plugin):
         """Set reference to main plugin instance - required by studio"""
         self.main_plugin = main_plugin
+        if main_plugin.model_loaded and getattr(main_plugin, 'model', None) is not None:
+            self.model = main_plugin.model
+            self.model_loaded = True
+            self._loaded_model_path = getattr(main_plugin, '_loaded_model_path', None)
         self.logger.debug(f"Main plugin reference set: {type(main_plugin)}")
 
     def set_studio_canvas(self, studio_canvas):
@@ -654,11 +537,10 @@ class BorderDetectionSettingsWidget(QWidget):
         From calibration.py lines 2148-2235 draw_border_annotations()
         """
         try:
-            self.logger.info(f"🎨 draw_overlay CALLED with {len(self.annotations) if hasattr(self, 'annotations') else 0} annotations")
-            if self.annotations:
-                for i, ann in enumerate(self.annotations):
-                    self.logger.info(f"   Annotation {i}: class_id={ann.class_id}, label={ann.label}")
-            
+            # Draws can occur hundreds of times during handle dragging.
+            # Per-frame INFO output obscures real YOLO requests/completions
+            # and makes the persistent diagnostic log grow unnecessarily.
+            # Real inference results/errors are logged by run_detection().
             if not self.annotations:
                 return image
             
@@ -689,18 +571,27 @@ class BorderDetectionSettingsWidget(QWidget):
                 # Determine if this is the selected annotation
                 is_selected = (self.selected_annotation == annotation)
                 
-                # Draw main border rectangle (calibration.py lines 2177-2179)
                 thickness = 3 if is_selected else 2
-                cv2.rectangle(annotated_image, (left, top), (right, bottom), color_bgr, thickness)
-                
-                # Draw corner handles for selected annotation (calibration.py lines 2181-2184)
-                if is_selected:
-                    self.draw_corner_handles(annotated_image, left, top, right, bottom, color_bgr)
-                    self.draw_side_handles(annotated_image, left, top, right, bottom, color_bgr)
+                if getattr(annotation, 'vertices', None):
+                    cv2.polylines(
+                        annotated_image,
+                        [np.rint(np.asarray(annotation.vertices)).astype(np.int32)],
+                        True, color_bgr, thickness,
+                    )
+                    if is_selected:
+                        self.draw_quad_corner_handles(annotated_image, annotation.vertices, color_bgr)
+                        self.draw_quad_side_handles(annotated_image, annotation.vertices, color_bgr)
+                else:
+                    # Compatibility with historical/simple rectangle annotations.
+                    cv2.rectangle(annotated_image, (left, top), (right, bottom), color_bgr, thickness)
+                    if is_selected:
+                        self.draw_corner_handles(annotated_image, left, top, right, bottom, color_bgr)
+                        self.draw_side_handles(annotated_image, left, top, right, bottom, color_bgr)
                 
                 # Draw class label (calibration.py lines 2186-2206)
                 label_text = f"{annotation.label}"
-                if hasattr(annotation, 'confidence'):
+                if (hasattr(annotation, 'confidence')
+                        and getattr(annotation, 'metadata', {}).get("confidence_source") != "unavailable"):
                     label_text += f" {annotation.confidence:.2f}"
                 
                 # Label background
@@ -822,10 +713,14 @@ class BorderDetectionSettingsWidget(QWidget):
             else:
                 color = (255, 0, 255)  # Magenta for graphic
             
-            # Draw ONLY the border rectangle - NO handles
+            # Draw the same actual quad as the Studio canvas when available.
             is_selected = (self.selected_annotation == annotation)
             thickness = 3 if is_selected else 2
-            cv2.rectangle(image, (x1, y1), (x2, y2), color, thickness)
+            if getattr(annotation, 'vertices', None):
+                poly = np.rint(np.asarray(annotation.vertices) * zoom_factor).astype(np.int32)
+                cv2.polylines(image, [poly], True, color, thickness)
+            else:
+                cv2.rectangle(image, (x1, y1), (x2, y2), color, thickness)
         
         return image
     
@@ -905,6 +800,24 @@ class BorderDetectionSettingsWidget(QWidget):
     def has_annotations(self) -> bool:
         """Check if there are annotations - Interface contract method"""
         return len(self.annotations) > 0
+
+    def draw_quad_corner_handles(self, image, vertices, color):
+        for x, y in vertices:
+            cx, cy = round(x), round(y)
+            points = np.asarray([
+                [cx, cy - 15], [cx + 15, cy],
+                [cx, cy + 15], [cx - 15, cy],
+            ], dtype=np.int32)
+            cv2.fillPoly(image, [points], color)
+            cv2.polylines(image, [points], True, (255, 255, 255), 2)
+
+    def draw_quad_side_handles(self, image, vertices, color):
+        quad = validate_quad(vertices)
+        for side in ('top', 'right', 'bottom', 'left'):
+            x, y = side_midpoint(quad, side)
+            cx, cy = round(x), round(y)
+            cv2.rectangle(image, (cx - 10, cy - 10), (cx + 10, cy + 10), color, -1)
+            cv2.rectangle(image, (cx - 10, cy - 10), (cx + 10, cy + 10), (255, 255, 255), 2)
 
     def draw_corner_handles(self, image, left, top, right, bottom, color):
         """Draw corner handles for precise editing - BIG ENOUGH TO ACTUALLY GRAB"""
@@ -1019,31 +932,28 @@ class BorderDetectionSettingsWidget(QWidget):
             self.logger.error(f"Cycle selection failed: {e}")
 
     def setup_enterprise_ui(self):
-        """Create comprehensive enterprise UI"""
+        """Keep controls usable in a height-constrained plugin panel."""
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(10, 10, 10, 10)
-        main_layout.setSpacing(8)
-
-        # Plugin header
-        self.create_plugin_header(main_layout)
-
-        # Model management section
-        self.create_model_section(main_layout)
-
-        # Detection settings section
-        self.create_detection_section(main_layout)
-
-        # Export & batch section
-        self.create_export_section(main_layout)
-
-        # Action buttons section
-        self.create_action_buttons(main_layout)
-
-        # Statistics and status
-        self.create_status_section(main_layout)
-
-        # Add stretch to push content up
-        main_layout.addStretch()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        scroll = QScrollArea(self)
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
+        content = QWidget()
+        sections = QVBoxLayout(content)
+        sections.setContentsMargins(8, 6, 8, 6)
+        sections.setSpacing(5)
+        self.create_plugin_header(sections)
+        self.create_model_section(sections)
+        self.create_detection_section(sections)
+        self.create_export_section(sections)
+        self.create_action_buttons(sections)
+        self.create_status_section(sections)
+        sections.addStretch()
+        scroll.setWidget(content)
+        main_layout.addWidget(scroll)
 
     def create_plugin_header(self, layout):
         """Professional plugin header"""
@@ -1129,6 +1039,8 @@ class BorderDetectionSettingsWidget(QWidget):
             }}
         """)
         detection_layout = QVBoxLayout(detection_group)
+        detection_layout.setContentsMargins(8, 14, 8, 7)
+        detection_layout.setSpacing(4)
 
         # Detection mode
         mode_layout = QHBoxLayout()
@@ -1167,36 +1079,34 @@ class BorderDetectionSettingsWidget(QWidget):
         conf_layout.addWidget(self.confidence_display)
         detection_layout.addLayout(conf_layout)
 
-        # Border selection controls - EXACT from border_calibration.py
-        selection_layout = QHBoxLayout()
-        selection_layout.setSpacing(5)
-        select_label = QLabel("Select:")
-        select_label.setStyleSheet(f"background: none; border: none; color: {TruScoreTheme.GHOST_WHITE}; padding: 0px; margin: 0px;")
-        select_label.setFixedWidth(80)
-        selection_layout.addWidget(select_label)
+        # All four controls belong to one contained 2x2 grid.
+        controls = QGridLayout()
+        controls.setContentsMargins(0, 2, 0, 0)
+        controls.setHorizontalSpacing(8)
+        controls.setVerticalSpacing(5)
+        controls.setColumnStretch(0, 1)
+        controls.setColumnStretch(1, 1)
 
-        self.outer_border_btn = TruScoreButton("Outer Border", width=120, height=25, style_type="secondary")
+        self.outer_border_btn = TruScoreButton("Outer Border", style_type="secondary")
+        self.outer_border_btn.setFixedHeight(26)
         self.outer_border_btn.clicked.connect(lambda: self.select_border_by_class(0))
-        selection_layout.addWidget(self.outer_border_btn)
+        controls.addWidget(self.outer_border_btn, 0, 0)
 
-        self.graphic_border_btn = TruScoreButton("Graphic Border", width=130, height=25, style_type="secondary")
+        self.graphic_border_btn = TruScoreButton("Graphic Border", style_type="secondary")
+        self.graphic_border_btn.setFixedHeight(26)
         self.graphic_border_btn.clicked.connect(lambda: self.select_border_by_class(1))
-        selection_layout.addWidget(self.graphic_border_btn)
+        controls.addWidget(self.graphic_border_btn, 0, 1)
 
-        detection_layout.addLayout(selection_layout)
+        self.run_detection_btn = TruScoreButton("Run Detection")
+        self.run_detection_btn.setFixedHeight(26)
+        self.run_detection_btn.clicked.connect(lambda: self.run_detection(source="manual"))
+        controls.addWidget(self.run_detection_btn, 1, 0)
 
-        # Detection controls
-        detect_layout = QHBoxLayout()
-
-        self.run_detection_btn = TruScoreButton("Run Detection", width=120, height=30)
-        self.run_detection_btn.clicked.connect(self.run_detection)
-        detect_layout.addWidget(self.run_detection_btn)
-
-        self.clear_btn = TruScoreButton("Clear", width=70, height=30, style_type="secondary")
+        self.clear_btn = TruScoreButton("Clear", style_type="secondary")
+        self.clear_btn.setFixedHeight(26)
         self.clear_btn.clicked.connect(self.clear_annotations)
-        detect_layout.addWidget(self.clear_btn)
-
-        detection_layout.addLayout(detect_layout)
+        controls.addWidget(self.clear_btn, 1, 1)
+        detection_layout.addLayout(controls)
         layout.addWidget(detection_group)
 
     def create_export_section(self, layout):
@@ -1329,9 +1239,17 @@ class BorderDetectionSettingsWidget(QWidget):
             self.logger.error(f"Set current image failed: {e}")
 
     def load_model(self):
-        """Load AI model for detection"""
+        """Load AI model for detection only for fresh-inference mode."""
         try:
-            model_path = self.settings.get('model_path', '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt')
+            studio = getattr(
+                getattr(getattr(self, "main_plugin", None), "studio_context", None),
+                "_studio", None
+            )
+            if getattr(self, "external_label_mode", False) or getattr(studio, "_existing_label_mode", False):
+                if hasattr(self, "model_status_label"):
+                    self.model_status_label.setText("Model: Disabled (existing labels)")
+                return False
+            model_path = self.settings.get('model_path', str(_default_border_model_path()))
             self.logger.info(f"Attempting to load model from: {model_path}")
 
             if not model_path:
@@ -1353,8 +1271,20 @@ class BorderDetectionSettingsWidget(QWidget):
             try:
                 from ultralytics import YOLO
                 self.logger.info(f"Loading YOLO model: {model_path}")
-                self.model = YOLO(model_path)
-                self.logger.info("Ultralytics YOLO model loaded successfully")
+                main_plugin = getattr(self, 'main_plugin', None)
+                model_file = Path(model_path).expanduser().resolve()
+                if (main_plugin is not None
+                        and getattr(main_plugin, 'model_loaded', False)
+                        and getattr(main_plugin, '_loaded_model_path', None) == str(model_file)):
+                    self.model = main_plugin.model
+                    self.logger.info("Reusing the already-loaded two-class detector")
+                elif (self.model_loaded and self.model is not None
+                      and getattr(self, '_loaded_model_path', None) == str(model_file)):
+                    self.logger.info("Detector already loaded in settings widget")
+                else:
+                    self.model = YOLO(str(model_file))
+                    self.logger.info("Ultralytics YOLO model loaded successfully")
+                self._loaded_model_path = str(model_file)
             except ImportError:
                 self.logger.error("Ultralytics not available - cannot load model")
                 self.model_status_label.setText("Model: YOLO Missing")
@@ -1367,6 +1297,11 @@ class BorderDetectionSettingsWidget(QWidget):
                 return False
 
             self.model_loaded = True
+            if main_plugin is not None:
+                main_plugin.model = self.model
+                main_plugin.model_loaded = True
+                main_plugin._loaded_model_path = str(model_file)
+                main_plugin.settings['model_path'] = str(model_file)
             # Show model filename, not just "Loaded"
             model_name = Path(model_path).name
             self.model_status_label.setText(f"Model: {model_name}")
@@ -1393,7 +1328,7 @@ class BorderDetectionSettingsWidget(QWidget):
             browser = ModernFileBrowser(
                 parent=self,
                 title="Select Border Detection Model",
-                initial_dir="/home/dewster/Projects/Vanguard/src/models",
+                initial_dir=str(_default_border_model_path().parent),
                 file_type="models"  # Custom type for model files
             )
 
@@ -1423,7 +1358,7 @@ class BorderDetectionSettingsWidget(QWidget):
                 file_path, _ = QFileDialog.getOpenFileName(
                     self,
                     "Select Border Detection Model",
-                    "/home/dewster/Projects/Vanguard/src/models",
+                    str(_default_border_model_path().parent),
                     "Model Files (*.pt *.pth *.onnx);;All Files (*.*)"
                 )
 
@@ -1438,8 +1373,10 @@ class BorderDetectionSettingsWidget(QWidget):
 
 
     def run_actual_detection(self):
-        """Run actual YOLO detection - EXACT from border_calibration.py"""
+        """Legacy entrypoint; never overwrite imported labels."""
         try:
+            if getattr(self, "external_label_mode", False):
+                return False
             if self.current_image is None or self.model is None:
                 self.logger.warning("No image or model available for detection")
                 return
@@ -1577,15 +1514,16 @@ class BorderDetectionSettingsWidget(QWidget):
         Returns:
             True if drag was handled
         """
-        if not self.selected_annotation:
+        # An edit requires an active grab, never a hover event.
+        if not self.selected_annotation or not getattr(self, "mouse_pressed", False):
             return False
-
-        # Skip invalid coordinates
         if image_x < 0 or image_y < 0:
             return False
-
+        grab_dx, grab_dy = getattr(self, "_drag_grab_offset", (0.0, 0.0))
         if self.dragging_corner:
-            self.selected_annotation.move_corner(self.dragging_corner, image_x, image_y)
+            if not self.selected_annotation.move_corner(
+                    self.dragging_corner, image_x - grab_dx, image_y - grab_dy):
+                return False
             self._bump_annotation_version()
             # Throttle display updates for BUTTERY SMOOTH performance at 165fps
             if not hasattr(self, '_drag_update_timer') or not self._drag_update_timer.isActive():
@@ -1596,7 +1534,9 @@ class BorderDetectionSettingsWidget(QWidget):
             return True
             
         elif self.dragging_side:
-            self.selected_annotation.move_side(self.dragging_side, image_x, image_y)
+            if not self.selected_annotation.move_side(
+                    self.dragging_side, image_x - grab_dx, image_y - grab_dy):
+                return False
             self._bump_annotation_version()
             if not hasattr(self, '_drag_update_timer') or not self._drag_update_timer.isActive():
                 self._drag_update_timer = QTimer()
@@ -1608,7 +1548,8 @@ class BorderDetectionSettingsWidget(QWidget):
         elif self.dragging_border:
             dx = image_x - self.last_mouse_x
             dy = image_y - self.last_mouse_y
-            self.selected_annotation.move_border(dx, dy)
+            if not self.selected_annotation.move_border(dx, dy):
+                return False
             self.last_mouse_x = image_x
             self.last_mouse_y = image_y
             self._bump_annotation_version()
@@ -1647,20 +1588,38 @@ class BorderDetectionSettingsWidget(QWidget):
                        self.dragging_side is not None or 
                        self.dragging_border)
         
-        # Clear all drag states
+        # Commit the last drag position and clear state regardless of
+        # whether release occurred inside the image bounds.
+        self.mouse_pressed = False
         self.dragging_corner = None
         self.dragging_side = None
         self.dragging_border = False
-        
-        # Clear dragging flag and trigger final update
-        if hasattr(self, '_dragging'):
-            self._dragging = False
-            self._drag_update_counter = 0  # Reset counter for next drag
-            # Final update after drag completes
+        self._drag_grab_offset = (0.0, 0.0)
+        self._dragging = False
+        self._drag_update_counter = 0
+        timer = getattr(self, "_drag_update_timer", None)
+        if timer is not None and timer.isActive():
+            timer.stop()
+        if was_dragging:
             self.update_visualization()
-        
         return was_dragging
-    
+
+    def precision_target_point(self):
+        """Current image-pixel position of last grabbed polygon feature."""
+        target = getattr(self, "_precision_target", None)
+        if not target:
+            return None
+        ann, kind, name = target
+        if not any(item is ann for item in self.annotations):
+            return None
+        if kind == "corner":
+            return tuple(ann.vertices[CORNER_NAMES.index(name)])
+        if kind == "side":
+            return side_midpoint(validate_quad(ann.vertices), name)
+        if kind == "border":
+            return (ann.center_x, ann.center_y)
+        return None
+
     # Legacy method for backward compatibility
     def on_canvas_release(self, canvas_x, canvas_y):
         """Legacy method - delegates to handle_release"""
@@ -1692,6 +1651,9 @@ class BorderDetectionSettingsWidget(QWidget):
                 # Check corner handles with MASSIVE hit zones for 2560x1440 monitor
                 corner = self.selected_annotation.get_corner_handle(img_x, img_y, handle_size=25)
                 if corner:
+                    hx, hy = self.selected_annotation.vertices[CORNER_NAMES.index(corner)]
+                    self._drag_grab_offset = (img_x - hx, img_y - hy)
+                    self._precision_target = (self.selected_annotation, "corner", corner)
                     self.dragging_corner = corner
                     self.dragging_side = None
                     self.dragging_border = False
@@ -1704,6 +1666,9 @@ class BorderDetectionSettingsWidget(QWidget):
                 # Check side handles with MASSIVE hit zones
                 side = self.selected_annotation.get_side_handle(img_x, img_y, handle_size=15)
                 if side:
+                    hx, hy = side_midpoint(validate_quad(self.selected_annotation.vertices), side)
+                    self._drag_grab_offset = (img_x - hx, img_y - hy)
+                    self._precision_target = (self.selected_annotation, "side", side)
                     self.dragging_side = side
                     self.dragging_corner = None
                     self.dragging_border = False
@@ -1715,6 +1680,8 @@ class BorderDetectionSettingsWidget(QWidget):
 
                 # Check border selection (using x,y coords since second BorderAnnotation class is active)
                 if self.selected_annotation.contains_point(img_x, img_y):
+                    self._drag_grab_offset = (0.0, 0.0)
+                    self._precision_target = (self.selected_annotation, "border", None)
                     self.dragging_border = True
                     self.mouse_pressed = True
                     self.last_mouse_x, self.last_mouse_y = img_x, img_y
@@ -1765,6 +1732,9 @@ class BorderDetectionSettingsWidget(QWidget):
             self.dragging_corner = None
             self.dragging_side = None
             self.dragging_border = False
+            self.mouse_pressed = False
+            self._drag_grab_offset = (0.0, 0.0)
+            self._precision_target = None
 
             # Update display by notifying studio
             self.update_visualization()
@@ -1785,7 +1755,11 @@ class BorderDetectionSettingsWidget(QWidget):
             self.logger.info(f"🚀 auto_create_training_labels() called - {len(self.annotations) if hasattr(self, 'annotations') else 0} annotations")
             
             if not self.annotations:
-                self.logger.warning("❌ No annotations to export")
+                self.logger.warning("No annotations to export")
+                return False
+            classes = {ann.class_id for ann in self.annotations}
+            if not {0, 1}.issubset(classes):
+                self.logger.error("Both outer class 0 and graphic class 1 are required for triple export")
                 return False
 
             if self.current_image is None:
@@ -1819,10 +1793,17 @@ class BorderDetectionSettingsWidget(QWidget):
                 rotated_image = self.current_image.copy()
 
             # Base export directory - annotations subdirectory
-            base_dir = Path("/home/dewster/Projects/Vanguard/src/shared/annotations")
+            base_dir = Path(__file__).resolve().parents[3] / "shared" / "annotations"
             
             # Image dimensions (from rotated image)
             h, w = rotated_image.shape[:2]
+            # Validate source-quad pixel coordinates BEFORE writing the
+            # three established detection datasets; avoid partial invalid exports.
+            if all(getattr(ann, 'vertices', None) for ann in self.annotations):
+                if not all(quad_inside_image(validate_quad(ann.vertices), w, h)
+                           for ann in self.annotations):
+                    self.logger.error("Quad vertex outside rotated output image; export aborted")
+                    return False
             
             # Image filename
             img_name = Path(image_path).stem
@@ -1861,7 +1842,9 @@ class BorderDetectionSettingsWidget(QWidget):
                 
                 # Save rotated image
                 img_save_path = images_dir / f"{img_name}{img_ext}"
-                cv2.imwrite(str(img_save_path), rotated_image)
+                if not cv2.imwrite(str(img_save_path), rotated_image):
+                    self.logger.error("Failed to write export image: %s", img_save_path)
+                    return False
                 
                 # Create YOLO label file
                 label_save_path = labels_dir / f"{img_name}.txt"
@@ -1869,18 +1852,57 @@ class BorderDetectionSettingsWidget(QWidget):
                     for ann in export['annotations']:
                         # to_yolo_format returns tuple (class_id, x_center, y_center, width, height)
                         class_id, x_center, y_center, width, height = ann.to_yolo_format(w, h)
+                        # Each single-target dataset has its own class-0 label;
+                        # combined_dual_class retains 0=outer, 1=graphic.
+                        if export['name'] != 'combined_dual_class':
+                            class_id = 0
                         yolo_line = f"{class_id} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f}"
                         f.write(f"{yolo_line}\n")
                 
                 exported_count += 1
                 self.logger.info(f"✅ Exported {export['description']}: {img_save_path.name}")
             
-            if exported_count > 0:
-                self.logger.info(f"🎉 Successfully exported {exported_count} formats to {base_dir}")
+            if exported_count == len(exports):
+                # Additional quad proposal only; detection labels remain unchanged.
+                if all(hasattr(ann, 'to_dict') and getattr(ann, 'vertices', None)
+                       for ann in self.annotations):
+                    import hashlib
+                    import os
+                    if not all(quad_inside_image(validate_quad(ann.vertices), w, h)
+                               for ann in self.annotations):
+                        self.logger.error("Quad vertices out of bounds; save rejected")
+                        return False
+                    directory = base_dir / "dual_contour_proposals"
+                    directory.mkdir(parents=True, exist_ok=True)
+                    combined_photo = base_dir / "combined_dual_class" / "images" / f"{img_name}{img_ext}"
+                    record = {
+                        "schema": "dual_contour_proposal_v1",
+                        "image_file": combined_photo.name,
+                        "image_width": int(w), "image_height": int(h),
+                        "image_sha256": hashlib.sha256(combined_photo.read_bytes()).hexdigest(),
+                        # Tie new exports to their incoming scan as well as the
+                        # encoded image on which the quad coordinates live.
+                        "source_image_sha256": (
+                            hashlib.sha256(Path(image_path).read_bytes()).hexdigest()
+                            if Path(image_path).is_file() else None
+                        ),
+                        "coordinate_frame": "exported_rotated_image_pixels",
+                        "rotation_degrees": float(getattr(studio, 'rotation_angle', 0.0)),
+                        "segmentation_ground_truth": False,
+                        "annotations": [ann.to_dict() for ann in self.annotations],
+                    }
+                    output = directory / f"{img_name}.json"
+                    temp = output.with_suffix(".json.tmp")
+                    try:
+                        temp.write_text(json.dumps(record, indent=2), encoding="utf-8")
+                        os.replace(temp, output)
+                    finally:
+                        temp.unlink(missing_ok=True)
+                self.logger.info("Exported all %d image/label datasets to %s",
+                                 exported_count, base_dir)
                 return True
-            else:
-                self.logger.warning("No formats were exported")
-                return False
+            self.logger.error("Incomplete triple export: %d/%d", exported_count, len(exports))
+            return False
 
         except Exception as e:
             self.logger.error(f"Export failed: {e}")
@@ -2022,9 +2044,30 @@ class BorderDetectionSettingsWidget(QWidget):
 
 
 
-    def run_detection(self):
-        """Run YOLO detection on current image - REAL DETECTION FROM BORDER_CALIBRATION.PY"""
+    def run_detection(self, source="manual"):
+        """Run real YOLO once; expose request origin and busy state."""
+        if source not in ("manual", "auto"):
+            source = "manual"
+        if getattr(self, "external_label_mode", False):
+            if hasattr(self, "status_label"):
+                self.status_label.setText("Existing-label mode: YOLO inference disabled")
+            return False
+        if getattr(self, "_detecting", False):
+            self.logger.info("Skipped overlapping %s detection: %s",
+                             source, getattr(self, "current_image_path", None))
+            return False
+        self._detecting = True
+        started_at = time.monotonic()
+        request_path = getattr(self, "current_image_path", None)
+        request_token = getattr(self, "_auto_request_token", None)
+        if hasattr(self, "status_label"):
+            self.status_label.setText(f"Detecting... ({source})")
+        if hasattr(self, "run_detection_btn"):
+            self.run_detection_btn.setEnabled(False)
+        self.logger.info("YOLO %s detection starting: %s", source, request_path)
         try:
+            if QApplication.instance() is not None:
+                QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
             # Get YOLO model - check settings widget first, then main plugin
             yolo_model = None
             
@@ -2038,22 +2081,36 @@ class BorderDetectionSettingsWidget(QWidget):
                     yolo_model = self.main_plugin.model
                     self.logger.debug("Using model from main plugin")
 
-            if not yolo_model:
-                self.logger.warning("No YOLO model loaded for detection")
-                return
+            if not yolo_model or not hasattr(yolo_model, 'predict'):
+                # The user may click Run Detection before the initialization
+                # timer has loaded the real checkpoint. Never use a dummy model.
+                if not self.load_model():
+                    self.logger.error("Cannot detect borders: no real YOLO model loaded")
+                    if hasattr(self, 'status_label'):
+                        self.status_label.setText("Detection unavailable: model failed to load")
+                    return False
+                yolo_model = self.model
             
             if self.current_image is None:
                 self.logger.warning("No current image for detection")
-                return
+                if hasattr(self, 'status_label'):
+                    self.status_label.setText("Detection unavailable: no card loaded")
+                return False
 
-            print("⚡ Running YOLO detection at 640×480 (model's preferred resolution)...")
+            image_h, image_w = self.current_image.shape[:2]
+            self.logger.info(
+                "YOLO %s source image size %dx%d; model controls its own preprocessing",
+                source, image_w, image_h
+            )
 
             # Use confidence value or default
-            confidence_value = getattr(self, 'confidence_value', 0.5)
+            confidence_value = self.settings.get('confidence_threshold', 0.25)
 
             # Run YOLO model inference using main plugin's model
             results = yolo_model(self.current_image, conf=confidence_value)
 
+            self.logger.info("YOLO inference returned %d result batches for %s",
+                             len(results), self.current_image_path)
             # Clear previous annotations
             self.annotations = []
             self.selected_annotation = None
@@ -2084,6 +2141,15 @@ class BorderDetectionSettingsWidget(QWidget):
 
                         print(f"Detection: {class_names.get(cls)} at ({x1:.0f},{y1:.0f})-({x2:.0f},{y2:.0f}) conf={conf:.3f}")
 
+            outer_count = sum(ann.class_id == 0 for ann in self.annotations)
+            graphic_count = sum(ann.class_id == 1 for ann in self.annotations)
+            if hasattr(self, 'status_label'):
+                self.status_label.setText(
+                    f"Detection: {outer_count} outer / {graphic_count} graphic"
+                    if self.annotations else "Detection: 0 boxes — check model/confidence"
+                )
+            self.logger.info("Two-class YOLO prediction count: outer=%d, graphic=%d; image=%s",
+                             outer_count, graphic_count, self.current_image_path)
             print(f"✅ Detection found {len(self.annotations)} borders")
 
             # AUTO-SELECT OUTER BORDER (class 0) by default like original
@@ -2097,12 +2163,35 @@ class BorderDetectionSettingsWidget(QWidget):
             # Update display with real YOLO results
             self.update_visualization()
             self.update_statistics()
+            # The editable boxes live in this settings widget. Publish to
+            # the Studio canvas explicitly; do not depend on parent walking
+            # or an opportunistic cached redraw.
+            self.detection_completed.emit(self.annotations)
 
-            self.logger.info(f"YOLO detected {len(self.annotations)} borders")
+            self._completed_detection_token = request_token
+            self.logger.info("YOLO %s detection returned %d boxes: %s",
+                             source, len(self.annotations), request_path)
+            return True
 
         except Exception as e:
-            self.logger.error(f"YOLO detection failed: {e}")
+            self.logger.error(f"YOLO detection failed: {e}", exc_info=True)
+            # The Studio is launched as a subprocess with stderr piped.
+            # The widget's differently named logger does not necessarily
+            # reach AnnotationStudio's log file. Persist the full traceback
+            # through the existing file-backed application logger as well.
+            logging.getLogger("AnnotationStudio").exception(
+                "Border YOLO detection failed for %s", self.current_image_path
+            )
+            if hasattr(self, 'status_label'):
+                self.status_label.setText(f"Detection error: {type(e).__name__} (see log)")
             print(f"❌ Detection failed: {e}")
+            return False
+        finally:
+            self._detecting = False
+            if hasattr(self, "run_detection_btn"):
+                self.run_detection_btn.setEnabled(True)
+            self.logger.info("YOLO %s request duration %.3fs: %s",
+                             source, time.monotonic() - started_at, request_path)
 
     def batch_process_dataset(self):
         """Batch process multiple images"""
@@ -2185,6 +2274,10 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
     def on_activate(self):
         """Called when plugin becomes active - Interface contract method"""
         self.logger.info("BorderDetectionPlugin activated")
+        studio = getattr(getattr(self, "studio_context", None), "_studio", None)
+        if getattr(studio, "_existing_label_mode", False):
+            self.logger.info("Existing labels selected: bypass YOLO model initialization")
+            return
         # Load model if not loaded
         if not hasattr(self, 'model_loaded') or not self.model_loaded:
             self._load_default_model()
@@ -2206,6 +2299,12 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             return self.settings_widget.handle_drag(image_x, image_y)
         return False
     
+    def precision_target_point(self):
+        """Forward actual edited source pixel coordinates to the Studio."""
+        if self.settings_widget:
+            return self.settings_widget.precision_target_point()
+        return None
+
     def handle_release(self, image_x: float, image_y: float) -> bool:
         """Delegate to settings widget - Interface contract method"""
         if self.settings_widget:
@@ -2245,27 +2344,160 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         return False
     
     def on_image_changed(self, image_path: str, image_data: np.ndarray):
-        """Notification that Studio loaded new image - Interface contract method"""
+        """Queue inference only for fresh-detection batches, not imported labels."""
         self.logger.info(f"on_image_changed called with image: {image_path}")
-        
-        # Store image data in plugin
         self.current_image = image_data
-        
-        # Pass image to settings widget (it has the detection logic)
-        if self.settings_widget:
-            self.settings_widget.current_image = image_data
-            self.settings_widget.current_image_path = image_path
-            
-            # CORRECT auto-detection - 500ms delay
-            if hasattr(self, 'model') and self.model_loaded:
-                self.logger.info("Auto-running detection on new image (500ms delay)")
-                from PyQt6.QtCore import QTimer
-                QTimer.singleShot(500, self.settings_widget.run_detection)
-            else:
-                self.logger.info("No model loaded - skipping auto-detection")
-        else:
-            self.logger.warning("Settings widget not available for auto-detection")
-    
+        widget = self.settings_widget
+        if widget is None:
+            self.logger.error("No border settings widget available for auto-detection")
+            return
+
+        widget.current_image = image_data
+        widget.current_image_path = image_path
+        widget._auto_request_token = getattr(widget, "_auto_request_token", 0) + 1
+        studio = getattr(getattr(self, "studio_context", None), "_studio", None)
+        if getattr(studio, "_existing_label_mode", False):
+            widget.external_label_mode = True
+            if hasattr(widget, "run_detection_btn"):
+                widget.run_detection_btn.setEnabled(False)
+            return
+        widget.external_label_mode = False
+        if hasattr(widget, "run_detection_btn"):
+            widget.run_detection_btn.setEnabled(True)
+        request_token = widget._auto_request_token
+        if hasattr(widget, "status_label"):
+            widget.status_label.setText("Detection queued (automatic)")
+        from PyQt6.QtCore import QTimer
+        # A token distinguishes two loads of the SAME path and prevents
+        # an older timer from replacing newer edits or manual detection.
+        QTimer.singleShot(
+            500,
+            lambda expected=image_path, token=request_token, target=widget: (
+                target.run_detection(source="auto")
+                if (target.current_image_path == expected
+                    and target._auto_request_token == token
+                    and getattr(target, "_completed_detection_token", None) != token
+                    and not getattr(target, "external_label_mode", False))
+                else None
+            ),
+        )
+
+    def get_review_candidate(self):
+        """Identify the exact saved quad export; never approve live unsaved edits.
+
+        Review dialog, source hashing and writing the receipt are owned by
+        Studio/shared services. This plugin owns only its annotation geometry,
+        export location and comparison with the editor's current vertices.
+        """
+        studio = getattr(getattr(self, "studio_context", None), "_studio", None)
+        image = getattr(studio, "current_image_path", None)
+        widget = self.settings_widget
+        if image is None or widget is None:
+            raise ValueError("Load a saved card before reviewing annotations")
+        base = Path(__file__).resolve().parents[3] / "shared" / "annotations"
+        source = Path(image)
+        proposal = base / "dual_contour_proposals" / (source.stem + ".json")
+        exported = base / "combined_dual_class" / "images" / source.name
+        if not proposal.is_file() or not exported.is_file():
+            raise ValueError("Save this card with Space before reviewing its exported borders")
+        try:
+            record = json.loads(proposal.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ValueError("Saved quad proposal is unreadable") from exc
+        # A duplicate filename does not prove physical-scan identity.
+        # Newer exports bind both the original scan and exported JPEG.
+        # Legacy sidecars lacking source SHA may be reviewed only when the
+        # current selected file is byte-identical to the exported image.
+        import hashlib
+        actual_source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
+        expected_source_sha = record.get("source_image_sha256")
+        if expected_source_sha is None:
+            expected_source_sha = record.get("image_sha256")
+        if actual_source_sha != expected_source_sha:
+            raise ValueError(
+                "Original scan hash differs from saved proposal; review aborted "
+                "(legacy exports may need a fresh save)"
+            )
+        entries = record.get("annotations", ())
+        if (record.get("image_file") != source.name or len(entries) != 2
+                or [entry.get("class_id") for entry in entries] != [0, 1]):
+            raise ValueError("Saved quad does not match this card and border classes")
+        current = getattr(widget, "annotations", ())
+        if (len(current) != 2
+                or [ann.class_id for ann in current] != [0, 1]):
+            raise ValueError("Editor must display both outer and graphic borders")
+        for live, saved in zip(current, entries):
+            actual = validate_quad(live.vertices)
+            previous = validate_quad(saved["vertices"])
+            if any(abs(a - b) > 1e-5 for point, old in zip(actual, previous)
+                   for a, b in zip(point, old)):
+                raise ValueError(
+                    "Unsaved border changes: export the current card before review"
+                )
+        return {
+            "kind": "dual_contour_proposal_v1",
+            "annotation_path": proposal,
+            "image_path": exported,
+        }
+
+    def load_existing_labels(self, image_path, image_data, label_path, proposal_path=None):
+        """Populate two REAL editable quads from existing YOLO labels, without AI."""
+        from modules.annotation_studio.existing_label_sessions import parse_combined_yolo
+        import hashlib
+
+        widget = self.settings_widget
+        if widget is None:
+            raise ValueError("Activate Border Detection plugin to import labels")
+        height, width = image_data.shape[:2]
+        rows = parse_combined_yolo(label_path, width, height)
+        selected = [
+            BorderAnnotation.from_yolo(rows[cls], width, height,
+                                       ["outer_border", "inner_border"])
+            for cls in (0, 1)
+        ]
+        for ann in selected:
+            ann.detection_method = "Imported YOLO"
+            ann.confidence = 0.0  # Imported YOLO labels have no confidence score.
+            ann.metadata["confidence_source"] = "unavailable"
+
+        if proposal_path is not None:
+            record = json.loads(Path(proposal_path).read_text(encoding="utf-8"))
+            actual_hash = hashlib.sha256(Path(image_path).read_bytes()).hexdigest()
+            if (record.get("schema") != "dual_contour_proposal_v1"
+                    or record.get("image_sha256") != actual_hash
+                    or record.get("image_width") != width
+                    or record.get("image_height") != height
+                    or record.get("coordinate_frame") != "exported_rotated_image_pixels"):
+                raise ValueError("Saved quad and selected image disagree; reimport aborted")
+            originals = record.get("annotations", [])
+            if len(originals) != 2 or [x.get("class_id") for x in originals] != [0, 1]:
+                raise ValueError("Saved quad does not contain exactly two border classes")
+            selected = [BorderAnnotation.from_dict(entry) for entry in originals]
+
+        widget._auto_request_token = getattr(widget, "_auto_request_token", 0) + 1
+        widget._completed_detection_token = widget._auto_request_token
+        widget.external_label_mode = True
+        self.current_image = image_data
+        widget.current_image = image_data
+        widget.current_image_path = str(image_path)
+        widget.annotations = selected
+        widget._precision_target = None
+        widget.selected_annotation = selected[0]  # Always outer first.
+        widget.dragging_corner = None
+        widget.dragging_side = None
+        widget.dragging_border = False
+        if hasattr(widget, "run_detection_btn"):
+            widget.run_detection_btn.setEnabled(False)
+        if hasattr(widget, "status_label"):
+            widget.status_label.setText(
+                "Existing labels loaded: outer + graphic (YOLO disabled)"
+            )
+        widget._bump_annotation_version()
+        widget.update_visualization()
+        widget.update_statistics()
+        widget.detection_completed.emit(selected)
+        return True
+
     def on_image_rotated(self, rotation_angle: float):
         """Notification that Studio rotated image - Interface contract method"""
         # Rotation is handled by Studio, annotations are in original coordinates
@@ -2297,8 +2529,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
     def run_detection(self) -> bool:
         """Run detection - Interface contract method"""
         if self.settings_widget:
-            self.settings_widget.run_detection()
-            return True
+            return self.settings_widget.run_detection(source="manual") is True
         return False
     
     def cycle_selection(self):
@@ -2335,8 +2566,10 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             self.logger.error(f"Failed to set image: {e}")
 
     def auto_run_detection(self):
-        """Auto-run detection when card loads and auto-save results"""
+        """Auto-run only when using new, unannotated images."""
         try:
+            if getattr(self, "external_label_mode", False):
+                return False
             # Prevent multiple detection runs
             if hasattr(self, '_detection_running') and self._detection_running:
                 return
@@ -2425,7 +2658,7 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             author="TruScore Technologies",
             category="border",
             requires_model=True,
-            default_model_path="models/border_detection.pt",
+            default_model_path=str(_default_border_model_path()),
             supported_formats=["jpg", "jpeg", "png", "bmp", "tiff"],
             export_types=["yolo", "coco", "pascal_voc", "truscore"],
             keyboard_shortcuts={
@@ -2437,31 +2670,16 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
         )
 
     def load_model(self, model_path: Optional[str] = None) -> bool:
-        """Load the border detection model"""
-        try:
-            if model_path is None:
-                model_path = self.metadata.default_model_path
-
-            if not model_path or not os.path.exists(model_path):
-                self.logger.warning(f"Model file not found: {model_path}")
-                return False
-
-            # TODO: Implement actual model loading based on file extension
-            # For now, simulate successful loading
-            self.model = {"path": model_path, "loaded": True}
-            self.settings['model_path'] = model_path
-
-            self.logger.info(f"Border detection model loaded: {model_path}")
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Failed to load border detection model: {e}")
-            return False
+        """Load the real two-class YOLO detector; never fabricate loaded state."""
+        if model_path is not None:
+            self.settings['model_path'] = str(model_path)
+        return self._load_default_model()
 
     def create_settings_panel(self, parent: QWidget) -> QWidget:
         """Create the settings panel for the plugin"""
         try:
             self.settings_widget = BorderDetectionSettingsWidget(parent)
+            self.settings_widget.set_main_plugin(self)
 
             # CRITICAL FIX: Pass studio canvas reference for coordinate conversion - FROM MEMORY 113
             if hasattr(parent, 'image_label'):
@@ -2473,9 +2691,12 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             # Connect settings changes
             self.settings_widget.settings_changed.connect(self.on_settings_changed)
 
-            # Apply current settings
+            # The widget already owns its settings dictionary. The previous
+            # call to apply_settings() referenced a method that does not exist
+            # and caused the panel to be silently replaced with an empty QWidget
+            # as soon as a real detector populated the plugin settings.
             if self.settings:
-                self.settings_widget.apply_settings(self.settings)
+                self.settings_widget.settings.update(self.settings)
 
             # Update UI to show main plugin's model status with filename
             if hasattr(self, 'model_loaded') and self.model_loaded:
@@ -2495,8 +2716,10 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             return self.settings_widget
 
         except Exception as e:
-            self.logger.error(f"Failed to create settings panel: {e}")
-            return QWidget(parent)  # Return empty widget as fallback
+            self.logger.exception("Failed to create Border Detection settings panel")
+            # A blank widget is NOT a working plugin. The Studio must report
+            # activation failure instead of announcing successful loading.
+            raise
 
     def process_image(self, image_array, settings: Dict[str, Any]) -> AnnotationResult:
         """Process an image and return border annotations"""
@@ -2627,47 +2850,41 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
             self.logger.error(f"Display update after drag failed: {e}")
 
     def _load_default_model(self):
-        """Load the default border detection model for main plugin"""
+        """Load or reuse a genuine Ultralytics two-class detector."""
+        model_file = Path(self.settings.get('model_path') or
+                          _default_border_model_path()).expanduser().resolve()
+        if (self.model_loaded and getattr(self, 'model', None) is not None
+                and getattr(self, '_loaded_model_path', None) == str(model_file)):
+            return True
+        widget = self.settings_widget
+        if (widget is not None and getattr(widget, 'model_loaded', False)
+                and getattr(widget, '_loaded_model_path', None) == str(model_file)):
+            self.model = widget.model
+            self.model_loaded = True
+            self._loaded_model_path = str(model_file)
+            return True
         try:
-            # Prevent duplicate loading
-            if hasattr(self, 'model_loaded') and self.model_loaded:
-                self.logger.debug("Model already loaded, skipping duplicate load")
-                return True
-
-            model_path = '/home/dewster/Projects/Vanguard/src/models/revolutionary_border_detector.pt'
-            model_file = Path(model_path)
-
-            if not model_file.exists():
-                self.logger.error(f"Model file not found at: {model_path}")
-                return False
-
-            # Load actual YOLO model
-            try:
-                from ultralytics import YOLO
-                self.model = YOLO(model_path)
-                self.model_loaded = True
-                self.logger.info(f"✅ Main plugin model loaded: {model_path}")
-                
-                # Update settings widget's model status if it exists
-                if hasattr(self, 'settings_widget') and self.settings_widget:
-                    if hasattr(self.settings_widget, 'model_status_label'):
-                        model_name = Path(model_path).name
-                        self.settings_widget.model_status_label.setText(f"Model: {model_name}")
-                        self.settings_widget.model_status_label.setStyleSheet(f"color: {TruScoreTheme.QUANTUM_GREEN};")
-                    self.settings_widget.model_loaded = True
-                    self.settings_widget.model = self.model
-                
-                return True
-            except ImportError:
-                self.logger.error("❌ Ultralytics not available - install with: pip install ultralytics")
-                return False
-            except Exception as e:
-                self.logger.error(f"❌ Model loading failed: {e}")
-                return False
-
-        except Exception as e:
-            self.logger.error(f"❌ _load_default_model failed: {e}")
+            if not model_file.is_file():
+                raise FileNotFoundError(f"Two-class YOLO checkpoint not found: {model_file}")
+            from ultralytics import YOLO
+            model = YOLO(str(model_file))
+        except Exception as exc:
+            self.model = None
+            self.model_loaded = False
+            self._loaded_model_path = None
+            self.logger.error(f"Border detector failed to load: {exc}", exc_info=True)
             return False
+        self.model = model
+        self.model_loaded = True
+        self._loaded_model_path = str(model_file)
+        self.settings['model_path'] = str(model_file)
+        if widget is not None:
+            widget.model = model
+            widget.model_loaded = True
+            widget._loaded_model_path = str(model_file)
+            widget.model_status_label.setText(f"Model: {model_file.name}")
+        self.logger.info(f"Loaded real two-class YOLO checkpoint: {model_file}")
+        return True
 
     def auto_create_training_labels(self):
         """
@@ -2704,7 +2921,9 @@ class BorderDetectionPlugin(BaseAnnotationPlugin):
                         human_corrected=ann.get('human_corrected', ann.get('corrected_by_human', False)),
                         correction_timestamp=None,
                         detection_method=ann.get('detection_method', 'AI'),
-                        metadata=ann.get('metadata', {})
+                        metadata=ann.get('metadata', {}),
+                        vertices=ann.get('vertices'),
+                        human_reviewed=ann.get('human_reviewed', False),
                     )
                     border_annotations.append(border_ann)
                 else:

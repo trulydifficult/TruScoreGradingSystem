@@ -76,11 +76,11 @@ class ProfessionalDatasetSelector(QWidget):
             'border_detection_2class': DatasetTypeInfo(
                 key='border_detection_2class',
                 name='Border Detection (2-Class)',
-                description='Dual-class border detection for graphical vs photographic border classification with enterprise precision',
+                description='Independent physical outer-card and printed graphic-border geometry for 24-station centering',
                 category='Border Analysis',
-                accuracy_target='97.8%+',
-                requirements=['Diverse border samples', 'Graphical/photo examples', 'Quality annotations'],
-                compatible_pipelines=['Detectron2 (Mask R-CNN + RPN) - Professional', 'Sub-Pixel Enhanced Detectron2', 'YOLOv9 Gelan-base', 'YOLOv11 Efficient'],
+                accuracy_target='Not benchmarked (24-station evaluation pending)',
+                requirements=['Matching exported JPEG and SHA-256-verified dual-quad JSON', 'Review the two independent border polygons', 'Precision segmentation ground truth still requires explicit human approval'],
+                compatible_pipelines=['High-Resolution RGB Dual-Contour Segmentation', 'Detectron2 PointRend + Mask R-CNN', 'Detectron2 (Mask R-CNN + RPN) - Professional', 'Sub-Pixel Enhanced Detectron2', 'YOLOv9 Gelan-base', 'YOLOv11 Efficient'],
                 example_use_cases=['Trading card classification', 'Vintage card analysis', 'Mixed collection processing'],
                 difficulty_level='Advanced',
                 estimated_time='6-8 hours training'

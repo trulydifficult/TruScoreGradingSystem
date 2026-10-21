@@ -12,7 +12,7 @@ Supports:
 
 Enhancements:
 - Command-line dataset loading from queue
-- EXISTING TruScoreDatasetValidator integration
+- Queue dataset contract checks
 - Pre-flight system checks (GPU, disk space, CUDA)
 - Progress reporting to training_status.json
 - Automatic dataset movement (completed/failed)
@@ -26,6 +26,7 @@ import json
 import sys
 import argparse
 import shutil
+import os
 from pathlib import Path
 from typing import Dict, List, Optional
 import logging
@@ -37,13 +38,32 @@ SRC_PATH = PROJECT_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-# Import EXISTING validation infrastructure
-from shared.dataset_tools.dataset_validator import TruScoreDatasetValidator
 try:
     from . import phoenix_logger as logger
 except ImportError:  # Fallback when executed directly
     from shared.essentials.truscore_logging import setup_truscore_logging
     logger = setup_truscore_logging("PhoenixTrainer", "phoenix_trainer.log")
+
+try:
+    from .run_artifacts import RunRecorder
+    from .atomic_io import atomic_write_json
+    from .operator_logging import (
+        cli_error,
+        cli_info,
+        cli_warning,
+        configure_operator_console,
+    )
+except ImportError:
+    from modules.phoenix_trainer.run_artifacts import RunRecorder
+    from modules.phoenix_trainer.atomic_io import atomic_write_json
+    from modules.phoenix_trainer.operator_logging import (
+        cli_error,
+        cli_info,
+        cli_warning,
+        configure_operator_console,
+    )
+
+configure_operator_console(logger)
 
 
 class PhoenixTrainer:
@@ -52,13 +72,21 @@ class PhoenixTrainer:
     Standalone training application with queue system
     """
     
-    def __init__(self, dataset_path: Optional[str] = None):
+    def __init__(
+        self,
+        dataset_path: Optional[str] = None,
+        auto_start: bool = False,
+        auto_exit_after_job: bool = False,
+    ):
         self.training_queue = []
         self.current_job = None
         self.is_training = False
         self.dataset_from_queue = dataset_path  # Dataset passed from queue
+        self.auto_start = auto_start
+        self.auto_exit_after_job = auto_exit_after_job
         self.loaded_dataset = None  # Currently loaded dataset
         self._last_metrics = {}
+        self._active_run_recorder = None
         
         # Paths
         self.project_root = Path(__file__).parents[3]
@@ -69,9 +97,6 @@ class PhoenixTrainer:
         self.failed_dir = self.queue_dir / "failed"
         # Priority/hardware weights for scheduling
         self.priority_weights = {"fusion_sam": 2, "eventps_real_time": 2, "llm_meta_learner": 1, "default": 1}
-        
-        # Dataset validator
-        self.validator = TruScoreDatasetValidator()
         
         # Theme colors matching TruScore - Enhanced Dark Theme
         # DearPyGUI uses RGB tuples (0-255) for colors
@@ -96,11 +121,16 @@ class PhoenixTrainer:
         # Pre-flight check results
         self.system_ready = False
         self.system_checks = {}
+
+        # Training workers never mutate Dear PyGui directly. They publish small
+        # UI events which the main render loop applies.
+        self._ui_events = queue.Queue()
         
     def setup_dpg(self):
         """Initialize DearPyGUI and create main window"""
         dpg.create_context()
-        
+        dpg.configure_app(manual_callback_management=True)
+
         # Setup viewport with static background support
         dpg.create_viewport(
             title="TruScore Phoenix Trainer",
@@ -153,6 +183,21 @@ class PhoenixTrainer:
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.set_primary_window("primary_window", True)
+
+        if self.auto_start and self.dataset_from_queue:
+            if self.loaded_dataset:
+                if not self.start_training():
+                    self.log_message(
+                        "Queued training could not start; trainer worker will exit.",
+                        "ERROR",
+                    )
+                    self._ui_events.put(("stop_app",))
+            else:
+                self.log_message(
+                    "Queued dataset could not be loaded; trainer worker will exit.",
+                    "ERROR",
+                )
+                self._ui_events.put(("stop_app",))
         
     # Queue panel removed - using standalone queue application
         
@@ -400,10 +445,23 @@ class PhoenixTrainer:
             dpg.add_text("  Max Norm:", indent=20)
             dpg.add_input_float(tag="grad_clip_norm", default_value=1.0, format="%.2f", width=-1, indent=20)
             
-            dpg.add_checkbox(label="Mixed Precision (AMP)", default_value=True, tag="mixed_precision")
+            dpg.add_text("Precision:")
+            dpg.add_combo(
+                items=["FP32", "FP16", "BF16"],
+                default_value="FP16",
+                tag="precision",
+                width=-1,
+            )
             dpg.add_checkbox(label="Gradient Accumulation", default_value=False, tag="grad_accumulation")
             dpg.add_text("  Steps:", indent=20)
             dpg.add_input_int(tag="accumulation_steps", default_value=2, min_value=1, max_value=16, width=-1, indent=20)
+            dpg.add_text("Random Seed:")
+            dpg.add_input_int(tag="random_seed", default_value=42, min_value=0, width=-1)
+            dpg.add_checkbox(
+                label="Deterministic Algorithms",
+                default_value=True,
+                tag="deterministic",
+            )
             dpg.add_separator()
             
             # Data Augmentation
@@ -427,8 +485,8 @@ class PhoenixTrainer:
             dpg.add_text("Hardware", color=self.theme_colors['accent'])
             dpg.add_text("Device:")
             dpg.add_combo(
-                items=["CUDA (GPU)", "CPU"],
-                default_value="CUDA (GPU)",
+                items=["GPU (PyTorch CUDA/ROCm)", "CPU"],
+                default_value="GPU (PyTorch CUDA/ROCm)",
                 tag="device",
                 width=-1
             )
@@ -439,6 +497,15 @@ class PhoenixTrainer:
             dpg.add_text("Directory:")
             dpg.add_input_text(tag="output_dir", default_value="models/trained/", width=-1)
             dpg.add_checkbox(label="Save Best Only", default_value=True, tag="save_best_only")
+            dpg.add_text("Checkpoint Interval (epochs):")
+            dpg.add_input_int(
+                tag="checkpoint_interval",
+                default_value=10,
+                min_value=0,
+                width=-1,
+            )
+            dpg.add_text("Resume Checkpoint (optional):")
+            dpg.add_input_text(tag="resume_from", default_value="", width=-1)
 
             dpg.add_separator()
             dpg.add_text("Uncertainty & Active Learning", color=self.theme_colors['accent'])
@@ -522,155 +589,244 @@ class PhoenixTrainer:
         logger.info("✓ Premium glassmorphism theme applied")
     
     def run_preflight_checks(self):
-        """Run pre-flight system checks before training"""
+        """Run real backend, disk, and filesystem pre-flight checks."""
         logger.info("Running pre-flight system checks...")
-        
-        # Check 1: GPU availability
+
         try:
-            import torch
-            cuda_available = torch.cuda.is_available()
-            if cuda_available:
-                gpu_name = torch.cuda.get_device_name(0)
-                gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1e9
-                self.system_checks['gpu'] = {
-                    'available': True,
-                    'name': gpu_name,
-                    'memory_gb': f"{gpu_memory:.2f}"
-                }
-                logger.info(f"✓ GPU: {gpu_name} ({gpu_memory:.2f} GB)")
-            else:
-                self.system_checks['gpu'] = {
-                    'available': False,
-                    'message': 'CUDA not available - will use CPU'
-                }
-                logger.warning("⚠ GPU: Not available - training will use CPU (slower)")
+            from .hardware_backend import probe_torch_accelerator
         except ImportError:
-            self.system_checks['gpu'] = {
-                'available': False,
-                'message': 'PyTorch not installed'
-            }
-            logger.error("✗ PyTorch not installed")
-        
-        # Check 2: Disk space
-        import shutil
+            from modules.phoenix_trainer.hardware_backend import probe_torch_accelerator
+
+        accelerator = probe_torch_accelerator()
+        gpu_info = accelerator.to_dict()
+        gpu_info["available"] = accelerator.ready
+        gpu_info["memory_gb"] = (
+            f"{accelerator.total_memory_gb:.2f}"
+            if accelerator.total_memory_gb is not None
+            else None
+        )
+        self.system_checks["gpu"] = gpu_info
+
+        if accelerator.ready:
+            precision = [
+                name.upper()
+                for name, available in (
+                    ("fp32", accelerator.fp32_compute),
+                    ("fp16", accelerator.fp16_compute),
+                    ("bf16", accelerator.bf16_compute),
+                )
+                if available
+            ]
+            cli_info(
+                logger,
+                "Phoenix | Accelerator: %s | %s | %.2f GB VRAM | precision=%s",
+                accelerator.backend.upper(),
+                accelerator.name,
+                accelerator.total_memory_gb or 0.0,
+                ",".join(precision),
+            )
+        else:
+            logger.error(
+                "GPU accelerator pre-flight failed: %s",
+                accelerator.error or "unknown accelerator error",
+            )
+            cli_error(
+                logger,
+                "Phoenix | ERROR: GPU pre-flight failed: %s",
+                accelerator.error or "unknown accelerator error",
+            )
+
         disk_stats = shutil.disk_usage(str(self.project_root))
-        free_gb = disk_stats.free / 1e9
-        self.system_checks['disk'] = {
-            'free_gb': f"{free_gb:.2f}",
-            'sufficient': free_gb > 10  # At least 10GB free
+        free_gb = disk_stats.free / (1024 ** 3)
+        self.system_checks["disk"] = {
+            "free_gb": f"{free_gb:.2f}",
+            "sufficient": free_gb > 10,
         }
         if free_gb > 10:
-            logger.info(f"✓ Disk Space: {free_gb:.2f} GB free")
+            cli_info(logger, "Phoenix | Disk: %.2f GB free", free_gb)
         else:
-            logger.warning(f"⚠ Disk Space: Only {free_gb:.2f} GB free (recommend 10+ GB)")
-        
-        # Check 3: Required directories exist
+            logger.warning(
+                "Disk space low: %.2f GB free (recommend 10+ GB)",
+                free_gb,
+            )
+            cli_warning(
+                logger,
+                "Phoenix | WARNING: Disk space low: %.2f GB free",
+                free_gb,
+            )
+
+        try:
+            page_size = os.sysconf("SC_PAGE_SIZE")
+            available_pages = os.sysconf("SC_AVPHYS_PAGES")
+            available_ram_gb = (page_size * available_pages) / (1024 ** 3)
+            self.system_checks["memory"] = {
+                "available_gb": f"{available_ram_gb:.2f}"
+            }
+            cli_info(
+                logger,
+                "Phoenix | System RAM: %.2f GB available",
+                available_ram_gb,
+            )
+        except (AttributeError, OSError, ValueError):
+            self.system_checks["memory"] = {"available_gb": None}
+
         for dir_path in [self.active_dir, self.completed_dir, self.failed_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
-        self.system_checks['directories'] = {'ready': True}
+        self.system_checks["directories"] = {"ready": True}
         logger.info("✓ Training directories ready")
-        
-        # Overall system readiness
-        self.system_ready = (
-            self.system_checks.get('directories', {}).get('ready', False) and
-            self.system_checks.get('disk', {}).get('sufficient', False)
+
+        base_ready = (
+            self.system_checks["directories"]["ready"]
+            and self.system_checks["disk"]["sufficient"]
         )
-        
+        self.system_checks["base_ready"] = base_ready
+        self.system_ready = base_ready and accelerator.ready
+
         if self.system_ready:
-            logger.info("✓ System ready for training!")
+            logger.info("Phoenix GPU training backend is ready")
+        elif base_ready:
+            logger.warning(
+                "Phoenix base system is ready, but GPU training is not ready"
+            )
+            cli_warning(
+                logger,
+                "Phoenix | WARNING: GPU training backend is not ready",
+            )
         else:
-            logger.warning("⚠ System has issues - check pre-flight status")
-    
+            logger.warning("Phoenix system pre-flight failed")
+            cli_warning(logger, "Phoenix | WARNING: System pre-flight failed")
     def create_preflight_banner(self):
-        """Create pre-flight status banner with premium styling"""
+        """Render current backend and disk readiness."""
         with dpg.group(horizontal=True):
-            dpg.add_text("System Status:", color=self.theme_colors['text_dim'])
-            
-            # GPU status with enhanced colors
-            if self.system_checks.get('gpu', {}).get('available'):
-                gpu_info = self.system_checks['gpu']
-                dpg.add_text(f"✓ GPU: {gpu_info['name']}", color=self.theme_colors['success'])
+            dpg.add_text("System Status:", color=self.theme_colors["text_dim"])
+
+            gpu_info = self.system_checks.get("gpu", {})
+            if gpu_info.get("available"):
+                backend = str(gpu_info.get("backend", "gpu")).upper()
+                name = gpu_info.get("name", "Unknown GPU")
+                dpg.add_text(
+                    f"✓ {backend}: {name}",
+                    color=self.theme_colors["success"],
+                )
             else:
-                dpg.add_text("⚠ GPU: Not Available", color=self.theme_colors['warning'])
-            
+                error = gpu_info.get("error", "GPU not ready")
+                dpg.add_text(
+                    f"⚠ GPU: {error}",
+                    color=self.theme_colors["warning"],
+                )
+
             dpg.add_spacer(width=20)
-            
-            # Disk space with conditional coloring
-            disk_info = self.system_checks.get('disk', {})
-            disk_color = self.theme_colors['success'] if disk_info.get('sufficient') else self.theme_colors['warning']
-            dpg.add_text(f"Disk: {disk_info.get('free_gb', '?')} GB free", color=disk_color)
-            
+
+            disk_info = self.system_checks.get("disk", {})
+            disk_color = (
+                self.theme_colors["success"]
+                if disk_info.get("sufficient")
+                else self.theme_colors["warning"]
+            )
+            dpg.add_text(
+                f"Disk: {disk_info.get('free_gb', '?')} GB free",
+                color=disk_color,
+            )
+
             dpg.add_spacer(width=20)
-            
-            # Overall status with icon
+
             if self.system_ready:
-                dpg.add_text("✓ System Ready", color=self.theme_colors['success'])
+                dpg.add_text(
+                    "✓ GPU Training Ready", color=self.theme_colors["success"]
+                )
+            elif self.system_checks.get("base_ready"):
+                dpg.add_text(
+                    "⚠ CPU Only / GPU Check Failed",
+                    color=self.theme_colors["warning"],
+                )
             else:
-                dpg.add_text("⚠ Check Status", color=self.theme_colors['warning'])
-    
+                dpg.add_text(
+                    "⚠ Check Status", color=self.theme_colors["warning"]
+                )
+    def _assert_trainable_queue_entry(self, dataset_path: Path, dataset_config: dict) -> int:
+        """Reject configuration-only or empty queue entries before training."""
+        export_source = str(dataset_config.get("export_source", "")).lower()
+        note = str(dataset_config.get("note", "")).lower()
+
+        if "configuration" in export_source or "configuration export" in note:
+            raise ValueError(
+                "This queue entry contains configuration only, not a completed training dataset."
+            )
+
+        image_suffixes = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".webp"}
+        image_files = [
+            path for path in dataset_path.rglob("*")
+            if path.is_file() and path.suffix.lower() in image_suffixes
+        ]
+        if not image_files:
+            raise ValueError(f"No training images were found under {dataset_path}")
+
+        return len(image_files)
+
     def load_dataset_from_queue(self, dataset_path: str):
-        """Load dataset from queue directory"""
+        """Load a completed dataset exported to the Phoenix queue."""
         dataset_path = Path(dataset_path)
-        
+
         logger.info(f"Loading dataset from queue: {dataset_path}")
-        
+
         if not dataset_path.exists():
             logger.error(f"Dataset path does not exist: {dataset_path}")
+            self.loaded_dataset = None
             return
-        
-        # Load dataset config
+
         config_file = dataset_path / "dataset_config.json"
-        if config_file.exists():
-            try:
-                with open(config_file, 'r') as f:
-                    dataset_config = json.load(f)
-                
-                # Validate dataset using EXISTING validator
-                logger.info("Validating dataset with TruScoreDatasetValidator...")
-                validation_report = self.validator.validate_dataset(
-                    str(dataset_path),
-                    dataset_type=dataset_config.get('export_format', 'COCO')
-                )
-                
-                if validation_report.is_ready:
-                    logger.info(f"✓ Dataset validation passed ({validation_report.readiness_percentage:.1f}% ready)")
-                    
-                    # Store loaded dataset for training
-                    self.loaded_dataset = {
-                        'name': dataset_config.get('dataset_name', dataset_path.name),
-                        'path': str(dataset_path),
-                        'model_type': dataset_config.get('model_type', 'Unknown'),
-                        'model_architecture': dataset_config.get('model_architecture', 'Unknown'),
-                        'dataset_type': dataset_config.get('dataset_type', 'Unknown'),
-                        'image_count': dataset_config.get('image_count', 0),
-                        'config': dataset_config
-                    }
-                    
-                    # Update UI to show loaded dataset
-                    if dpg.does_item_exist("current_job"):
-                        dpg.set_value("current_job", self.loaded_dataset['name'])
-                    if dpg.does_item_exist("model_type"):
-                        dpg.set_value("model_type", f"{self.loaded_dataset['model_architecture']} ({self.loaded_dataset['dataset_type']})")
-                    
-                    self.log_message(f"✓ Loaded: {self.loaded_dataset['name']}", "SUCCESS")
-                    self.log_message(f"Model: {self.loaded_dataset['model_architecture']}", "INFO")
-                    self.log_message(f"Images: {self.loaded_dataset['image_count']}", "INFO")
-                    self.log_message(f"Dataset Type: {self.loaded_dataset['dataset_type']}", "INFO")
-                    self.log_message(f"Ready to train!", "SUCCESS")
-                else:
-                    logger.error(f"✗ Dataset validation failed ({validation_report.readiness_percentage:.1f}% ready)")
-                    logger.error(f"Issues: {', '.join(validation_report.issues)}")
-                    self.log_message(f"Dataset validation failed: {', '.join(validation_report.issues[:3])}", "ERROR")
-                    
-            except Exception as e:
-                logger.error(f"Error loading dataset config: {e}")
-                import traceback
-                logger.error(traceback.format_exc())
-                self.log_message(f"Error loading dataset: {e}", "ERROR")
-        else:
+        if not config_file.exists():
             logger.warning("No dataset_config.json found")
             self.log_message("Error: dataset_config.json not found", "ERROR")
-    
+            self.loaded_dataset = None
+            return
+
+        try:
+            with open(config_file, "r", encoding="utf-8") as f:
+                dataset_config = json.load(f)
+
+            image_count = self._assert_trainable_queue_entry(dataset_path, dataset_config)
+
+            self.loaded_dataset = {
+                "name": dataset_config.get("dataset_name", dataset_path.name),
+                "path": str(dataset_path),
+                "model_type": dataset_config.get(
+                    "model_type", dataset_config.get("pipeline", "Unknown")
+                ),
+                "model_architecture": dataset_config.get("model_architecture", "Unknown"),
+                "dataset_type": dataset_config.get("dataset_type", "Unknown"),
+                "pipeline": dataset_config.get("pipeline", ""),
+                "image_count": dataset_config.get("image_count") or image_count,
+                "priority": dataset_config.get("priority", 1),
+                "hardware_hint": dataset_config.get("hardware_hint", "gpu"),
+                "extra_modalities": dataset_config.get("extra_modalities", {}),
+                "fusion_mode": dataset_config.get("fusion_mode"),
+                "config": dataset_config,
+            }
+
+            if dpg.does_item_exist("current_job"):
+                dpg.set_value("current_job", self.loaded_dataset["name"])
+            if dpg.does_item_exist("model_type"):
+                dpg.set_value(
+                    "model_type",
+                    f"{self.loaded_dataset['model_architecture']} "
+                    f"({self.loaded_dataset['dataset_type']})",
+                )
+
+            self.log_message(f"Loaded: {self.loaded_dataset['name']}", "SUCCESS")
+            self.log_message(
+                f"Model: {self.loaded_dataset['model_architecture']}", "INFO"
+            )
+            self.log_message(f"Images discovered: {image_count}", "INFO")
+            self.log_message(
+                "Queue structure check passed. Trainer-specific validation "
+                "will run when the selected trainer loads the dataset.",
+                "SUCCESS",
+            )
+        except Exception as exc:
+            self.loaded_dataset = None
+            logger.exception("Could not load queue dataset")
+            self.log_message(f"Dataset is not trainable: {exc}", "ERROR")
     def open_dataset_browser(self):
         """Open file browser to load a dataset"""
         import tkinter as tk
@@ -764,22 +920,33 @@ class PhoenixTrainer:
         if (dataset_path / "normal_maps").exists() and (dataset_path / "masks").exists():
             return "U-Net (Surface)"
         
-        # Default
-        return "Detectron2 (Mask R-CNN)"
+        raise ValueError(
+            f"Could not infer a supported trainer from dataset structure: {dataset_path}"
+        )
     
     def get_current_config(self) -> dict:
-        """Get current training configuration from UI"""
+        """Get the current runtime configuration from the DPG controls."""
+        precision = dpg.get_value("precision").lower()
         return {
             'learning_rate': dpg.get_value("learning_rate"),
             'batch_size': dpg.get_value("batch_size"),
             'epochs': dpg.get_value("epochs"),
             'optimizer': dpg.get_value("optimizer").lower(),
-            'device': 'cuda' if 'CUDA' in dpg.get_value("device") else 'cpu',
-            'mixed_precision': dpg.get_value("mixed_precision"),
+            'device': 'cuda' if 'GPU' in dpg.get_value("device") else 'cpu',
+            'precision': precision,
+            'mixed_precision': precision != 'fp32',
+            'gradient_clipping': dpg.get_value("gradient_clipping"),
+            'grad_clip_norm': dpg.get_value("grad_clip_norm"),
+            'grad_accumulation': dpg.get_value("grad_accumulation"),
+            'accumulation_steps': dpg.get_value("accumulation_steps"),
+            'seed': dpg.get_value("random_seed"),
+            'deterministic': dpg.get_value("deterministic"),
+            'checkpoint_interval': dpg.get_value("checkpoint_interval"),
+            'resume_from': dpg.get_value("resume_from").strip() or None,
             'output_dir': dpg.get_value("output_dir"),
-            'use_wandb': False,  # Can add checkbox for this
-            'early_stopping_patience': 10,
-            'num_workers': 2
+            'use_wandb': False,
+            'early_stopping_patience': dpg.get_value("early_stop_patience"),
+            'num_workers': 2,
         }
     
     # DEPRECATED - Use standalone queue app
@@ -789,365 +956,409 @@ class PhoenixTrainer:
         self.update_queue_display()
         self.log_message("Training queue cleared")
     
-    def start_training(self):
-        """Start training with loaded dataset"""
-        # Check if dataset is loaded
-        if not hasattr(self, 'loaded_dataset') or not self.loaded_dataset:
+    def start_training(self) -> bool:
+        """Start training with the currently loaded completed dataset."""
+        if not getattr(self, "loaded_dataset", None):
             self.log_message("No dataset loaded! Load a dataset first.", "ERROR")
-            return
-        
+            return False
+
         if self.is_training:
             self.log_message("Training already in progress!", "WARNING")
-            return
-        
-        if not self.system_ready:
-            self.log_message("System not ready! Check pre-flight status.", "ERROR")
-            return
-        
-        self.log_message(
-            f"Starting training: {self.loaded_dataset['name']} | priority={self.loaded_dataset.get('priority',1)} | hw={self.loaded_dataset.get('hardware_hint','cpu')}",
-            "SUCCESS"
-        )
-        
-        # Create job from loaded dataset
+            return False
+
+        requested_gpu = "GPU" in dpg.get_value("device")
+        if not self.system_checks.get("base_ready", False):
+            self.log_message(
+                "Base system pre-flight failed. Check disk/directories.", "ERROR"
+            )
+            return False
+        if requested_gpu and not self.system_checks.get("gpu", {}).get("available", False):
+            error = self.system_checks.get("gpu", {}).get(
+                "error", "GPU backend is not ready"
+            )
+            self.log_message(f"GPU training blocked: {error}", "ERROR")
+            return False
+
         job = {
-            'name': self.loaded_dataset['name'],
-            'path': self.loaded_dataset['path'],
-            'model_type': self.loaded_dataset['model_type'],
-            'model_architecture': self.loaded_dataset['model_architecture'],
-            'dataset_type': self.loaded_dataset['dataset_type'],
-            'extra_modalities': self.loaded_dataset.get('extra_modalities', {}),
-            'config': {
-                'epochs': dpg.get_value("epochs"),
-                'batch_size': dpg.get_value("batch_size"),
-                'learning_rate': dpg.get_value("learning_rate")
-            }
+            "name": self.loaded_dataset["name"],
+            "path": self.loaded_dataset["path"],
+            "model_type": self.loaded_dataset["model_type"],
+            "model_architecture": self.loaded_dataset["model_architecture"],
+            "dataset_type": self.loaded_dataset["dataset_type"],
+            "pipeline": self.loaded_dataset.get("pipeline", ""),
+            "priority": self.loaded_dataset.get("priority", 1),
+            "hardware_hint": self.loaded_dataset.get("hardware_hint", "gpu"),
+            "extra_modalities": self.loaded_dataset.get("extra_modalities", {}),
+            "fusion_mode": self.loaded_dataset.get("fusion_mode"),
+            "dataset_config": dict(self.loaded_dataset.get("config", {})),
         }
-        
+
+        # Snapshot all DPG configuration on the UI thread before the training
+        # worker starts. The worker should not read controls to build its config.
+        job["config"] = self.get_training_config(job, Path(job["path"]))
+
+        self.log_message(
+            f"Starting training: {job['name']} | priority={job['priority']} "
+            f"| hw={job['hardware_hint']}",
+            "SUCCESS",
+        )
+
         self.current_job = job
         self.is_training = True
-        
-        # Start training in background thread
-        training_thread = threading.Thread(target=self._train_job, args=(job,), daemon=True)
+        self._last_metrics = {}
+
+        training_thread = threading.Thread(
+            target=self._train_job,
+            args=(job,),
+            daemon=True,
+            name=f"phoenix-training-{job['name']}",
+        )
         training_thread.start()
-    
+        return True
     def _train_job(self, job: dict):
-        """Execute training job (runs in background thread)"""
+        """Execute one Phoenix training job with persistent provenance."""
+        dataset_path = Path(job["path"])
+        recorder = None
+        trainer = None
+
         try:
-            dataset_path = Path(job['path'])
-            
-            # Write initial status
-            self.write_training_status(job, 'started', 0.0)
-            
-            # Move dataset to active directory if it's in pending
+            self._assert_trainable_queue_entry(
+                dataset_path, job.get("dataset_config", {})
+            )
+            self.write_training_status(job, "started", 0.0)
+
             if dataset_path.parent == self.pending_dir:
                 active_path = self.active_dir / dataset_path.name
                 logger.info(f"Moving dataset to active: {active_path}")
                 shutil.move(str(dataset_path), str(active_path))
-                job['path'] = str(active_path)
+                job["path"] = str(active_path)
+                job["config"]["dataset_path"] = str(active_path)
                 dataset_path = active_path
-            
-            # Validate dataset one more time before training
-            # Placeholder for new validator signature; will be wrapped below.
-            validation_ok = True
-            try:
-                val_report = self.validator.validate_dataset(
-                    images=[],  # Provide real image list when available
-                    labels={},  # Provide real labels dict when available
-                    project_config={'dataset_type': job.get('dataset_type', ''), 'output_format': job.get('model_type', ''), 'extra_modalities': job.get('extra_modalities', {})},
-                    dataset_type=job.get('dataset_type', ''),
-                    output_format=job.get('model_type', '')
-                )
-                validation_ok = getattr(val_report, "overall_status", "ready") in {"ready", "needs_fixes"}
-            except Exception as exc:
-                logger.warning(f"Validator placeholder failed: {exc}; continuing with training.")
-                validation_ok = True
-            if not validation_ok:
-                raise Exception("Dataset validation failed.")
-            
-            self.log_message("Dataset validated (basic checks)", "SUCCESS")
-            
-            # Update UI
-            dpg.set_value("current_job", job['name'])
-            dpg.set_value("model_type", job['model_type'])
-            
-            # REAL TRAINING INTEGRATION - Call actual trainers
+
+            output_root = Path(job["config"]["output_dir"]).expanduser()
+            if not output_root.is_absolute():
+                output_root = self.project_root / output_root
+
+            recorder = RunRecorder(
+                output_root=output_root,
+                dataset_name=job["name"],
+                dataset_path=dataset_path,
+                resolved_config=job["config"],
+                dataset_config=job.get("dataset_config", {}),
+            )
+            self._active_run_recorder = recorder
+            recorder.write_dataset_reference(dataset_path)
+            job["config"] = dict(recorder.resolved_config)
+
+            cli_info(logger, "Phoenix | Run ID: %s", recorder.run_id)
+            cli_info(logger, "Phoenix | Run log: %s", recorder.log_path)
+            job["config"]["dataset_path"] = str(dataset_path)
+
+            self.log_message(
+                "Queue structure verified; trainer-specific dataset loading is next.",
+                "SUCCESS",
+            )
+            self.log_message(f"Run ID: {recorder.run_id}", "INFO")
+            self.log_message(f"Run directory: {recorder.run_dir}", "INFO")
+            self.log_message(
+                "Resolved training config: "
+                f"epochs={job['config'].get('epochs')}, "
+                f"batch_size={job['config'].get('batch_size')}, "
+                f"lr={job['config'].get('learning_rate')}, "
+                f"optimizer={job['config'].get('optimizer')}, "
+                f"precision={job['config'].get('precision')}, "
+                f"accumulation={job['config'].get('accumulation_steps') if job['config'].get('grad_accumulation') else 1}, "
+                f"clip={job['config'].get('gradient_clipping')}, "
+                f"seed={job['config'].get('seed')}, "
+                f"deterministic={job['config'].get('deterministic')}",
+                "INFO",
+            )
+            self.log_message(
+                "Resolved config persisted to training_config.json",
+                "INFO",
+            )
+
+            self._queue_ui_value("current_job", job["name"])
+            self._queue_ui_value("model_type", job["model_type"])
+
             self.log_message("Initializing trainer...", "INFO")
-            
-            # Get training configuration from UI
-            training_config = self.get_training_config(job, dataset_path)
-            
-            # Create appropriate trainer based on model type
-            trainer = self.create_trainer(job['model_type'], training_config)
-            
-            if trainer:
-                self.log_message(f"Starting {job['model_type']} training...", "SUCCESS")
-                
-                # Train with progress callback
-                def progress_callback(epoch, total_epochs, metrics):
-                    if not self.is_training:
-                        return False  # Signal to stop training
-                    
-                    progress = epoch / total_epochs
-                    
-                    # Update UI
-                    dpg.set_value("epoch_progress", progress)
-                    dpg.set_value("epoch_text", f"Epoch {epoch}/{total_epochs}")
-                    
-                    # Update metrics
-                    if 'loss' in metrics:
-                        dpg.set_value("loss_text", f"Loss: {metrics['loss']:.4f}")
-                    if 'learning_rate' in metrics:
-                        dpg.set_value("lr_text", f"Learning Rate: {metrics['learning_rate']:.6f}")
-                    if 'mAP' in metrics:
-                        dpg.set_value("map_text", f"mAP: {metrics['mAP']:.4f}")
-                    if 'accuracy' in metrics:
-                        dpg.set_value("acc_text", f"Accuracy: {metrics['accuracy']:.2f}%")
-                    self._last_metrics = metrics
-                    
-                    # Write progress to file
-                    self.write_training_status(job, 'training', progress, epoch, metrics=metrics)
-                    # Active learning export: queue low-confidence/uncertain samples
-                    self._export_low_confidence(job, epoch, metrics)
-                    
-                    # Log to training log
-                    self.log_message(f"Epoch {epoch}/{total_epochs} - Loss: {metrics.get('loss', 'N/A')}", "INFO")
-                    
-                    return True  # Continue training
-                
-                # Execute real training
-                trainer.train(progress_callback=progress_callback)
-                
-                self.log_message("Training completed successfully!", "SUCCESS")
-            else:
-                raise Exception(f"No trainer available for {job['model_type']}")
-            
-            # Training completed successfully
+            trainer = self.create_trainer(job["model_type"], job["config"])
+
+            model_config_written = False
+
+            def trainer_log_callback(message, level):
+                self.log_message(message, level)
+
+            def epoch_start_callback(epoch):
+                nonlocal model_config_written
+                if not model_config_written:
+                    recorder.write_model_config(trainer)
+                    model_config_written = True
+                # BaseTrainer logs the epoch start; model config is persisted here
+                # because the model has been constructed by this point.
+
+            def metrics_callback(metrics):
+                metrics = dict(metrics or {})
+                self._last_metrics = metrics
+                recorder.record_metrics(
+                    metrics,
+                    epoch=getattr(trainer, "current_epoch", 0) + 1,
+                )
+
+                loss = metrics.get(
+                    "val_loss", metrics.get("train_loss", metrics.get("loss"))
+                )
+                if loss is not None:
+                    self._queue_ui_value("loss_text", f"Loss: {float(loss):.4f}")
+
+                learning_rate = metrics.get("learning_rate")
+                if learning_rate is not None:
+                    self._queue_ui_value(
+                        "lr_text", f"Learning Rate: {float(learning_rate):.6f}"
+                    )
+
+                map_value = metrics.get("mAP")
+                if map_value is not None:
+                    self._queue_ui_value("map_text", f"mAP: {float(map_value):.4f}")
+
+                accuracy = metrics.get(
+                    "accuracy",
+                    metrics.get(
+                        "train_accuracy",
+                        metrics.get("train_pixel_accuracy"),
+                    ),
+                )
+                if accuracy is not None:
+                    self._queue_ui_value(
+                        "acc_text", f"Accuracy: {float(accuracy):.2f}%"
+                    )
+
+            def progress_callback(epoch, total_epochs, progress):
+                if not self.is_training:
+                    return
+
+                self._queue_ui_value("epoch_progress", float(progress))
+                self._queue_ui_value("epoch_text", f"Epoch {epoch}/{total_epochs}")
+
+                self.log_message(
+                    f"Progress: epoch={epoch}/{total_epochs}, "
+                    f"progress={float(progress) * 100:.1f}%",
+                    "INFO",
+                )
+                self.write_training_status(
+                    job,
+                    "training",
+                    float(progress),
+                    epoch,
+                    metrics=self._last_metrics,
+                )
+                self._export_low_confidence(job, epoch, self._last_metrics)
+
+            trainer.register_callback("on_log_message", trainer_log_callback)
+            trainer.register_callback("on_epoch_start", epoch_start_callback)
+            trainer.register_callback("on_metrics_update", metrics_callback)
+            trainer.register_callback("on_progress_update", progress_callback)
+
+            self.log_message(
+                f"Starting {job['model_type']} training...", "SUCCESS"
+            )
+            trainer.train()
+
+            if not model_config_written:
+                recorder.write_model_config(trainer)
+
             self.log_message(f"Training completed: {job['name']}", "SUCCESS")
-            
-            # Move to completed directory
+            recorder.finalize(
+                status="completed",
+                final_metrics=self._last_metrics,
+                artifacts=recorder.artifact_inventory(),
+            )
+            recorder.write_dataset_reference(dataset_path)
+
             completed_path = self.completed_dir / dataset_path.name
             logger.info(f"Moving dataset to completed: {completed_path}")
             shutil.move(str(dataset_path), str(completed_path))
-            
-            # Write final status
-            self.write_training_status(job, 'completed', 1.0, job['config']['epochs'], metrics=self._last_metrics)
+            job["path"] = str(completed_path)
+            job["config"]["dataset_path"] = str(completed_path)
+            dataset_path = completed_path
+
+            self.write_training_status(
+                job,
+                "completed",
+                1.0,
+                job["config"]["epochs"],
+                metrics=self._last_metrics,
+            )
             self.write_blockchain_export(job, completed_path, self._last_metrics)
-            
-            # Update job status
-            job['status'] = 'Completed'
-            self.training_queue.remove(job)
-            self.update_queue_display()
-            
-        except Exception as e:
-            logger.error(f"Training failed: {e}")
-            self.log_message(f"Training failed: {e}", "ERROR")
-            
-            # Move to failed directory
+
+            job["status"] = "Completed"
+            if job in self.training_queue:
+                self.training_queue.remove(job)
+                self._ui_events.put(("refresh_queue",))
+
+        except Exception as exc:
+            logger.exception("Training failed")
+            self.log_message(f"Training failed: {exc}", "ERROR")
+
+            detail_log = (
+                recorder.log_path
+                if recorder is not None
+                else self.project_root / "src" / "Logs" / "phoenix_trainer.log"
+            )
+            cli_error(logger, "Phoenix | Details: %s", detail_log)
+
+            if recorder is not None:
+                try:
+                    recorder.finalize(
+                        status="failed",
+                        final_metrics=self._last_metrics,
+                        error=str(exc),
+                        artifacts=recorder.artifact_inventory(),
+                    )
+                    if dataset_path.exists():
+                        recorder.write_dataset_reference(dataset_path)
+                except Exception:
+                    logger.exception("Could not finalize Phoenix run record")
+
             try:
-                dataset_path = Path(job['path'])
-                failed_path = self.failed_dir / dataset_path.name
-                logger.info(f"Moving dataset to failed: {failed_path}")
-                shutil.move(str(dataset_path), str(failed_path))
-                
-                # Write error log
-                error_log = failed_path / "training_error.txt"
-                with open(error_log, 'w') as f:
-                    f.write(f"Training failed at {datetime.now().isoformat()}\n")
-                    f.write(f"Error: {str(e)}\n")
-                
-                # Write final status
-                self.write_training_status(job, 'failed', 0.0, error=str(e))
-                
-            except Exception as move_error:
-                logger.error(f"Could not move failed dataset: {move_error}")
-            
-            # Update job status
-            job['status'] = 'Failed'
-            self.training_queue.remove(job)
-            self.update_queue_display()
-        
+                dataset_path = Path(job["path"])
+                if dataset_path.exists():
+                    failed_path = self.failed_dir / dataset_path.name
+                    logger.info(f"Moving dataset to failed: {failed_path}")
+                    shutil.move(str(dataset_path), str(failed_path))
+                    job["path"] = str(failed_path)
+                    job["config"]["dataset_path"] = str(failed_path)
+                    dataset_path = failed_path
+
+                    error_log = failed_path / "training_error.txt"
+                    with open(error_log, "w", encoding="utf-8") as f:
+                        f.write(
+                            f"Training failed at {datetime.now().isoformat()}\n"
+                        )
+                        f.write(f"Error: {exc}\n")
+
+                self.write_training_status(
+                    job, "failed", 0.0, error=str(exc)
+                )
+            except Exception:
+                logger.exception("Could not persist failed training job state")
+
+            job["status"] = "Failed"
+            if job in self.training_queue:
+                self.training_queue.remove(job)
+                self.update_queue_display()
+
         finally:
+            self._active_run_recorder = None
             self.is_training = False
             self.current_job = None
-            dpg.set_value("current_job", "No active training")
-            dpg.set_value("model_type", "N/A")
-    
+            self._queue_ui_value("current_job", "No active training")
+            self._queue_ui_value("model_type", "N/A")
+            if self.auto_exit_after_job:
+                self._ui_events.put(("stop_app",))
+
     def get_training_config(self, job: dict, dataset_path: Path) -> dict:
-        """Get training configuration from UI settings"""
-        return {
-            'dataset_path': str(dataset_path),
-            'dataset_name': job['name'],
-            'model_type': job['model_type'],
-            'output_dir': dpg.get_value("output_dir"),
-            'num_epochs': dpg.get_value("epochs"),
-            'batch_size': dpg.get_value("batch_size"),
-            'learning_rate': dpg.get_value("learning_rate"),
-            'optimizer': dpg.get_value("optimizer"),
-            'weight_decay': dpg.get_value("weight_decay"),
-            'lr_scheduler': dpg.get_value("lr_scheduler"),
-            'warmup_epochs': dpg.get_value("warmup_epochs"),
-            'early_stopping': dpg.get_value("early_stopping"),
-            'early_stop_patience': dpg.get_value("early_stop_patience"),
-            'gradient_clipping': dpg.get_value("gradient_clipping"),
-            'grad_clip_norm': dpg.get_value("grad_clip_norm"),
-            'mixed_precision': dpg.get_value("mixed_precision"),
-            'grad_accumulation': dpg.get_value("grad_accumulation"),
-            'accumulation_steps': dpg.get_value("accumulation_steps"),
-            'dropout': dpg.get_value("dropout"),
-            'label_smoothing': dpg.get_value("label_smoothing"),
-            'device': 'cuda' if 'GPU' in dpg.get_value("device") else 'cpu',
-            'save_best_only': dpg.get_value("save_best_only"),
-            # Data augmentation settings
-            'augmentation': {
-                'rotation': dpg.get_value("aug_rotation"),
-                'flip': dpg.get_value("aug_flip"),
-                'color': dpg.get_value("aug_color"),
-                'crop': dpg.get_value("aug_crop"),
-                'noise': dpg.get_value("aug_noise")
+        """Resolve a run config from UI values plus queued dataset overrides."""
+        dataset_config = job.get("dataset_config", {})
+        saved_training = dataset_config.get("training_config", {})
+        if not isinstance(saved_training, dict):
+            saved_training = {}
+
+        config = {
+            "dataset_path": str(dataset_path),
+            "dataset_name": job["name"],
+            "model_type": job["model_type"],
+            "model_architecture": job.get("model_architecture")
+            or dataset_config.get("model_architecture", ""),
+            "dataset_type": job.get("dataset_type")
+            or dataset_config.get("dataset_type", ""),
+            "pipeline": job.get("pipeline")
+            or dataset_config.get("pipeline", ""),
+            "output_format": dataset_config.get("export_format", ""),
+            "output_dir": dpg.get_value("output_dir"),
+            "epochs": dpg.get_value("epochs"),
+            "batch_size": dpg.get_value("batch_size"),
+            "learning_rate": dpg.get_value("learning_rate"),
+            "optimizer": dpg.get_value("optimizer"),
+            "weight_decay": dpg.get_value("weight_decay"),
+            "lr_scheduler": dpg.get_value("lr_scheduler"),
+            "warmup_epochs": dpg.get_value("warmup_epochs"),
+            "early_stopping": dpg.get_value("early_stopping"),
+            "early_stopping_patience": dpg.get_value("early_stop_patience"),
+            "gradient_clipping": dpg.get_value("gradient_clipping"),
+            "grad_clip_norm": dpg.get_value("grad_clip_norm"),
+            "precision": dpg.get_value("precision").lower(),
+            "mixed_precision": dpg.get_value("precision") != "FP32",
+            "grad_accumulation": dpg.get_value("grad_accumulation"),
+            "accumulation_steps": dpg.get_value("accumulation_steps"),
+            "seed": dpg.get_value("random_seed"),
+            "deterministic": dpg.get_value("deterministic"),
+            "dropout": dpg.get_value("dropout"),
+            "label_smoothing": dpg.get_value("label_smoothing"),
+            "device": "cuda" if "GPU" in dpg.get_value("device") else "cpu",
+            "save_best_only": dpg.get_value("save_best_only"),
+            "checkpoint_interval": dpg.get_value("checkpoint_interval"),
+            "resume_from": dpg.get_value("resume_from").strip() or None,
+            "num_workers": 2,
+            "augmentation": {
+                "rotation": dpg.get_value("aug_rotation"),
+                "flip": dpg.get_value("aug_flip"),
+                "color": dpg.get_value("aug_color"),
+                "crop": dpg.get_value("aug_crop"),
+                "noise": dpg.get_value("aug_noise"),
             },
-            # Advanced flags for uncertainty/active learning and multimodal
-            'enable_uncertainty': dpg.get_value("enable_uncertainty") if dpg.does_item_exist("enable_uncertainty") else False,
-            'enable_active_learning': dpg.get_value("enable_active_learning") if dpg.does_item_exist("enable_active_learning") else False,
-            'extra_modalities': job.get('extra_modalities', {}),  # normals/depth/reflectance/prompt
-            'fusion_mode': job.get('fusion_mode', None),
-            'entropy_threshold': 0.2  # default for active learning export
+            "advanced_monitoring": True,
+            "enable_uncertainty": (
+                dpg.get_value("enable_uncertainty")
+                if dpg.does_item_exist("enable_uncertainty")
+                else False
+            ),
+            "enable_active_learning": (
+                dpg.get_value("enable_active_learning")
+                if dpg.does_item_exist("enable_active_learning")
+                else False
+            ),
+            "extra_modalities": job.get("extra_modalities", {}),
+            "fusion_mode": job.get("fusion_mode"),
+            "entropy_threshold": 0.2,
         }
-    
+
+        # Unattended queue jobs must honor the training configuration exported
+        # with the dataset rather than silently using Trainer UI defaults.
+        if self.auto_start:
+            for key, value in saved_training.items():
+                if value is not None:
+                    config[key] = value
+
+            # Backward compatibility for queue manifests created before explicit
+            # precision selection replaced the mixed_precision boolean.
+            if "precision" not in saved_training and "mixed_precision" in saved_training:
+                config["precision"] = (
+                    "fp16" if bool(saved_training["mixed_precision"]) else "fp32"
+                )
+
+            # Allow a small set of trainer-specific smoke/production overrides at
+            # the dataset root without making the DPG layer model-aware.
+            for key in ("model_name", "pretrained", "num_workers", "advanced_monitoring"):
+                if key in dataset_config:
+                    config[key] = dataset_config[key]
+
+            hardware_hint = str(job.get("hardware_hint", "")).lower()
+            if hardware_hint in {"gpu", "rocm", "cuda"}:
+                config["device"] = "cuda"
+            elif hardware_hint == "cpu":
+                config["device"] = "cpu"
+
+        return config
+
     def create_trainer(self, model_type: str, config: dict):
-        """
-        Create appropriate trainer based on model type and dataset type
-        
-        Handles all 14 dataset types from professional_dataset_selector:
-        - Border Analysis (3 types): Single, 2-Class, Ultra-Precision
-        - Corner Analysis (2 types): Quality, Damage Detection
-        - Surface Analysis (2 types): Defect Detection, Quality Rating
-        - Phoenix Specialized (5 types): Photometric, Multi-Modal, Defect, Centering, Edge
-        - Advanced (1 type): Photometric Surface Normals
-        - Experimental (1 type): Vision-Language Fusion
-        """
+        """Create a verified trainer or fail explicitly for unsupported models."""
         try:
-            # Determine dataset type from config
-            dataset_type = config.get('dataset_type', '')
-            dataset_name = config.get('dataset_name', '')
-            
-            logger.info(f"Creating trainer for model: {model_type}, dataset: {dataset_type}")
-            
-            # BORDER ANALYSIS DATASETS (Detectron2 Mask R-CNN)
-            if any(x in dataset_type for x in ['border_detection', 'border_ultra_precision']) or \
-               any(x in model_type for x in ['Detectron2', 'Mask R-CNN']):
-                from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
-                logger.info("Creating Detectron2 Trainer for Border Detection")
-                # Configure for border-specific training
-                config['task'] = 'instance_segmentation'
-                config['num_classes'] = 2 if '2class' in dataset_type else 1
-                return Detectron2Trainer(config)
-            
-            # CORNER ANALYSIS DATASETS (Vision Transformer for Classification)
-            elif any(x in dataset_type for x in ['corner_quality', 'corner_damage']) or \
-                 any(x in model_type for x in ['Vision Transformer', 'ViT']):
-                from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
-                logger.info("Creating ViT Trainer for Corner Analysis")
-                # Configure for corner classification (4 corners, quality levels)
-                config['task'] = 'classification'
-                config['num_classes'] = 10  # PSA-style 1-10 grading
-                return ViTTrainer(config)
-            
-            # SURFACE ANALYSIS DATASETS (U-Net for Segmentation + Photometric)
-            elif any(x in dataset_type for x in ['surface_defect', 'surface_quality', 'photometric']) or \
-                 'U-Net' in model_type:
-                from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
-                logger.info("Creating U-Net Trainer for Surface Analysis")
-                # Configure for surface defect segmentation
-                config['task'] = 'semantic_segmentation'
-                config['use_photometric'] = 'photometric' in dataset_type
-                # Allow 6-channel mode if normals provided
-                if config.get('extra_modalities') and config['extra_modalities'].get('normals'):
-                    config['input_channels'] = 6
-                return UNetTrainer(config)
-            
-            # CENTERING ANALYSIS (Detectron2 for 24-Point System)
-            elif 'centering' in dataset_type:
-                from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
-                logger.info("Creating Detectron2 Trainer for Centering Analysis")
-                config['task'] = 'keypoint_detection'
-                config['num_keypoints'] = 24  # 24-point centering system
-                return Detectron2Trainer(config)
-            
-            # EDGE DEFINITION (Detectron2 for Edge Precision)
-            elif 'edge_definition' in dataset_type:
-                from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
-                logger.info("Creating Detectron2 Trainer for Edge Definition")
-                config['task'] = 'edge_detection'
-                config['sub_pixel'] = True  # Sub-pixel precision
-                return Detectron2Trainer(config)
-            
-            # MULTI-MODAL FUSION (Ensemble of Multiple Models)
-            elif 'multi_modal' in dataset_type:
-                logger.info("Creating Multi-Modal Ensemble Trainer")
-                # TODO: Implement multi-modal trainer that combines Detectron2 + ViT + U-Net
-                logger.warning("Multi-modal fusion trainer not yet implemented - using Detectron2")
-                from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
-                return Detectron2Trainer(config)
+            from .trainer_registry import create_trainer
+        except ImportError:
+            from modules.phoenix_trainer.trainer_registry import create_trainer
 
-            # VISION-LANGUAGE / PROMPTABLE (FusionSAM / FILM)
-            elif 'vision_language_fusion' in dataset_type or 'FusionSAM' in model_type:
-                logger.info("Creating Vision-Language Fusion Trainer (placeholder)")
-                from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
-                config['task'] = 'promptable_segmentation'
-                config['prompt_supervision'] = True
-                return UNetTrainer(config)
-
-            # LLM META-LEARNER (Multi-Modal)
-            elif 'llm_meta_learner' in dataset_type or 'Meta-Learner' in model_type:
-                logger.info("Creating LLM Meta-Learner Trainer (placeholder)")
-                from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
-                config['task'] = 'multi_modal_explainable'
-                config['bayesian_heads'] = True
-                return ViTTrainer(config)
-            
-            # FUSION PRESETS (DUAL YOLO or YOLO11 + Mask R-CNN)
-            elif config.get('fusion_mode') == 'dual_yolo':
-                logger.info("Creating Dual YOLO Fusion Trainer")
-                from src.modules.phoenix_trainer.trainers.fusion_trainer import FusionTrainer
-                fusion_cfg = config.copy()
-                fusion_cfg['fusion_members'] = ['yolov10x_precision', 'yolov9_gelan']
-                return FusionTrainer(fusion_cfg)
-            elif config.get('fusion_mode') == 'yolo11_maskrcnn':
-                logger.info("Creating YOLO11 + Mask R-CNN Fusion Trainer")
-                from src.modules.phoenix_trainer.trainers.fusion_trainer import FusionTrainer
-                fusion_cfg = config.copy()
-                fusion_cfg['fusion_members'] = ['yolo11s_precision_edge', 'detectron2_professional']
-                return FusionTrainer(fusion_cfg)
-            
-            # DEFECT DETECTION SPECIALIST (Enhanced U-Net)
-            elif 'defect_detection_specialist' in dataset_type:
-                from src.modules.phoenix_trainer.trainers.unet_trainer import UNetTrainer
-                logger.info("Creating Enhanced U-Net for Defect Detection Specialist")
-                config['task'] = 'defect_detection'
-                config['enhanced'] = True
-                return UNetTrainer(config)
-            
-            # VISION-LANGUAGE FUSION (Experimental - BERT + Vision Model)
-            elif 'vision_language' in dataset_type:
-                logger.info("Vision-Language Fusion trainer (Experimental)")
-                # TODO: Implement CLIP-style vision-language model
-                logger.warning("Vision-language fusion trainer not yet implemented - using ViT")
-                from src.modules.phoenix_trainer.trainers.vit_trainer import ViTTrainer
-                return ViTTrainer(config)
-            
-            # FALLBACK: Default to Detectron2
-            else:
-                logger.warning(f"Unknown dataset type '{dataset_type}', defaulting to Detectron2")
-                from src.modules.phoenix_trainer.trainers.detectron2_trainer import Detectron2Trainer
-                return Detectron2Trainer(config)
-                
-        except Exception as e:
-            logger.error(f"Failed to create trainer: {e}")
-            import traceback
-            logger.error(traceback.format_exc())
-            return None
-    
+        return create_trainer(model_type, config)
     def write_training_status(self, job: dict, status: str, progress: float, epoch: int = 0, error: str = None, metrics: dict = None):
         """Write training status to JSON file for queue monitoring"""
         dataset_path = Path(job['path'])
@@ -1185,10 +1396,17 @@ class PhoenixTrainer:
             status_data['metrics'] = metrics
         
         try:
-            with open(status_file, 'w') as f:
-                json.dump(status_data, f, indent=2)
-        except Exception as e:
-            logger.error(f"Could not write training status: {e}")
+            atomic_write_json(status_file, status_data, indent=2)
+        except Exception as exc:
+            logger.exception("Could not write training status")
+            cli_error(
+                logger,
+                "Phoenix | ERROR: Could not publish training status: %s",
+                exc,
+            )
+            recorder = getattr(self, "_active_run_recorder", None)
+            if recorder is not None:
+                cli_error(logger, "Phoenix | Details: %s", recorder.log_path)
 
     def write_blockchain_export(self, job: dict, dataset_path: Path, metrics: dict = None):
         """Write blockchain/NFC-ready export stub for digital twin."""
@@ -1289,59 +1507,140 @@ class PhoenixTrainer:
         self.update_queue_display()
         self.log_message(f"Removed job #{job_id} from queue", "INFO")
     
-    def log_message(self, message: str, level: str = "INFO"):
-        """Add message to training log with color-coded output"""
+    def _queue_ui_value(self, tag: str, value):
+        """Publish a widget-value update from a training worker."""
+        self._ui_events.put(("set_value", tag, value))
+
+    def _append_log_to_ui(self, message: str, level: str):
+        """Render a log line. This method is only called on the main thread."""
         color_map = {
-            "INFO": self.theme_colors['text'],
-            "SUCCESS": self.theme_colors['success'],
-            "WARNING": self.theme_colors['warning'],
-            "ERROR": self.theme_colors['error']
+            "DEBUG": self.theme_colors["text_dim"],
+            "INFO": self.theme_colors["text"],
+            "SUCCESS": self.theme_colors["success"],
+            "WARNING": self.theme_colors["warning"],
+            "ERROR": self.theme_colors["error"],
+            "CRITICAL": self.theme_colors["error"],
         }
-        
-        color = color_map.get(level, self.theme_colors['text'])
-        
-        # Add to log window with timestamp and color
         timestamp = datetime.now().strftime("%H:%M:%S")
         log_text = f"[{timestamp}] {message}"
-        
-        # Add colored text to log window
         if dpg.does_item_exist("training_log"):
-            dpg.add_text(log_text, color=color, parent="training_log")
-        
-        # Also log to console
-        logger.log(getattr(logging, level), message)
-    
+            dpg.add_text(
+                log_text,
+                color=color_map.get(level, self.theme_colors["text"]),
+                parent="training_log",
+            )
+
+    def _drain_ui_events(self):
+        """Apply worker-originated UI events on the Dear PyGui main thread."""
+        while True:
+            try:
+                event = self._ui_events.get_nowait()
+            except queue.Empty:
+                break
+
+            kind = event[0]
+            if kind == "set_value":
+                _, tag, value = event
+                if dpg.does_item_exist(tag):
+                    dpg.set_value(tag, value)
+            elif kind == "log":
+                _, message, level = event
+                self._append_log_to_ui(message, level)
+            elif kind == "refresh_queue":
+                self.update_queue_display()
+            elif kind == "stop_app":
+                dpg.stop_dearpygui()
+
+    def log_message(
+        self,
+        message: str,
+        level: str = "INFO",
+        *,
+        cli: bool = False,
+    ):
+        """Write full detail to Phoenix logs/UI; keep the operator CLI sparse."""
+        normalized_level = str(level).upper()
+        logging_levels = {
+            "DEBUG": logging.DEBUG,
+            "INFO": logging.INFO,
+            "SUCCESS": logging.INFO,
+            "WARNING": logging.WARNING,
+            "ERROR": logging.ERROR,
+            "CRITICAL": logging.CRITICAL,
+        }
+        if normalized_level not in logging_levels:
+            raise ValueError(f"Unsupported Phoenix log level: {level}")
+
+        console_visible = cli or normalized_level in {
+            "WARNING",
+            "ERROR",
+            "CRITICAL",
+        }
+        logger.log(
+            logging_levels[normalized_level],
+            message,
+            extra={"phoenix_cli": console_visible},
+        )
+
+        recorder = getattr(self, "_active_run_recorder", None)
+        if recorder is not None:
+            try:
+                recorder.log(message, normalized_level)
+            except Exception:
+                logger.exception("Could not append to Phoenix run log")
+
+        if threading.current_thread() is threading.main_thread():
+            self._append_log_to_ui(message, normalized_level)
+        else:
+            self._ui_events.put(("log", message, normalized_level))
     def run(self):
-        """Start the trainer application"""
+        """Start the trainer application."""
         self.setup_dpg()
-        
-        # Main loop
+
         while dpg.is_dearpygui_running():
+            callback_jobs = dpg.get_callback_queue()
+            if callback_jobs:
+                dpg.run_callbacks(callback_jobs)
+
+            self._drain_ui_events()
             dpg.render_dearpygui_frame()
-        
+
         dpg.destroy_context()
 
 
 def main():
-    """Launch Phoenix Trainer"""
-    # Parse command-line arguments
+    """Launch Phoenix Trainer."""
     parser = argparse.ArgumentParser(description="TruScore Phoenix Trainer")
     parser.add_argument(
-        '--dataset',
+        "--dataset",
         type=str,
-        help='Path to dataset directory (from training queue)'
+        help="Path to dataset directory (from training queue)",
+    )
+    parser.add_argument(
+        "--auto-start",
+        action="store_true",
+        help="Start the supplied queued dataset immediately after Phoenix opens.",
+    )
+    parser.add_argument(
+        "--auto-exit",
+        action="store_true",
+        help="Close Phoenix automatically after the queued job finishes or fails.",
     )
     args = parser.parse_args()
-    
+
     logger.info("=" * 60)
     logger.info("TruScore Phoenix Trainer - Starting")
     logger.info("The Ultimate Training System")
     logger.info("=" * 60)
-    
+
     if args.dataset:
         logger.info(f"Loading dataset from queue: {args.dataset}")
-    
-    trainer = PhoenixTrainer(dataset_path=args.dataset)
+
+    trainer = PhoenixTrainer(
+        dataset_path=args.dataset,
+        auto_start=args.auto_start,
+        auto_exit_after_job=args.auto_exit,
+    )
     trainer.run()
 
 

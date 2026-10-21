@@ -17,12 +17,12 @@ import os
 
 # Import enterprise features
 try:
-    from src.modules.phoenix_trainer.utils.advanced_monitoring import AdvancedMonitor
-    from src.modules.phoenix_trainer.utils.advanced_training_features import EarlyStopping, MixedPrecisionManager
+    from ..utils.advanced_monitoring import AdvancedMonitor
+    from ..utils.advanced_training_features import EarlyStopping
     ENTERPRISE_FEATURES_AVAILABLE = True
-except ImportError:
+except ImportError as exc:
     ENTERPRISE_FEATURES_AVAILABLE = False
-    logging.warning("Enterprise features not available")
+    logging.warning("Enterprise features not available: %s", exc)
 
 # Import Guru integration
 try:
@@ -32,6 +32,14 @@ try:
 except ImportError:
     GURU_AVAILABLE = False
     logging.warning("Guru integration not available")
+
+from ..training_runtime import (
+    capture_rng_state,
+    metric_improved,
+    restore_rng_state,
+    seed_everything,
+    select_monitor_metric,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +72,18 @@ class BaseTrainer(ABC):
         
         # Training state
         self.current_epoch = 0
+        self.start_epoch = 0
         self.current_iteration = 0
-        self.best_metric = 0.0
+        self.best_metric: Optional[float] = None
+        self.monitor_metric_name: Optional[str] = None
+        self.monitor_mode: Optional[str] = None
         self.is_training = False
         self.is_paused = False
+
+        # Reproducibility is owned by the shared runtime contract.
+        self.seed = int(config.get("seed", 42))
+        self.deterministic = bool(config.get("deterministic", True))
+        seed_everything(self.seed, self.deterministic)
         
         # Callbacks for UI updates
         self.callbacks = {
@@ -89,7 +105,7 @@ class BaseTrainer(ABC):
         # Enterprise features
         self.advanced_monitor = None
         self.early_stopping = None
-        self.mixed_precision = None
+        self.early_stopping_enabled = bool(config.get("early_stopping", True))
         
         # Initialize enterprise features if available
         if ENTERPRISE_FEATURES_AVAILABLE:
@@ -100,38 +116,151 @@ class BaseTrainer(ABC):
         logger.info(f"Output: {self.output_dir}")
     
     def _setup_enterprise_features(self):
-        """Initialize enterprise monitoring and training features"""
+        """Initialize monitoring; runtime precision and early stopping are separate."""
         try:
-            # Advanced monitoring (TensorBoard + WandB)
-            experiment_name = f"{self.__class__.__name__}_{self.dataset_path.name}"
-            self.advanced_monitor = AdvancedMonitor(
-                log_dir=self.output_dir / "logs",
-                experiment_name=experiment_name,
-                config=self.config
-            )
-            logger.info("✅ Advanced monitoring enabled (TensorBoard + WandB)")
-            
-            # Early stopping
-            patience = self.config.get('early_stopping_patience', 10)
-            self.early_stopping = EarlyStopping(
-                patience=patience,
-                min_delta=0.001,
-                mode='max',
-                save_path=self.output_dir / "best_model_early_stop.pth"
-            )
-            logger.info(f"✅ Early stopping enabled (patience={patience})")
-            
-            # Mixed precision training
-            if self.config.get('mixed_precision', True):
-                self.mixed_precision = MixedPrecisionManager(enabled=True)
-                logger.info("✅ Mixed precision training enabled (FP16)")
-            
+            if self.config.get("advanced_monitoring", True):
+                experiment_name = f"{self.__class__.__name__}_{self.dataset_path.name}"
+                self.advanced_monitor = AdvancedMonitor(
+                    log_dir=self.output_dir / "logs",
+                    experiment_name=experiment_name,
+                    config=self.config,
+                )
+                logger.info("Advanced monitoring enabled")
+            else:
+                self.advanced_monitor = None
+                logger.info("Advanced monitoring disabled")
+
+            # Early stopping is initialized lazily after validation establishes
+            # the monitored metric and its min/max direction.
+            self.early_stopping = None
+
         except Exception as e:
-            logger.warning(f"Failed to initialize enterprise features: {e}")
+            logger.warning(f"Failed to initialize enterprise monitoring: {e}")
             self.advanced_monitor = None
             self.early_stopping = None
-            self.mixed_precision = None
-    
+
+    def _ensure_early_stopping(self, mode: str):
+        """Create early stopping once the monitored metric direction is known."""
+        if (
+            not ENTERPRISE_FEATURES_AVAILABLE
+            or not self.early_stopping_enabled
+            or self.early_stopping is not None
+        ):
+            return
+
+        patience = int(self.config.get("early_stopping_patience", 10))
+        self.early_stopping = EarlyStopping(
+            patience=patience,
+            min_delta=float(self.config.get("early_stopping_min_delta", 0.001)),
+            mode=mode,
+            save_path=self.output_dir / "best_model_early_stop.pth",
+        )
+        logger.info(
+            "Early stopping enabled (patience=%s, mode=%s)",
+            patience,
+            mode,
+        )
+
+    def get_profile_input_size(self):
+        """Return a model-appropriate profiling tensor shape."""
+        channels = int(getattr(self, "in_channels", 3))
+        size = int(getattr(self, "image_size", 224))
+        return (channels, size, size)
+
+    def build_common_checkpoint_payload(self) -> Dict[str, Any]:
+        """Build the shared checkpoint state used by ordinary PyTorch trainers."""
+        runtime = getattr(self, "training_runtime", None)
+        return {
+            "epoch": self.current_epoch,
+            "model_state_dict": self.model.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict(),
+            "scheduler_state_dict": (
+                self.scheduler.state_dict()
+                if getattr(self, "scheduler", None) is not None
+                else None
+            ),
+            "runtime_state_dict": (
+                runtime.state_dict() if runtime is not None else None
+            ),
+            "rng_state": capture_rng_state(),
+            "best_metric": self.best_metric,
+            "monitor_metric": self.monitor_metric_name,
+            "monitor_mode": self.monitor_mode,
+            "metrics_history": self.metrics_history,
+            "early_stopping_state": (
+                {
+                    "counter": self.early_stopping.counter,
+                    "best_score": self.early_stopping.best_score,
+                    "early_stop": self.early_stopping.early_stop,
+                }
+                if self.early_stopping is not None
+                else None
+            ),
+            "config": self.config,
+        }
+
+    def load_checkpoint(self, filepath: Path) -> None:
+        """Resume model, optimizer, scheduler, scaler, metrics, and RNG state."""
+        import torch
+
+        filepath = Path(filepath)
+        if not filepath.exists():
+            raise FileNotFoundError(f"Resume checkpoint not found: {filepath}")
+
+        self.log(f"Loading checkpoint: {filepath}", "INFO")
+        checkpoint = torch.load(
+            filepath,
+            # CPU RNG snapshots must remain ByteTensors on CPU; model and optimizer
+            # load_state_dict() restore parameters/state to their configured devices.
+            map_location="cpu",
+            weights_only=False,
+        )
+
+        self.model.load_state_dict(checkpoint["model_state_dict"])
+        self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+
+        scheduler_state = checkpoint.get("scheduler_state_dict")
+        if scheduler_state is not None and getattr(self, "scheduler", None) is not None:
+            self.scheduler.load_state_dict(scheduler_state)
+
+        runtime_state = checkpoint.get("runtime_state_dict")
+        runtime = getattr(self, "training_runtime", None)
+        if runtime_state and runtime is not None:
+            runtime.load_state_dict(runtime_state)
+
+        self.best_metric = checkpoint.get("best_metric")
+        self.monitor_metric_name = checkpoint.get("monitor_metric")
+        self.monitor_mode = checkpoint.get("monitor_mode")
+        self.metrics_history = checkpoint.get(
+            "metrics_history",
+            self.metrics_history,
+        )
+
+        early_state = checkpoint.get("early_stopping_state")
+        if early_state and self.monitor_mode:
+            self._ensure_early_stopping(self.monitor_mode)
+            if self.early_stopping is not None:
+                self.early_stopping.counter = int(early_state.get("counter", 0))
+                self.early_stopping.best_score = early_state.get("best_score")
+                self.early_stopping.early_stop = bool(
+                    early_state.get("early_stop", False)
+                )
+                # Best weights are persisted separately by EarlyStopping; avoid
+                # duplicating a full model state inside every resume checkpoint.
+                self.early_stopping.best_model_state = None
+
+        if checkpoint.get("rng_state"):
+            restore_rng_state(checkpoint["rng_state"])
+
+        saved_epoch = int(checkpoint.get("epoch", -1))
+        self.current_epoch = max(saved_epoch, 0)
+        self.start_epoch = saved_epoch + 1
+
+        self.log(
+            f"Checkpoint restored; resuming at epoch {self.start_epoch + 1}",
+            "SUCCESS",
+        )
+
     def register_callback(self, event: str, callback: Callable):
         """Register callback for training events"""
         if event in self.callbacks:
@@ -139,10 +268,22 @@ class BaseTrainer(ABC):
             logger.debug(f"Registered callback for: {event}")
     
     def log(self, message: str, level: str = "INFO"):
-        """Log message and call log callback"""
-        logger.log(getattr(logging, level), message)
+        """Log a trainer message and preserve Phoenix's UI-level labels."""
+        normalized_level = str(level).upper()
+        log_levels = {
+            "DEBUG": logging.DEBUG,
+            "INFO": logging.INFO,
+            "SUCCESS": logging.INFO,
+            "WARNING": logging.WARNING,
+            "ERROR": logging.ERROR,
+            "CRITICAL": logging.CRITICAL,
+        }
+        if normalized_level not in log_levels:
+            raise ValueError(f"Unsupported Phoenix log level: {level}")
+
+        logger.log(log_levels[normalized_level], message)
         if self.callbacks['on_log_message']:
-            self.callbacks['on_log_message'](message, level)
+            self.callbacks['on_log_message'](message, normalized_level)
     
     def update_progress(self, epoch: int, total_epochs: int, progress: float):
         """Update progress and call progress callback"""
@@ -213,13 +354,17 @@ class BaseTrainer(ABC):
             self.log("Building model...", "INFO")
             self.build_model()
             self.log("Model built successfully", "SUCCESS")
+
+            resume_from = self.config.get("resume_from")
+            if resume_from:
+                self.load_checkpoint(Path(resume_from))
             
             # Profile model with advanced monitoring
             if self.advanced_monitor:
                 self.log("Profiling model...", "INFO")
                 profile_results = self.advanced_monitor.profile_model(
                     self.model if hasattr(self, 'model') else None,
-                    input_size=(3, 224, 224)  # Override in subclass if needed
+                    input_size=self.get_profile_input_size()
                 )
                 self.log(f"Model parameters: {profile_results.get('total_parameters', 'N/A')}", "INFO")
                 self.log(f"Model FLOPs: {profile_results.get('gflops', 'N/A')} GFLOPs", "INFO")
@@ -242,7 +387,7 @@ class BaseTrainer(ABC):
                     }
                 )
             
-            for epoch in range(total_epochs):
+            for epoch in range(self.start_epoch, total_epochs):
                 if not self.is_training:
                     self.log("Training stopped by user", "WARNING")
                     break
@@ -259,6 +404,7 @@ class BaseTrainer(ABC):
                     self.callbacks['on_epoch_start'](epoch)
                 
                 self.log(f"Epoch {epoch + 1}/{total_epochs}", "INFO")
+                epoch_started_at = time.time()
                 
                 # Train one epoch - REAL TRAINING HAPPENS HERE
                 train_metrics = self.train_epoch()
@@ -268,6 +414,7 @@ class BaseTrainer(ABC):
                 
                 # Combine metrics
                 all_metrics = {**train_metrics, **val_metrics}
+                all_metrics["epoch_time"] = time.time() - epoch_started_at
                 self.update_metrics(all_metrics)
                 
                 # Log to advanced monitoring
@@ -288,41 +435,83 @@ class BaseTrainer(ABC):
                         epoch=epoch + 1,
                         training_loss=train_metrics.get('loss', train_metrics.get('train_loss', 0.0)),
                         validation_loss=val_metrics.get('loss', val_metrics.get('val_loss', 0.0)),
-                        training_accuracy=train_metrics.get('accuracy', train_metrics.get('mAP', 0.0)),
-                        validation_accuracy=val_metrics.get('accuracy', val_metrics.get('mAP', val_metrics.get('IoU', 0.0))),
+                        training_accuracy=train_metrics.get(
+                            'train_accuracy',
+                            train_metrics.get(
+                                'train_pixel_accuracy',
+                                train_metrics.get('accuracy', 0.0),
+                            ),
+                        ),
+                        validation_accuracy=val_metrics.get('accuracy', 0.0),
                         time_per_epoch=epoch_time,
                         metadata={'all_metrics': all_metrics}
                     )
                 
-                # Save best model
-                metric_value = val_metrics.get('mAP', val_metrics.get('accuracy', val_metrics.get('IoU', val_metrics.get('val_loss', 0))))
-                if metric_value > self.best_metric:
+                # Resolve the monitored validation metric and its direction.
+                metric_name, metric_value, metric_mode = select_monitor_metric(
+                    val_metrics,
+                    self.config,
+                )
+                self.monitor_metric_name = metric_name
+                self.monitor_mode = metric_mode
+                self._ensure_early_stopping(metric_mode)
+
+                is_best = metric_improved(
+                    metric_value,
+                    self.best_metric,
+                    metric_mode,
+                )
+
+                # Update early-stopping state before writing a checkpoint so a
+                # resumed run preserves patience/counter state exactly.
+                early_stopped = False
+                if self.early_stopping:
+                    early_stopped = self.early_stopping(
+                        metric_value,
+                        self.model if hasattr(self, 'model') else None,
+                    )
+
+                if is_best:
                     self.best_metric = metric_value
                     best_path = self.output_dir / "best_model.pth"
                     self.save_checkpoint(best_path)
-                    self.log(f"Saved best model: {metric_value:.4f}", "SUCCESS")
-                    
+                    self.log(
+                        f"Saved best model: {metric_name}={metric_value:.4f} "
+                        f"({metric_mode})",
+                        "SUCCESS",
+                    )
+
                     # GURU EVENT #3: Checkpoint Saved
                     if GURU_AVAILABLE:
                         guru.send_checkpoint_saved(
                             checkpoint_path=str(best_path),
-                            validation_accuracy=metric_value,
+                            validation_accuracy=val_metrics.get('accuracy', 0.0),
                             is_best=True,
                             epoch=epoch + 1,
-                            metadata={'checkpoint_type': 'best_model'}
+                            metadata={
+                                'checkpoint_type': 'best_model',
+                                'monitor_metric': metric_name,
+                                'monitor_mode': metric_mode,
+                                'monitor_value': metric_value,
+                            }
                         )
-                
-                # Check early stopping
-                if self.early_stopping:
-                    if self.early_stopping(metric_value, self.model if hasattr(self, 'model') else None):
-                        self.log("Early stopping triggered - restoring best model", "WARNING")
-                        if hasattr(self, 'model'):
-                            self.early_stopping.restore_best_model(self.model)
-                        break
-                
-                # Save checkpoint every N epochs
-                if (epoch + 1) % 10 == 0:
-                    checkpoint_path = self.output_dir / f"checkpoint_epoch_{epoch + 1}.pth"
+
+                if early_stopped:
+                    self.log(
+                        "Early stopping triggered - restoring best model",
+                        "WARNING",
+                    )
+                    if hasattr(self, 'model'):
+                        self.early_stopping.restore_best_model(self.model)
+                    break
+
+                checkpoint_interval = int(
+                    self.config.get("checkpoint_interval", 10)
+                )
+                if checkpoint_interval > 0 and (epoch + 1) % checkpoint_interval == 0:
+                    checkpoint_path = (
+                        self.output_dir / f"checkpoint_epoch_{epoch + 1}.pth"
+                    )
                     self.save_checkpoint(checkpoint_path)
                 
                 # Update progress
@@ -340,15 +529,22 @@ class BaseTrainer(ABC):
             # GURU EVENT #4: Training Completed
             if GURU_AVAILABLE:
                 converged = self.early_stopping.early_stop if self.early_stopping else (self.current_epoch >= total_epochs - 1)
+                final_accuracy_history = self.metrics_history.get("accuracy", [])
                 guru.send_training_completed(
-                    final_accuracy=self.best_metric,
+                    final_accuracy=(
+                        final_accuracy_history[-1]
+                        if final_accuracy_history
+                        else 0.0
+                    ),
                     total_epochs=self.current_epoch + 1,
                     total_time=elapsed,
                     final_model_path=str(self.output_dir / "best_model.pth"),
                     converged=converged,
                     metadata={
                         'final_metrics': self.metrics_history,
-                        'best_metric': self.best_metric
+                        'best_metric': self.best_metric,
+                        'monitor_metric': self.monitor_metric_name,
+                        'monitor_mode': self.monitor_mode,
                     }
                 )
             

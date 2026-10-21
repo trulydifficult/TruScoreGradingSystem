@@ -1,0 +1,80 @@
+{
+  "schema": "dual_contour_proposal_v1",
+  "image_file": "card067.jpg",
+  "image_width": 1603,
+  "image_height": 2192,
+  "image_sha256": "34414da72e19a95f9c3bec2b70afc5d41179c1f58b4d67bcb2fac8f521dc1041",
+  "coordinate_frame": "exported_rotated_image_pixels",
+  "rotation_degrees": 0.0,
+  "segmentation_ground_truth": false,
+  "annotations": [
+    {
+      "x1": 43.917808219178085,
+      "y1": 32.93835616438356,
+      "x2": 1556.3373287671234,
+      "y2": 2149.2277397260273,
+      "class_id": 0,
+      "confidence": 0.9687520265579224,
+      "label": "outer_border",
+      "human_corrected": true,
+      "correction_timestamp": "2026-10-18T13:41:25.483457",
+      "detection_method": "AI",
+      "metadata": {},
+      "geometry_format": "quad_v1",
+      "vertices": [
+        [
+          43.917808219178085,
+          32.93835616438356
+        ],
+        [
+          1556.3373287671234,
+          38.428082191780824
+        ],
+        [
+          1553.5924657534247,
+          2149.2277397260273
+        ],
+        [
+          46.66267123287671,
+          2143.7380136986303
+        ]
+      ],
+      "human_reviewed": false,
+      "segmentation_ground_truth": false
+    },
+    {
+      "x1": 126.40557861328125,
+      "y1": 104.30479452054794,
+      "x2": 1476.736301369863,
+      "y2": 2083.35102739726,
+      "class_id": 1,
+      "confidence": 0.9666006565093994,
+      "label": "inner_border",
+      "human_corrected": true,
+      "correction_timestamp": "2026-10-18T13:42:52.442365",
+      "detection_method": "AI",
+      "metadata": {},
+      "geometry_format": "quad_v1",
+      "vertices": [
+        [
+          139.98801369863014,
+          104.30479452054794
+        ],
+        [
+          1476.736301369863,
+          107.04965753424658
+        ],
+        [
+          1473.9914383561643,
+          2083.35102739726
+        ],
+        [
+          126.40557861328125,
+          2079.7734375
+        ]
+      ],
+      "human_reviewed": false,
+      "segmentation_ground_truth": false
+    }
+  ]
+}

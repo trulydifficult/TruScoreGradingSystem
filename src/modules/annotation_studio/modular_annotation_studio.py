@@ -16,12 +16,18 @@ from typing import Optional, List, Dict, Any
 
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
-    QFrame, QLabel, QPushButton, QApplication, QSlider, QSizePolicy, QComboBox, QGroupBox
+    QFrame, QLabel, QPushButton, QApplication, QSlider, QSizePolicy, QComboBox, QGroupBox,
+    QFileDialog, QMessageBox, QInputDialog
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject
 from PyQt6.QtGui import QKeySequence, QFont, QShortcut, QImage, QPixmap
 
 from modules.annotation_studio.static_background import StaticBackgroundImage
+from modules.annotation_studio.magnifier_geometry import MagnifierViewport
+from modules.annotation_studio.existing_label_sessions import (
+    AnnotationBatchError, build_session, read_session, save_session,
+    record_completed, next_pending,
+)
 try:
     from . import annotation_logger as logger
 except ImportError:  # Fallback for direct execution
@@ -156,14 +162,24 @@ class ModularAnnotationStudio(QMainWindow):
 
 
         # Core data
+        # The canvas receives mouse events before a card is loaded. Keep an
+        # explicit empty original-image state so coordinate transforms are safe.
+        self.original_image = None
         self.current_image = None
         self.current_image_path = None
         self.image_files = []
         self.current_index = 0
+        self._successfully_saved_indices = set()
+        self._annotation_complete = False
+        self._existing_label_mode = False
+        self._pending_label_sources = []
+        self._existing_batch_state = None
+        self._choose_for_labels = False
         self.rotation_angle = 0.0  # For our beautiful rotation controls
         
         # Magnifier settings - DEFAULT TO 2X
         self.current_magnification = 2
+        self._magnifier_locked_center = None
         
         # UI components (will be created in setup_ui)
         self.core_panel = None
@@ -413,8 +429,14 @@ class ModularAnnotationStudio(QMainWindow):
             self.plugin_settings_container = controls_frame
             self.plugin_settings_layout = controls_layout
             
-            left_layout.addWidget(controls_frame)
-            left_layout.addStretch()  # Push content to top
+            # Let the plugin frame use ALL remaining vertical space in
+            # the left column, matching the nearly full-height image and
+            # magnifier panels. The plugin's own QScrollArea remains a
+            # fallback if the operator makes the window smaller.
+            controls_frame.setSizePolicy(
+                QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding
+            )
+            left_layout.addWidget(controls_frame, 1)
             
             left_panel.setMinimumWidth(300)  # Substantial width for functions
             return left_panel
@@ -580,6 +602,15 @@ class ModularAnnotationStudio(QMainWindow):
         
         mag_controls.addWidget(self.mag_2x_btn)
         mag_controls.addWidget(self.mag_4x_btn)
+        self.magnifier_follow_btn = QPushButton("Follow Cursor")
+        self.magnifier_follow_btn.setToolTip(
+            "Unlock last edited area; click another handle to lock it again"
+        )
+        self.magnifier_follow_btn.setStyleSheet(get_quantum_button_style())
+        self.magnifier_follow_btn.clicked.connect(self.unlock_precision_magnifier)
+        # No additional vertical row: preserve the existing 400px magnifier
+        # in the operator's height-constrained workstation window.
+        mag_controls.addWidget(self.magnifier_follow_btn)
         magnifier_layout.addLayout(mag_controls)
         
         layout.addWidget(magnifier_frame, 1)  # Magnifier at bottom
@@ -644,7 +675,39 @@ class ModularAnnotationStudio(QMainWindow):
         load_layout.addWidget(self.card_counter)
         
         controls_layout.addWidget(load_group)
-        
+
+        # Explicit label-first workflow; never repurpose the normal Load Cards.
+        prior_group = QGroupBox("Previously Annotated Cards")
+        prior_group.setStyleSheet(load_group.styleSheet())
+        prior_layout = QVBoxLayout(prior_group)
+        self.label_files_button = QPushButton("1. Select YOLO Label Files")
+        self.label_files_button.clicked.connect(self.select_existing_labels)
+        prior_layout.addWidget(self.label_files_button)
+        self.label_images_button = QPushButton("2. Select Matching Images")
+        self.label_images_button.clicked.connect(self.select_existing_images)
+        prior_layout.addWidget(self.label_images_button)
+        self.resume_session_button = QPushButton("Resume Interrupted Batch")
+        self.resume_session_button.clicked.connect(self.resume_existing_batch)
+        prior_layout.addWidget(self.resume_session_button)
+        self.existing_label_progress = QLabel("Select labels to correct an existing dataset")
+        self.existing_label_progress.setWordWrap(True)
+        self.existing_label_progress.setStyleSheet(
+            f"color: {TruScoreTheme.GHOST_WHITE}; font-size: 9px;"
+        )
+        prior_layout.addWidget(self.existing_label_progress)
+        controls_layout.addWidget(prior_group)
+
+        # Studio-wide review, NOT a border-plugin preference. A plugin may
+        # opt in by providing a saved review candidate; all confirmation,
+        # validation and review persistence use one shared implementation.
+        self.review_saved_button = QPushButton("Review Saved Annotation")
+        self.review_saved_button.setToolTip(
+            "Visually review saved annotation fidelity; creates a source-bound "
+            "receipt, not segmentation masks or training-ready labels"
+        )
+        self.review_saved_button.clicked.connect(self.review_saved_annotation)
+        controls_layout.addWidget(self.review_saved_button)
+
         # ZOOM CONTROLS SECTION
         zoom_group = QGroupBox("Zoom Controls")
         zoom_group.setStyleSheet(f"""
@@ -698,6 +761,72 @@ class ModularAnnotationStudio(QMainWindow):
         self.zoom_level = 0.5
         self.fit_mode = True
     
+    def review_saved_annotation(self):
+        """Generic Studio approval UI for any plugin with a review candidate.
+
+        No border-specific class logic or geometry rules belong here. The
+        active plugin identifies only its *saved* artifact; the shared
+        validator registry provides component names and checks provenance.
+        """
+        from shared.dataset_tools.annotation_review import (
+            AnnotationReviewError, inspect_candidate, save_attestation,
+        )
+        plugin = getattr(self, "current_plugin", None)
+        if plugin is None or not hasattr(plugin, "get_review_candidate"):
+            QMessageBox.warning(self, "Annotation Review",
+                                "Choose a plugin and load a saved annotation first.")
+            return False
+        try:
+            candidate = plugin.get_review_candidate()
+            if candidate is None:
+                raise AnnotationReviewError(
+                    "This plugin does not currently support saved-annotation review"
+                )
+            spec = inspect_candidate(candidate)
+        except (AnnotationReviewError, OSError, ValueError, TypeError, KeyError) as exc:
+            QMessageBox.warning(self, "Annotation Review Unavailable", str(exc))
+            return False
+
+        reviewer, accepted = QInputDialog.getText(
+            self, "Review Saved Annotation",
+            "Reviewer name or identifier (required):"
+        )
+        if not accepted:
+            return False
+        if not reviewer.strip():
+            QMessageBox.warning(self, "Annotation Review",
+                                "A reviewer identifier is required.")
+            return False
+
+        checked = []
+        for component in spec["components"]:
+            outcome = QMessageBox.question(
+                self, "Verify Saved Contour: " + component,
+                f"Inspect {component.replace('_', ' ')} on the CURRENT saved card.\n\n"
+                "Confirm that you personally examined the visible boundary "
+                "and that its saved geometry follows the true boundary "
+                "closely enough for your intended supervision.\n\n"
+                "If four vertices omit curvature or damage, select No. "
+                "Do not approve an uninspected or merely AI-suggested contour.",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if outcome != QMessageBox.StandardButton.Yes:
+                return False
+            checked.append(component)
+        try:
+            receipt = save_attestation(candidate, reviewer, checked)
+        except (AnnotationReviewError, OSError, ValueError, TypeError) as exc:
+            QMessageBox.warning(self, "Annotation Review Not Saved", str(exc))
+            return False
+        QMessageBox.information(
+            self, "Annotation Review Recorded",
+            f"Source-bound review receipt saved:\n{receipt}\n\n"
+            "The existing annotation remains unchanged. This receipt is "
+            "NOT yet a segmentation-training mask or model accuracy proof.",
+        )
+        return True
+
     # Placeholder methods for buttons (will be replaced with full implementation)
     def load_images_placeholder(self):
         """FIXED: Card loading using modern file browser - COPIED PATTERNS FROM WORKING BORDER_CALIBRATION.PY"""
@@ -715,9 +844,21 @@ class ModularAnnotationStudio(QMainWindow):
                 file_paths = browser.selected_files
                 
                 if file_paths:
+                    if getattr(self, "_choose_for_labels", False):
+                        self._begin_existing_batch(file_paths)
+                        return
+                    self._existing_label_mode = False
+                    self._existing_batch_state = None
+                    widget = getattr(self, "current_plugin_widget", None)
+                    if widget is not None:
+                        widget.external_label_mode = False
+                        if hasattr(widget, "run_detection_btn"):
+                            widget.run_detection_btn.setEnabled(True)
                     # CRITICAL: Store files exactly like working border_calibration.py
                     self.image_files = file_paths
                     self.current_index = 0
+                    self._successfully_saved_indices = set()
+                    self._annotation_complete = False
                     
                     self.logger.info(f"Loaded {len(file_paths)} cards successfully")
                     
@@ -736,6 +877,158 @@ class ModularAnnotationStudio(QMainWindow):
         except Exception as e:
             self.logger.error(f"Card loading failed: {e}")
 
+    def _update_existing_progress(self):
+        label = getattr(self, "existing_label_progress", None)
+        if label is None:
+            return
+        state = getattr(self, "_existing_batch_state", None)
+        if state is None:
+            files = getattr(self, "_pending_label_sources", [])
+            label.setText(f"{len(files)} labels selected; choose images"
+                          if files else "Select labels to correct an existing dataset")
+            return
+        count = len(state["completed"])
+        total = len(state["image_files"])
+        upcoming = next_pending(state)
+        label.setText(f"{count}/{total} confirmed saved; "
+                      + (f"resume at card {upcoming + 1}" if upcoming is not None
+                         else "all cards saved"))
+
+    def select_existing_labels(self):
+        files, _ = QFileDialog.getOpenFileNames(
+            self, "Select Combined Outer/Graphic YOLO Labels",
+            str(Path.home()), "YOLO labels (*.txt)"
+        )
+        if not files:
+            return
+        self._pending_label_sources = files
+        self._existing_batch_state = None
+        self._existing_label_mode = True
+        widget = getattr(self, "current_plugin_widget", None)
+        if widget is not None:
+            widget.external_label_mode = True
+            widget._auto_request_token = getattr(widget, "_auto_request_token", 0) + 1
+            if hasattr(widget, "run_detection_btn"):
+                widget.run_detection_btn.setEnabled(False)
+        self._update_existing_progress()
+
+    def select_existing_images(self):
+        if not getattr(self, "_pending_label_sources", None):
+            QMessageBox.warning(self, "Select Labels First",
+                                "Select your combined dual-class YOLO labels before images.")
+            return False
+        self._choose_for_labels = True
+        try:
+            return self.load_images_placeholder()
+        finally:
+            self._choose_for_labels = False
+
+    def _ensure_existing_label_plugin(self):
+        if hasattr(getattr(self, "current_plugin", None), "load_existing_labels"):
+            return
+        if not self.load_plugin_from_file("border_detection_plugin"):
+            raise AnnotationBatchError("Border Detection plugin could not be activated")
+        if not hasattr(getattr(self, "current_plugin", None), "load_existing_labels"):
+            raise AnnotationBatchError("Current plugin cannot load existing borders")
+
+    def _begin_existing_batch(self, images):
+        try:
+            state = build_session(images, self._pending_label_sources)
+            from modules.annotation_studio.existing_label_sessions import default_session_path
+            # A corrupt existing checkpoint must not be silently overwritten.
+            previous = read_session() if default_session_path().exists() else None
+            if previous and next_pending(previous) is not None:
+                reply = QMessageBox.question(
+                    self, "Unfinished Annotation Session",
+                    f"{len(previous['completed'])}/{len(previous['image_files'])} "
+                    "cards are already saved. Replace that recovery checkpoint?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No
+                )
+                if reply != QMessageBox.StandardButton.Yes:
+                    return False
+            self._existing_label_mode = True
+            self._existing_batch_state = None
+            self._ensure_existing_label_plugin()
+            save_session(state)
+            self._existing_batch_state = state
+            self.image_files = state["image_files"]
+            self.current_index = 0
+            self._successfully_saved_indices = set()
+            self._annotation_complete = False
+            if not self.load_current_image():
+                raise AnnotationBatchError("First image could not load its matched label")
+            self.update_image_counter()
+            self.update_navigation_buttons()
+            self._update_existing_progress()
+            return True
+        except (AnnotationBatchError, ValueError, OSError) as error:
+            self.logger.error("Existing labels rejected: %s", error)
+            QMessageBox.warning(self, "Existing Label Import Failed", str(error))
+            return False
+
+    def resume_existing_batch(self):
+        try:
+            state = read_session()
+            index = next_pending(state)
+            if index is None:
+                QMessageBox.information(self, "Batch Complete", "All saved cards are recorded.")
+                return False
+            self._existing_label_mode = True
+            self._pending_label_sources = list(state["labels"].values())
+            self._existing_batch_state = None
+            self._ensure_existing_label_plugin()
+            self._existing_batch_state = state
+            self.image_files = state["image_files"]
+            self.current_index = index
+            self._successfully_saved_indices = set(state["completed"])
+            self._annotation_complete = False
+            if not self.load_current_image():
+                raise AnnotationBatchError(f"Cannot resume image {index + 1}")
+            self.update_image_counter()
+            self.update_navigation_buttons()
+            self._update_existing_progress()
+            return True
+        except (AnnotationBatchError, ValueError, OSError) as error:
+            self.logger.error("Resume failed: %s", error)
+            QMessageBox.warning(self, "Resume Failed", str(error))
+            return False
+
+    def _load_existing_card_labels(self):
+        session = getattr(self, "_existing_batch_state", None)
+        plugin = getattr(self, "current_plugin", None)
+        if not session or not hasattr(plugin, "load_existing_labels"):
+            raise AnnotationBatchError("Existing labels require the Border Detection plugin")
+        image = str(Path(self.current_image_path).resolve())
+        label = session["labels"].get(image)
+        if not label:
+            raise AnnotationBatchError(f"Missing selected label for {Path(image).name}")
+        proposal = getattr(self, "_saved_quad_proposal_path", None)
+        saved_image = getattr(self, "_saved_quad_image_path", None)
+        # Completed quads are saved in exported-image pixel coordinates.
+        # Keep source image path for pairing/checkpoint identity but import
+        # polygon geometry against the exact exported JPEG it belongs to.
+        quad_image = str(saved_image) if proposal is not None else image
+        return plugin.load_existing_labels(
+            quad_image, self.original_image, label, proposal
+        )
+
+    def _record_existing_export(self):
+        if not getattr(self, "_existing_label_mode", False):
+            return True
+        state = getattr(self, "_existing_batch_state", None)
+        if state is None:
+            self.logger.error("Cannot record progress: no active saved batch")
+            return False
+        try:
+            record_completed(state, self.current_index)
+            self._update_existing_progress()
+            return True
+        except (OSError, ValueError) as error:
+            self.logger.error("Export exists but checkpoint write failed: %s", error)
+            self.update_status("Export saved but progress checkpoint failed; retry Space")
+            return False
+
     def load_current_image(self):
         """Load current image and notify plugin - EXACT from calibration.py lines 709-788"""
         try:
@@ -748,17 +1041,46 @@ class ModularAnnotationStudio(QMainWindow):
             if isinstance(image_path, str):
                 image_path = Path(image_path)
             self.logger.info(f"Loading image: {image_path.name}")
-            
-            # Load with cv2 like working system 
+
+            # A completed card must reopen the exact saved JPEG, not the
+            # original input JPEG against which exported quads were never hashed.
+            saved_quad = None
+            active_image_path = image_path
+            session = getattr(self, "_existing_batch_state", None)
+            if (getattr(self, "_existing_label_mode", False)
+                    and session is not None
+                    and self.current_index in session["completed"]):
+                from modules.annotation_studio.existing_label_sessions import (
+                    resolve_completed_quad_source,
+                )
+                root = Path(__file__).resolve().parents[2] / "shared" / "annotations"
+                active_image_path, saved_quad = resolve_completed_quad_source(
+                    image_path, root
+                )
+
             import cv2
-            self.original_image = cv2.imread(str(image_path))
-            if self.original_image is None:
-                self.logger.error(f"Failed to load image: {image_path}")
+            loaded_image = cv2.imread(str(active_image_path))
+            if loaded_image is None:
+                self.logger.error(f"Failed to load image: {active_image_path}")
                 return False
+            if saved_quad is not None:
+                import json
+                metadata = json.loads(saved_quad.read_text(encoding="utf-8"))
+                height, width = loaded_image.shape[:2]
+                if (width, height) != (
+                        metadata["image_width"], metadata["image_height"]):
+                    raise AnnotationBatchError(
+                        f"Saved quad JPEG dimensions changed: {active_image_path}"
+                    )
+            self.original_image = loaded_image
+            self._saved_quad_image_path = active_image_path if saved_quad else None
+            self._saved_quad_proposal_path = saved_quad
                 
             # CRITICAL: Clear annotations for new image (like calibration.py)
             self.current_image = None
             self.current_image_path = image_path
+            self._magnifier_locked_center = None
+            self._cached_rotated_image = None
             
             # Reset rotation for new image (like calibration.py lines 1232-1235)
             self.rotation_angle = 0.0
@@ -770,27 +1092,36 @@ class ModularAnnotationStudio(QMainWindow):
             # Display image
             self.display_current_image()
             
-            # CRITICAL FIX: Notify plugin AFTER image loads (like calibration.py lines 1240-1242)
-            self.logger.debug(f"DEBUG: hasattr current_plugin: {hasattr(self, 'current_plugin')}")
-            self.logger.debug(f"DEBUG: current_plugin value: {getattr(self, 'current_plugin', None)}")
-            
-            if hasattr(self, 'current_plugin') and self.current_plugin:
-                self.logger.debug(f"DEBUG: Plugin has on_image_changed: {hasattr(self.current_plugin, 'on_image_changed')}")
-                if hasattr(self.current_plugin, 'on_image_changed'):
-                    self.logger.info("Notifying plugin of image change")
-                    self.current_plugin.on_image_changed(str(image_path), self.original_image)
-                else:
-                    self.logger.warning("Plugin exists but no on_image_changed method!")
+            if getattr(self, "_existing_label_mode", False):
+                # Studio owns paired-file input, Plugin owns annotation creation.
+                # Never invoke on_image_changed (which queues YOLO inference).
+                widget = getattr(self, "current_plugin_widget", None)
+                if widget is not None and hasattr(widget, "set_current_image"):
+                    widget.set_current_image(self.original_image)
+                if not self._load_existing_card_labels():
+                    raise AnnotationBatchError("Imported annotations were not applied")
             else:
-                self.logger.warning("No current_plugin set!")
-            
-            # Also update settings widget directly
-            if hasattr(self, 'current_plugin_widget') and self.current_plugin_widget:
-                if hasattr(self.current_plugin_widget, 'set_current_image'):
-                    self.current_plugin_widget.set_current_image(self.original_image)
+                # Preserve the tested fresh YOLO inference lifecycle unchanged.
+                self.logger.debug(f"DEBUG: hasattr current_plugin: {hasattr(self, 'current_plugin')}")
+                self.logger.debug(f"DEBUG: current_plugin value: {getattr(self, 'current_plugin', None)}")
+                if hasattr(self, 'current_plugin') and self.current_plugin:
+                    self.logger.debug(
+                        f"DEBUG: Plugin has on_image_changed: "
+                        f"{hasattr(self.current_plugin, 'on_image_changed')}"
+                    )
+                    if hasattr(self.current_plugin, 'on_image_changed'):
+                        self.logger.info("Notifying plugin of image change")
+                        self.current_plugin.on_image_changed(str(image_path), self.original_image)
+                    else:
+                        self.logger.warning("Plugin exists but no on_image_changed method!")
                 else:
-                    self.logger.warning("Plugin widget exists but no set_current_image method!")
-            
+                    self.logger.warning("No current_plugin set!")
+                if hasattr(self, 'current_plugin_widget') and self.current_plugin_widget:
+                    if hasattr(self.current_plugin_widget, 'set_current_image'):
+                        self.current_plugin_widget.set_current_image(self.original_image)
+                    else:
+                        self.logger.warning("Plugin widget exists but no set_current_image method!")
+
             self.logger.info(f"✅ Loaded image: {image_path.name}")
             return True
             
@@ -833,6 +1164,34 @@ class ModularAnnotationStudio(QMainWindow):
             self.logger.error(f"Plugin image update traceback: {traceback.format_exc()}")
     
     
+    def _connect_border_detection_results(self, settings_widget):
+        """Connect the active plugin's existing completion signal to Studio."""
+        signal = getattr(settings_widget, 'detection_completed', None)
+        if signal is None:
+            return
+        if getattr(settings_widget, '_studio_detection_receiver', None) is self:
+            return
+        signal.connect(
+            lambda annotations, owner=settings_widget:
+                self._receive_border_detection_results(owner, annotations)
+        )
+        settings_widget._studio_detection_receiver = self
+        self.logger.info("Connected border detection results to Studio canvas")
+
+    def _receive_border_detection_results(self, settings_widget, annotations):
+        """Only the displayed plugin may publish overlay annotations."""
+        if settings_widget is not self.current_plugin_widget:
+            self.logger.warning("Ignored results from an inactive annotation widget")
+            return
+        if self.original_image is None:
+            self.logger.warning("Ignored detections because no card is displayed")
+            return
+        self.logger.info(
+            "Received %d border predictions for %s",
+            len(annotations), getattr(self.current_image_path, 'name', 'unknown'),
+        )
+        self.update_image_with_annotations(annotations)
+
     def update_image_with_annotations(self, annotations):
         """
         Update display with plugin annotations - CALLED BY PLUGIN
@@ -1033,7 +1392,8 @@ class ModularAnnotationStudio(QMainWindow):
                                Returns (-1, -1) if outside image bounds
         """
         if not hasattr(self, 'image_label') or self.original_image is None:
-            return canvas_x, canvas_y
+            # No pixels loaded: a canvas event is not an annotation event.
+            return -1, -1
 
         try:
             # Get the actual displayed pixmap
@@ -1276,14 +1636,32 @@ class ModularAnnotationStudio(QMainWindow):
             return
 
         try:
-            # Auto-save current annotations
-            self.auto_save_current_annotations()
+            # Preserve existing Previous navigation; track genuine successes.
+            if self.auto_save_current_annotations() is True:
+                if (getattr(self, "_existing_label_mode", False)
+                        and not self._record_existing_export()):
+                    return
+                self._successfully_saved_indices.add(self.current_index)
+            elif getattr(self, "_existing_label_mode", False):
+                return  # A failed imported export cannot advance.
 
-            # Move to previous image
+            # Restore current card if a saved quad cannot be reopened;
+            # never leave a different image displaying stale editable borders.
+            previous_index = self.current_index
             self.current_index -= 1
-            
-            # Load new image using proper method
             success = self.load_current_image()
+            if not success:
+                self.current_index = previous_index
+                self.load_current_image()
+                self.update_image_counter()
+                self.update_navigation_buttons()
+                QMessageBox.warning(
+                    self, "Previous Card Not Restored",
+                    "The previous card's exported image/quad pair failed "
+                    "validation. Navigation was cancelled to protect its annotations. "
+                    "Check the Annotation Studio log."
+                )
+                return
             if success:
                 self.update_image_counter()
                 self.update_navigation_buttons()
@@ -1297,20 +1675,41 @@ class ModularAnnotationStudio(QMainWindow):
             self.logger.error(f"Previous image failed: {e}")
     
     def next_image_placeholder(self):
-        """Navigate to next image - FIXED USING WORKING BORDER_CALIBRATION.PY PATTERNS"""
+        """Normal Next action keeps the existing auto-save-before-navigation behavior."""
+        self._advance_to_next_image(save_current=True)
+
+    def _advance_to_next_image(self, *, save_current: bool):
+        """Advance once; Space already saved its current card before rotation reset."""
         if not self.image_files or self.current_index >= len(self.image_files) - 1:
             self.logger.debug("Reached end of dataset")
             return
 
         try:
             # Auto-save current annotations
-            self.auto_save_current_annotations()
+            if save_current:
+                if self.auto_save_current_annotations() is True:
+                    if (getattr(self, "_existing_label_mode", False)
+                        and not self._record_existing_export()):
+                        return
+                    self._successfully_saved_indices.add(self.current_index)
+                elif getattr(self, "_existing_label_mode", False):
+                    return  # Preserve card after failed export.
 
-            # Move to next image
+            # A bad completed-card restore must not leave a stale overlay.
+            previous_index = self.current_index
             self.current_index += 1
-            
-            # Load new image using proper method
             success = self.load_current_image()
+            if not success:
+                self.current_index = previous_index
+                self.load_current_image()
+                self.update_image_counter()
+                self.update_navigation_buttons()
+                QMessageBox.warning(
+                    self, "Next Card Not Restored",
+                    "The next card's exported image/quad pair failed validation. "
+                    "Navigation was cancelled; see the Annotation Studio log."
+                )
+                return
             if success:
                 self.update_image_counter()
                 self.update_navigation_buttons()
@@ -1352,7 +1751,7 @@ class ModularAnnotationStudio(QMainWindow):
     
     def update_navigation_buttons(self):
         """Update navigation button states"""
-        has_images = bool(self.image_files)
+        has_images = bool(self.image_files) and not getattr(self, "_annotation_complete", False)
         can_go_prev = has_images and self.current_index > 0
         can_go_next = has_images and self.current_index < len(self.image_files) - 1
         
@@ -1360,64 +1759,112 @@ class ModularAnnotationStudio(QMainWindow):
         self.next_btn.setEnabled(can_go_next)
     
     def auto_save_current_annotations(self):
-        """Auto-save current annotations"""
+        """Export the active plugin's annotations and report its actual outcome."""
+        if (getattr(self, "_existing_label_mode", False)
+                and getattr(self, "_existing_batch_state", None) is None):
+            self.logger.warning("Choose matching images before exporting existing labels")
+            return False
         try:
-            # Try border plugin's 3-format export
-            if hasattr(self, 'current_plugin') and self.current_plugin:
-                if hasattr(self.current_plugin, 'auto_create_training_labels'):
-                    self.current_plugin.auto_create_training_labels()
-                    self.logger.info("Auto-saved with 3 training label formats")
-                    return
-                
-                # Try corner plugin's single annotation save
-                if hasattr(self.current_plugin, 'auto_save_current_annotation'):
-                    self.current_plugin.auto_save_current_annotation()
-                    self.logger.info("Auto-saved corner annotation")
-                    return
-            
-            # Fallback to old method
-            if hasattr(self, 'current_plugin_widget') and self.current_plugin_widget:
-                if hasattr(self.current_plugin_widget, 'auto_save_current_annotations'):
-                    self.current_plugin_widget.auto_save_current_annotations()
-                    self.logger.debug("Auto-saved annotations")
-                    
-        except Exception as e:
-            self.logger.error(f"Auto-save failed: {e}")
-    
+            if self.current_plugin:
+                if hasattr(self.current_plugin, "auto_create_training_labels"):
+                    success = self.current_plugin.auto_create_training_labels()
+                    if success is True:
+                        self.logger.info("Saved all border training formats")
+                        return True
+                    self.logger.error("Border training-data export did not succeed")
+                    return False
+                if hasattr(self.current_plugin, "auto_save_current_annotation"):
+                    return self.current_plugin.auto_save_current_annotation() is True
+            widget = getattr(self, "current_plugin_widget", None)
+            if widget is not None and hasattr(widget, "auto_save_current_annotations"):
+                return widget.auto_save_current_annotations() is True
+            self.logger.error("No annotation export method is available")
+            return False
+        except Exception as exc:
+            self.logger.error(f"Auto-save failed: {exc}", exc_info=True)
+            return False
+
     def save_rotated_image(self):
-        """Save the rotated image back to disk - OVERWRITES ORIGINAL"""
+        """Save the finalized rotated image to its existing source path."""
         try:
             import cv2
-            if self.current_image_path and self.current_image is not None:
-                # Save rotated image (overwrite original)
-                cv2.imwrite(str(self.current_image_path), self.current_image)
-                self.logger.info(f"💾 Saved rotated image: {self.current_image_path.name} ({self.rotation_angle:.3f}°)")
-        except Exception as e:
-            self.logger.error(f"❌ Failed to save rotated image: {e}")
-    
+            if self.current_image_path is None or self.current_image is None:
+                self.logger.error("Cannot save rotated image without a loaded card")
+                return False
+            if not cv2.imwrite(str(self.current_image_path), self.current_image):
+                self.logger.error("Rotated image write returned failure: %s", self.current_image_path)
+                return False
+            self.logger.info(
+                "Saved rotated source image: %s (%.3f degrees)",
+                self.current_image_path.name, self.rotation_angle,
+            )
+            return True
+        except Exception as exc:
+            self.logger.error(f"Failed to save rotated image: {exc}", exc_info=True)
+            return False
+
+    def _show_annotation_complete(self):
+        """Replace the last edited card with an explicit session summary."""
+        completed = len(self._successfully_saved_indices)
+        total = len(self.image_files)
+        self._annotation_complete = True
+
+        # No card remains active; this prevents a second Space-bar save and
+        # invalidates any delayed detector callback bound to the last image.
+        self.original_image = None
+        self.current_image = None
+        self.current_image_path = None
+        widget = getattr(self, "current_plugin_widget", None)
+        if widget is not None:
+            widget.current_image = None
+            widget.current_image_path = None
+
+        self.image_label.clear()
+        if completed == total:
+            message = f"Annotation complete!\n{completed}/{total} successfully annotated"
+        else:
+            message = f"Annotation session finished\n{completed}/{total} successfully saved"
+        self.image_label.setText(message)
+        self.card_counter.setText(f"{completed}/{total} saved")
+        self._magnifier_locked_center = None
+        if hasattr(self, "magnifier_display"):
+            self.magnifier_display.clear()
+        self.update_navigation_buttons()
+        self.logger.info("Annotation session finished: %d/%d saved", completed, total)
+
     def save_and_next_image(self):
-        """SPACE BAR - Save annotations, rotated image, reset rotation, and move to next"""
+        """Space: save once, then navigate or show completion on the final card."""
+        if not self.image_files or getattr(self, "_annotation_complete", False):
+            return False
+        if self.current_image_path is None:
+            self.logger.warning("Space ignored: no active card")
+            return False
+
         try:
-            self.logger.info("🔥 SPACE BAR PRESSED - save_and_next_image() called")
-            
-            # 1. Save rotated image if rotation was applied
-            if hasattr(self, 'rotation_angle') and abs(self.rotation_angle) > 0.001:
-                self.save_rotated_image()
-            
-            # 2. Save current image annotations (creates 3 training label formats)
-            self.auto_save_current_annotations()
-            
-            # 3. Reset rotation slider to 0° for next image
-            self.reset_rotation()
-            
-            # 4. Move to next image
-            self.next_image_placeholder()
-            
-            self.logger.info("✅ Saved (image + labels), reset rotation, and moved to next")
-            
-        except Exception as e:
-            self.logger.error(f"❌ Save and next failed: {e}")
-    
+            self.logger.info("Space: saving card %d/%d",
+                             self.current_index + 1, len(self.image_files))
+            # Preserve the deliberately rotated image and matching labels.
+            # Never reset rotation before the final export is confirmed.
+            if abs(self.rotation_angle) > 0.001 and not self.save_rotated_image():
+                return False
+            if not self.auto_save_current_annotations():
+                self.logger.error("Card export failed; keeping editor open for retry")
+                return False
+
+            if (getattr(self, "_existing_label_mode", False)
+                        and not self._record_existing_export()):
+                return False
+            self._successfully_saved_indices.add(self.current_index)
+            if self.current_index == len(self.image_files) - 1:
+                self._show_annotation_complete()
+            else:
+                self.reset_rotation()
+                self._advance_to_next_image(save_current=False)
+            return True
+        except Exception as exc:
+            self.logger.error(f"Save and next failed: {exc}", exc_info=True)
+            return False
+
     def zoom_out_placeholder(self):
         """Zoom out with professional scaling - EXACT from border calibration"""
         try:
@@ -1543,6 +1990,34 @@ class ModularAnnotationStudio(QMainWindow):
         
         self.logger.debug("Rotation reset to 0.0°")
     
+    def unlock_precision_magnifier(self):
+        """Return to cursor-controlled browsing until the next grab."""
+        self._magnifier_locked_center = None
+        if hasattr(self, "last_magnifier_x"):
+            self.update_magnifier(self.last_magnifier_x, self.last_magnifier_y)
+
+    def _keep_precision_target_visible(self):
+        """Move the crop only when an actively dragged handle nears an edge."""
+        center = getattr(self, "_magnifier_locked_center", None)
+        plugin = getattr(self, "current_plugin", None)
+        if center is None or plugin is None or not hasattr(plugin, "precision_target_point"):
+            return
+        point = plugin.precision_target_point()
+        if point is None:
+            return
+        frame = MagnifierViewport.centered(
+            *center, getattr(self, "current_magnification", 2)
+        )
+        u, v = frame.project(*point)
+        margin = 32
+        target_u = max(margin, min(frame.output - margin, u))
+        target_v = max(margin, min(frame.output - margin, v))
+        if target_u != u or target_v != v:
+            self._magnifier_locked_center = (
+                center[0] + (u - target_u) / frame.scale,
+                center[1] + (v - target_v) / frame.scale,
+            )
+
     def set_magnification(self, level):
         """Set magnifier level (2x or 4x only) and force immediate update"""
         # Update button states
@@ -1553,7 +2028,9 @@ class ModularAnnotationStudio(QMainWindow):
         self.current_magnification = level
         
         # CRITICAL FIX: Force magnifier update with current position
-        if hasattr(self, 'last_magnifier_x') and hasattr(self, 'last_magnifier_y'):
+        if getattr(self, "_magnifier_locked_center", None) is not None:
+            self.update_magnifier()
+        elif hasattr(self, 'last_magnifier_x') and hasattr(self, 'last_magnifier_y'):
             self.update_magnifier(self.last_magnifier_x, self.last_magnifier_y)
         
         self.logger.info(f"Magnification set to {level}x")
@@ -1562,7 +2039,7 @@ class ModularAnnotationStudio(QMainWindow):
         """Get CACHED rotated version of ORIGINAL image (no overlays/anchors)"""
         # CRITICAL OPTIMIZATION: Cache rotated image to avoid rotating on every mouse move!
         # Only re-rotate if angle changed
-        if hasattr(self, '_cached_rotation_angle') and hasattr(self, '_cached_rotated_image'):
+        if hasattr(self, '_cached_rotation_angle') and getattr(self, '_cached_rotated_image', None) is not None:
             if abs(self._cached_rotation_angle - self.rotation_angle) < 0.001:
                 # Angle unchanged - return cached image
                 return self._cached_rotated_image
@@ -1586,219 +2063,108 @@ class ModularAnnotationStudio(QMainWindow):
         self._cached_rotated_image = rotated
         return rotated
     
-    def draw_borders_on_magnifier(self, magnified_image, center_x, center_y, crop_size):
-        """Draw border LINES (not anchors) on magnifier - ported from border_calibration.py"""
-        try:
-            import cv2
-            
-            # Ask plugin for annotations
-            if not hasattr(self, 'current_plugin') or not self.current_plugin:
-                return magnified_image
-            
-            # Get annotations from plugin
-            annotations = None
-            if hasattr(self.current_plugin, 'settings_widget') and self.current_plugin.settings_widget:
-                annotations = getattr(self.current_plugin.settings_widget, 'annotations', None)
-            elif hasattr(self.current_plugin, 'annotations'):
-                annotations = self.current_plugin.annotations
-            
-            if not annotations:
-                return magnified_image
-            
-            # Calculate magnification zoom (400x400 display / crop_size)
-            zoom = 400 / (crop_size * 2)  # crop_size is half-width
-            
-            # Calculate offset (top-left of crop region)
-            offset_x = center_x - crop_size
-            offset_y = center_y - crop_size
-            
-            # Draw each border that intersects magnifier region
-            for annotation in annotations:
-                # Border coordinates in image space
-                border_x1 = min(annotation.x1, annotation.x2)
-                border_y1 = min(annotation.y1, annotation.y2)
-                border_x2 = max(annotation.x1, annotation.x2)
-                border_y2 = max(annotation.y1, annotation.y2)
-                
-                # Check if border intersects with magnified region
-                mag_x1, mag_y1 = offset_x, offset_y
-                mag_x2, mag_y2 = offset_x + (crop_size * 2), offset_y + (crop_size * 2)
-                
-                if (border_x2 >= mag_x1 and border_x1 <= mag_x2 and
-                    border_y2 >= mag_y1 and border_y1 <= mag_y2):
-                    
-                    # Convert to magnifier coordinates
-                    mag_border_x1 = int((border_x1 - offset_x) * zoom)
-                    mag_border_y1 = int((border_y1 - offset_y) * zoom)
-                    mag_border_x2 = int((border_x2 - offset_x) * zoom)
-                    mag_border_y2 = int((border_y2 - offset_y) * zoom)
-                    
-                    # Clamp to magnifier bounds
-                    mag_border_x1 = max(0, min(400, mag_border_x1))
-                    mag_border_y1 = max(0, min(400, mag_border_y1))
-                    mag_border_x2 = max(0, min(400, mag_border_x2))
-                    mag_border_y2 = max(0, min(400, mag_border_y2))
-                    
-                    # Get color for this annotation class (match main display colors)
-                    if annotation.class_id == 0:
-                        color = (255, 255, 0)  # CYAN for outer border (BGR)
-                    elif annotation.class_id == 1:
-                        color = (255, 0, 255)  # MAGENTA for graphic border (BGR)
-                    else:
-                        color = (255, 255, 255)  # White default
-                    
-                    # Draw rectangle outline ONLY (no handles!)
-                    if mag_border_x2 > mag_border_x1 and mag_border_y2 > mag_border_y1:
-                        cv2.rectangle(magnified_image, 
-                                    (mag_border_x1, mag_border_y1),
-                                    (mag_border_x2, mag_border_y2),
-                                    color, 2)
-            
+    def draw_borders_on_magnifier(self, magnified_image, viewport):
+        """Draw actual image-space polygons through the source photo's crop.
+
+        A single affine MagnifierViewport owns both transforms, avoiding
+        a different zoom or image origin for the overlay.
+        """
+        plugin = getattr(self, "current_plugin", None)
+        if plugin is None:
             return magnified_image
-            
-        except Exception as e:
-            self.logger.error(f"Draw borders on magnifier failed: {e}")
+        widget = getattr(plugin, "settings_widget", None)
+        annotations = (getattr(widget, "annotations", None)
+                       if widget is not None else getattr(plugin, "annotations", None))
+        if not annotations:
             return magnified_image
-    
+        import cv2
+        import numpy as np
+        for ann in annotations:
+            verts = (ann.vertices if getattr(ann, "vertices", None)
+                     else ((ann.x1, ann.y1), (ann.x2, ann.y1),
+                           (ann.x2, ann.y2), (ann.x1, ann.y2)))
+            coords = np.rint(np.asarray(
+                [viewport.project(float(x), float(y)) for x, y in verts],
+                dtype=np.float64
+            )).astype(np.int32)
+            color = ((255, 255, 0) if ann.class_id == 0
+                     else (255, 0, 255) if ann.class_id == 1
+                     else (255, 255, 255))
+            cv2.polylines(magnified_image, [coords], True, color, 2)
+        return magnified_image
+
     def update_magnifier(self, canvas_x=None, canvas_y=None):
-        """Update magnifier display with clean rotated image (NO overlays) around mouse position"""
+        """Magnify exact card pixels with currently edited polygons, not old ones."""
+        if getattr(self, "original_image", None) is None:
+            return
         try:
-            # Store last position for magnification toggle
-            if canvas_x is not None:
-                self.last_magnifier_x = canvas_x
-                self.last_magnifier_y = canvas_y
-            
-            if not hasattr(self, 'original_image') or self.original_image is None:
-                return
-            
             import cv2
             import numpy as np
             from PyQt6.QtGui import QImage, QPixmap
-            
-            # CRITICAL FIX: Use clean rotated original (NO overlays/anchors)
-            if hasattr(self, 'rotation_angle') and abs(self.rotation_angle) > 0.001:
-                # Create clean rotated image for magnifier
-                magnifier_image = self._get_clean_rotated_image()
-            else:
-                # Use original directly
-                magnifier_image = self.original_image.copy()
-            
-            # Convert canvas coordinates to image coordinates
+
             if canvas_x is not None and canvas_y is not None:
-                # Get the displayed pixmap size
-                if hasattr(self, 'image_label') and self.image_label.pixmap():
-                    pixmap = self.image_label.pixmap()
-                    display_w = pixmap.width()
-                    display_h = pixmap.height()
-                    
-                    # CRITICAL: Account for pixmap centering in label
-                    # If label is larger than pixmap, pixmap is centered
-                    label_w = self.image_label.width()
-                    label_h = self.image_label.height()
-                    
-                    # Calculate pixmap offset within label
-                    offset_x = (label_w - display_w) // 2 if label_w > display_w else 0
-                    offset_y = (label_h - display_h) // 2 if label_h > display_h else 0
-                    
-                    # Adjust canvas coords to pixmap coords
-                    pixmap_x = canvas_x - offset_x
-                    pixmap_y = canvas_y - offset_y
-                    
-                    # Get actual image size
-                    img_h, img_w = magnifier_image.shape[:2]
-                    
-                    # Calculate scale factor
-                    scale_x = img_w / display_w if display_w > 0 else 1
-                    scale_y = img_h / display_h if display_h > 0 else 1
-                    
-                    # Convert pixmap coords to image coords
-                    img_x = int(pixmap_x * scale_x)
-                    img_y = int(pixmap_y * scale_y)
-                    
-                    # CRITICAL FIX: Clamp magnifier center to stay within image bounds
-                    img_x = max(0, min(img_w - 1, img_x))
-                    img_y = max(0, min(img_h - 1, img_y))
-                else:
-                    img_x, img_y = int(canvas_x), int(canvas_y)
+                self.last_magnifier_x = canvas_x
+                self.last_magnifier_y = canvas_y
+
+            locked = getattr(self, "_magnifier_locked_center", None)
+            if locked is not None:
+                x, y = locked
+            elif canvas_x is not None and canvas_y is not None:
+                # The SAME canvas-to-image transform that moves quads.
+                x, y = self.canvas_to_image_coords(canvas_x, canvas_y)
+                if x < 0 or y < 0:
+                    return
             else:
-                # Default to center
-                img_h, img_w = magnifier_image.shape[:2]
-                img_x, img_y = img_w // 2, img_h // 2
-            
-            # Get magnification level (default 2x)
-            mag_level = getattr(self, 'current_magnification', 2)
-            
-            # Calculate crop region around mouse - EXACT from border_calibration.py
-            region_size = 400 // mag_level  # 2x = 200px region, 4x = 100px region
-            half_region = region_size // 2
-            
-            x1 = int(img_x - half_region)
-            y1 = int(img_y - half_region)
-            x2 = int(img_x + half_region)
-            y2 = int(img_y + half_region)
-            
-            # Handle edge cases by padding with zeros if needed
-            img_h, img_w = magnifier_image.shape[:2]
-            
-            # Create padded region for edge cases
-            pad_left = max(0, -x1)
-            pad_top = max(0, -y1)
-            pad_right = max(0, x2 - img_w)
-            pad_bottom = max(0, y2 - img_h)
-            
-            # Adjust bounds to valid image area
-            x1_clipped = max(0, x1)
-            y1_clipped = max(0, y1)
-            x2_clipped = min(img_w, x2)
-            y2_clipped = min(img_h, y2)
-            
-            # Extract valid region
-            crop = magnifier_image[y1_clipped:y2_clipped, x1_clipped:x2_clipped].copy()
-            
-            if crop.size == 0:
-                return
-            
-            # Pad if necessary to maintain proper size - EXACT from border_calibration.py
-            if pad_left > 0 or pad_top > 0 or pad_right > 0 or pad_bottom > 0:
-                if len(crop.shape) == 3:
-                    crop = np.pad(crop, ((pad_top, pad_bottom), (pad_left, pad_right), (0, 0)), 
-                                 'constant', constant_values=0)
-                else:
-                    crop = np.pad(crop, ((pad_top, pad_bottom), (pad_left, pad_right)), 
-                                 'constant', constant_values=0)
-            
-            # Resize to 400x400 magnifier (now won't stretch!)
-            magnified = cv2.resize(crop, (400, 400), interpolation=cv2.INTER_LINEAR)
-            
-            # CRITICAL: Draw border LINES (not anchors) on magnifier
-            magnified = self.draw_borders_on_magnifier(magnified, img_x, img_y, half_region)
-            
-            # Draw full crosshair lines at center to show mouse position
-            center_x, center_y = 200, 200  # Center of 400x400 window
-            crosshair_color = (0, 255, 255)  # Yellow in BGR
-            crosshair_thickness = 1  # Thin lines so they don't block view
-            
-            # Horizontal line - full width (left to right)
-            cv2.line(magnified, 
-                    (0, center_y), 
-                    (400, center_y), 
-                    crosshair_color, crosshair_thickness)
-            # Vertical line - full height (top to bottom)
-            cv2.line(magnified, 
-                    (center_x, 0), 
-                    (center_x, 400), 
-                    crosshair_color, crosshair_thickness)
-            
-            # Convert to QPixmap for display
-            h, w, ch = magnified.shape
-            bytes_per_line = ch * w
-            q_image = QImage(magnified.data, w, h, bytes_per_line, QImage.Format.Format_RGB888)
-            pixmap = QPixmap.fromImage(q_image.rgbSwapped())
-            
-            self.magnifier_display.setPixmap(pixmap)
-            
-        except Exception as e:
-            self.logger.error(f"Magnifier update failed: {e}")
+                h, w = self.original_image.shape[:2]
+                x, y = w / 2, h / 2
+
+            source = (self._get_clean_rotated_image()
+                      if abs(getattr(self, "rotation_angle", 0.0)) > 0.001
+                      else self.original_image)
+            h, w = source.shape[:2]
+            x = max(0, min(w - 1, float(x)))
+            y = max(0, min(h - 1, float(y)))
+            viewport = MagnifierViewport.centered(
+                x, y, getattr(self, "current_magnification", 2)
+            )
+            side, x0, y0 = viewport.side, viewport.left, viewport.top
+            crop = np.zeros((side, side, source.shape[2]), dtype=source.dtype)
+            sx0, sy0 = max(0, x0), max(0, y0)
+            sx1, sy1 = min(w, x0 + side), min(h, y0 + side)
+            if sx1 > sx0 and sy1 > sy0:
+                crop[sy0-y0:sy1-y0, sx0-x0:sx1-x0] = source[sy0:sy1, sx0:sx1]
+            # True original pixels (2x/4x blocks), without interpolation.
+            magnified = cv2.resize(
+                crop, (viewport.output, viewport.output),
+                interpolation=cv2.INTER_NEAREST,
+            )
+            magnified = self.draw_borders_on_magnifier(magnified, viewport)
+
+            # Crosshair follows the edited feature's LIVE geometry,
+            # not a mouse sample taken before the last drag movement.
+            plugin = getattr(self, "current_plugin", None)
+            target = None
+            if (locked is not None and plugin is not None
+                    and hasattr(plugin, "precision_target_point")):
+                target = plugin.precision_target_point()
+            ux, uy = viewport.project(*(target if target is not None else (x, y)))
+            cx, cy = round(ux), round(uy)
+            if 0 <= cx < viewport.output and 0 <= cy < viewport.output:
+                color = (0, 255, 255)
+                cv2.line(magnified, (cx - 12, cy), (cx - 3, cy), color, 1)
+                cv2.line(magnified, (cx + 3, cy), (cx + 12, cy), color, 1)
+                cv2.line(magnified, (cx, cy - 12), (cx, cy - 3), color, 1)
+                cv2.line(magnified, (cx, cy + 3), (cx, cy + 12), color, 1)
+
+            ih, iw, ch = magnified.shape
+            qimage = QImage(magnified.data, iw, ih, iw * ch,
+                            QImage.Format.Format_RGB888)
+            self.magnifier_display.setPixmap(
+                QPixmap.fromImage(qimage.rgbSwapped())
+            )
+            self._magnifier_viewport = viewport
+        except Exception as error:
+            self.logger.error("Precision magnifier rendering failed: %s", error)
 
     def apply_image_rotation(self, angle):
         """DEPRECATED - Rotation now applied during display_current_image()
@@ -1821,7 +2187,9 @@ class ModularAnnotationStudio(QMainWindow):
             5. Studio refreshes display if needed
         """
         try:
-            self._mouse_pressed = True  # Track mouse state for drag detection
+            if hasattr(event, "button") and event.button() != Qt.MouseButton.LeftButton:
+                return
+            self._mouse_pressed = False
             
             # Extract canvas coordinates from event (PyQt6)
             pos = event.position()
@@ -1834,14 +2202,22 @@ class ModularAnnotationStudio(QMainWindow):
             # Check if coordinates are valid
             if image_x < 0 or image_y < 0:
                 return  # Click outside image bounds
+            self._mouse_pressed = True
             
             if hasattr(self, 'current_plugin') and self.current_plugin:
                 # Try new interface method first (handle_click)
                 if hasattr(self.current_plugin, 'handle_click'):
                     handled = self.current_plugin.handle_click(image_x, image_y)
                     if handled:
-                        # Plugin handled it, refresh display
+                        target = (self.current_plugin.precision_target_point()
+                                  if hasattr(self.current_plugin, "precision_target_point")
+                                  else None)
+                        self._magnifier_locked_center = (
+                            tuple(target) if target is not None else (image_x, image_y)
+                        )
                         self.display_current_image()
+                        if getattr(self, "current_image", None) is not None:
+                            self.update_magnifier()
                 
                 # Fallback to old method for backward compatibility
                 elif hasattr(self.current_plugin, 'on_canvas_click'):
@@ -1863,14 +2239,23 @@ class ModularAnnotationStudio(QMainWindow):
             canvas_x = pos.x()
             canvas_y = pos.y()
             
-            # Update magnifier with current mouse position (uses canvas coords)
-            if self.current_image is not None:
-                self.update_magnifier(int(canvas_x), int(canvas_y))
-            
-            # Forward to drag handler ONLY if dragging
+            # Render the magnifier only after the plugin changes geometry.
+            # Mouse tracking emits hover events. Recover from a missed
+            # release without permitting another edit.
+            if hasattr(event, "buttons") and not (event.buttons() & Qt.MouseButton.LeftButton):
+                if getattr(self, "_mouse_pressed", False):
+                    self._mouse_pressed = False
+                    plugin = getattr(self, "current_plugin", None)
+                    if plugin and hasattr(plugin, "handle_release"):
+                        plugin.handle_release(-1, -1)
+                    # A lost release is still a release. End the
+                    # handle-anchored crop before processing this hover.
+                    self._magnifier_locked_center = None
+                if getattr(self, "current_image", None) is not None:
+                    self.update_magnifier(canvas_x, canvas_y)
+                return
             if hasattr(self, 'current_plugin') and self.current_plugin:
-                # Only call drag if mouse is pressed (actual drag operation)
-                if hasattr(self, '_mouse_pressed') and self._mouse_pressed:
+                if getattr(self, '_mouse_pressed', False):
                     # MASTER COORDINATE TRANSFORM
                     image_x, image_y = self.canvas_to_image_coords(canvas_x, canvas_y)
                     
@@ -1885,6 +2270,11 @@ class ModularAnnotationStudio(QMainWindow):
                         elif hasattr(self.current_plugin, 'on_canvas_drag'):
                             self.current_plugin.on_canvas_drag(canvas_x, canvas_y)
                         
+            if getattr(self, "current_image", None) is not None:
+                if getattr(self, "_mouse_pressed", False):
+                    self._keep_precision_target_visible()
+                self.update_magnifier(canvas_x, canvas_y)
+
         except Exception as e:
             self.logger.error(f"Mouse move handling failed: {e}")
 
@@ -1895,6 +2285,7 @@ class ModularAnnotationStudio(QMainWindow):
         Finalizes drag operations.
         """
         try:
+            had_active_press = getattr(self, "_mouse_pressed", False)
             self._mouse_pressed = False  # Clear mouse state
             
             # Extract canvas coordinates from event (PyQt6)
@@ -1905,18 +2296,24 @@ class ModularAnnotationStudio(QMainWindow):
             # MASTER COORDINATE TRANSFORM
             image_x, image_y = self.canvas_to_image_coords(canvas_x, canvas_y)
             
-            if hasattr(self, 'current_plugin') and self.current_plugin:
-                if image_x >= 0 and image_y >= 0:  # Valid coordinates
-                    # Try new interface method first (handle_release)
-                    if hasattr(self.current_plugin, 'handle_release'):
-                        handled = self.current_plugin.handle_release(image_x, image_y)
-                        if handled:
-                            self.display_current_image()
-                    
-                    # Fallback to old method for backward compatibility
-                    elif hasattr(self.current_plugin, 'on_canvas_release'):
-                        self.current_plugin.on_canvas_release(canvas_x, canvas_y)
-                        
+            if had_active_press and hasattr(self, 'current_plugin') and self.current_plugin:
+                # Release clears the drag even when the pointer is outside.
+                if hasattr(self.current_plugin, 'handle_release'):
+                    handled = self.current_plugin.handle_release(image_x, image_y)
+                    if handled:
+                        self.display_current_image()
+                elif hasattr(self.current_plugin, 'on_canvas_release'):
+                    self.current_plugin.on_canvas_release(canvas_x, canvas_y)
+
+            if had_active_press:
+                # First paint the final saved line against the exact
+                # locked source pixels (no release-position jump).
+                if getattr(self, "current_image", None) is not None:
+                    self.update_magnifier()
+                # Now restore ordinary hover-to-inspect. The next mouse
+                # movement pans the VIEW ONLY, never polygon vertices.
+                self._magnifier_locked_center = None
+
         except Exception as e:
             self.logger.error(f"Mouse release handling failed: {e}")
 
@@ -1966,9 +2363,17 @@ class ModularAnnotationStudio(QMainWindow):
                     else:
                         self.logger.warning(f"Settings widget has no set_main_plugin method")
                     
+                    # Give the settings widget an explicit Studio/canvas target.
+                    # A plugin-panel-created widget may not have our canvas in
+                    # its parent chain, so inference can succeed without redraw.
+                    if hasattr(settings_widget, 'set_studio_canvas'):
+                        settings_widget.set_studio_canvas(self.image_label)
+                        settings_widget.studio = self
+
                     # Store both the main plugin AND the settings widget
                     self.current_plugin = plugin
                     self.current_plugin_widget = settings_widget
+                    self._connect_border_detection_results(settings_widget)
                     self.plugin_widget = settings_widget  
                     self.plugin_settings_widget = settings_widget
                     
@@ -2008,6 +2413,13 @@ class ModularAnnotationStudio(QMainWindow):
                     if hasattr(self.current_plugin_widget, 'set_current_image'):
                         self.current_plugin_widget.set_current_image(self.current_image)
                         self.logger.debug(f"Forwarded current image to plugin settings widget: {plugin_name}")
+                    if getattr(self, "_existing_label_mode", False):
+                        if getattr(self, "_existing_batch_state", None):
+                            self._load_existing_card_labels()
+                    elif hasattr(self.current_plugin, 'on_image_changed') and self.current_image_path:
+                        self.current_plugin.on_image_changed(
+                            str(self.current_image_path), self.original_image
+                        )
                 
                 # TODO: Update plugin controls in left panel
                 # TODO: Configure plugin-specific settings
@@ -2127,10 +2539,12 @@ class ModularAnnotationStudio(QMainWindow):
 
                 # CRITICAL: Store reference to current plugin widget for image notifications
                 self.current_plugin_widget = settings_widget
+                self._connect_border_detection_results(settings_widget)
 
                 # CRITICAL: Set studio canvas reference so plugin can draw annotations
                 if hasattr(settings_widget, 'set_studio_canvas'):
                     settings_widget.set_studio_canvas(self.image_label)
+                    settings_widget.studio = self
                     self.logger.info("✅ Studio canvas reference passed to plugin")
 
                 # Clear existing settings and add new one
@@ -2140,6 +2554,28 @@ class ModularAnnotationStudio(QMainWindow):
                         child.widget().deleteLater()
 
                 self.plugin_settings_layout.addWidget(settings_widget)
+
+                # A card may already be open when the user selects the border
+                # plugin. In that startup order load_current_image() could not
+                # notify the plugin, so forward the existing image exactly once.
+                # Detection remains owned by on_image_changed() and its delayed
+                # real-model inference; do not introduce another detector.
+                if plugin_filename == "border_detection_plugin":
+                    loaded_image = getattr(self, "original_image", None)
+                    loaded_path = getattr(self, "current_image_path", None)
+                    if loaded_image is not None and loaded_path is not None:
+                        if hasattr(settings_widget, "set_current_image"):
+                            settings_widget.set_current_image(loaded_image)
+                        self.logger.info(
+                            "Border plugin activated with existing card: %s; scheduling first detection",
+                            loaded_path,
+                        )
+                        if getattr(self, "_existing_label_mode", False):
+                            if getattr(self, "_existing_batch_state", None):
+                                self._load_existing_card_labels()
+                        else:
+                            self.current_plugin.on_image_changed(str(loaded_path), loaded_image)
+
                 self.logger.info(f"✅ Plugin {plugin_filename} loaded and settings panel created")
                 self.logger.info(f"✅ current_plugin set to: {self.current_plugin}")
                 self.logger.info(f"✅ current_plugin_widget set to: {self.current_plugin_widget}")

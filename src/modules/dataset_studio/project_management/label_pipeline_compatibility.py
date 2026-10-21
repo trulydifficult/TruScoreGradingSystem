@@ -124,6 +124,33 @@ class LabelPipelineCompatibility:
         Returns: (is_compatible, error_message)
         """
         try:
+            # These are dataset-review choices, NOT registered Phoenix trainers.
+            # Reject similarly named COCO detection files and ordinary JSON.
+            from shared.dataset_tools.dual_quad_dataset import (
+                CONTOUR_PIPELINES, DualQuadDatasetError, json_label_kind,
+            )
+            if pipeline_name in CONTOUR_PIPELINES:
+                if label_file_path.suffix.lower() != ".json":
+                    return False, "Dual-contour project requires native quad JSON or genuine COCO segmentation"
+                try:
+                    kind = json_label_kind(label_file_path)
+                except DualQuadDatasetError as exc:
+                    return False, str(exc)
+                if kind == "dual_quad_proposal":
+                    return True, ("TruScore dual-quad proposal recognized for image/label "
+                                  "verification only. Not approved segmentation ground truth; "
+                                  "Phoenix training/export blocked.")
+                if (kind == "coco_instance_segmentation"
+                        and pipeline_name == "Detectron2 PointRend + Mask R-CNN"):
+                    return False, ("Genuine COCO instance-segmentation structure detected, "
+                                   "but the PointRend COCO polygon/mask import and training "
+                                   "adapter have not been implemented. "
+                                   "Use matching TruScore quad JSON for preview today.")
+                return False, (
+                    f"{kind}: not compatible with {pipeline_name}. "
+                    "Detection-only COCO bounding boxes and arbitrary JSON "
+                    "are not dual-contour segmentation labels."
+                )
             if pipeline_name not in self.pipeline_requirements:
                 return False, f"Unknown pipeline: {pipeline_name}"
             
@@ -160,8 +187,10 @@ class LabelPipelineCompatibility:
                 with open(label_file_path, 'r') as f:
                     data = json.load(f)
                     
+                if isinstance(data, dict) and data.get("schema") == "dual_contour_proposal_v1":
+                    return "TruScore Dual-Quad JSON (*.json)"
                 # COCO format detection
-                if 'images' in data and 'annotations' in data and 'categories' in data:
+                if isinstance(data, dict) and 'images' in data and 'annotations' in data and 'categories' in data:
                     return 'COCO JSON (*.json)'
                 
                 # Custom JSON formats

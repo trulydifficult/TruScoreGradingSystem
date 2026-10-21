@@ -436,6 +436,40 @@ class ProjectCreationDialog(QDialog):
         
         # PROFESSIONAL TRAINING PIPELINES - ENTERPRISE EDITION
         self.training_pipelines = {
+            # New source-quad review pipelines: not executable trainer aliases.
+            'High-Resolution RGB Dual-Contour Segmentation': {
+                'description': 'Native RGB dual-border contour model (planned). Quad import and verification only until reviewed masks and a dedicated Phoenix trainer are implemented.',
+                'category': 'Border Analysis / Research',
+                'model_architecture': 'Three-channel high-resolution boundary-aware network (planned)',
+                'backbone': 'U-Net-style baseline; architecture under evaluation',
+                'framework': 'PyTorch / ROCm (this trainer not implemented)',
+                'output_type': 'Two independently measured native-image contours (planned)',
+                'batch_sizes': [1, 2, 4, 8],
+                'recommended_batch': 2,
+                'training_time': 'Not benchmarked',
+                'accuracy': 'Not benchmarked',
+                'hardware_req': 'AMD Radeon RX 7900 XTX acceptance pending',
+                'required_label_formats': ['TruScore Dual-Quad JSON (*.json) — review only'],
+                'preferred_format': 'TruScore Dual-Quad JSON (*.json) — review only'
+            },
+            'Detectron2 PointRend + Mask R-CNN': {
+                'description': 'Boundary-refined Mask R-CNN candidate (planned). True human-reviewed instance masks and ROCm/PointRend support needed before training.',
+                'category': 'Border Analysis / Research',
+                'model_architecture': 'Mask R-CNN + PointRend mask-point refinement (planned)',
+                'backbone': 'ResNet-FPN variant pending',
+                'framework': 'Detectron2 PointRend (ROCm unverified)',
+                'output_type': 'Two instance masks / ordered contours (planned)',
+                'batch_sizes': [1, 2, 4],
+                'recommended_batch': 2,
+                'training_time': 'Not benchmarked',
+                'accuracy': 'Not benchmarked',
+                'hardware_req': 'AMD ROCm compatibility unverified',
+                'required_label_formats': [
+                    'TruScore Dual-Quad JSON (*.json) — review only',
+                    'COCO Instance Segmentation JSON (*.json) — future training adapter'
+                ],
+                'preferred_format': 'TruScore Dual-Quad JSON (*.json) — review only'
+            },
             # PROFESSIONAL TIER - MAXIMUM ACCURACY
             'Detectron2 (Mask R-CNN + RPN) - Professional': {
                 'description': 'State-of-the-art object detection and segmentation for 99%+ accuracy',
@@ -658,7 +692,7 @@ class ProjectCreationDialog(QDialog):
         self.dataset_pipeline_compatibility = {
             # Border Detection Types
             'border_detection_single': ['Detectron2 (Mask R-CNN + RPN) - Professional', 'YOLOv10x Precision', 'YOLOv9 Gelan-base'],
-            'border_detection_2class': ['Detectron2 (Mask R-CNN + RPN) - Professional', 'Sub-Pixel Enhanced Detectron2', 'YOLOv9 Gelan-base'],
+            'border_detection_2class': ['High-Resolution RGB Dual-Contour Segmentation', 'Detectron2 PointRend + Mask R-CNN', 'Detectron2 (Mask R-CNN + RPN) - Professional', 'Sub-Pixel Enhanced Detectron2', 'YOLOv9 Gelan-base', 'YOLO11s Optimized'],
             'border_ultra_precision': ['Sub-Pixel Enhanced Detectron2', 'YOLOv10x Precision'],
             
             # Corner Analysis Types
