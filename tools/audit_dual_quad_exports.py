@@ -168,8 +168,8 @@ def build_inventory(root: Path, files: list[Path], preview_dir: Path | None = No
             record = json.loads(proposal.read_text(encoding="utf-8"))
             # These are proposals, regardless of a human correction or review
             # flag. Never promote them into dual_contour_v1 mask GT.
-            if (record.get("segmentation_ground_truth") is not False
-                    or any(a.get("segmentation_ground_truth") is not False
+            if (record.get("segmentation_ground_truth") not in (None, False)
+                    or any(a.get("segmentation_ground_truth") not in (None, False)
                            for a in record["annotations"])):
                 raise ValueError("Proposal falsely claims segmentation ground truth")
             if any(a.get("human_reviewed") not in (True, False)
