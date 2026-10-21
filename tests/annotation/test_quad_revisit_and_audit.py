@@ -212,3 +212,94 @@ def test_read_only_auditor_draws_real_quads_and_rejects_bad_labels(tmp_path):
     combined.write_text("0 0.5 0.5 0.2 0.2\n1 0.5 0.5 0.7 0.8\n")
     with pytest.raises(ValueError, match="disagrees"):
         module.audit_card(root, record)
+
+
+def _inventory_auditor():
+    spec = importlib.util.spec_from_file_location("quad_inventory_audit", AUDITOR)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_inventory_tracks_valid_pairs_and_refuses_proposal_training_promotion(tmp_path):
+    _, root, proposal, exported = _saved_pair(tmp_path)
+    tool = _inventory_auditor()
+    report = tool.build_inventory(root, [proposal])
+    assert report["schema"] == "dual_quad_inventory_v1"
+    assert report["counts"]["proposals_checked"] == 1
+    assert report["counts"]["valid_export_pairs"] == 1
+    assert report["counts"]["failed_export_pairs"] == 0
+    assert report["counts"]["segmentation_training_ready"] == 0
+    assert report["records"][0]["status"] == "PASS"
+    assert report["records"][0]["training_ready"] is False
+    assert report["records"][0]["image_sha256_verified"] == hashlib.sha256(
+        exported.read_bytes()).hexdigest()
+
+    # Even an explicit review flag on proposal_v1 cannot certify mask GT.
+    data = json.loads(proposal.read_text())
+    for ann in data["annotations"]:
+        ann["human_reviewed"] = True
+    proposal.write_text(json.dumps(data))
+    report = tool.build_inventory(root, [proposal])
+    assert report["counts"]["explicitly_reviewed_contours"] == 2
+    assert report["counts"]["segmentation_training_ready"] == 0
+
+    # Proposals claiming segmentation ground truth must fail, not promote.
+    data["segmentation_ground_truth"] = True
+    proposal.write_text(json.dumps(data))
+    report = tool.build_inventory(root, [proposal])
+    assert report["counts"]["failed_export_pairs"] == 1
+    assert "falsely claims" in report["records"][0]["error"]
+
+
+def test_inventory_records_failures_orphans_and_casefold_collisions(tmp_path):
+    _, root, proposal, exported = _saved_pair(tmp_path)
+    tool = _inventory_auditor()
+    extra = root / "combined_dual_class" / "images" / "oldtrial.jpg"
+    shutil.copyfile(exported, extra)
+    duplicate = root / "dual_contour_proposals" / "Card001.json"
+    shutil.copyfile(proposal, duplicate)
+
+    report = tool.build_inventory(root, [proposal, duplicate])
+    assert report["counts"]["identity_collision_groups"] >= 1
+    assert report["exports_without_quad_proposals"][
+        str(root / "combined_dual_class" / "images")]["count"] == 1
+
+    # A damaged saved JPEG must not count as a valid pair.
+    exported.write_bytes(b"bad image")
+    report = tool.build_inventory(root, [proposal])
+    assert report["counts"]["valid_export_pairs"] == 0
+    assert report["counts"]["failed_export_pairs"] == 1
+    assert report["counts"]["segmentation_training_ready"] == 0
+
+
+def test_inventory_reports_same_bytes_without_claiming_same_physical_card(tmp_path):
+    _, root, proposal, exported = _saved_pair(tmp_path)
+    data = json.loads(proposal.read_text())
+    cloned = root / "dual_contour_proposals" / "card002.json"
+    data["image_file"] = "card002.jpg"
+    cloned.write_text(json.dumps(data))
+    for target in ("outer_border_model", "graphic_border_model", "combined_dual_class"):
+        folder = root / target
+        shutil.copyfile(folder / "images" / "card001.jpg",
+                        folder / "images" / "card002.jpg")
+        shutil.copyfile(folder / "labels" / "card001.txt",
+                        folder / "labels" / "card002.txt")
+    report = _inventory_auditor().build_inventory(root, [proposal, cloned])
+    assert report["counts"]["valid_export_pairs"] == 2
+    assert report["counts"]["possible_same_image_groups"] == 1
+    assert report["same_exported_jpeg_sha256"][0]["stems"] == ["card001", "card002"]
+    assert report["counts"]["segmentation_training_ready"] == 0
+
+
+def test_inventory_report_is_explicit_no_clobber_and_never_inside_sources(tmp_path):
+    _, root, proposal, _ = _saved_pair(tmp_path)
+    tool = _inventory_auditor()
+    destination = tmp_path / "report.json"
+    assert tool.main(["--root", str(root), "--report-json", str(destination)]) == 0
+    report = json.loads(destination.read_text())
+    assert report["counts"]["valid_export_pairs"] == 1
+    assert tool.main(["--root", str(root), "--report-json", str(destination)]) == 1
+    assert tool.main(["--root", str(root), "--report-json",
+                      str(root / "inventory.json")]) == 1
+    assert not (root / "inventory.json").exists()
