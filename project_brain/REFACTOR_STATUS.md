@@ -1,11 +1,36 @@
 # TruScoreGradingSystem — Refactor Status
 
-Last continuity update: 2026-10-20 (both contour pickers + six-image GUI verification accepted)
+Last continuity update: 2026-10-21 (read-only dual-quad corpus preflight; six-image GUI verification unchanged)
 Base whole-subsystem audit: 2026-10-16/17; many modules still PARTIAL
 
 > Current actionable handoff and evidence tiers: SESSION_START.md.
 > The matrix below is a subsystem-level overview; individual passed
 > source tests and GUI/GPU smoke checks are described in dated sections.
+
+## 2026-10-21 — Read-only quad corpus inventory (source/CI slice)
+
+- Extended the existing `tools/audit_dual_quad_exports.py`; no new
+  validator ownership or mutation of annotation source files.
+- `build_inventory` checks each proposal against three source JPEG/YOLO
+  outputs, reports case-folded stem collisions, exported JPEG SHA repeats,
+  old export files without matching proposals, exact failures and review
+  metadata. `--report-json` is opt-in, exclusive-create and prohibited
+  beneath annotation sources. Source-image digest is explicitly
+  UNVERIFIED unless original scans are independently checked.
+- `dual_contour_proposal_v1` remains non-training ground truth even if
+  human-correction/review flags are set. No mask export, auto-approval,
+  renaming, deletion or user dataset reset was introduced.
+- Annotation Integrity run 39551139211: **114 tests PASS** after the
+  tool and four inventory regression tests. Dataset, Phoenix Handoff
+  and Phoenix Foundation also passed on commit 7016ef2. A separate
+  Project Memory bounded-snapshot check initially failed because an
+  earlier handoff edit enlarged SESSION_START; that was condensed
+  and the memory check passed at run 39551288792.
+- CI tested committed fixtures and temporary synthetic pairs, not the
+  operator's local ~100-card corpus. Current precision/model/ROCm
+  acceptance gates remain OPEN. Data collection proceeds concurrently;
+  training dataset size must reflect genuinely reviewed eligible cards
+  at the time of each experiment, with physically grouped splits.
 
 ## 2026-10-20 — Dataset Studio six-image operator GUI acceptance
 
