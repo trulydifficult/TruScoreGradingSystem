@@ -7,6 +7,25 @@ Latest continuity audit / dataset acceptance: 2026-10-16 CDT / 2026-10-17 UTC
 > [SESSION_START.md](SESSION_START.md). Older dated continuation paragraphs
 > further down are retained only as historical snapshots.
 
+## 2026-10-20 — REAL GUI acceptance: both contour model choices, six card pairs
+
+Operator confirmed Dataset Studio project configuration and native
+Labels/Verification workflow on the workstation. Both new options,
+`High-Resolution RGB Dual-Contour Segmentation` and
+`Detectron2 PointRend + Mask R-CNN`, were selectable and each accepted
+six imported images plus matching quad JSON labels; the two saved
+border outlines were visible for both pipeline choices. This is a
+**user-reported real GUI import/visualization acceptance**, not simply
+source-only or CI acceptance. No independently measured pixel-edge
+precision, full ~100-card integrity audit, or 550-card corpus acceptance
+is implied. No tested COCO mask importer, reviewed dense segmentation
+truth, actual RGB/PointRend trainer or ROCm benchmark exists yet.
+
+Prior source tests and CI: head a02d0df, five GitHub workflow families
+PASSED; Dataset Integrity 55 tests passed. The source/workstation
+evidence tiers remain distinct, and the older next-step paragraphs
+below are historical. Authoritative next actions: SESSION_START.md.
+
 ## 2026-10-20 — Native Dataset Studio quad verification (source/CI slice)
 
 Enterprise project startup now lists High-Resolution RGB Dual-Contour
