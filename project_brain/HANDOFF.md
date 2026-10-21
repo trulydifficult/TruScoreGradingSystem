@@ -1946,3 +1946,37 @@ No source files, user training samples or local project files were
 modified as part of recording this operator acceptance. Maintain
 `project_brain` as continuity source of truth; GitHub active
 development branch is `refactor/phoenix-foundation`, not main.
+
+
+## 2026-10-21 — Continued annotation alongside inventory preflight
+
+Operator confirmed they will keep annotating during engineering. At each
+future training test, use the actual number of reviewed/eligible saved cards
+then available, not a fixed 550-card target. Report excluded cards and
+physical-card-held-out split counts; do not count unreviewed quad proposals
+as segmentation ground truth. No local image count was independently audited.
+
+Implemented a narrow read-only preflight in the existing
+`tools/audit_dual_quad_exports.py`: `build_inventory` plus optional
+`--report-json /outside/annotation/root/inventory.json` supports
+pair integrity, exact JPEG hashes, duplicate case-folded stems, possible
+same-image bytes across stems, leftover bbox exports and claimed source
+hash provenance. JSON output is exclusive-create outside annotation source;
+it neither renames nor removes cards, labels, checkpoint state, or QA fixtures.
+Current proposals report `segmentation_training_ready: 0` regardless of
+corrected/reviewed flags because source contract is proposal_v1, not approved
+dual_contour_v1. No reviewed masks/trainer adapter has been implemented.
+
+Verification: Annotation Integrity 114 tests PASS, workflow 39551139211;
+Dataset Integrity, Phoenix Dataset Handoff and Phoenix Foundation PASS on
+commit 7016ef2. Earlier Project Memory Integrity failed its 185-line
+SESSION_START bound due to the prior session's dynamic-dataset note;
+compressed that note and run 39551288792 passed. Subsequent GitHub
+CI statuses must be checked at the actual development branch HEAD.
+
+Next: ask operator only for still-open A/B naming and approval semantics
+when they become necessary for a destructive migration/review workflow;
+otherwise advance human-reviewable contour approval and true mask adapters
+by reusing current `dual_quad_dataset` and model-specific training contracts.
+Preserve actual operator annotation work throughout. This was a source/CI
+slice only, not workstation execution or a certified precision baseline.
