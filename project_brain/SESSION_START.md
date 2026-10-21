@@ -1,6 +1,6 @@
 # NEW SESSION START HERE — TruScore active project state
 
-**Current as of 2026-10-19 | Branch `refactor/phoenix-foundation` | last
+**Current as of 2026-10-20 | Branch `refactor/phoenix-foundation` | last
 operator data commit `20b5df641200423a099e0fa22d8d45cbdb8dd69c`.**
 Always fetch the latest remote HEAD and CI results; this SHA identifies
 the evidence reviewed when this snapshot was written, not a permanent
@@ -85,13 +85,13 @@ mobile services are longer-term systems, NOT all implemented today.
   ignore `src/shared/annotations/`. A blanket `git rm` / bulk
   deletion would break tests and destroy documented QA evidence.
 
-- **2026-10-20 workstation/CI:** operator accepted one-card Back
-  restoration with aligned editable quads; ~100-card corpus unaudited.
-  Dataset Studio now lists two dual-border research models under
-  2-class Border Detection. Native-quad JSON/image hash validation,
-  format distinction and true quad Verification overlay source-tested.
-  Model-specific exporters/ROCm trainers still NOT IMPLEMENTED;
-  Dataset Studio GUI model picker/quad preview user acceptance pending.
+- **2026-10-20 Dataset Studio GUI ACCEPTED:** in real UI operator
+  successfully used BOTH new 2-class border research pipelines,
+  imported six exported card images and matching quad JSON labels,
+  and saw both saved border outlines for each choice. Earlier Back
+  navigation/editability also GUI-accepted; ~100-card corpus unaudited.
+  Model-specific masks/export/ROCm trainers still NOT IMPLEMENTED;
+  this is import/preview acceptance, not pixel-level ground truth.
 
 **Still NOT verified or implemented:**
 - Quad proposals are explicitly `human_reviewed=false` and
@@ -147,16 +147,14 @@ mobile services are longer-term systems, NOT all implemented today.
    labels/annotations before selectively cleaning trial outputs.
    Reset/migrate the local resume checkpoint knowingly. No destructive
    command or rename in this handoff.
-2. **Dataset Studio workstation acceptance:** create a 2-class border
-   project for each new model, load matching exported card094 JPEG and
-   `dual_contour_proposals/card094.json`, inspect both quad overlays,
-   reject a wrong image hash. No segmentation-training claim.
-3. **Human review/approval + true border supervision contract:**
-   preserve the accepted fast quad editor; decide when 4 corners
-   suffice and when editable extra side vertices/actual mask tracing
-   are needed. Keep source provenance, native pixels, outer/graphic
-   identity, missing/partial boundaries, face and source scan hash.
-   Do not assume YOLO5 bbox→COCO synthetic rectangles are true GT.
+2. **Complete honest contour GT/adapter contract:** GUI accepts
+   both model options with six image/quad pairs. Next: sampling audit
+   of actual vertex-to-edge accuracy, negative import/mismatch in GUI,
+   human review/approval and deciding if >4 edge points are needed.
+3. **Approve model-independent supervision:** preserve editable
+   quads, source-hash/native-pixel/face provenance, border class and
+   missing/partial-boundary handling. Specify approved dual_contour_v1,
+   extra edge vertices/tracing when needed; YOLO AABBs are not GT.
 4. **Dataset Studio adapter→Phoenix real segmentation.** Build
    genuine native-coordinate dual polygons/COCO masks and explicit
    model/dataset registry, validators and Queue handoff. Compare
